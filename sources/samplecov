@@ -1,0 +1,49 @@
+	void samplecov(int P, int nrep)	{
+
+		InverseWishartMatrix* t = new InverseWishartMatrix(sigmaZero,10);
+		InverseWishartMatrix* s = new InverseWishartMatrix(sigmaZero,P);
+
+		int dim = s->GetDim();
+		double mean1[dim][dim];
+		double mean2[dim][dim];
+		double var1[dim][dim];
+		double var2[dim][dim];
+		for (int i=0; i<dim; i++)	{
+			for (int j=0; j<dim; j++)	{
+				mean1[i][j] = mean2[i][j] = var1[i][j] = var2[i][j] = 0;
+			}
+		}
+
+		for (int rep=0; rep<nrep; rep++)	{
+
+			s->drawSample(t);
+			for (int i=0; i<dim; i++)	{
+				for (int j=0; j<dim; j++)	{
+					mean1[i][j] += (*s)[i][j];
+					var1[i][j] += (*s)[i][j] * (*s)[i][j];
+				}
+			}
+	
+			s->drawSample2(t);
+			for (int i=0; i<dim; i++)	{
+				for (int j=0; j<dim; j++)	{
+					mean2[i][j] += (*s)[i][j];
+					var2[i][j] += (*s)[i][j] * (*s)[i][j];
+				}
+			}
+		}
+
+		for (int i=0; i<dim; i++)	{
+			for (int j=0; j<dim; j++)	{
+				mean1[i][j] /= nrep;
+				var1[i][j] /= nrep;
+				var1[i][j] -= mean1[i][j] * mean1[i][j];
+				mean2[i][j] /= nrep;
+				var2[i][j] /= nrep;
+				var2[i][j] -= mean2[i][j] * mean2[i][j];
+				cerr << mean1[i][j] << '\t' << var1[i][j] << '\t' << mean2[i][j] << '\t' << var2[i][j] << '\n';
+			}
+		}
+	}
+
+

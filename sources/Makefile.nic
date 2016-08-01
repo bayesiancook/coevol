@@ -1,0 +1,405 @@
+#To compile with gsl, reactivate the following line (remove '#')
+#USE_GSL=-DGSL
+
+#To statically build the executables, uncomment the following line
+STATIC=-static
+
+
+ifdef USE_GSL
+GSLLIB=-lgsl -lgslcblas
+else
+GSLLIB=
+endif
+
+LIBS=$(GSLLIB)
+
+CC=g++
+SYSLIB=
+INCLUDES=
+#CPPFLAGS= $(USE_GSL) $(INCLUDES)
+CPPFLAGS= -Wall -O3 $(USE_GSL) $(INCLUDES)
+LDFLAGS=$(STATIC)
+INSTALL_DIR=
+INSTALL_LIB=
+SRCS= ConjugateGTRModel.cpp Chrono.cpp BaseType.cpp Chain.cpp DrawTree.cpp GTRSubMatrix.cpp linalg.cpp PhyloProcess.cpp ProbModel.cpp Random.cpp RandomBranchSitePath.cpp RandomTypes.cpp DAGnode.cpp Sample.cpp SequenceAlignment.cpp SiteMapping.cpp BranchSitePath.cpp StateSpace.cpp SubMatrix.cpp TaxonSet.cpp Tree.cpp CodonSubMatrix.cpp CodonStateSpace.cpp CodonSequenceAlignment.cpp Move.cpp MGAAProfileMutSelCodonSubMatrix.cpp MGCodonProfileMutSelCodonSubMatrix.cpp MGCodonAAProfileMutSelCodonSubMatrix.cpp
+
+OBJS=$(patsubst %.cpp,%.o,$(SRCS))
+ALL_SRCS=$(wildcard *.cpp)
+ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
+
+PROGSDIR=../data
+ALL= readaaprofilemutsel readaaprofilemutselinfmix readcodonaaprofilemutselinfmix readcodonprofilemutselinfmix readneffmutsel readneffinfmix neffaaprofileinfmixmutsel aaprofilemutselinfmix codonprofilemutselinfmix codonaaprofilemutselinfmix neffaaprofilemutsel aaprofilemutsel mulomega simulomega readmulomega 
+#ALL= readcont simucont cont simuinvwish priorchrono mulomega simulomega readmulomega readomega omega aamutsel readnhaa readnormflexdiscnhaa normflexdiscnhaa readdirflexdiscnhaa dirflexdiscnhaa readdiscnhaa discnhaa nhaa pca jc readgcpopsizeaamutsel readacgtpopsizeaamutsel gcpopsizeaamutsel acgtpopsizeaamutsel readsepmulaamutsel sepmulaamutsel bgcmutsel aamutsel readaamutsel drawtree 
+#ALL= gcmixmg mixmg gcmatmixmg matmixmg readacgtpopsizeaaredmutsel acgtpopsizeaaredmutsel readgcpopsizeaaredmutsel gcpopsizeaaredmutsel readgcpopsizeaamutsel gcpopsizeaamutsel popsizeaamutsel bgchkymutsel bgcmutsel aamutsel readpopsizeaamutsel readaamutsel drawtree 
+PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
+
+# If we are on a windows platform, executables are .exe files
+# [S.Bigaret] we assume here that we are compiling w/ MinGW, not Cygwin
+EXEEXT=
+uname := $(shell uname -s 2>/dev/null)
+ifeq (MINGW,$(findstring MINGW,$(uname)))
+	EXEEXT=.exe
+	PROGS=$(addsuffix $(EXEEXT), $(ALL))
+endif
+
+.PHONY: all clean
+all: $(PROGS)
+
+# Rules for generate the dependencies automatically
+
+%.d: %.cpp
+	@echo "Generating dependencies for $<..."; \
+	 set -e; rm -f $@; $(CC) -MM $(CPPFLAGS) $< > $@.$$$$; \
+	 sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; rm -f $@.$$$$
+
+
+# Rules to create .o files from .cpp files
+%.o: %.cpp %.d
+	$(CC) -c $(CPPFLAGS) $*.cpp
+
+# Include the dependencies unless the request was to clean eveything up
+ifneq ($(MAKECMDGOALS),clean)
+-include $(ALL_OBJS:.o=.d)
+endif
+
+# Targets
+
+readaaprofilemutsel$(EXEEXT): $(PROGSDIR)/readaaprofilemutsel$(EXEEXT)
+$(PROGSDIR)/readaaprofilemutsel$(EXEEXT): ReadMutSelMix.o $(OBJS)
+	$(CC) ReadMutSelMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readaaprofilemutselinfmix$(EXEEXT): $(PROGSDIR)/readaaprofilemutselinfmix$(EXEEXT)
+$(PROGSDIR)/readaaprofilemutselinfmix$(EXEEXT): ReadMutSelInfMix.o $(OBJS)
+	$(CC) ReadMutSelInfMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readcodonaaprofilemutselinfmix$(EXEEXT): $(PROGSDIR)/readcodonaaprofilemutselinfmix$(EXEEXT)
+$(PROGSDIR)/readcodonaaprofilemutselinfmix$(EXEEXT): ReadCodonAAProfileMutSelInfMix.o $(OBJS)
+	$(CC) ReadCodonAAProfileMutSelInfMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readcodonprofilemutselinfmix$(EXEEXT): $(PROGSDIR)/readcodonprofilemutselinfmix$(EXEEXT)
+$(PROGSDIR)/readcodonprofilemutselinfmix$(EXEEXT): ReadCodonProfileMutSelInfMix.o $(OBJS)
+	$(CC) ReadCodonProfileMutSelInfMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readneffmutsel$(EXEEXT): $(PROGSDIR)/readneffmutsel$(EXEEXT)
+$(PROGSDIR)/readneffmutsel$(EXEEXT): ReadNeffMutSel.o $(OBJS)
+	$(CC) ReadNeffMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readneffinfmix$(EXEEXT): $(PROGSDIR)/readneffinfmix$(EXEEXT)
+$(PROGSDIR)/readneffinfmix$(EXEEXT): ReadNeffInfMix.o $(OBJS)
+	$(CC) ReadNeffInfMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+neffaaprofileinfmixmutsel$(EXEEXT): $(PROGSDIR)/neffaaprofileinfmixmutsel$(EXEEXT)
+$(PROGSDIR)/neffaaprofileinfmixmutsel$(EXEEXT): NeffAAProfileInfMixMutSel.o $(OBJS)
+	$(CC) NeffAAProfileInfMixMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+aaprofilemutselinfmix$(EXEEXT): $(PROGSDIR)/aaprofilemutselinfmix$(EXEEXT)
+$(PROGSDIR)/aaprofilemutselinfmix$(EXEEXT): AAProfileMutSelInfMix.o $(OBJS)
+	$(CC) AAProfileMutSelInfMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+codonprofilemutselinfmix$(EXEEXT): $(PROGSDIR)/codonprofilemutselinfmix$(EXEEXT)
+$(PROGSDIR)/codonprofilemutselinfmix$(EXEEXT): CodonProfileMutSelInfMix.o $(OBJS)
+	$(CC) CodonProfileMutSelInfMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+codonaaprofilemutselinfmix$(EXEEXT): $(PROGSDIR)/codonaaprofilemutselinfmix$(EXEEXT)
+$(PROGSDIR)/codonaaprofilemutselinfmix$(EXEEXT): CodonAAProfileMutSelInfMix.o $(OBJS)
+	$(CC) CodonAAProfileMutSelInfMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+neffaaprofilemutsel$(EXEEXT): $(PROGSDIR)/neffaaprofilemutsel$(EXEEXT)
+$(PROGSDIR)/neffaaprofilemutsel$(EXEEXT): NeffAAProfileMutSel.o $(OBJS)
+	$(CC) NeffAAProfileMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+aaprofilemutsel$(EXEEXT): $(PROGSDIR)/aaprofilemutsel$(EXEEXT)
+$(PROGSDIR)/aaprofilemutsel$(EXEEXT): AAProfileMutSel.o $(OBJS)
+	$(CC) AAProfileMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+simucont$(EXEEXT): $(PROGSDIR)/simucont$(EXEEXT)
+$(PROGSDIR)/simucont$(EXEEXT): SimuCont.o $(OBJS)
+	$(CC) SimuCont.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readcont$(EXEEXT): $(PROGSDIR)/readcont$(EXEEXT)
+$(PROGSDIR)/readcont$(EXEEXT): ReadCont.o $(OBJS)
+	$(CC) ReadCont.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+cont$(EXEEXT): $(PROGSDIR)/cont$(EXEEXT)
+$(PROGSDIR)/cont$(EXEEXT): Cont.o $(OBJS)
+	$(CC) Cont.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+simuinvwish$(EXEEXT): $(PROGSDIR)/simuinvwish$(EXEEXT)
+$(PROGSDIR)/simuinvwish$(EXEEXT): SimuInvWish.o $(OBJS)
+	$(CC) SimuInvWish.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+dirflexdiscnhaa$(EXEEXT): $(PROGSDIR)/dirflexdiscnhaa$(EXEEXT)
+$(PROGSDIR)/dirflexdiscnhaa$(EXEEXT): DirFlexDiscreteNHAminoAcid.o $(OBJS)
+	$(CC) DirFlexDiscreteNHAminoAcid.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readdirflexdiscnhaa$(EXEEXT): $(PROGSDIR)/readdirflexdiscnhaa$(EXEEXT)
+$(PROGSDIR)/readdirflexdiscnhaa$(EXEEXT): ReadDirFlexDiscreteNHAminoAcid.o $(OBJS)
+	$(CC) ReadDirFlexDiscreteNHAminoAcid.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+normflexdiscnhaa$(EXEEXT): $(PROGSDIR)/normflexdiscnhaa$(EXEEXT)
+$(PROGSDIR)/normflexdiscnhaa$(EXEEXT): NormFlexDiscreteNHAminoAcid.o $(OBJS)
+	$(CC) NormFlexDiscreteNHAminoAcid.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readnormflexdiscnhaa$(EXEEXT): $(PROGSDIR)/readnormflexdiscnhaa$(EXEEXT)
+$(PROGSDIR)/readnormflexdiscnhaa$(EXEEXT): ReadNormFlexDiscreteNHAminoAcid.o $(OBJS)
+	$(CC) ReadNormFlexDiscreteNHAminoAcid.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readnhaa$(EXEEXT): $(PROGSDIR)/readnhaa$(EXEEXT)
+$(PROGSDIR)/readnhaa$(EXEEXT): ReadNHAminoAcid.o $(OBJS)
+	$(CC) ReadNHAminoAcid.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+discnhaa$(EXEEXT): $(PROGSDIR)/discnhaa$(EXEEXT)
+$(PROGSDIR)/discnhaa$(EXEEXT): DiscreteNHAminoAcid.o $(OBJS)
+	$(CC) DiscreteNHAminoAcid.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readdiscnhaa$(EXEEXT): $(PROGSDIR)/readdiscnhaa$(EXEEXT)
+$(PROGSDIR)/readdiscnhaa$(EXEEXT): ReadDiscreteNHAminoAcid.o $(OBJS)
+	$(CC) ReadDiscreteNHAminoAcid.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+nhaa$(EXEEXT): $(PROGSDIR)/nhaa$(EXEEXT)
+$(PROGSDIR)/nhaa$(EXEEXT): NHAminoAcid.o $(OBJS)
+	$(CC) NHAminoAcid.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+pca$(EXEEXT): $(PROGSDIR)/pca$(EXEEXT)
+$(PROGSDIR)/pca$(EXEEXT): PCA.o $(OBJS)
+	$(CC) PCA.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+jc$(EXEEXT): $(PROGSDIR)/jc$(EXEEXT)
+$(PROGSDIR)/jc$(EXEEXT): JCAlignment.o $(OBJS)
+	$(CC) JCAlignment.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+bgchkymutsel$(EXEEXT): $(PROGSDIR)/bgchkymutsel$(EXEEXT)
+$(PROGSDIR)/bgchkymutsel$(EXEEXT): BGCHKYMutSel.o $(OBJS)
+	$(CC) BGCHKYMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+bgcmutsel$(EXEEXT): $(PROGSDIR)/bgcmutsel$(EXEEXT)
+$(PROGSDIR)/bgcmutsel$(EXEEXT): BGCMutSel.o $(OBJS)
+	$(CC) BGCMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readaamutsel$(EXEEXT): $(PROGSDIR)/readaamutsel$(EXEEXT)
+$(PROGSDIR)/readaamutsel$(EXEEXT): ReadAAMutSel.o $(OBJS)
+	$(CC) ReadAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readsepmulaamutsel$(EXEEXT): $(PROGSDIR)/readsepmulaamutsel$(EXEEXT)
+$(PROGSDIR)/readsepmulaamutsel$(EXEEXT): ReadSeparateMultiVariateAAMutSel.o $(OBJS)
+	$(CC) ReadSeparateMultiVariateAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+sepmulaamutsel$(EXEEXT): $(PROGSDIR)/sepmulaamutsel$(EXEEXT)
+$(PROGSDIR)/sepmulaamutsel$(EXEEXT): SeparateMultiVariateAAMutSel.o $(OBJS)
+	$(CC) SeparateMultiVariateAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+acgtpopsizeaamutsel$(EXEEXT): $(PROGSDIR)/acgtpopsizeaamutsel$(EXEEXT)
+$(PROGSDIR)/acgtpopsizeaamutsel$(EXEEXT): ACGTPopSizeAAMutSel.o $(OBJS)
+	$(CC) ACGTPopSizeAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readacgtpopsizeaamutsel$(EXEEXT): $(PROGSDIR)/readacgtpopsizeaamutsel$(EXEEXT)
+$(PROGSDIR)/readacgtpopsizeaamutsel$(EXEEXT): ReadACGTPopSizeAAMutSel.o $(OBJS)
+	$(CC) ReadACGTPopSizeAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+gcpopsizeaamutsel$(EXEEXT): $(PROGSDIR)/gcpopsizeaamutsel$(EXEEXT)
+$(PROGSDIR)/gcpopsizeaamutsel$(EXEEXT): GCPopSizeAAMutSel.o $(OBJS)
+	$(CC) GCPopSizeAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readgcpopsizeaamutsel$(EXEEXT): $(PROGSDIR)/readgcpopsizeaamutsel$(EXEEXT)
+$(PROGSDIR)/readgcpopsizeaamutsel$(EXEEXT): ReadGCPopSizeAAMutSel.o $(OBJS)
+	$(CC) ReadGCPopSizeAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+popsizeaamutsel$(EXEEXT): $(PROGSDIR)/popsizeaamutsel$(EXEEXT)
+$(PROGSDIR)/popsizeaamutsel$(EXEEXT): PopSizeAAMutSel.o $(OBJS)
+	$(CC) PopSizeAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readpopsizeaamutsel$(EXEEXT): $(PROGSDIR)/readpopsizeaamutsel$(EXEEXT)
+$(PROGSDIR)/readpopsizeaamutsel$(EXEEXT): ReadPopSizeAAMutSel.o $(OBJS)
+	$(CC) ReadPopSizeAAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+aanormmutsel$(EXEEXT): $(PROGSDIR)/aanormmutsel$(EXEEXT)
+$(PROGSDIR)/aanormmutsel$(EXEEXT): AANormMutSel.o $(OBJS)
+	$(CC) AANormMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+aamutsel$(EXEEXT): $(PROGSDIR)/aamutsel$(EXEEXT)
+$(PROGSDIR)/aamutsel$(EXEEXT): AAMutSel.o $(OBJS)
+	$(CC) AAMutSel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+thermogauss$(EXEEXT): $(PROGSDIR)/thermogauss$(EXEEXT)
+$(PROGSDIR)/thermogauss$(EXEEXT): thermogauss.o $(OBJS)
+	$(CC) thermogauss.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+drawtree$(EXEEXT): $(PROGSDIR)/drawtree$(EXEEXT)
+$(PROGSDIR)/drawtree$(EXEEXT): DrawTreeMain.o $(OBJS)
+	$(CC) DrawTreeMain.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+subtree$(EXEEXT): $(PROGSDIR)/subtree$(EXEEXT)
+$(PROGSDIR)/subtree$(EXEEXT): SubTree.o $(OBJS)
+	$(CC) SubTree.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+popsize$(EXEEXT): $(PROGSDIR)/popsize$(EXEEXT)
+$(PROGSDIR)/popsize$(EXEEXT): PopSize.o $(OBJS)
+	$(CC) PopSize.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readpopsize$(EXEEXT): $(PROGSDIR)/readpopsize$(EXEEXT)
+$(PROGSDIR)/readpopsize$(EXEEXT): ReadPopSize.o $(OBJS)
+	$(CC) ReadPopSize.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+gcomega$(EXEEXT): $(PROGSDIR)/gcomega$(EXEEXT)
+$(PROGSDIR)/gcomega$(EXEEXT): BranchOmegaMultivariateGC.o $(OBJS)
+	$(CC) BranchOmegaMultivariateGC.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readgcomega$(EXEEXT): $(PROGSDIR)/readgcomega$(EXEEXT)
+$(PROGSDIR)/readgcomega$(EXEEXT): ReadBranchOmegaMultivariateGC.o $(OBJS)
+	$(CC) ReadBranchOmegaMultivariateGC.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+omega$(EXEEXT): $(PROGSDIR)/omega$(EXEEXT)
+$(PROGSDIR)/omega$(EXEEXT): BranchOmega.o $(OBJS)
+	$(CC) BranchOmega.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+popomega$(EXEEXT): $(PROGSDIR)/popomega$(EXEEXT)
+$(PROGSDIR)/popomega$(EXEEXT): BranchPopOmega.o $(OBJS)
+	$(CC) BranchPopOmega.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readomega$(EXEEXT): $(PROGSDIR)/readomega$(EXEEXT)
+$(PROGSDIR)/readomega$(EXEEXT): ReadBranchOmega.o $(OBJS)
+	$(CC) ReadBranchOmega.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+omegaiid$(EXEEXT): $(PROGSDIR)/omegaiid$(EXEEXT)
+$(PROGSDIR)/omegaiid$(EXEEXT): BranchOmegaIID.o $(OBJS)
+	$(CC) BranchOmegaIID.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readomegaiid$(EXEEXT): $(PROGSDIR)/readomegaiid$(EXEEXT)
+$(PROGSDIR)/readomegaiid$(EXEEXT): ReadBranchOmegaIID.o $(OBJS)
+	$(CC) ReadBranchOmegaIID.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readgenomega$(EXEEXT): $(PROGSDIR)/readgenomega$(EXEEXT)
+$(PROGSDIR)/readgenomega$(EXEEXT): ReadBranchGenOmega.o $(OBJS)
+	$(CC) ReadBranchGenOmega.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readarmulomega$(EXEEXT): $(PROGSDIR)/readarmulomega$(EXEEXT)
+$(PROGSDIR)/readarmulomega$(EXEEXT): ReadBranchOmegaAutoRegressiveMultivariate.o $(OBJS)
+	$(CC) ReadBranchOmegaAutoRegressiveMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+armulomega$(EXEEXT): $(PROGSDIR)/armulomega$(EXEEXT)
+$(PROGSDIR)/armulomega$(EXEEXT): BranchOmegaAutoRegressiveMultivariate.o $(OBJS)
+	$(CC) BranchOmegaAutoRegressiveMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readmulomega$(EXEEXT): $(PROGSDIR)/readmulomega$(EXEEXT)
+$(PROGSDIR)/readmulomega$(EXEEXT): ReadBranchOmegaMultivariate.o $(OBJS)
+	$(CC) ReadBranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+mulomega$(EXEEXT): $(PROGSDIR)/mulomega$(EXEEXT)
+$(PROGSDIR)/mulomega$(EXEEXT): BranchOmegaMultivariate.o $(OBJS)
+	$(CC) BranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+priorchrono$(EXEEXT): $(PROGSDIR)/priorchrono$(EXEEXT)
+$(PROGSDIR)/priorchrono$(EXEEXT): PriorChronogram.o $(OBJS)
+	$(CC) PriorChronogram.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+simulomega$(EXEEXT): $(PROGSDIR)/simulomega$(EXEEXT)
+$(PROGSDIR)/simulomega$(EXEEXT): SimuBranchOmegaMultivariate.o $(OBJS)
+	$(CC) SimuBranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+bgenomega$(EXEEXT): $(PROGSDIR)/bgenomega$(EXEEXT)
+$(PROGSDIR)/bgenomega$(EXEEXT): BranchGenOmegaPerBranch.o $(OBJS)
+	$(CC) BranchGenOmegaPerBranch.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+genomega$(EXEEXT): $(PROGSDIR)/genomega$(EXEEXT)
+$(PROGSDIR)/genomega$(EXEEXT): BranchGenOmega.o $(OBJS)
+	$(CC) BranchGenOmega.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+popeff$(EXEEXT): $(PROGSDIR)/popeff $(EXEEXT)
+$(PROGSDIR)/popeff$(EXEEXT): PopSize.o $(OBJS)
+	$(CC) PopSize.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+conjlogn$(EXEEXT): $(PROGSDIR)/conjlogn$(EXEEXT)
+$(PROGSDIR)/conjlogn$(EXEEXT): ConjLogN.o $(OBJS)
+	$(CC) ConjLogN.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+logn$(EXEEXT): $(PROGSDIR)/logn$(EXEEXT)
+$(PROGSDIR)/logn$(EXEEXT): LogN.o $(OBJS)
+	$(CC) LogN.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+genedirgtr$(EXEEXT): $(PROGSDIR)/genedirgtr$(EXEEXT)
+$(PROGSDIR)/genedirgtr$(EXEEXT): GeneDirichletGTRModel.o $(OBJS)
+	$(CC) GeneDirichletGTRModel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+genegtr$(EXEEXT): $(PROGSDIR)/genegtr$(EXEEXT)
+$(PROGSDIR)/genegtr$(EXEEXT): GeneGTRModel.o $(OBJS)
+	$(CC) GeneGTRModel.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+conjgampoi$(EXEEXT): $(PROGSDIR)/conjgampoi$(EXEEXT)
+$(PROGSDIR)/conjgampoi$(EXEEXT): ConjugateJeffreysGammaPoisson.o $(OBJS)
+	$(CC) ConjugateJeffreysGammaPoisson.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+conjbinpoi$(EXEEXT): $(PROGSDIR)/conjbinpoi$(EXEEXT)
+$(PROGSDIR)/conjbinpoi$(EXEEXT): ConjugateBinPoisson.o $(OBJS)
+	$(CC) ConjugateBinPoisson.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+binpoi$(EXEEXT): $(PROGSDIR)/binpoi$(EXEEXT)
+$(PROGSDIR)/binpoi$(EXEEXT): BinPoisson.o $(OBJS)
+	$(CC) BinPoisson.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+gammix$(EXEEXT): $(PROGSDIR)/gammix$(EXEEXT)
+$(PROGSDIR)/gammix$(EXEEXT): GamMix.o $(OBJS)
+	$(CC) GamMix.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+sitestat$(EXEEXT): $(PROGSDIR)/sitestat$(EXEEXT)
+$(PROGSDIR)/sitestat$(EXEEXT): SiteStatGTR.o $(OBJS)
+	$(CC) SiteStatGTR.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+branchstat$(EXEEXT): $(PROGSDIR)/branchstat$(EXEEXT)
+$(PROGSDIR)/branchstat$(EXEEXT): BranchStatGTR.o $(OBJS)
+	$(CC) BranchStatGTR.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+matmixmg$(EXEEXT): $(PROGSDIR)/matmixmg$(EXEEXT)
+$(PROGSDIR)/matmixmg$(EXEEXT): MatMixMG.o $(OBJS)
+	$(CC) MatMixMG.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+gcmixmg$(EXEEXT): $(PROGSDIR)/gcmixmg$(EXEEXT)
+$(PROGSDIR)/gcmixmg$(EXEEXT): GCMixMG.o $(OBJS)
+	$(CC) GCMixMG.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+gcmatmixmg$(EXEEXT): $(PROGSDIR)/gcmatmixmg$(EXEEXT)
+$(PROGSDIR)/gcmatmixmg$(EXEEXT): GCMatMixMG.o $(OBJS)
+	$(CC) GCMatMixMG.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+mixmg$(EXEEXT): $(PROGSDIR)/mixmg$(EXEEXT)
+$(PROGSDIR)/mixmg$(EXEEXT): MixMG.o $(OBJS)
+	$(CC) MixMG.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+mg$(EXEEXT): $(PROGSDIR)/mg$(EXEEXT)
+$(PROGSDIR)/mg$(EXEEXT): MG.o $(OBJS)
+	$(CC) MG.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+pb$(EXEEXT): $(PROGSDIR)/pb$(EXEEXT)
+$(PROGSDIR)/pb$(EXEEXT): PB.o $(OBJS)
+	$(CC) PB.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readpb$(EXEEXT): $(PROGSDIR)/readpb$(EXEEXT)
+$(PROGSDIR)/readpb$(EXEEXT): ReadPB.o $(OBJS)
+	$(CC) ReadPB.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+poisson$(EXEEXT): $(PROGSDIR)/poisson$(EXEEXT)
+$(PROGSDIR)/poisson$(EXEEXT): Poisson.o $(OBJS)
+	$(CC) Poisson.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+bipoisson$(EXEEXT): $(PROGSDIR)/bipoisson$(EXEEXT)
+$(PROGSDIR)/bipoisson$(EXEEXT): Bipoisson.o $(OBJS)
+	$(CC) Bipoisson.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+multinomial$(EXEEXT): $(PROGSDIR)/multinomial$(EXEEXT)
+$(PROGSDIR)/multinomial$(EXEEXT): Multinomial.o $(OBJS)
+	$(CC) Multinomial.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+beta$(EXEEXT): $(PROGSDIR)/beta$(EXEEXT)
+$(PROGSDIR)/beta$(EXEEXT): Beta.o $(OBJS)
+	$(CC) Beta.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+simubeta$(EXEEXT): $(PROGSDIR)/simubeta$(EXEEXT)
+$(PROGSDIR)/simubeta$(EXEEXT): SimuBeta.o $(OBJS)
+	$(CC) SimuBeta.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+
+clean:
+	-rm -f *.o *.d *.d.*
+	-rm -f $(PROGS)
+#../data/pb
+#../data/poisson
+

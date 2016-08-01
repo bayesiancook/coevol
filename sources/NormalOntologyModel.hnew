@@ -1,0 +1,590 @@
+
+#ifndef NORMALONTOLOGY_H
+#define NORMALONTOLOGY_H
+
+#include "RandomTypes.h"
+#include "Jeffreys.h"
+#include "IID.h"
+#include "ProbModel.h"
+#include "LinRegOmega.h"
+#include "LinRegOntology.h"
+#include "MatrixAlgebra.h"
+
+const double minjeff = 0.0000001;
+const double maxjeff = 10000000;
+const double minuni = -1000;
+const double maxuni = 1000;
+
+class NormalOntologyModel : public ProbModel, public virtual MatrixAlgebra {
+
+	public:
+
+	string ontologyfile;
+	string datafile;
+
+	int Ngene;
+	int Ncont;
+	int mingene;
+	int minconcept;
+
+	string* genename;
+	double** genemean;
+	double** genevar;
+
+	Ontology* ontology;
+
+	Const<Real>* Zero;
+	Const<PosReal>* One;
+
+	JeffreysIIDArray* jeffkappa;
+	Var<PosReal>** kappa;
+	Var<Real>** betamean;
+	BidimIIDNormal* beta;
+
+	BidimGOMean* alphamean;
+
+	JeffreysIIDArray* jeffalphavar;
+	Var<PosReal>** alphavar;
+	BidimGONormal* alpha;
+
+	BidimNormal* GeneMean;
+	BidimIIDGamma* GeneVar;
+	
+	double** Lambda;
+	double** alphaz;
+	double** betabar;
+	double** alphahat;
+	double** alphabar;
+	CovMatrix* CovQ;
+	double** Q;
+	double** InvQ;
+	double** InvMZ;
+	CovMatrix* CovM;
+	double** M;
+	double** InvM;
+	double* conjbeta;
+	
+	int GetNgene()	{
+		return Ngene;
+	}
+
+	int GetNcont()	{
+		return Ncont;
+	}
+
+	int GetNconcept()	{
+		return ontology->GetNconcept();
+	}
+
+	Ontology* GetOntology()	{
+		return ontology;
+	}
+
+	NormalOntologyModel(string indatafile, string inontologyfile, int inmingene, int inminconcept)	{
+
+		cerr << "create model\n";
+
+		datafile = indatafile;
+		ontologyfile = inontologyfile;
+		mingene = inmingene;
+		minconcept = inminconcept;
+
+		cerr << "datafile : " << datafile << '\n';
+		ifstream is(datafile.c_str());
+		int tmpNgene;
+		is >> tmpNgene >> Ncont;
+		cerr << "Ngene : " << tmpNgene << '\n';
+		cerr << "Ncont : " << Ncont << '\n';
+		string* tmpgenename = new string[tmpNgene];
+		double** tmpgenemean = new double*[tmpNgene];
+		double** tmpgenevar = new double*[tmpNgene];
+		for (int gene=0; gene<tmpNgene; gene++)	{
+			is >> tmpgenename[gene];
+			tmpgenemean[gene] = new double[GetNcont()];
+			tmpgenevar[gene] = new double[GetNcont()];
+			double tmp;
+			for (int cont=0; cont<GetNcont(); cont++)	{
+				is >> tmpgenemean[gene][cont] >> tmp;
+				tmpgenevar[gene][cont] = tmp * tmp;
+			}
+		}
+
+		int* include = new int[tmpNgene];
+
+		Ontology* tmpontology = new Ontology(ontologyfile);
+		ontology = new Ontology(tmpontology,tmpNgene,tmpgenename,mingene,minconcept,include);
+		Ngene = 0;
+		for (int g=0; g<tmpNgene; g++)	{
+			Ngene += include[g];
+		}
+		if (Ngene != ontology->GetNgene())	{
+			cerr << "error : non matching reduxed gene sets\n";
+			exit(1);
+		}
+		genename = new string[Ngene];
+		genemean = new double*[Ngene];
+		genevar = new double*[Ngene];
+		int gene = 0;
+		for (int g=0; g<tmpNgene; g++)	{
+			if (include[g])	{
+				genename[gene] = tmpgenename[g];
+				genemean[gene] = tmpgenemean[g];
+				genevar[gene] = tmpgenevar[g];
+				gene++;
+			}
+			else	{
+				delete[] tmpgenemean[g];
+				delete[] tmpgenevar[g];
+			}
+		}
+		delete[] tmpgenename;
+		delete[] tmpgenemean;
+		delete[] tmpgenevar;
+
+		delete[] include;
+
+		cerr << "after reduction: " << ontology->GetNgene() << '\t' << ontology->GetNconcept() << '\n';
+		cerr << GetNgene() << '\t' << GetNconcept() << '\t' << GetNcont() << '\n';
+		for (int gene=0; gene<GetNgene(); gene++)	{
+			cerr << genename[gene];
+			for (int k=0; k<GetNcont(); k++)	{
+				cerr << '\t' << genemean[gene][k] << '\t' << genevar[gene][k];
+			}
+			cerr << '\n';
+		}
+		cerr << '\n';
+
+		Zero = new Const<Real>(0);
+		One = new Const<PosReal>(1);
+
+		jeffkappa = new JeffreysIIDArray(GetNcont(),minjeff,maxjeff,Zero);
+		kappa = new Var<PosReal>*[GetNcont()];
+		betamean = new Var<Real>*[GetNcont()];
+		for (int cont=0; cont<GetNcont(); cont++)	{
+			kappa[cont] = jeffkappa->GetVal(cont);
+			jeffkappa->GetVal(cont)->setval(0.1);
+			betamean[cont] = Zero;
+		}
+
+		beta = new BidimIIDNormal(GetNconcept(),GetNcont(),betamean,kappa);
+		alphamean = new BidimGOMean(ontology,beta);
+
+		jeffalphavar = new JeffreysIIDArray(GetNcont(),minjeff,maxjeff,Zero);
+		alphavar = new Var<PosReal>*[GetNcont()];
+		for (int cont=0; cont<GetNcont(); cont++)	{
+			alphavar[cont] = jeffalphavar->GetVal(cont);
+			jeffalphavar->GetVal(cont)->setval(0.1);
+		}
+
+		alpha = new BidimGONormal(alphamean,alphavar);
+		/*
+		for (int k=0; k<GetNcont(); k++)	{
+			alpha->SetAt(0,k);
+			alpha->Clamp(k);
+		}
+		*/
+
+		GeneVar = new BidimIIDGamma(GetNgene(),GetNcont(),One,One);
+		GeneVar->ClampAt(genevar);
+		GeneMean = new BidimNormal(alpha,GeneVar);
+		GeneMean->ClampAt(genemean);
+
+		RootRegister(Zero);
+		RootRegister(One);
+		Register();
+
+		Update();
+
+		MakeScheduler();
+
+		CreateConjugateMatrices();
+
+		cerr << "model created\n";
+	}
+
+	~NormalOntologyModel()	{}
+
+	void MakeScheduler();
+	/*
+	double Move(double tuning = 1)	{
+		scheduler.Cycle(1,1,true,true);
+		return 1;
+	}
+	*/
+
+	BidimIIDNormal* GetBeta() {return beta;}
+	BidimGONormal* GetAlpha() {return alpha;}
+
+	double GetBeta(int concept, int cont)	{
+		return beta->GetCell(concept,cont)->val();
+	}
+
+	double GetAlpha(int gene, int cont)	{
+		return alpha->GetCell(gene,cont)->val();
+	}
+
+	void drawSample()	{
+		cerr << "in normal ontology draw sample\n";
+		exit(1);
+	}
+
+	double GetLogProb()	{
+		double total = 0;
+		total += jeffkappa->GetLogProb();
+		total += beta->GetLogProb();
+		total += jeffalphavar->GetLogProb();
+		total += alpha->GetLogProb();
+		total += GeneMean->GetLogProb();
+		return total;
+	}
+
+	void TraceHeader(ostream& os)	{
+		os << "logl";
+		for (int cont=0; cont<GetNcont(); cont++)	{
+			os << "\tbetamean" << cont;
+			os << "\tbetavar" << cont;
+			os << "\tjeffbeta" << cont;
+			os << "\talphavar" << cont;
+			
+		}
+		os << '\n';
+	}
+
+	void Trace(ostream& os)	{
+		os << GetLogProb();
+		for (int cont=0; cont<GetNcont(); cont++)	{
+			os << '\t' << beta->GetMean(cont) << '\t' << beta->GetVar(cont);
+			os << '\t' << jeffkappa->GetVal(cont)->val();
+			os << '\t' << jeffalphavar->GetVal(cont)->val();
+		}
+		os << '\n';
+	}
+
+	void ToStream(ostream& os)	{
+		jeffkappa->ToStream(os);
+		os << '\n';
+		jeffalphavar->ToStream(os);
+		os << '\n';
+		beta->ToStream(os);
+		os << '\n';
+		alpha->ToStream(os);
+		os << '\n';
+	}
+
+	void FromStream(istream& is)	{
+		jeffkappa->FromStream(is);
+		jeffalphavar->FromStream(is);
+		beta->FromStream(is);
+		alpha->FromStream(is);
+	}
+
+	void CreateConjugateMatrices()	{
+		Lambda = ontology->GetLambda();
+		alphaz = MatrixCreate(GetNgene(),1);
+		betabar = MatrixCreate(GetNconcept(),1);
+		CovM = new CovMatrix(GetNconcept());
+		M = CovM->GetMatrix();
+		MatrixSetIdentity(M,GetNconcept());
+		CovM->CorruptDiag();
+		CovM->Diagonalise();
+		InvM = CovM->GetInvMatrix();
+		conjbeta = new double[GetNconcept()];
+
+		alphahat = MatrixCreate(GetNgene(),1);
+		alphabar = MatrixCreate(GetNgene(),1);
+		CovQ = new CovMatrix(GetNgene());
+		Q = CovQ->GetMatrix();
+		MatrixSetIdentity(Q,GetNgene());
+		CovQ->CorruptDiag();
+		CovQ->Diagonalise();
+		InvQ = CovQ->GetInvMatrix();
+		conjalpha = new double[GetNgene()];
+	}
+	
+	void ResampleAlpha()	{
+		for (int i=0; i<GetNgene(); i++)	{
+			for (int j=0; j<GetNcont(); j++)	{
+				double tau0 = 1.0 / alphavar[j]->val();
+				double tau1 = 1.0 / genevar[i][j];
+				double tau2 = tau0 + tau1;
+				double m = (tau0 * alphamean->GetMean(i,j)->val() + tau1 * genemean[i][j]) / (tau0 + tau1);
+				double v = 1.0 / tau2;
+				double postalpha = m + Random::sNormal() * sqrt(v);
+				alpha->GetCell(i,j)->setval(postalpha);
+			}
+		}
+	}
+
+	void ComputeM(int cont)	{
+
+		// M = tau Lambda + kappa I (Nconcept x Nconcept)
+		// also compute betabar = M^-1 alpha Z
+
+		for (int k=0; k<GetNconcept(); k++)	{
+			alphaz[k][0] = 0;
+			for (int i=0; i<GetNgene(); i++)	{
+				alphaz[k][0] += GetAlpha(i,cont) * ontology->GetZ(i,k);
+			}
+		}
+		MatrixScalarProduct(alphaz,1.0/alphavar[cont]->val(),GetNconcept(),1);
+		
+		MatrixSetIdentity(M,GetNconcept());
+		MatrixScalarProduct(M,alphavar[cont]->val()/kappa[cont]->val(),GetNconcept(),GetNconcept());
+		MatrixAdd(M,Lambda,GetNconcept(),GetNconcept());
+		MatrixScalarProduct(M,1.0/alphavar[cont]->val(),GetNconcept(),GetNconcept());
+		CovM->CorruptDiag();
+		CovM->Diagonalise();
+
+		MatrixProduct(InvM,alphaz,betabar,GetNconcept(),GetNconcept(),1);
+	}
+
+	void ComputeQ(int cont)	{
+
+		// Q = D + tau^2  Z' M-1 Z + tau I (Ngene x Ngene)
+		// where D is gene var diagonal matrix for cont
+		// also computes alphabar = R^-1 D alphahat
+
+		double** Z = ontology->GetZmatrix();
+		double** transZ = ontology->GetTransZmatrix();
+
+		double tau = 1.0 / jeffalphavar->GetVal(cont)->val();
+
+		MatrixProduct(InvM,Z,InvMZ,GetNconcept(),GetNconcept(),GetNgene());
+		MatrixProduct(transZ,InvMZ,Q,GetNgene(),GetNconcept(),GetNgene());
+		MatrixScalarProduct(Q,tau*tau,GetNgene(),GetNgene());
+
+		for (int i=0; i<GetNgene(); i++)	{
+			Q[i][i] += tau + 1.0 / genevar[i][cont];
+		}
+
+		CovQ->CorruptDiag();
+		CovQ->Diagonalise();
+
+		for (int i=0; i<GetNgene(); i++)	{
+			alphahat[i][0] = genemean[i][cont] / genevar[i][cont];
+		}
+
+		MatrixProduct(InvR,alphahat,alphabar,GetNgene(),GetNgene(),1);
+	}
+
+	double CheckMatrixInverse(double** M, int N)	{
+		double max = 0;
+		for (int i=0; i<N; i++)	{
+			for (int j=0; j<N; j++)	{
+				double tot = 0;
+				for (int k=0; k<N; k++)	{
+					tot += M[i][k] * InvM[k][j];
+				}
+				if (i==j)	{
+					tot -= 1;
+				}
+				if (max < fabs(tot))	{
+					max = fabs(tot);
+				}
+			}
+		}
+		return max;
+	}
+
+	double MarginalLogProb(int cont)	{
+
+		ComputeM(cont);
+		ComputeQ(cont);
+
+		// alphabar = gene mean
+		// S = alphabar' R alphabar 
+		double S = 0;
+		for (int i=0; i<GetNgene(); i++)	{
+			for (int j=0; j<GetNgene(); j++)	{
+				S += alphabar[i][0] * Q[i][j] * alphabar[j][0];
+			}
+		}
+ 
+		double tau = 1.0 / jeffalphavar->GetVal(cont)->val();
+		double kappa = 1.0 / jeffkappa->GetVal(cont)->val();
+
+		double total = 0;
+		total += (GetNgene() - 1) * log(tau);
+		total += (GetNconcept() - 1) * log(kappa);
+		total -= CovM->GetLogDeterminant();
+		total -= CovQ->GetLogDeterminant();
+		total -= S;
+
+		return 0.5 * total;
+	}
+
+	void ResampleAlphaBeta()	{
+
+		// model is in fact split into independent components
+		for (int cont=0; cont<GetNcont(); cont++)	{
+
+			ComputeM(cont);
+			ComputeQ(cont);
+
+			CovQ->drawValInv(conjalpha);
+			for (int i=0; i<GetNgene(); i++)	{
+				alpha->GetCell(i,cont)->setval(conjalpha[i] + alphabar[i][0]);
+			}
+
+			CovM->drawValInv(conjbeta);
+			for (int k=0; k<GetNconcept(); k++)	{
+				beta->GetCell(k,cont)->setval(conjbeta[k] + betabar[k][0]);
+			}
+			
+		}
+	}
+
+	void ResampleBeta(int cont)	{
+
+		ComputeM(cont);
+
+
+		CovM->drawValInv(conjbeta);
+
+		for (int k=0; k<GetNconcept(); k++)	{
+			beta->GetCell(k,cont)->setval(conjbeta[k] + betabar[k][0]);
+		}
+	}
+
+	void ResampleAlphaVar()	{
+
+		for (int cont=0; cont<GetNcont(); cont++)	{
+			jeffalphavar->GetVal(cont)->Corrupt(false);
+			double s2 = 0;
+			for (int i=0; i<GetNgene(); i++)	{
+				double tot = 0;
+				for (int k=0; k<GetNconcept(); k++)	{
+					tot += ontology->GetZ(i,k) * beta->GetCell(k,cont)->val();
+				}
+				tot -= alpha->GetCell(i,cont)->val();
+				s2 += tot*tot;
+			}
+			double tmp = Random::Gamma(0.5 * GetNgene(), 0.5 * s2);
+			if ((tmp > minjeff) && (tmp < maxjeff))	{
+				jeffalphavar->GetVal(cont)->setval(1.0 / tmp);
+			}
+			jeffalphavar->GetVal(cont)->Update();
+		}
+	}
+
+	void ResampleBetaVar()	{
+
+		for (int cont = 0; cont<GetNcont(); cont++)	{
+			jeffkappa->GetVal(cont)->Corrupt(false);
+			double s2 = 0;
+			for (int k=0; k<GetNconcept(); k++)	{
+				double tmp = beta->GetCell(k,cont)->val();
+				s2 += tmp * tmp;
+			}
+			double tmp = Random::Gamma(0.5 * GetNconcept(), 0.5 * s2);
+			if ((tmp > minjeff) && (tmp < maxjeff))	{
+				jeffkappa->GetVal(cont)->setval(1.0 / tmp);
+			}
+			jeffkappa->GetVal(cont)->Update();
+		}
+	}
+};
+
+class ConjugateAlphaVarMove : public MCUpdate	{
+
+	NormalOntologyModel* model;
+
+	public:
+
+	ConjugateAlphaVarMove(NormalOntologyModel* inmodel)	{
+		model = inmodel;
+	}
+
+	double Move(double tuning=1)	{
+		model->ResampleAlphaVar();
+		return 1;
+	}
+};
+
+class ConjugateBetaVarMove : public MCUpdate	{
+
+	NormalOntologyModel* model;
+
+	public:
+
+	ConjugateBetaVarMove(NormalOntologyModel* inmodel)	{
+		model = inmodel;
+	}
+
+	double Move(double tuning=1)	{
+		model->ResampleBetaVar();
+		return 1;
+	}
+};
+
+class ConjugateAlphaMove : public MCUpdate, public Mnode	{
+
+	private:
+
+	NormalOntologyModel* model;
+	
+	public:
+
+	ConjugateAlphaMove(NormalOntologyModel* inmodel)	{
+		model = inmodel;
+		model->GetAlpha()->RegisterArray(this);
+	}
+
+	double Move(double tuning = 1)	{
+
+		Corrupt(false);
+		model->ResampleAlpha();
+		Update();
+		return 1;
+	}
+};
+
+class ConjugateBetaMove : public MCUpdate, public Mnode	{
+
+	private:
+
+	NormalOntologyModel* model;
+	int cont;
+	
+	public:
+
+	ConjugateBetaMove(NormalOntologyModel* inmodel, int incont)	{
+		model = inmodel;
+		cont = incont;
+		model->GetBeta()->RegisterArray(this,cont);
+	}
+
+	double Move(double tuning = 1)	{
+
+		Corrupt(false);
+		model->ResampleBeta(cont);
+		Update();
+		return 1;
+	}
+};
+
+void NormalOntologyModel::MakeScheduler()	{
+	int nrep = 1;
+
+	for (int rep=0; rep<nrep; rep++)	{
+		// scheduler.Register(new SimpleMove(alpha,1),1,"alpha");
+		scheduler.Register(new ConjugateAlphaMove(this),1,"conj alpha");
+
+		
+		// scheduler.Register(new SimpleMove(beta,1),10,"beta");
+		for (int cont=0; cont<GetNcont(); cont++)	{
+			scheduler.Register(new ConjugateBetaMove(this,cont),1,"conj beta");
+		}
+
+		scheduler.Register(new SimpleMove(jeffalphavar,1),100,"alpha var");
+		scheduler.Register(new SimpleMove(jeffalphavar,0.1),100,"alpha var");
+		// scheduler.Register(new ConjugateAlphaVarMove(this),1,"conjugate alpha var");
+		scheduler.Register(new SimpleMove(jeffkappa,1),100,"kappa");
+		scheduler.Register(new SimpleMove(jeffkappa,0.1),100,"kappa");
+		// scheduler.Register(new ConjugateBetaVarMove(this),1,"conjugate beta var");
+	}
+}
+
+
+#endif
+

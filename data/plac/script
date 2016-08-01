@@ -1,0 +1,2 @@
+../coevol -f -d plac.ali -t plac.tree -c plac.lht -cal plac.calib 100 100 -dsom essaicoevoldsom1
+

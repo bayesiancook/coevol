@@ -1,0 +1,34 @@
+#include "linalg.h"
+#include <cstdlib>
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char* argv[])	{
+
+	double** cov= new double*[2];
+	for (int i=0; i<2; i++)	{
+		cov[i] = new double[2];
+	}
+	cov[0][0] = 2;
+	cov[0][1] = -1;
+	cov[1][0] = -1;
+	cov[1][1] = 2.00001;
+	
+
+	double val[2];
+	double** vec = new double*[2];
+	for (int i=0; i<2; i++)	{
+		vec[i] = new double[2];
+	}
+
+	int s = LinAlg::DiagonalizeSymmetricMatrix(cov,2,1000,1e-6,val,vec);
+
+	cerr << s << '\n' << '\n';
+
+	for (int i=0; i<2; i++)	{
+		cerr << val[i] << '\n';
+	}
+
+}
+

@@ -1,0 +1,453 @@
+
+#include "BaseType.h"
+#include "RandomTypes.h"
+#include "ProbModel.h"
+#include "GTRModel.h"
+#include "IID.h"
+#include "ScalableNormalTreeProcess.h"
+#include "BDCalibratedChronogram.h"
+
+#include "F81TransitionMatrix.h"
+#include "GeneralConjugatePath.h"
+
+class F81MatrixTree : public BranchValPtrTree<RandomTransitionMatrix>	{
+
+	public:
+
+	F81MatrixTree(LengthTree* inlengthtree, Var<Profile>* instationary) {
+		SetWithRoot(true);
+		lengthtree = inlengthtree;
+		stationary = instationary;
+		RecursiveCreate(GetRoot());
+	}
+
+	~F81MatrixTree()	{
+		RecursiveDelete(GetRoot());
+	}
+
+	protected:
+
+	RandomTransitionMatrix* CreateBranchVal(const Link* link)	{
+		return new RandomF81TransitionMatrix(stationary,lengthtree->GetBranchVal(link->GetBranch()));
+	}
+
+	Tree* GetTree() {return lengthtree->GetTree();}
+
+	private:
+
+	LengthTree* lengthtree;
+	Var<Profile>* stationary;
+
+};
+
+
+class BranchTransitionMatrixPhyloProcess : public PhyloProcess	{
+
+
+	protected:
+
+	public:
+
+	BranchTransitionMatrixPhyloProcess(LengthTree* inlengthtree, BranchValPtrTree<RandomTransitionMatrix>* inmatrixtree,  SequenceAlignment* indata) : PhyloProcess(inlengthtree,indata,false)	{
+		matrixtree = inmatrixtree;
+		lengthtree = inlengthtree;
+	}
+
+	virtual RandomBranchSitePath* 	CreateRandomBranchSitePath(const Link* link, int site)	{
+		RandomBranchSitePath* tmp = new RandomBranchSitePath(this, matrixtree->GetBranchVal(link->GetBranch()), 0, lengthtree->GetBranchVal(link->GetBranch()));
+		return tmp;
+	}
+
+	protected:
+	BranchValPtrTree<RandomTransitionMatrix>* matrixtree;
+	BranchVarTree<PosReal>* lengthtree;
+};
+
+class GTRLogNormalModel : public ProbModel {
+
+	// data fields
+
+	// ---------
+	// the fixed parameters of the model
+	// ---------
+
+	// a fixed tree (read from file)
+	Tree* tree;
+	SequenceAlignment* nucdata;
+	SequenceAlignment* morpho2data;
+	SequenceAlignment* morpho3data;
+	SequenceAlignment* morpho4data;
+	TaxonSet* taxonset;
+
+	// ---------
+	// the random variables of the model
+	// ---------
+
+	Const<PosReal>* One;
+
+	double rootalpha;
+	double rootbeta;
+
+	// chronogram
+	CalibratedChronogram* chronogram;
+
+	CalibrationSet* calibset;
+
+	// autocorrelated process
+	Gamma* sigma;
+	Gamma* nu;
+	LogNormalTreeProcess* lognormaltree;
+
+	Dirichlet* nucrelrate;
+	Dirichlet* nucstationary;
+	GTRRandomSubMatrixWithNormRates* nucmatrix;
+
+	Dirichlet* morpho2stationary;
+	Dirichlet* morpho3stationary;
+	Dirichlet* morpho4stationary;
+
+	F81MatrixTree* morpho2matrixtree;
+	F81MatrixTree* morpho3matrixtree;
+	F81MatrixTree* morpho4matrixtree;
+
+	// phylo process
+	// OneMatrixPhyloProcess* phyloprocess;
+	PathConjugateTree* nucpathconjtree;
+	PhyloProcess* nucphyloprocess;
+	TransitionPathConjugateTree* morpho2pathconjtree;
+	TransitionPathConjugateTree* morpho3pathconjtree;
+	TransitionPathConjugateTree* morpho4pathconjtree;
+	PhyloProcess* morpho2phyloprocess;
+	PhyloProcess* morpho3phyloprocess;
+	PhyloProcess* morpho4phyloprocess;
+
+	bool conjpath;
+	int chronoprior;
+
+	public:
+
+	// constructor
+	// this is where the entire graph structure of the model is created
+
+	GTRLogNormalModel(string nucdatafile, string morpho2datafile, string morpho3datafile, string morpho4datafile, string treefile, string calibfile, double inrootage, double inrootstdev, int inchronoprior)	{
+
+		conjpath = true;
+		chronoprior = inchronoprior;
+		// fetch data from file
+		nucdata = new FileSequenceAlignment(nucdatafile);
+		morpho2data = new FileSequenceAlignment(morpho2datafile);
+		morpho3data = new FileSequenceAlignment(morpho3datafile);
+		morpho4data = new FileSequenceAlignment(morpho4datafile);
+
+		taxonset = nucdata->GetTaxonSet();
+
+		// get tree from file (newick format)
+		tree = new Tree(treefile);
+
+		// check whether tree and data fits together
+		tree->RegisterWith(taxonset);
+
+		cerr << "tree and data ok\n";
+
+		CalibrationSet* calibset = new FileCalibrationSet(calibfile, tree);
+		cerr << "calib ok\n";
+
+		// ----------
+		// construction of the graph
+		// ----------
+
+		One = new Const<PosReal>(1);
+
+		double rootage = inrootage;
+		double rootstdev = inrootstdev;
+
+		rootalpha = rootage * rootage / rootstdev / rootstdev;
+		rootbeta = rootage / rootstdev / rootstdev;
+
+		if (chronoprior)	{
+			cerr << "chrono prior not yet\n";
+			exit(1);
+		}
+		else	{
+			chronogram = new CalibratedChronogram(tree,One,rootalpha,rootbeta,calibset,false);
+		}
+
+		// a log normal process on that tree
+		sigma = new Gamma(One,One);
+		nu = new Gamma(One,One);
+		cerr << "log normal tree\n";
+		lognormaltree = new LogNormalTreeProcess(chronogram,sigma,nu);
+		cerr << "ok\n";
+
+		// substitution matrix
+		int Nstate = nucdata->GetNstate();
+		nucrelrate = new Dirichlet(Nstate*(Nstate-1)/2);
+		nucstationary = new Dirichlet(Nstate);
+		nucmatrix = new GTRRandomSubMatrixWithNormRates(nucrelrate,nucstationary,false);
+
+		morpho2stationary = new Dirichlet(2);
+		morpho3stationary = new Dirichlet(3);
+		morpho4stationary = new Dirichlet(4);
+		morpho2stationary->setuniform();
+		morpho3stationary->setuniform();
+		morpho4stationary->setuniform();
+		morpho2matrixtree = new F81MatrixTree(lognormaltree,morpho2stationary);
+		morpho3matrixtree = new F81MatrixTree(lognormaltree,morpho3stationary);
+		morpho4matrixtree = new F81MatrixTree(lognormaltree,morpho4stationary);
+
+		// a phylogenetic process
+		cerr << "phyloprocess\n";
+		if (conjpath)	{
+			nucpathconjtree = new OneMatrixPathConjugateTree(lognormaltree,nucmatrix,nucdata);
+			nucphyloprocess = new PathConjugatePhyloProcess(nucpathconjtree);
+			morpho2pathconjtree = new BranchMatrixTransitionPathConjugateTree(lognormaltree,morpho2matrixtree,morpho2data);
+			morpho3pathconjtree = new BranchMatrixTransitionPathConjugateTree(lognormaltree,morpho3matrixtree,morpho3data);
+			morpho4pathconjtree = new BranchMatrixTransitionPathConjugateTree(lognormaltree,morpho4matrixtree,morpho4data);
+			morpho2phyloprocess = new TransitionPathConjugatePhyloProcess(morpho2pathconjtree);
+			morpho3phyloprocess = new TransitionPathConjugatePhyloProcess(morpho3pathconjtree);
+			morpho4phyloprocess = new TransitionPathConjugatePhyloProcess(morpho4pathconjtree);
+		}
+		else	{
+			nucpathconjtree = 0;
+			morpho2pathconjtree = 0;
+			morpho3pathconjtree = 0;
+			morpho4pathconjtree = 0;
+			nucphyloprocess = new OneMatrixPhyloProcess(lognormaltree,nucmatrix,nucdata);
+			morpho2phyloprocess = new BranchTransitionMatrixPhyloProcess(lognormaltree,morpho2matrixtree,morpho2data);
+			morpho3phyloprocess = new BranchTransitionMatrixPhyloProcess(lognormaltree,morpho3matrixtree,morpho3data);
+			morpho4phyloprocess = new BranchTransitionMatrixPhyloProcess(lognormaltree,morpho4matrixtree,morpho4data);
+		}
+		cerr << "unfold\n";
+		nucphyloprocess->Unfold();
+		morpho2phyloprocess->Unfold();
+		morpho3phyloprocess->Unfold();
+		morpho4phyloprocess->Unfold();
+		nucphyloprocess->Sample();
+		morpho2phyloprocess->Sample();
+		morpho3phyloprocess->Sample();
+		morpho4phyloprocess->Sample();
+
+		cerr << "register\n";
+		RootRegister(One);
+		RootRegister(lognormaltree->GetRootRate());
+		RootRegister(nucrelrate);
+		RootRegister(nucstationary);
+		RootRegister(morpho2stationary);
+		RootRegister(morpho3stationary);
+		RootRegister(morpho4stationary);
+		Register();
+
+		MakeScheduler();
+
+		Update();
+		TraceHeader(cerr);
+		Trace(cerr);
+
+		cerr << "model created\n";
+
+	}
+
+	// destructor
+	// deallocations should normally be done here
+	// but in general, the model is deleted just before the program exits, so we can dispense with it for the moment
+
+	~GTRLogNormalModel() {}
+
+	/*
+	double Move(double tuning = 1)	{
+		scheduler.Cycle(1,1,true,true);
+		return 1;
+	}
+	*/
+
+	double GetLogProb()	{
+		return GetLogPrior() + GetLogLikelihood();
+	}
+
+	double GetLogPrior()	{
+		double total = 0;
+		total += chronogram->GetLogProb();
+		total += nu->GetLogProb();
+		total += sigma->GetLogProb();
+		total += lognormaltree->GetLogProb();
+		total += nucrelrate->GetLogProb();
+		total += nucstationary->GetLogProb();
+		return total;
+	}
+
+	double GetLogLikelihood()	{
+		double ret = 0;
+		ret += nucphyloprocess->GetLogProb();
+		ret += morpho2phyloprocess->GetLogProb();
+		ret += morpho3phyloprocess->GetLogProb();
+		ret += morpho4phyloprocess->GetLogProb();
+		return ret;
+	}
+
+	CalibratedChronogram* GetCalibratedChronogram()	{
+		return dynamic_cast<CalibratedChronogram*>(chronogram);
+	}
+
+	// scheduler is empty. instead, we use the old fashioned move function (below)
+	void MakeScheduler()	{
+		if (conjpath)	{
+			scheduler.Register(new DSemiConjugateMappingMove(nucphyloprocess,nucpathconjtree),1,"mapping + sufficient stat");
+			scheduler.Register(new DSemiConjugateMappingMove(morpho2phyloprocess,morpho2pathconjtree),1,"mapping + sufficient stat");
+			scheduler.Register(new DSemiConjugateMappingMove(morpho3phyloprocess,morpho3pathconjtree),1,"mapping + sufficient stat");
+			scheduler.Register(new DSemiConjugateMappingMove(morpho4phyloprocess,morpho4pathconjtree),1,"mapping + sufficient stat");
+		}
+		else	{
+			scheduler.Register(new SimpleMove(nucphyloprocess,1),1,"mapping");
+			scheduler.Register(new SimpleMove(morpho2phyloprocess,1),1,"mapping");
+			scheduler.Register(new SimpleMove(morpho3phyloprocess,1),1,"mapping");
+			scheduler.Register(new SimpleMove(morpho4phyloprocess,1),1,"mapping");
+		}
+
+		int nrep = conjpath ? 30 : 1;
+		for (int i=0; i<nrep; i++)	{
+			scheduler.Register(new SimpleMove(nu,1),10,"nu");
+			scheduler.Register(new SimpleMove(nu,0.1),10,"nu");
+			scheduler.Register(new SimpleMove(nu,0.01),10,"nu");
+			scheduler.Register(new SimpleMove(sigma,10),10,"sigma");
+			scheduler.Register(new SimpleMove(sigma,1),10,"sigma");
+			scheduler.Register(new SimpleMove(sigma,0.1),10,"sigma");
+
+			scheduler.Register(new SimpleMove(chronogram,1),10,"chrono");
+			scheduler.Register(new SimpleMove(chronogram,0.1),10,"chrono");
+			scheduler.Register(new SimpleMove(chronogram,0.01),10,"chrono");
+
+			scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),1),10,"root age");
+			scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.1),10,"root age");
+			scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.01),10,"root age");
+
+			scheduler.Register(new SimpleMove(lognormaltree,1),10,"lognormal");
+			scheduler.Register(new SimpleMove(lognormaltree,0.1),10,"lognormal");
+			scheduler.Register(new SimpleMove(lognormaltree,0.01),10,"lognormal");
+
+			scheduler.Register(new ProfileMove(nucrelrate,0.1,1),10,"relrates");
+			scheduler.Register(new ProfileMove(nucrelrate,0.03,2),10,"relrates");
+			scheduler.Register(new SimpleMove(nucrelrate,0.01),10,"relrates");
+
+			scheduler.Register(new ProfileMove(nucstationary,0.01,2),10,"stat4");
+			scheduler.Register(new ProfileMove(nucstationary,0.03,2),10,"stat4");
+			scheduler.Register(new ProfileMove(nucstationary,0.01,5),10,"stat10");
+			scheduler.Register(new SimpleMove(nucstationary,0.001),10,"stat");
+		}
+	}
+
+	void drawSample()	{
+		chronogram->Sample();
+		sigma->Sample();
+		nu->Sample();
+		lognormaltree->Sample();
+		nucstationary->Sample();
+		nucphyloprocess->Sample();
+		morpho2phyloprocess->Sample();
+		morpho3phyloprocess->Sample();
+		morpho4phyloprocess->Sample();
+	}
+
+
+	// various summary statistics
+	// used to check mcmc convergence
+
+	double GetMeanRho()	{
+		return lognormaltree->GetMeanRate();
+	}
+
+	double GetVarRho()	{
+		return lognormaltree->GetVarRate();
+	}
+
+	double GetLength()	{
+		return lognormaltree->GetTotalLength();
+	}
+
+	double GetRootAge()	{
+		return GetCalibratedChronogram()->GetScale()->val();
+	}
+
+	void TraceChrono(ostream& os)	{
+		chronogram->Newick(os);
+	}
+
+	// creates the header of the <model_name>.trace file
+	void TraceHeader(ostream& os)	{
+		os << "#logprior\tlnL\tscale";
+		os << "\tsigma\tmeanrho\tvarrho\n";
+	}
+
+	// writes all summary statistics on one single line
+	// in the same order as that provided by the header
+	void Trace(ostream& os)	{
+		os << GetLogPrior() << '\t' << GetLogLikelihood();
+		os << '\t' << GetRootAge();
+		os << '\t' << sigma->val();
+		os << '\t' << nu->val();
+		os << '\t' << GetMeanRho() << '\t' << GetVarRho();
+		os << '\t' << *lognormaltree->GetRootRate();
+		os << '\n';
+		os.flush();
+	}
+
+	void ToStream(ostream& os)	{
+	}
+
+	void FromStream(istream& is)	{
+	}
+
+};
+
+
+int main(int argc, char* argv[])	{
+
+	string nucdatafile = argv[1];
+	string morpho2datafile = argv[2];
+	string morpho3datafile = argv[3];
+	string morpho4datafile = argv[4];
+	string treefile = argv[5];
+	string calibfile = argv[6];
+	double rootage = atof(argv[7]);
+	double rootstdev = atof(argv[8]);
+	string name = argv[9];
+	int chronoprior = 0;
+	/*
+	string prior = argv[9];
+	if (prior == "bd")	{
+		chronoprior = 1;
+	}
+	else if (prior == "uni")	{
+		chronoprior = 0;
+	}
+	else	{
+		cerr << "error : does not recognise " << argv[9] << '\n';
+		exit(1);
+	}
+
+	if (chronoprior)	{
+		cerr << "birth death prior\n";
+	}
+	else	{
+		cerr << "uniform prior\n";
+	}
+	*/
+
+	GTRLogNormalModel* model = new GTRLogNormalModel(nucdatafile,morpho2datafile,morpho3datafile,morpho4datafile,treefile,calibfile,rootage,rootstdev,chronoprior);
+
+	cerr << "start\n";
+
+	ofstream os((name + ".trace").c_str());
+	model->TraceHeader(os);
+	ofstream tos((name + ".trees").c_str());
+
+	while (1)	{
+		model->Move(1);
+		model->Trace(os);
+		model->TraceChrono(tos);
+		os.flush();
+		tos.flush();
+		ofstream mos((name + ".monitor").c_str());
+		ofstream mos2((name + ".detailedmonitor").c_str());
+		model->Monitor(mos,mos2);
+	}
+}

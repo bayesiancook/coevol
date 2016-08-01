@@ -1,0 +1,1 @@
+../tipcoevol -f -nuc eutheria105brca2.ali -t chronoeutheria105.tree -cal eutheria105.calib -nodebd 100 100 1 1 1 1 -lnwn lnwnnodebdeutheria105

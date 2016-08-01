@@ -1,0 +1,232 @@
+
+#ifndef TREE_H
+#define TREE_H
+
+#include <cstdlib>
+#include <string>
+#include <iostream>
+#include "TaxonSet.h"
+
+class Node {
+
+	private:
+	int index;
+	string name;
+
+	public:
+
+	Node() : index(0) , name("") {}
+	Node(string s) : index(0) , name(s) {}
+	Node(const Node* from) : index(from->index) , name(from->name) {}
+
+	virtual ~Node() {}
+	
+	virtual string GetName() const {return name;}
+	virtual void SetName(string inname) {name = inname;}
+	int GetIndex() const {return index;}
+	void SetIndex(int i) {index = i;}
+};
+
+class Branch {
+
+	private:
+	int index;
+	string name;
+
+	public:
+
+	Branch() : index(0) , name("") {}
+	Branch(string s) : index(0) , name(s) {}
+	Branch(const Branch* from) : index(from->index), name(from->name) {}
+
+	virtual ~Branch() {}
+	
+	virtual string GetName() const {return name;}
+	virtual void SetName(string inname) {name = inname;}
+	int GetIndex() const {return index;}
+	void SetIndex(int i) {index = i;}
+};
+
+class Link	{
+
+	private:
+	Link* next;
+	Link* out;
+	Branch* branch;
+	Node* node;
+
+	public:
+
+	double* tbl;
+
+	Link()	{
+		tbl = 0;
+		next = out = this;
+		branch = 0;
+		node = 0;
+	}
+
+	Link(const Link* from)	{
+		tbl = 0;
+		next = out = this;
+		node = 0;
+		branch = 0;
+	}
+
+	Link* Next() const {return next;}
+	Link* Out() const {return out;}
+	Branch* GetBranch() const {return branch;}
+	Node* GetNode() const {return node;}
+
+	void SetBranch(Branch* inbranch)	{
+		/*
+		if (branch == inbranch)	{
+			cerr << "error in Link::SetBranch: branch and new branch are the same\n";
+			exit(1);
+		}
+		delete branch;
+		*/
+		branch = inbranch;
+	}
+	void SetNode(Node* innode)	{
+		/*
+		if (node == innode)	{
+			cerr << "error in Link::SetNode: node and new node are the same\n";
+			exit(1);
+		}
+		delete node;
+		*/
+		node = innode;
+	}
+
+	void AppendTo(Link* link)	{
+		if (link)	{
+			link->next = this;
+		}
+	}
+
+	void Insert(Link* link)	{ // insert link after this
+		link->next = next;
+		next = link;
+	}
+
+	void InsertOut(Link* link)	{ // insert link as out
+		link->out = this;
+		out = link;
+	}
+
+	bool isLeaf() const	{
+		return (next == this);
+	}
+
+	bool isRoot() const {
+		return (out == this);
+	}
+
+	// degree : number of branches connecting to the node associated to this link
+	int GetDegree()	const {
+		int d = 1;
+		const Link* link = next;
+		while (link!=this)	{
+			d++;
+			link=link->next;
+		}
+		return d;
+	}
+};
+
+
+class Tree {
+
+	public:
+
+	Tree();
+	// default constructor: set member pointers to 0
+
+	Tree(const Tree* from);
+	// clones the entire Link structure
+	// but does NOT clone the Nodes and Branches
+	// calls RecursiveClone
+
+	Tree(string filename);
+	// create a tree by reading into a file (netwick format expected)
+	// calls ReadFromStream
+
+	virtual ~Tree();
+	// calls RecursiveDelete
+	// but does NOT delete the Nodes and Branches
+ 
+	Link* GetRoot() const {return root;}
+	void RootAt(Link* newroot);
+	
+	void RegisterWith(const TaxonSet* taxset);
+	// Registers all leaves of the tree with an external TaxonSet
+	// the taxon set defines a map between taxon names and indices (between 0 and P-1)
+	// the tree is recursively traversed
+	// each leaf's name is looked for in the map of the taxon set
+	// if not found : an error is emitted
+	// otherwise, the leaf's index is set equal to the index of the corresponding taxon
+	
+	Link* RegisterWith(const TaxonSet* taxset, Link* from);
+	// recursive function called by RegisterWith
+
+	virtual string GetBranchName(const Link* link) const {return link->GetBranch()->GetName();}
+	virtual string GetNodeName(const Link* link) const {return link->GetNode()->GetName();}
+	// trivial accessors
+	// they can be useful to override, so as to bypass Branch::GetName() and Node::GetName()
+
+	void EraseInternalNodeName();
+	void EraseInternalNodeName(Link* from);
+
+	void Print(ostream& os,const Link* from) const ;
+	void Print(ostream& os) const;
+	// printing int netwick format
+
+	void RecursiveCreateTBL(Link* from, int Nstate);
+	void RecursiveDeleteTBL(Link* from);
+	// for creating and deleting the arrays of conditional likelihoods associated with each link
+	// called by PhyloProcess
+
+	protected:
+
+	void ReadFromStream(istream& is);
+	// reading a tree from a stream:
+	// recursively invokes the two following functions
+
+	Link* ParseGroup(string input, Link* from);
+	// a group is an expression of one of the two following forms:
+	//
+	// 	(Body)Node_name
+	// 	(Body)Node_name:Branch_name
+	//
+	// where Body is a list, and Node_name and Branch_name are 2 strings
+	// Node_name may be an empty string
+	//
+	// Node_name cannot contain the ':' character, but Branch_name can
+	// thus, if the group reads "(BODY)A:B:C"
+	// then Node_name = "A" and Branch_name = "B:C"
+
+	Link* ParseList(string input, Node* node);
+	// a list is an expression of the form X1,X2,...Xn
+	// where Xi is a group 
+
+	void RecursiveClone(const Link* from, Link* to);
+	// Used by Tree(const Tree* from)
+	// only clone the Links, and their mutual relations
+	// does not copy the Node or Branch objects
+
+	// deletes the link structure
+	// does not delete the Node or Branch objects
+	void RecursiveDelete(Link* from);
+
+	void SetRoot(Link* link) {root = link;}
+
+	// data fields
+	// just 2 pointers, to the root and to a list of taxa
+	Link* root;
+	const TaxonSet* taxset;
+};
+
+
+
+#endif // TREE_H

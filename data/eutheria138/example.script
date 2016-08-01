@@ -1,0 +1,2 @@
+../tipcoevol -f -nuc eutheria138brca2.ali -t chronoeutheria138b.tree -cal eutheria138.calib -serialBD 100 100 1 1 10 10 1 1 1 0 -diag -divsampling 25 5000 -lnwn serialbdlnwneutheria138 
+
