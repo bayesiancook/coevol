@@ -423,7 +423,7 @@ int main(int argc, char* argv[])	{
 	MPI_Type_commit(&Propagate_arg);
 
 	if (! myid)	{
-		cerr << "Coevol version 1.4\n";
+		cerr << "Coevol version 1.5\n";
 		cerr << '\n';
 	}
 

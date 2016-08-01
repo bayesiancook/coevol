@@ -33,7 +33,6 @@ ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
 ALL= coevol readcoevol tipcoevol readtipcoevol ancov readancov
-#ALL= coevol readcoevol drawtree tip readtip drawtree tipcoevol readtipcoevol sitemg drawtree simucodon biclock matinfmixmg mixmg matmixmg mutsel siteom structstat simucodon brownian readbrownian ic ancov readancov normalontology readnormalontology branchmodel readbranchmodel simucont redcomp fourfold 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
