@@ -171,7 +171,7 @@ class GammaWhiteNoiseBranchMean : public Rvar<PosReal>	{
 				tmp *= mean->val();
 			}
 			setval(tmp);
-			if (isnan(val()))	{
+			if (isnan(((double) val())))	{
 				cerr << "nan in gamma white noise\n";
 				cerr << m << '\t' << v << '\t' << a << '\t' << b << '\n';
 				cerr << "time : " << time->val() << '\n';

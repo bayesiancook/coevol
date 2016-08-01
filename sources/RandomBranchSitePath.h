@@ -202,7 +202,7 @@ class RandomBranchSitePath : public virtual Rnode, public BranchSitePath, public
 	virtual double 			GetTime()		{
 					// 		return return length ? ((double) length->val()) : 0;}
 						if (length)	{
-							if (isnan(length->val()))	{
+							if (isnan(((double) (length->val()))))	{
 								cerr << "length is nan\n";
 							}
 							return length->val();
