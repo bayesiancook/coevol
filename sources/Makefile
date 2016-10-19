@@ -11,7 +11,7 @@ GSLLIB=
 endif
 
 #LIBS=$(GSLLIB)
-LIBS=$(GSLLIB) -lboost_regex
+#LIBS=$(GSLLIB) -lboost_regex
 
 CC=mpic++
 OMP=-fopenmp

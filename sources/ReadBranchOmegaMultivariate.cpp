@@ -970,6 +970,64 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "covariance matrix in " << name << ".cov\n";
 		cerr << '\n';
 
+		if (postdist)	{
+
+			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
+				ofstream os((GetName() + ".postdistsynrate.tab").c_str());
+				meansynrate->TabulateDistribution(os);
+				os.close();
+			}
+
+			ofstream os((GetName() + ".postdistbranchsynrate.tab").c_str());
+			meanbranchsynrate->TabulateDistribution(os);
+			os.close();
+
+			if (GetModel()->Has3Omega())	{
+				ofstream otsoos((GetName() + ".postdistomegats.tab").c_str());
+				meanomegats->TabulateDistribution(otsoos);
+				otsoos.close();
+
+				ofstream otv0oos((GetName() + ".postdistomegatv0.tab").c_str());
+				meanomegatv0->TabulateDistribution(otv0oos);
+				otv0oos.close();
+
+				ofstream otvgcoos((GetName() + ".postdistomegatvgc.tab").c_str());
+				meanomegatvgc->TabulateDistribution(otvgcoos);
+				otvgcoos.close();
+			}
+			else if (GetModel()->Has2Omega())	{
+				ofstream otsoos((GetName() + ".postdistomegats.tab").c_str());
+				meanomegats->TabulateDistribution(otsoos);
+				otsoos.close();
+
+				ofstream otv0oos((GetName() + ".postdistomegatv0.tab").c_str());
+				meanomegatv0->TabulateDistribution(otv0oos);
+				otv0oos.close();
+			}
+			else if (GetModel()->Has1Omega())	{
+				ofstream os((GetName() + ".postdistomega.tab").c_str());
+				meanomega->TabulateDistribution(os);
+				os.close();
+
+				ofstream bos((GetName() + ".postdistbranchomega.tab").c_str());
+				meanbranchomega->TabulateDistribution(bos);
+				bos.close();
+			}
+
+			if (GetModel()->isGCActivated())	{
+				ofstream gcos((GetName() + ".postdistgc.tab").c_str());
+				meangc->TabulateDistribution(gcos);
+				gcos.close();
+			}
+
+			for (int k=0; k<Ncont; k++)	{
+				ostringstream s;
+				s << GetName() << ".postdist" << k+1 << ".tab";
+				ofstream os(s.str().c_str());
+				tree[k]->TabulateDistribution(os);
+			}
+		}
+
 		meantree->Normalise();
 		ofstream tos((GetName() + ".postmean.tre").c_str());
 		meantree->ToStream(tos);
@@ -1088,23 +1146,11 @@ class BranchOmegaMultivariateSample : public Sample	{
 			ofstream ssos((GetName() + ".postmeansynrate.tab").c_str());
 			meansynrate->Tabulate(ssos);
 			ssos.close();
-			if (postdist)	{
-				ostringstream s;
-				s << GetName() << ".postdistsynrate.tab";
-				ofstream os(s.str().c_str());
-				meansynrate->TabulateDistribution(os);
-			}
 		}
 
 		ofstream bssos((GetName() + ".postmeanbranchsynrate.tab").c_str());
 		meanbranchsynrate->Tabulate(bssos);
 		bssos.close();
-		if (postdist)	{
-			ostringstream s;
-			s << GetName() << ".postdistbranchsynrate.tab";
-			ofstream os(s.str().c_str());
-			meanbranchsynrate->TabulateDistribution(os);
-		}
 
 		if (GetModel()->Has3Omega())	{
 			ofstream otsoos((GetName() + ".postmeanomegats.tab").c_str());
@@ -1133,12 +1179,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			ofstream ooos((GetName() + ".postmeanomega.tab").c_str());
 			meanomega->Tabulate(ooos);
 			ooos.close();
-			if (postdist)	{
-				ostringstream s;
-				s << GetName() << ".postdistomega.tab";
-				ofstream os(s.str().c_str());
-				meanomega->TabulateDistribution(os);
-			}
 
 			meanbranchomega->Normalise();
 			ofstream bsos((GetName() + ".postmeanbranchnonsynrate.tre").c_str());
@@ -1146,12 +1186,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			ofstream bssos((GetName() + ".postmeanbranchnonsynrate.tab").c_str());
 			meanbranchomega->Tabulate(bssos);
 			bssos.close();
-			if (postdist)	{
-				ostringstream s;
-				s << GetName() << ".postdistbranchomega.tab";
-				ofstream os(s.str().c_str());
-				meanbranchomega->TabulateDistribution(os);
-			}
 
 			
 		}
@@ -1166,12 +1200,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			s << GetName() << ".postmean" << k+1 << ".tab";
 			ofstream os(s.str().c_str());
 			tree[k]->Tabulate(os);
-			if (postdist)	{
-				ostringstream s;
-				s << GetName() << ".postdist" << k+1 << ".tab";
-				ofstream os(s.str().c_str());
-				tree[k]->TabulateDistribution(os);
-			}
 		}
 		cerr << '\n';
 	}
