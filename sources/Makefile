@@ -66,6 +66,10 @@ endif
 
 # Targets
 
+$poissongamma(EXEEXT): $(PROGSDIR)/poissongamma$(EXEEXT)
+$(PROGSDIR)/poissongamma$(EXEEXT): PoissonGamma.o $(OBJS)
+	$(CC) PoissonGamma.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
 translate$(EXEEXT): $(PROGSDIR)/translate$(EXEEXT)
 $(PROGSDIR)/translate$(EXEEXT): Translate.o $(OBJS)
 	$(CC) Translate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
