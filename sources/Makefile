@@ -10,11 +10,11 @@ else
 GSLLIB=
 endif
 
-#LIBS=$(GSLLIB)
+LIBS=$(GSLLIB)
 #LIBS=$(GSLLIB) -lboost_regex
 
 CC=mpic++
-OMP=-fopenmp
+#OMP=-fopenmp
 #CC=g++
 SYSLIB=
 INCLUDES=
@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= diffsel poissongamma coevol readcoevol tipcoevol readtipcoevol ancov readancov
+ALL= poissongamma diffsel readdiffsel coevol readcoevol tipcoevol readtipcoevol ancov readancov
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -69,6 +69,10 @@ endif
 $diffsel(EXEEXT): $(PROGSDIR)/diffsel$(EXEEXT)
 $(PROGSDIR)/diffsel$(EXEEXT): DirichletNormalCodonUsageSelectionMS.o $(OBJS)
 	$(CC) DirichletNormalCodonUsageSelectionMS.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+$readdiffsel(EXEEXT): $(PROGSDIR)/readdiffsel$(EXEEXT)
+$(PROGSDIR)/readdiffsel$(EXEEXT): ReadDirichletNormalCodonUsageSelectionMS.o $(OBJS)
+	$(CC) ReadDirichletNormalCodonUsageSelectionMS.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 $poissongamma(EXEEXT): $(PROGSDIR)/poissongamma$(EXEEXT)
 $(PROGSDIR)/poissongamma$(EXEEXT): PoissonGamma.o $(OBJS)
