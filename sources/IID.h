@@ -201,6 +201,34 @@ class DirichletIIDArray : public IIDArray<Profile>	{
 		return ptr;
 	}
 
+	Dirichlet* GetDirichletVal(int site)	{
+		return dynamic_cast<Dirichlet*>(GetVal(site));
+	}
+
+	double GetMeanEntropy()	{
+		double mean = 0;
+		for (int i=0; i<GetSize(); i++)	{
+			mean += GetDirichletVal(i)->GetEntropy();
+		}
+		mean /= GetSize();
+		return mean;
+	}
+
+	void SetUniform()	{
+		for (int i=0; i<GetSize(); i++)	{
+			GetDirichletVal(i)->setuniform();
+		}
+	}
+
+	/*
+	void SetSemiUniform()	{
+		for (int i=0; i<GetSize(); i++)	{
+			GetDirichletVal(i)->setsemiuniform();
+		}
+	}
+	*/
+
+
 	int GetDim()	{
 		return GetVal(0)->GetDim();
 	}
@@ -213,6 +241,34 @@ class DirichletIIDArray : public IIDArray<Profile>	{
 
 	Var<Profile>* center;
 	Var<PosReal>* concentration;
+};
+
+class DirichletIIDArrayMove : public MCUpdate	{
+
+	public: 
+
+	DirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int inm) : selectarray(inselectarray), tuning(intuning), m(inm)	{}
+
+	double Move(double tuning_modulator)	{
+		double total = 0;
+
+		#ifdef _OPENMP
+		#pragma omp parallel for
+		#endif
+
+			for (int i=0; i<selectarray->GetSize(); i++)	{
+				total += selectarray->GetDirichletVal(i)->Move(tuning_modulator * tuning,m);
+			}
+
+
+		return total / selectarray->GetSize();
+	}	
+
+	private:
+
+	DirichletIIDArray* selectarray;
+	double tuning;
+	int m;
 };
 
 class NormalIIDArray : public IIDArray<Real>	{

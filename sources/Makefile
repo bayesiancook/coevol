@@ -25,14 +25,14 @@ CPPFLAGS= -w -O3 -c -g $(OMP)
 LDFLAGS= $(OMP)
 INSTALL_DIR=
 INSTALL_LIB=
-SRCS= ConjugateGTRModel.cpp Chrono.cpp BaseType.cpp Chain.cpp DrawTree.cpp GTRSubMatrix.cpp linalg.cpp PhyloProcess.cpp ProbModel.cpp Random.cpp RandomBranchSitePath.cpp RandomTypes.cpp DAGnode.cpp Sample.cpp SequenceAlignment.cpp SiteMapping.cpp BranchSitePath.cpp StateSpace.cpp SubMatrix.cpp TaxonSet.cpp Tree.cpp CodonSubMatrix.cpp MG3OmegaCodonSubMatrix.cpp CodonStateSpace.cpp CodonSequenceAlignment.cpp Move.cpp AminoAcidOmegaSubMatrix.cpp SimilarityMatrix.cpp MGAAProfileMutSelCodonSubMatrix.cpp MGCodonProfileMutSelCodonSubMatrix.cpp MGCodonAAProfileMutSelCodonSubMatrix.cpp BrownianBridge.cpp  PureBrownianProcess.cpp BrownianProcess.cpp BrownianModel.cpp CovMatrix.cpp stabledistribution.cpp
+SRCS= ConjugateGTRModel.cpp Chrono.cpp BaseType.cpp Chain.cpp DrawTree.cpp GTRSubMatrix.cpp linalg.cpp PhyloProcess.cpp ProbModel.cpp Random.cpp RandomBranchSitePath.cpp RandomTypes.cpp DAGnode.cpp Sample.cpp SequenceAlignment.cpp SiteMapping.cpp BranchSitePath.cpp StateSpace.cpp SubMatrix.cpp TaxonSet.cpp Tree.cpp CodonSubMatrix.cpp MSCodonSubMatrix.cpp MG3OmegaCodonSubMatrix.cpp CodonStateSpace.cpp CodonSequenceAlignment.cpp Move.cpp AminoAcidOmegaSubMatrix.cpp SimilarityMatrix.cpp MGAAProfileMutSelCodonSubMatrix.cpp MGCodonProfileMutSelCodonSubMatrix.cpp MGCodonAAProfileMutSelCodonSubMatrix.cpp BrownianBridge.cpp  PureBrownianProcess.cpp BrownianProcess.cpp BrownianModel.cpp CovMatrix.cpp stabledistribution.cpp
 
 OBJS=$(patsubst %.cpp,%.o,$(SRCS))
 ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= poissongamma coevol readcoevol tipcoevol readtipcoevol ancov readancov
+ALL= diffsel poissongamma coevol readcoevol tipcoevol readtipcoevol ancov readancov
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -65,6 +65,10 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 # Targets
+
+$diffsel(EXEEXT): $(PROGSDIR)/diffsel$(EXEEXT)
+$(PROGSDIR)/diffsel$(EXEEXT): DirichletNormalCodonUsageSelectionMS.o $(OBJS)
+	$(CC) DirichletNormalCodonUsageSelectionMS.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 $poissongamma(EXEEXT): $(PROGSDIR)/poissongamma$(EXEEXT)
 $(PROGSDIR)/poissongamma$(EXEEXT): PoissonGamma.o $(OBJS)

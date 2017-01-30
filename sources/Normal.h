@@ -294,6 +294,23 @@ class IIDNormal : public virtual Rvar<RealVector>	{
 		return 0;
 	}
 
+	virtual double	Move(double tuning, int m)	{
+		if (! isClamped())	{
+			// Metropolis Hastings here
+			Corrupt(true);
+			double logHastings = RealVector::ProposeMove(tuning, m);
+			double deltaLogProb = Update();
+			double logRatio = deltaLogProb + logHastings;
+			bool accepted = (log(Random::Uniform()) < logRatio);
+			if (! accepted)	{
+				Corrupt(false);
+				Restore();
+			}
+			return (double) accepted;
+		}
+		return 1;
+	}
+
 
 	double GetMean()	{
 		double total = 0;

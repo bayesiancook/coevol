@@ -13,6 +13,7 @@ class CodonSequenceAlignment : public SequenceAlignment	{
 
 	CodonSequenceAlignment(CodonSequenceAlignment* from) : SequenceAlignment((SequenceAlignment*) from) {}
 
+	CodonSequenceAlignment(CodonSequenceAlignment* from, int sitemin, int sitemax) : SequenceAlignment((SequenceAlignment*) from, sitemin, sitemax) {}
 	CodonSequenceAlignment(SequenceAlignment* from, bool force_stops = false,GeneticCodeType type = Universal);
 
 	~CodonSequenceAlignment() {}
