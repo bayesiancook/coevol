@@ -5,4 +5,4 @@ file(GLOB SRC
     "src/*.cpp"
 )
 
-add_executable(helloworld ${SRC})
+add_executable(PoissonGamma ${SRC})
