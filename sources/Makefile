@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= coevol readcoevol tipcoevol readtipcoevol ancov readancov
+ALL= poissongamma coevol readcoevol tipcoevol readtipcoevol ancov readancov
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -65,6 +65,10 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 # Targets
+
+$poissongamma(EXEEXT): $(PROGSDIR)/poissongamma$(EXEEXT)
+$(PROGSDIR)/poissongamma$(EXEEXT): PoissonGamma.o $(OBJS)
+	$(CC) PoissonGamma.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 translate$(EXEEXT): $(PROGSDIR)/translate$(EXEEXT)
 $(PROGSDIR)/translate$(EXEEXT): Translate.o $(OBJS)
