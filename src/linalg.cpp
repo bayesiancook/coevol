@@ -403,7 +403,7 @@ double LinAlg::Gauss(double** a, int dim, double** invu)	{
 				}
 				cerr << '\n';
 			}
-			return 1.0 / 0;
+			return 1.0; // was 1.0/0 (why??)
 			exit(1);
 		}
 
