@@ -73,7 +73,9 @@ class DrawTree	{
 	// abstract class
 	public:
 
-	DrawTree() : prec(2), beamer(true), sizeX(6), sizeY(10), Z(0), fontsize(4), groupfontsize(6), header(true), shiftname(-0.02), texscale(1.0), withleafnames(true),  withnodetext(false) {}
+	DrawTree() : prec(2), beamer(true), sizeX(6), sizeY(10), Z(0), fontsize(4), groupfontsize(6), header(true), shiftname(-0.02), texscale(1.0), withleafnames(true),  withnodetext(false) {
+		changenames = 0;
+	}
 	virtual ~DrawTree() {}
 
 	void Draw(string targetfile);
@@ -142,6 +144,9 @@ class DrawTree	{
 	virtual string GetNodeName(const Link* link) const = 0;
 
 	virtual string GetLeafNodeName(const Link* link) {
+		if (changenames)	{
+			return leafname[GetNodeName(link)];
+		}
 		return GetNodeName(link);
 	}
 
@@ -177,6 +182,19 @@ class DrawTree	{
 				cerr << "did not find common ancestor of: " << tax1 << '\t' << tax2 << '\n';
 				exit(1);
 			}
+		}
+	}	
+
+	void SetNames(string filename)	{
+
+		changenames = 1;
+		ifstream is(filename.c_str());
+		int N;
+		is >> N;
+		for (int i=0; i<N; i++)	{
+			string tax, name;
+			is >> tax >> name;
+			leafname[tax] = name;
 		}
 	}	
 
@@ -255,10 +273,15 @@ class DrawTree	{
 	bool withleafnames;
 	bool withnodetext;
 
+	int changenames;
+
 	map<const Node*, string> groupname;
+	map<const Node*, double> groupx;
 	map<const Node*, double> groupy;
+	map<const Node*, double> groupdy;
 	map<const Node*, int> grouptext;
 	map<const Node*, int> groupcolor;
+	map<string,string> leafname;
 
 
 };
@@ -274,6 +297,9 @@ class FileDrawTree : public FileTree, public DrawTree	{
 	const Link* GetLCA(string tax1, string tax2) {return Tree::GetLCA(tax1,tax2);}
 
 	virtual string GetLeafNodeName(const Link* link)  {
+		if (changenames)	{
+			return leafname[FileTree::GetLeafNodeName(link)];
+		}
 		return FileTree::GetLeafNodeName(link);
 	}
 

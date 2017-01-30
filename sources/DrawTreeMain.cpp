@@ -21,6 +21,7 @@ int main(int argc, char* argv[])	{
 	int prec = 2;
 	bool withheader = true;
 	bool unibranch = false;
+	string namefile = "";
 
 	double barwidth = 0.04;
 
@@ -106,6 +107,10 @@ int main(int argc, char* argv[])	{
 				i++;
 				y = atof(argv[i]);
 				sizeset = true;
+			}
+			else if (s == "-names")	{
+				i++;
+				namefile = argv[i];
 			}
 			else if (s == "-beamer")	{
 				style = "beamer";
@@ -301,6 +306,14 @@ int main(int argc, char* argv[])	{
 		tree->SetWithLeafNames(withleafnames);
 		tree->SetNodeText(withnodetext);
 		tree->SetFontSize(fontsize);
+		if (groupfile != "")	{
+			tree->SetGroupOffset(z);
+			tree->SetGroups(groupfile);
+			tree->SetGroupFontSize(groupfontsize);
+		}
+		if (namefile != "")	{
+			tree->SetNames(namefile);
+		}
 		tree->Draw(out);
 	}
 	}

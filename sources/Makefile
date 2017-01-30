@@ -11,7 +11,7 @@ GSLLIB=
 endif
 
 #LIBS=$(GSLLIB)
-#LIBS=$(GSLLIB) -lboost_regex
+LIBS=$(GSLLIB) -lboost_regex
 
 CC=mpic++
 OMP=-fopenmp
@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= coevol readcoevol tipcoevol readtipcoevol ancov readancov
+ALL= drawtree coevol readcoevol tipcoevol readtipcoevol ancov readancov
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files

@@ -85,12 +85,19 @@ void DrawTree::Draw(string target)	{
 
 	RecursiveDraw(GetRoot(),os,startX,sizeY/2,scaleX,scaleY);
 
-	RecursiveAfterDraw(GetRoot(),os,startX,sizeY/2,scaleX,scaleY);
-
 	if (Z)	{
 		cerr << "write group names\n";
 		WriteGroupNames(os);
 	}
+
+	RecursiveAfterDraw(GetRoot(),os,startX,sizeY/2,scaleX,scaleY);
+
+	/*
+	if (Z)	{
+		cerr << "write group names\n";
+		WriteGroupNames(os);
+	}
+	*/
 
 	FinishDrawing(os,scaleX,scaleY);
 	// texscalecale
@@ -127,9 +134,28 @@ void DrawTree::WriteGroupNames(ostream& os)	{
 		if (grouptext[node])	{
 			cerr << name << '\n';
 			double x = sizeX + Z;
+			double xmin = groupx[node]-0.1;
 			double y = groupy[node];
+			double dy = groupdy[node] * 0.99;
+			// os << "\\path [draw] (" << texapprox(x) << ',' << texapprox(y - dy) << ") -- +(0," << texapprox(2*dy) << ");\n";
 			cerr << x << '\t' << y << '\n';
 			os << "\\path [anchor=west] (" << texapprox(x) << "," << texapprox(y) << ") node[font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" <<  name << " };\n";
+
+			int color = groupcolor[node];
+			string colorname;
+			if (color == 0)	{
+				colorname = "blue";
+			}
+			else if (color == 1)	{
+				colorname = "green";
+			}
+			else if (color == 2)	{
+				colorname = "orange";
+			}
+			else if (color == 3)	{
+				colorname = "red";
+			}
+			os << "\\path [fill=" << colorname << ",opacity=0.2,anchor=center] (" << texapprox(xmin) << ',' << texapprox(y-dy) << ") rectangle (" << texapprox(x) << ',' << texapprox(y+dy)  << ");\n";
 		}
 	}
 }
@@ -157,7 +183,9 @@ double DrawTree::RecursiveDraw(const Link* from, ostream& os, double X, double Y
 		double y = Y - 0.5 * GetSize(from) * scaleY;
 
 		if (groupname[from->GetNode()] != "")	{
+			groupx[from->GetNode()] = X;
 			groupy[from->GetNode()] = Y;
+			groupdy[from->GetNode()] = 0.5*GetSize(from) * scaleY;
 		}
 
 		const Link* link = from->Next();
@@ -741,10 +769,13 @@ void HeatTree::MakeScale(ostream& os)	{
 
 
 void DrawTree::WriteNodeText(const Link* link, ostream& os, double x, double y)	{
-	os << "\\path [anchor=south east,font=\\fontsize{" << fontsize << "}{" << fontsize << "}\\selectfont,scale=" << texscale<< "]";
-	// os << "\\path [anchor=west,font=\\fontsize{" << fontsize - 1 << "}{" << fontsize -1 << "}\\selectfont,scale=" << texscale<< "]";
+	if ((GetNodeName(link) != "100") && (GetNodeName(link) != "1"))	{
+	// os << "\\path [anchor=south east,font=\\fontsize{" << fontsize << "}{" << fontsize << "}\\selectfont,scale=" << texscale<< "]";
+	os << "\\path [anchor=west,font=\\fontsize{" << fontsize - 1 << "}{" << fontsize -1 << "}\\selectfont,scale=" << texscale<< "]";
 	os << "(" << texapprox(x-0.1) << "," << texapprox(y) << ") node {" << GetNodeName(link) << " };\n";
+	// os << "(" << texapprox(x-0.1) << "," << texapprox(y) << ") node {" << GetNodeName(link) << " };\n";
 	// os << "(" << texapprox(x-0.1) << "," << texapprox(y) << ") node {" << ((double) ((int) (10 * GetNodeVal(link)))) / 10 << " };\n";
+	}
 }
 
 void HeatTree::SetBranchVal(string infile)	{
