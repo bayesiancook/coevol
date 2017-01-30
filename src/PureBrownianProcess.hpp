@@ -2,9 +2,9 @@
 #ifndef PUREBROWNIANPROCESS_H
 #define	PUREBROWNIANPROCESS_H
 
-#include "ValTree.h"
-#include "RandomBrownianPath.h"
-#include "Chronogram.h"
+#include "ValTree.hpp"
+#include "RandomBrownianPath.hpp"
+#include "Chronogram.hpp"
 
 class PureBrownianProcess : public BranchValPtrTree<Rvar<BrownianBridge> >, public MCMC
 {

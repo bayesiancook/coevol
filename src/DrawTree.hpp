@@ -2,7 +2,7 @@
 #ifndef DRAWTREE_H
 #define DRAWTREE_H
 
-#include "Tree.h"
+#include "Tree.hpp"
 #include <cmath>
 
 class FileTree : public Tree	{

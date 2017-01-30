@@ -3,9 +3,9 @@
 #include <cstdlib>
 using namespace std;
 
-#include "BiologicalSequences.h"
-#include "TaxonSet.h"
-#include "Tree.h"
+#include "BiologicalSequences.hpp"
+#include "TaxonSet.hpp"
+#include "Tree.hpp"
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------

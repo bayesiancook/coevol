@@ -1,7 +1,7 @@
 #ifndef CODONSTATESPACE_H
 #define CODONSTATESPACE_H
 
-#include "StateSpace.h"
+#include "StateSpace.hpp"
 #include <map>
 
 class CodonStateSpace : public StateSpace	{

@@ -1,10 +1,10 @@
 #ifndef EVOLUTIONNUCBROWNIANPROCESS_H
 #define EVOLUTIONNUCBROWNIANPROCESS_H
 
-#include "RandomSubMatrix.h"
-#include "ValTree.h"
-#include "BrownianProcess.h"
-#include "InverseWishartMatrix.h"
+#include "RandomSubMatrix.hpp"
+#include "ValTree.hpp"
+#include "BrownianProcess.hpp"
+#include "InverseWishartMatrix.hpp"
 
 
 class EvolutionNucMatrix : public TransitionMatrix {

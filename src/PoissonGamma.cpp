@@ -1,6 +1,6 @@
 
-#include "ProbModel.h"
-#include "RandomTypes.h"
+#include "ProbModel.hpp"
+#include "RandomTypes.hpp"
 
 class PoissonGammaModel : public ProbModel	{
 

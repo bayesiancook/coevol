@@ -1,11 +1,11 @@
 #ifndef BROWNIANPROCESS_H
 #define	BROWNIANPROCESS_H
 
-#include "MultiVariateTreeProcess.h"
-#include "PureBrownianProcess.h"
-#include "ConjugateInverseWishart.h"
-#include "ConjugateMultiVariateTreeProcess.h"
-#include "Move.h"
+#include "MultiVariateTreeProcess.hpp"
+#include "PureBrownianProcess.hpp"
+#include "ConjugateInverseWishart.hpp"
+#include "ConjugateMultiVariateTreeProcess.hpp"
+#include "Move.hpp"
 
 class BrownianProcess : public MCMC {
 

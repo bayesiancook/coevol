@@ -2,12 +2,12 @@
 #ifndef CONJUGATEPATH_H
 #define CONJUGATEPATH_H
 
-#include "RandomBranchSitePath.h"
-#include "Conjugate.h"
-#include "IIDConjugate.h"
-#include "ConjugatePoisson.h"
-#include "ConjugateMultinomial.h"
-#include "GTRSubMatrix.h"
+#include "RandomBranchSitePath.hpp"
+#include "Conjugate.hpp"
+#include "IIDConjugate.hpp"
+#include "ConjugatePoisson.hpp"
+#include "ConjugateMultinomial.hpp"
+#include "GTRSubMatrix.hpp"
 
 class LengthConjugatePath : public virtual ConjugateSampling<void>, public virtual RandomBranchSitePath {
 

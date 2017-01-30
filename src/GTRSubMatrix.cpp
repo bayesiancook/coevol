@@ -1,5 +1,5 @@
 
-#include "GTRSubMatrix.h"
+#include "GTRSubMatrix.hpp"
 #include <iostream>
 using namespace std;
 

@@ -1,9 +1,9 @@
 #ifndef ARMULTIVARIATETREEPROCESS
 #define ARMULTIVARIATETREEPROCESS
 
-#include "MultiVariateTreeProcess.h"
-#include "Chronogram.h"
-#include "ContinuousData.h"
+#include "MultiVariateTreeProcess.hpp"
+#include "Chronogram.hpp"
+#include "ContinuousData.hpp"
 
 
 // Vector of reals draw from a Wishart distribution.

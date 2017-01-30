@@ -2,8 +2,8 @@
 #ifndef EVOLUTIONSEGMENTEDOMEGAPROCESS_H
 #define	EVOLUTIONSEGMENTEDOMEGAPROCESS_H
 
-#include "EvolutionSegmentedProcess.h"
-#include "MGCodonTransitionMatrix.h"
+#include "EvolutionSegmentedProcess.hpp"
+#include "MGCodonTransitionMatrix.hpp"
 
 
 

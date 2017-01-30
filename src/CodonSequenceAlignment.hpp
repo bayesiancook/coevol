@@ -2,9 +2,9 @@
 #define CODONSEQUENCEALIGNMENT_H
 
 
-#include "ContinuousData.h"
-#include "SequenceAlignment.h"
-#include "CodonStateSpace.h"
+#include "ContinuousData.hpp"
+#include "SequenceAlignment.hpp"
+#include "CodonStateSpace.hpp"
 #include <cmath>
 
 class CodonSequenceAlignment : public SequenceAlignment	{

@@ -3,8 +3,8 @@
 #define SITEPATH_H
 
 #include <string>
-#include "Tree.h"
-#include "StateSpace.h"
+#include "Tree.hpp"
+#include "StateSpace.hpp"
 
 class Plink	{
 

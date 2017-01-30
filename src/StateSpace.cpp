@@ -4,8 +4,8 @@
 using namespace std;
 
 #include <sstream>
-#include "BiologicalSequences.h"
-#include "StateSpace.h"
+#include "BiologicalSequences.hpp"
+#include "StateSpace.hpp"
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------

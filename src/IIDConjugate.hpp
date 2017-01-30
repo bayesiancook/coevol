@@ -1,9 +1,9 @@
 #ifndef IIDCONJUGATE_H
 #define IIDCONJUGATE_H
 
-#include "BaseType.h"
-#include "Var.h"
-#include "Conjugate.h"
+#include "BaseType.hpp"
+#include "Var.hpp"
+#include "Conjugate.hpp"
 
 class IIDPoissonSemiConjugate: public virtual SemiConjugatePrior<PosRealVector> {
 

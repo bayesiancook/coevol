@@ -2,7 +2,7 @@
 #ifndef SPLITAAMAT
 #define SPLITAAMAT
 
-#include "SimilarityMatrix.h"
+#include "SimilarityMatrix.hpp"
 
 class SplitAAMatrix {
 

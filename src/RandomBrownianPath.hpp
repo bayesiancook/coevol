@@ -3,10 +3,10 @@
 #define	RANDOMBROWNIANPATH_H
 
 
-#include "BrownianBridge.h"
-#include "Var.h"
+#include "BrownianBridge.hpp"
+#include "Var.hpp"
 
-#include "ConjugateInverseWishart.h"
+#include "ConjugateInverseWishart.hpp"
 
 class RandomBrownianPath : virtual public Rvar<BrownianBridge> {
 

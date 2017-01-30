@@ -2,8 +2,8 @@
 #ifndef MGCODONPROFILEMUTSELCODONSUBMATRIX_H
 #define MGCODONPROFILEMUTSELCODONSUBMATRIX_H
 
-#include "CodonSubMatrix.h"
-#include "Var.h"
+#include "CodonSubMatrix.hpp"
+#include "Var.hpp"
 
 class MGCodonProfileMutSelCodonSubMatrix : public NucCodonSubMatrix   {
 

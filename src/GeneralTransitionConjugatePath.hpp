@@ -1,15 +1,15 @@
 #ifndef CONJUGATETRANSPATH_H
 #define CONJUGATETRANSPATH_H
 
-#include "RandomBranchSitePath.h"
-#include "Conjugate.h"
-#include "RandomSubMatrix.h"
-#include "PhyloProcess.h"
+#include "RandomBranchSitePath.hpp"
+#include "Conjugate.hpp"
+#include "RandomSubMatrix.hpp"
+#include "PhyloProcess.hpp"
 
 #include <utility>
 #include <map>
 
-#include "CodonSubMatrix.h"
+#include "CodonSubMatrix.hpp"
 
 class AbstractPathConj {
 public:

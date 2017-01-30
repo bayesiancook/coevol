@@ -1,5 +1,5 @@
 
-#include "linalg.h"
+#include "linalg.hpp"
 
 #include <fstream>
 #include <cstdlib>

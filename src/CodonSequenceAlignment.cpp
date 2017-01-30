@@ -3,9 +3,9 @@
 #include <cstdlib>
 using namespace std;
 
-#include "CodonSequenceAlignment.h"
-#include "Exception.h"
-#include "Random.h"
+#include "CodonSequenceAlignment.hpp"
+#include "Exception.hpp"
+#include "Random.hpp"
 
 CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool force_stops, GeneticCodeType type)	{
 

@@ -1,4 +1,4 @@
-#include "BaseType.h"
+#include "BaseType.hpp"
 
 const double Profile::MIN = 1e-20;
 

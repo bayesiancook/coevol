@@ -1,7 +1,7 @@
 #ifndef CONTINUOUSDATA_H
 #define CONTINUOUSDATA_H
 
-#include "TaxonSet.h"
+#include "TaxonSet.hpp"
 #include <fstream>
 #include <cmath>
 #include <sstream>

@@ -5,7 +5,7 @@
 #include <cstdlib>
 using namespace std;
 
-#include "ProbModel.h"
+#include "ProbModel.hpp"
 
 /// Chain is a Monte Carlo Markov Chain
 //  it is responsible for creating a model, applying it to data

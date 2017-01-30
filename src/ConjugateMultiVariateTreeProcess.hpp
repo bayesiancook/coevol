@@ -1,10 +1,10 @@
 #ifndef CONJUGATEMULTIVARIATETREEPROCESS
 #define CONJUGATEMULTIVARIATETREEPROCESS
 
-#include "MultiVariateTreeProcess.h"
-#include "ConjugateInverseWishart.h"
-#include "ContinuousData.h"
-#include "AutoRegressiveMultiVariateTreeProcess.h"
+#include "MultiVariateTreeProcess.hpp"
+#include "ConjugateInverseWishart.hpp"
+#include "ContinuousData.hpp"
+#include "AutoRegressiveMultiVariateTreeProcess.hpp"
 
 
 class ConjugateMultiVariateTreeProcess : public virtual MultiVariateTreeProcess	{

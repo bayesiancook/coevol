@@ -1,7 +1,7 @@
 #ifndef GENERICTIMELINE_H
 #define GENERICTIMELINE_H
 
-#include "StringStreamUtils.h"
+#include "StringStreamUtils.hpp"
 #include <iostream>
 #include <map>
 #include <vector>

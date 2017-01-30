@@ -1,4 +1,4 @@
-#include "MGAAProfileMutSelCodonSubMatrix.h"
+#include "MGAAProfileMutSelCodonSubMatrix.hpp"
 
 
 void MGAAProfileMutSelCodonSubMatrix::ComputeStationary()    {

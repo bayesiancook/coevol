@@ -5,8 +5,8 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
-#include "TaxonSet.h"
-#include "Random.h"
+#include "TaxonSet.hpp"
+#include "Random.hpp"
 
 class Node {
 

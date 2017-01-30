@@ -1,6 +1,6 @@
 
 #include <sstream>
-#include "BranchSitePath.h"
+#include "BranchSitePath.hpp"
 
 #include <cmath>
 

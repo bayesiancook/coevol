@@ -4,9 +4,9 @@
 
 #include <sstream>
 
-#include "BaseType.h"
-#include "Var.h"
-#include "AbstractTree.h"
+#include "BaseType.hpp"
+#include "Var.hpp"
+#include "AbstractTree.hpp"
 
 // implements recursive allocations and basic accessors
 

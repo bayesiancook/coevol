@@ -2,15 +2,15 @@
 #ifndef PHYLOPROCESS_H
 #define PHYLOPROCESS_H
 
-#include "MCMC.h"
-#include "BranchProcess.h"
-#include "SiteMapping.h"
-#include "RandomBranchSitePath.h"
-#include "SequenceAlignment.h"
-#include "BranchSiteSubstitutionProcess.h"
+#include "MCMC.hpp"
+#include "BranchProcess.hpp"
+#include "SiteMapping.hpp"
+#include "RandomBranchSitePath.hpp"
+#include "SequenceAlignment.hpp"
+#include "BranchSiteSubstitutionProcess.hpp"
 #include <map>
 
-#include "Chrono.h"
+#include "Chrono.hpp"
 
 // PhyloProcess is a dispatcher:
 // its responsibility is to create a random branch/site path

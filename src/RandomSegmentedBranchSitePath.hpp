@@ -1,9 +1,9 @@
 #ifndef RANDOMSEGMENTEDBRANCHSITEPATH_H
 #define	RANDOMSEGMENTEDBRANCHSITEPATH_H
 
-#include "RandomBranchSitePath.h"
-#include "EvolutionSegmentedProcess.h"
-#include "Chrono.h"
+#include "RandomBranchSitePath.hpp"
+#include "EvolutionSegmentedProcess.hpp"
+#include "Chrono.hpp"
 
 class RandomSegmentedBranchSitePath : public RandomBranchSitePath {
 

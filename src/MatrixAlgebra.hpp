@@ -2,7 +2,7 @@
 #ifndef MATAL_H
 #define MATAL_H
 
-#include "CovMatrix.h"
+#include "CovMatrix.hpp"
 
 class MatrixAlgebra	{
 

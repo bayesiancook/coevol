@@ -1,12 +1,12 @@
 #ifndef CONJUGATEGTRMODEL_H
 #define CONJUGATEGTRMODEL_H
 
-#include "ProbModel.h"
-#include "ConjugatePath.h"
-#include "ConjugateGammaTree.h"
-#include "ConjugateOneMatrixPhyloProcess.h"
+#include "ProbModel.hpp"
+#include "ConjugatePath.hpp"
+#include "ConjugateGammaTree.hpp"
+#include "ConjugateOneMatrixPhyloProcess.hpp"
 
-#include "IID.h"
+#include "IID.hpp"
 
 
 //

@@ -2,7 +2,7 @@
 #ifndef STATESPACE_H
 #define STATESPACE_H
 
-#include "BiologicalSequences.h"
+#include "BiologicalSequences.hpp"
 
 // pure interface
 //

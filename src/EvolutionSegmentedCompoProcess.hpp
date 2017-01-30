@@ -8,10 +8,10 @@
 #ifndef EVOLUTIONSEGMENTEDCOMPOPROCESS_H
 #define	EVOLUTIONSEGMENTEDCOMPOPROCESS_H
 
-#include "EvolutionSegmentedProcess.h"
-#include "Chrono.h"
-#include "BrownianMove.h"
-#include "SumConstrained.h"
+#include "EvolutionSegmentedProcess.hpp"
+#include "Chrono.hpp"
+#include "BrownianMove.hpp"
+#include "SumConstrained.hpp"
 
 class CompoMatrix : virtual public EvolutionSegmentedMatrix {
 	public :

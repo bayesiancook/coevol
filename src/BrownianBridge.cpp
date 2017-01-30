@@ -1,4 +1,4 @@
-#include "BrownianBridge.h"
+#include "BrownianBridge.hpp"
 
 
 int BrownianBridge::nTreeSegments = 0;

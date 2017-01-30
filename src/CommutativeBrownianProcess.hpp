@@ -2,8 +2,8 @@
 #ifndef COMMUTATIVEBROWNIANPROCESS_H
 #define	COMMUTATIVEBROWNIANPROCESS_H
 
-#include "BrownianProcess.h"
-#include "ValTree.h"
+#include "BrownianProcess.hpp"
+#include "ValTree.hpp"
 
 class CommutativeIntegralPath : public Dvar<PosReal> {
 	public:

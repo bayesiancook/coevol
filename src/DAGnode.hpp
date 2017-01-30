@@ -7,8 +7,8 @@
 #include <map>
 
 using namespace std;
-#include "Random.h"
-#include "MCMC.h"
+#include "Random.hpp"
+#include "MCMC.hpp"
 
 class DAGnode;
 class ProbModel;

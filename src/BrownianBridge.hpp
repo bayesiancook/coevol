@@ -2,8 +2,8 @@
 #ifndef BROWNIANBRIDGE_H
 #define	BROWNIANBRIDGE_H
 
-#include "Random.h"
-#include "CovMatrix.h"
+#include "Random.hpp"
+#include "CovMatrix.hpp"
 
 enum Segmentation {SEGM_REGULAR, SEGM_ABSOLUTE};
 

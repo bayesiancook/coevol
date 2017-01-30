@@ -1,4 +1,4 @@
-#include "MSCodonSubMatrix.h"
+#include "MSCodonSubMatrix.hpp"
 
 
 void MGFitnessCodonSubMatrix::ComputeStationary()	{

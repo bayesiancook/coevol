@@ -1,16 +1,16 @@
 #ifndef CONJUGATEPATH_H
 #define CONJUGATEPATH_H
 
-#include "RandomBranchSitePath.h"
-#include "Conjugate.h"
-#include "RandomSubMatrix.h"
-#include "PhyloProcess.h"
+#include "RandomBranchSitePath.hpp"
+#include "Conjugate.hpp"
+#include "RandomSubMatrix.hpp"
+#include "PhyloProcess.hpp"
 
 #include <utility>
 #include <map>
 
-#include "CodonSubMatrix.h"
-#include "GeneralTransitionConjugatePath.h"
+#include "CodonSubMatrix.hpp"
+#include "GeneralTransitionConjugatePath.hpp"
 
 class PathConjugate : public DSemiConjugatePrior<void>	{
 

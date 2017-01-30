@@ -5,7 +5,7 @@
 #include <cstdlib>
 using namespace std;
 
-#include "ProbModel.h"
+#include "ProbModel.hpp"
 
 //
 // Sample is in charge of reading chains from file,

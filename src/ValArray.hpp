@@ -2,7 +2,7 @@
 #ifndef VALARRAY_H
 #define VALARRAY_H
 
-#include "BaseType.h"
+#include "BaseType.hpp"
 
 class AbstractArray	{
 

@@ -3,8 +3,8 @@
 
 #include <set>
 #include <iostream>
-#include "DAGnode.h"
-#include "Move.h"
+#include "DAGnode.hpp"
+#include "Move.hpp"
 
 /// Probabisetic model
 /**

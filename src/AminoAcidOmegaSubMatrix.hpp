@@ -1,11 +1,11 @@
 #ifndef AMINOACIDOMEGASUBMATRIX_H
 #define AMINOACIDOMEGASUBMATRIX_H
 
-#include "RandomSubMatrix.h"
-#include "GTRSubMatrix.h"
-#include "SimilarityMatrix.h"
-#include "CodonSubMatrix.h"
-#include "SplitAAMatrix.h"
+#include "RandomSubMatrix.hpp"
+#include "GTRSubMatrix.hpp"
+#include "SimilarityMatrix.hpp"
+#include "CodonSubMatrix.hpp"
+#include "SplitAAMatrix.hpp"
 
 class AAOmegaSubMatrix : public GTRSubMatrix {
 	public:

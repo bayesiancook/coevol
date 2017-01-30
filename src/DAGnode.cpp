@@ -1,9 +1,9 @@
 
 #include <algorithm>
 
-#include "Random.h"
-#include "ProbModel.h"
-#include "RandomSubMatrix.h"
+#include "Random.hpp"
+#include "ProbModel.hpp"
+#include "RandomSubMatrix.hpp"
 
 bool DAGnode::initmode = true;
 

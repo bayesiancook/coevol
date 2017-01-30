@@ -2,9 +2,9 @@
 #ifndef MGAAPROFILEMUTSELCODONSUBMATRIX_H
 #define MGAAPROFILEMUTSELCODONSUBMATRIX_H
 
-#include "CodonSubMatrix.h"
-// #include "CovMatrix.h"
-#include "Var.h"
+#include "CodonSubMatrix.hpp"
+// #include "CovMatrix.hpp"
+#include "Var.hpp"
 
 class MGAAProfileMutSelCodonSubMatrix : public NucCodonSubMatrix   {
 

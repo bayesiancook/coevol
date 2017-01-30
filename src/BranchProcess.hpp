@@ -4,8 +4,8 @@
 
 #include <sstream>
 
-#include "ValTree.h"
-#include "RandomTypes.h"
+#include "ValTree.hpp"
+#include "RandomTypes.hpp"
 
 // iid random variables of type Rvar<V>
 // associated to each branch of the tree

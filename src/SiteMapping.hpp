@@ -3,7 +3,7 @@
 #define SITEMAPPING_H
 
 #include <iostream>
-#include "BranchSitePath.h"
+#include "BranchSitePath.hpp"
 
 class SiteMapping	{
 

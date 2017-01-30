@@ -1,8 +1,8 @@
-#include "SequenceAlignment.h"
-#include "StringStreamUtils.h"
-#include "BiologicalSequences.h"
+#include "SequenceAlignment.hpp"
+#include "StringStreamUtils.hpp"
+#include "BiologicalSequences.hpp"
 
-#include "Random.h"
+#include "Random.hpp"
 
 #include <fstream>
 

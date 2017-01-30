@@ -1,7 +1,7 @@
 #ifndef COVMATRIX_H
 #define COVMATRIX_H
 
-#include "linalg.h"
+#include "linalg.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
@@ -9,8 +9,8 @@
 
 using namespace std;
 
-#include "RandomTypes.h"
-#include "ValArray.h"
+#include "RandomTypes.hpp"
+#include "ValArray.hpp"
 
 class CovMatrix : public BaseType, public Multiplicative {
 

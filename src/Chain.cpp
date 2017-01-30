@@ -1,5 +1,5 @@
-#include "Chain.h"
-#include "Chrono.h"
+#include "Chain.hpp"
+#include "Chrono.hpp"
 #include <cmath>
 
 Chain::Chain()	{

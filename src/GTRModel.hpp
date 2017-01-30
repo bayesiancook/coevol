@@ -1,14 +1,14 @@
 #ifndef GTRMODEL_H
 #define GTRMODEL_H
 
-#include "BaseType.h"
-#include "RandomTypes.h"
-#include "ProbModel.h"
-#include "IID.h"
-#include "GTRSubMatrix.h"
-#include "OneMatrixPhyloProcess.h"
-#include "Move.h"
-#include "PhyloProcessMHMove.h"
+#include "BaseType.hpp"
+#include "RandomTypes.hpp"
+#include "ProbModel.hpp"
+#include "IID.hpp"
+#include "GTRSubMatrix.hpp"
+#include "OneMatrixPhyloProcess.hpp"
+#include "Move.hpp"
+#include "PhyloProcessMHMove.hpp"
 
 class MHOneMatrixPhyloProcess : public OneMatrixPhyloProcess	{
 

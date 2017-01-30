@@ -1,11 +1,11 @@
 #ifndef MULTIVARIATETREEPROCESS
 #define MULTIVARIATETREEPROCESS
 
-#include "InverseWishartMatrix.h"
-#include "ValTree.h"
-#include "ContinuousData.h"
-#include "AncestralData.h"
-#include "MatrixAlgebra.h"
+#include "InverseWishartMatrix.hpp"
+#include "ValTree.hpp"
+#include "ContinuousData.hpp"
+#include "AncestralData.hpp"
+#include "MatrixAlgebra.hpp"
 
 
 

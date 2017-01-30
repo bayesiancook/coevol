@@ -3,13 +3,13 @@
 #ifndef MOVE_H
 #define MOVE_H
 
-#include "MCMC.h"
+#include "MCMC.hpp"
 #include <vector>
 
-#include "DAGnode.h"
-#include "RandomTypes.h"
+#include "DAGnode.hpp"
+#include "RandomTypes.hpp"
 
-// #include "Normal.h"
+// #include "Normal.hpp"
 
 class ProbModel;
 

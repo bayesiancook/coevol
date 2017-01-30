@@ -1,8 +1,8 @@
 
-#include "Move.h"
-#include "Chrono.h"
-#include "Random.h"
-#include "ProbModel.h"
+#include "Move.hpp"
+#include "Chrono.hpp"
+#include "Random.hpp"
+#include "ProbModel.hpp"
 
 #include <iostream>
 

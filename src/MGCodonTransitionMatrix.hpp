@@ -1,9 +1,9 @@
 #ifndef MGCODONTRANSITIONMATRIX_H
 #define	MGCODONTRANSITIONMATRIX_H
 
-#include "SubMatrix.h"
-#include "CodonStateSpace.h"
-#include "GTRSubMatrix.h"
+#include "SubMatrix.hpp"
+#include "CodonStateSpace.hpp"
+#include "GTRSubMatrix.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>

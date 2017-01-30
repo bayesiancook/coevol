@@ -1,12 +1,12 @@
 #ifndef EVOLUTIONSEGMENTEDPROCESS_H
 #define	EVOLUTIONSEGMENTEDPROCESS_H
 
-#include "DAGnode.h"
-#include "BrownianBridge.h"
-#include "SubMatrix.h"
-#include "RandomBrownianPath.h"
-#include "BrownianProcess.h"
-#include "ValTree.h"
+#include "DAGnode.hpp"
+#include "BrownianBridge.hpp"
+#include "SubMatrix.hpp"
+#include "RandomBrownianPath.hpp"
+#include "BrownianProcess.hpp"
+#include "ValTree.hpp"
 
 
 #ifdef _OPENMP

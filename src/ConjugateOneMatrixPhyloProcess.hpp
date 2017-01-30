@@ -2,8 +2,8 @@
 #define CONJUGATEONEMATRIXPHYLOPROCESS_H
 
 
-#include "OneMatrixPhyloProcess.h"
-#include "ConjugatePath.h"
+#include "OneMatrixPhyloProcess.hpp"
+#include "ConjugatePath.hpp"
 
 
 class ConjugateOneMatrixRASPhyloProcess : public OneMatrixRASPhyloProcess	{

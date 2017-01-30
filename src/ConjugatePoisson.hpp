@@ -2,9 +2,9 @@
 #ifndef CONJUGATEPOISSON_H
 #define CONJUGATEPOISSON_H
 
-#include "Conjugate.h"
-#include "RandomTypes.h"
-#include "IID.h"
+#include "Conjugate.hpp"
+#include "RandomTypes.hpp"
+#include "IID.hpp"
 
 // Imagine a collection of N integer variables, x_i, i=1..N, all Poisson distributed with the same mean mu
 // and imagine that this mean mu is itself distributed according to a gamma, of shape parameter alpha and scale parameter beta.

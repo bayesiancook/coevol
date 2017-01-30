@@ -1,6 +1,6 @@
 
-#include "SimilarityMatrix.h"
-#include "BiologicalSequences.h"
+#include "SimilarityMatrix.hpp"
+#include "BiologicalSequences.hpp"
 #include <iostream>
 using namespace std;
 

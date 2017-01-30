@@ -1,5 +1,5 @@
 
-#include "MG3OmegaCodonSubMatrix.h"
+#include "MG3OmegaCodonSubMatrix.hpp"
 
 
 void MG3CodonSubMatrix::ComputeArray(int i)	{

@@ -1,5 +1,5 @@
 
-#include "CovMatrix.h"
+#include "CovMatrix.hpp"
 
 int CovMatrix::maxn = 0;
 int CovMatrix::ndiag = 0;

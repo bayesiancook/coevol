@@ -2,7 +2,7 @@
 #ifndef MSCODONSUBMATRIX_H
 #define MSCODONSUBMATRIX_H
 
-#include "CodonSubMatrix.h"
+#include "CodonSubMatrix.hpp"
 
 // The Muse and Gaut codon substitution process
 // with an fitness = exp(selection profile) parameter

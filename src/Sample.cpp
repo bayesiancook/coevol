@@ -1,5 +1,5 @@
 
-#include "Sample.h"
+#include "Sample.hpp"
 
 Sample::Sample(string filename, int in_burnin, int in_every, int in_until)	{
 	burnin = in_burnin;

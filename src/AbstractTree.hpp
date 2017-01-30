@@ -2,7 +2,7 @@
 #ifndef ABSTRACTTREE_H
 #define ABSTRACTTREE_H
 
-#include "Tree.h"
+#include "Tree.hpp"
 
 class AbstractTree	{
 

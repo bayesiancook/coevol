@@ -1,4 +1,4 @@
-#include "PureBrownianProcess.h"
+#include "PureBrownianProcess.hpp"
 
 PureBrownianProcess::PureBrownianProcess(Chronogram *intree, Var<CovMatrix> *insigma, Var<PosReal>* inagescale, GlobalScalingFunction* inscalefunction)
 {

@@ -1,8 +1,8 @@
 #ifndef SEQUENCEALIGNMENT_H
 #define SEQUENCEALIGNMENT_H
 
-#include "StateSpace.h"
-#include "TaxonSet.h"
+#include "StateSpace.hpp"
+#include "TaxonSet.hpp"
 
 // this class works like an interface
 // it does not do any job

@@ -3,8 +3,8 @@
 #ifndef CONJUGATEMULTINOMIAL_H
 #define CONJUGATEMULTINOMIAL_H
 
-#include "Conjugate.h"
-#include "RandomTypes.h"
+#include "Conjugate.hpp"
+#include "RandomTypes.hpp"
 
 
 class MultinomialSemiConjugate : public virtual SemiConjugatePrior<Profile> {

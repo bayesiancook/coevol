@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "RandomBranchSitePath.h"
-#include "PhyloProcess.h"
+#include "RandomBranchSitePath.hpp"
+#include "PhyloProcess.hpp"
 
 //-------------------------------------------------------------------------
 //	* RandomBranchSitePath

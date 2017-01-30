@@ -1,11 +1,11 @@
 #ifndef CHRONOGRAM_H
 #define CHRONOGRAM_H
 
-#include "ValTree.h"
-#include "Tree.h"
+#include "ValTree.hpp"
+#include "Tree.hpp"
 #include <math.h>
 #include <algorithm>
-#include "RandomTypes.h"
+#include "RandomTypes.hpp"
 
 template<class U, class V> class NodeBranchProcess : public MCMC , public NodeBranchValPtrTree<Rvar <U>, Dvar <V> > {
 

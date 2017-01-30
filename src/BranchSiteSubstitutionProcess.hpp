@@ -1,9 +1,9 @@
 #ifndef SUBPROCESS_H
 #define SUBPROCESS_H
 
-#include "Random.h"
-#include "SubMatrix.h"
-#include "Var.h"
+#include "Random.hpp"
+#include "SubMatrix.hpp"
+#include "Var.hpp"
 
 class BranchSiteSubstitutionProcess	{
 

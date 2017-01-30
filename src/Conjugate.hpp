@@ -3,7 +3,7 @@
 #define CONJUGATE_H
 
 using namespace std;
-#include "MCMC.h"
+#include "MCMC.hpp"
 #include <set>
 
 class Rnode;

@@ -2,10 +2,10 @@
 #ifndef BROWNIANGCSTATIONARY_H
 #define	BROWNIANGCSTATIONARY_H
 
-#include "RandomSubMatrix.h"
-#include "ValTree.h"
-#include "BrownianProcess.h"
-#include "InverseWishartMatrix.h"
+#include "RandomSubMatrix.hpp"
+#include "ValTree.hpp"
+#include "BrownianProcess.hpp"
+#include "InverseWishartMatrix.hpp"
 
 class RootStationary : public Dvar<Profile> {
 	public :

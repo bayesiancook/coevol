@@ -1,13 +1,13 @@
 #ifndef WISHART_H
 #define WISHART_H
 
-#include "CovMatrix.h"
-#include "Tree.h"
-#include "ValArray.h"
+#include "CovMatrix.hpp"
+#include "Tree.hpp"
+#include "ValArray.hpp"
 
-#include "GenericTimeLine.h"
+#include "GenericTimeLine.hpp"
 
-#include "GlobalScalingFunction.h"
+#include "GlobalScalingFunction.hpp"
 
 class SigmaZero : public Dnode{
 

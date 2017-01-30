@@ -1,9 +1,9 @@
 #ifndef BROWNIANMOVE_H
 #define	BROWNIANMOVE_H
 
-#include "Move.h"
-#include "BrownianProcess.h"
-#include "Chrono.h"
+#include "Move.hpp"
+#include "BrownianProcess.hpp"
+#include "Chrono.hpp"
 
 class BrownianHorizontalMove : public MCUpdate {
 

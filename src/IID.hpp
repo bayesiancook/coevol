@@ -5,8 +5,8 @@
 #include <cstdlib>
 using namespace std;
 
-#include "RandomTypes.h"
-#include "ValArray.h"
+#include "RandomTypes.hpp"
+#include "ValArray.hpp"
 
 template <class V> class IIDArray : public ValPtrArray< Rvar<V> >	{
 

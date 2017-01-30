@@ -1,7 +1,7 @@
 
 #include <cstdlib>
 
-#include "ProbModel.h"
+#include "ProbModel.hpp"
 
 ProbModel::ProbModel() : scheduler(this) {}
 

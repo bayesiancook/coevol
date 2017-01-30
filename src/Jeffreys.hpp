@@ -1,9 +1,9 @@
 #ifndef JEFF_H
 #define JEFF_H
 
-#include "IID.h"
+#include "IID.hpp"
 
-#include "ValArray.h"
+#include "ValArray.hpp"
 
 class Jeffreys: public Rvar<PosReal>	{
 

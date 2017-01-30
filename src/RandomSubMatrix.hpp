@@ -25,9 +25,9 @@
 #ifndef RANDOMSUBMATRIX_H
 #define RANDOMSUBMATRIX_H
 
-#include "SubMatrix.h"
-#include "Var.h"
-#include "RandomTypes.h"
+#include "SubMatrix.hpp"
+#include "Var.hpp"
+#include "RandomTypes.hpp"
 
 // a RandomSubMatrix is just a SubMatrix (substitution matrix)
 // wrapped up into a Dvar<void*>

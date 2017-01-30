@@ -4,8 +4,8 @@
 #include <cstdlib>
 using namespace std;
 
-#include "CodonStateSpace.h"
-#include "Exception.h"
+#include "CodonStateSpace.hpp"
+#include "Exception.hpp"
 
 CodonStateSpace::CodonStateSpace(GeneticCodeType type)	{
 

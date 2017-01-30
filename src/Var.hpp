@@ -2,7 +2,7 @@
 #ifndef VAR_H
 #define VAR_H
 
-#include "DAGnode.h"
+#include "DAGnode.hpp"
 
 template<class T> class Var : public virtual DAGnode , public T{
 

@@ -2,8 +2,8 @@
 #ifndef PHYLOMHMOVE_H
 #define PHYLOMHMOVE_H
 
-#include "Move.h"
-#include "PhyloProcess.h"
+#include "Move.hpp"
+#include "PhyloProcess.hpp"
 
 class PhyloProcessMHMove : public MCUpdate	{
 

@@ -2,7 +2,7 @@
 #include <list>
 #include <sstream>
 #include <fstream>
-#include "Tree.h"
+#include "Tree.hpp"
 
 bool NewickTree::simplify = false;
 

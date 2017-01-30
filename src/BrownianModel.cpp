@@ -1,4 +1,4 @@
-#include "BrownianModel.h"
+#include "BrownianModel.hpp"
 
 BrownianModel::~BrownianModel()
 {

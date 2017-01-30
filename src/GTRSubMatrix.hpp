@@ -2,8 +2,8 @@
 #ifndef GTRSUBMATRIX_H
 #define GTRSUBMATRIX_H
 
-#include "RandomSubMatrix.h"
-#include "BiologicalSequences.h"
+#include "RandomSubMatrix.hpp"
+#include "BiologicalSequences.hpp"
 
 class GTRSubMatrix : public virtual SubMatrix	{
 

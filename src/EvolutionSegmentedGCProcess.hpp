@@ -8,9 +8,9 @@
 #ifndef EVOLUTIONSEGMENTEDGCPROCESS_H
 #define	EVOLUTIONSEGMENTEDGCPROCESS_H
 
-#include "EvolutionSegmentedProcess.h"
-#include "Chrono.h"
-#include "BrownianMove.h"
+#include "EvolutionSegmentedProcess.hpp"
+#include "Chrono.hpp"
+#include "BrownianMove.hpp"
 
 class GCMatrix : virtual public EvolutionSegmentedMatrix {
 	public :

@@ -1,7 +1,7 @@
 
-#include "DrawTree.h"
-#include "ConjugateGTRModel.h"
-#include "IID.h"
+#include "DrawTree.hpp"
+#include "ConjugateGTRModel.hpp"
+#include "IID.hpp"
 
 ConjugateGTRModel::ConjugateGTRModel(string datafile, string treefile)	{
 

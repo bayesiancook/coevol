@@ -2,11 +2,11 @@
 #ifndef ONEMATRIXPHYLOPROCESS_H
 #define ONEMATRIXPHYLOPROCESS_H
 
-#include "PhyloProcess.h"
-#include "RandomSubMatrix.h"
-#include "GTRSubMatrix.h"
-#include "RandomTypes.h"
-#include "ValArray.h"
+#include "PhyloProcess.hpp"
+#include "RandomSubMatrix.hpp"
+#include "GTRSubMatrix.hpp"
+#include "RandomTypes.hpp"
+#include "ValArray.hpp"
 
 // all branches and all sites are described by one single General Time Reversible (GTR) substitution process
 

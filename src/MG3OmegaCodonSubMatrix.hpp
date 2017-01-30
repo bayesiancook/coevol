@@ -2,7 +2,7 @@
 #ifndef GC3CODON
 #define GC3CODON
 
-#include "CodonSubMatrix.h"
+#include "CodonSubMatrix.hpp"
 
 
 // most codon matrices rely on a mutation process at the level of nucleotides

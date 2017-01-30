@@ -1,7 +1,7 @@
 #ifndef MCMC_H
 #define MCMC_H
 
-#include "Exception.h"
+#include "Exception.hpp"
 
 /// An interface for Monte-carlo behavior
 /**

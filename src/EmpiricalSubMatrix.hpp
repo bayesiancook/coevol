@@ -2,8 +2,8 @@
 #ifndef EMPSUB_H
 #define EMPSUB_H
 
-#include "SubMatrix.h"
-#include "BranchSitePath.h"
+#include "SubMatrix.hpp"
+#include "BranchSitePath.hpp"
 #include <vector>
 
 

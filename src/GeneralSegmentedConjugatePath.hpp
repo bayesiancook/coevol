@@ -3,16 +3,16 @@
 #define	GENERALSEGMENTEDCONJUGATEPATH_H
 
 
-#include "RandomSegmentedBranchSitePath.h"
-#include "Conjugate.h"
-#include "RandomSubMatrix.h"
-#include "PhyloProcess.h"
-#include "BrownianMove.h"
+#include "RandomSegmentedBranchSitePath.hpp"
+#include "Conjugate.hpp"
+#include "RandomSubMatrix.hpp"
+#include "PhyloProcess.hpp"
+#include "BrownianMove.hpp"
 
 #include <utility>
 #include <map>
 
-//#include "CodonSubMatrix.h"
+//#include "CodonSubMatrix.hpp"
 
 
 

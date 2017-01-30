@@ -1,12 +1,12 @@
 #ifndef ANCESTRALDATA_H
 #define ANCESTRALDATA_H
 
-#include "Tree.h"
-#include "TaxonSet.h"
+#include "Tree.hpp"
+#include "TaxonSet.hpp"
 #include <fstream>
 #include <cmath>
 #include <map>
-#include "SumConstrained.h"
+#include "SumConstrained.hpp"
 
 class AncestralData	{
 

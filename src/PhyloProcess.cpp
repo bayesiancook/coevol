@@ -1,5 +1,5 @@
 
-#include "PhyloProcess.h"
+#include "PhyloProcess.hpp"
 
 int PhyloProcess::GetMaxNstate()	{
 	if (!MaxNstate)	{

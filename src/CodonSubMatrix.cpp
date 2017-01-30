@@ -1,4 +1,4 @@
-#include "CodonSubMatrix.h"
+#include "CodonSubMatrix.hpp"
 
 void MGCodonSubMatrix::ComputeArray(int i)	{
 

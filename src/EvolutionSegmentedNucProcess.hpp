@@ -8,8 +8,8 @@
 #ifndef EVOLUTIONSEGMENTEDNUCPROCESS_H
 #define	EVOLUTIONSEGMENTEDNUCPROCESS_H
 
-#include "EvolutionSegmentedProcess.h"
-#include "GTRSubMatrix.h"
+#include "EvolutionSegmentedProcess.hpp"
+#include "GTRSubMatrix.hpp"
 
 
 

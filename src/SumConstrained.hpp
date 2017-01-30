@@ -2,8 +2,8 @@
 #ifndef SUMCONS_H
 #define SUMCONS_H
 
-#include "RandomTypes.h"
-#include "ValTree.h"
+#include "RandomTypes.hpp"
+#include "ValTree.hpp"
 
 class SumConstrainedMapping	{
 

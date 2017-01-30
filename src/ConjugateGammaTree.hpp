@@ -1,8 +1,8 @@
 #ifndef CONJUGATEGAMMATREE_H
 #define CONJUGATEGAMMATREE_H
 
-#include "BranchProcess.h"
-#include "ConjugatePoisson.h"
+#include "BranchProcess.hpp"
+#include "ConjugatePoisson.hpp"
 
 class PoissonSemiConjugateTree : public BranchProcess<PosReal> {
 

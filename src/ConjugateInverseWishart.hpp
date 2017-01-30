@@ -2,8 +2,8 @@
 #ifndef CONJUGATEWISHART_H
 #define CONJUGATEWISHART_H
 
-#include "Conjugate.h"
-#include "InverseWishartMatrix.h"
+#include "Conjugate.hpp"
+#include "InverseWishartMatrix.hpp"
 
 
 

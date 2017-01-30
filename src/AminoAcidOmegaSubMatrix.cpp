@@ -1,4 +1,4 @@
-#include "AminoAcidOmegaSubMatrix.h"
+#include "AminoAcidOmegaSubMatrix.hpp"
 
 
 ///	AAOmegaSubMatrix
