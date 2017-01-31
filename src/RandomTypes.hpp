@@ -3,7 +3,6 @@
 
 #include "BaseType.hpp"
 #include "Var.hpp"
-#include "Move.hpp"
 
 
 // if variance is null (either as a pointer, or as a value), then this is an improper uniform distribution
