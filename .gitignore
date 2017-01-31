@@ -2,4 +2,5 @@
 *.d
 cscope*
 data/
+dependencies*
 

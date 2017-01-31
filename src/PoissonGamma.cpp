@@ -98,13 +98,13 @@ public:
     }
   }
 
-  void ToStream(ostream& os) {}
-  void FromStream(istream& is) {}
+  void ToStream(ostream&) {}
+  void FromStream(istream&) {}
 
 };
 
 
-int main(int argc, char* argv[])	{
+int main(int, char* argv[])	{
 
   ifstream is(argv[1]);
   string name = argv[2];
