@@ -4,7 +4,6 @@
 #include <vector>
 #include <iostream>
 
-#include "MCMC.hpp"
 #include "RandomTypes.hpp"
 
 class ProbModel;
