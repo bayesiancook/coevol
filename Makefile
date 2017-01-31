@@ -10,3 +10,7 @@ clean:
 	@rm -rf _build
 	@rm -f cscope* *.dot tmp*
 	@rm -rf data/tmp*
+
+test: all
+	@_build/PoissonGamma data/test.data _build/test.out
+	@less _build/test.out.trace

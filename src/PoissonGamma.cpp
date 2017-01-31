@@ -120,8 +120,10 @@ int main(int, char* argv[])	{
   ofstream os((name + ".trace").c_str());
   model->TraceHeader(os);
 
-  while (1)	{
+  int i = 0;
+  while (i<10000)	{
     model->Move(1.0);
     model->Trace(os);
+    i++;
   }
 }
