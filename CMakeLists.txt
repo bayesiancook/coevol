@@ -5,3 +5,4 @@ file(GLOB SRC
 )
 
 add_executable(PoissonGamma ${SRC})
+set(CMAKE_CXX_FLAGS "-O3 -Wall -pedantic")
