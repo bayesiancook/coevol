@@ -1,10 +1,6 @@
 #ifndef MCMC_H
 #define MCMC_H
 
-#include "Exception.hpp"
-#include <iostream>
-
-
 /// An interface for Monte-carlo behavior
 /**
  * is implemented by various components of the model such as

@@ -2,6 +2,7 @@
 
 #include "ProbModel.hpp"
 #include "DAGnode.hpp"
+#include "Exception.hpp"
 using namespace std;
 
 bool DAGnode::initmode = true;
