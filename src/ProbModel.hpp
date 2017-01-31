@@ -3,7 +3,6 @@
 
 #include <set>
 #include <iostream>
-#include "DAGnode.hpp"
 #include "Move.hpp"
 
 /// Probabilistic model
@@ -55,21 +54,21 @@ public:
   bool 	CheckUpdateFlags();
 
   // save model configuration to stream
-  virtual void ToStream(ostream& os) = 0;
+  virtual void ToStream(std::ostream& os) = 0;
   // get model configuration from stream
-  virtual void FromStream(istream& is) = 0;
+  virtual void FromStream(std::istream& is) = 0;
 
   // monitoring the run
-  virtual void Trace(ostream&) {};
-  virtual void TraceHeader(ostream&) {};
-  virtual void Monitor(ostream& os, ostream& osdetail);
-  // virtual void Monitor(ostream& os);
+  virtual void Trace(std::ostream&) {};
+  virtual void TraceHeader(std::ostream&) {};
+  virtual void Monitor(std::ostream& os, std::ostream& osdetail);
+  // virtual void Monitor(std::ostream& os);
 
-  virtual void Details(ostream&) {};
+  virtual void Details(std::ostream&) {};
   virtual void test() {};
 
-  set<DAGnode*> state;
-  set<DAGnode*> root;
+  std::set<DAGnode*> state;
+  std::set<DAGnode*> root;
 
   MCScheduler scheduler;
 

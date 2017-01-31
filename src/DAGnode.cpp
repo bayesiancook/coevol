@@ -4,6 +4,7 @@
 #include "Random.hpp"
 #include "ProbModel.hpp"
 #include "RandomSubMatrix.hpp"
+using namespace std;
 
 bool DAGnode::initmode = true;
 

@@ -1,5 +1,3 @@
-
-
 // SubMatrix:
 // this class implements
 // the instant rate matrix of a substitution process
@@ -19,14 +17,12 @@
 // in this class, implement SetParameters
 // (this function is responsible for updating the internal parameters that the SubMatrix uses in ComputeArray And ComputeStationary,
 // based on the values stored by the parent nodes)
-//
-//
+
 
 #ifndef RANDOMSUBMATRIX_H
 #define RANDOMSUBMATRIX_H
 
 #include "SubMatrix.hpp"
-#include "Var.hpp"
 #include "RandomTypes.hpp"
 
 // a RandomSubMatrix is just a SubMatrix (substitution matrix)
@@ -37,47 +33,46 @@
 
 class RandomTransitionMatrix : public virtual AbstractTransitionMatrix, public virtual Dnode	{
 
-	public:
+public:
 
-	virtual ~RandomTransitionMatrix()	{
-		SetName("transition matrix");	
-	}
+  virtual ~RandomTransitionMatrix()	{
+    SetName("transition matrix");
+  }
 
-	void specialUpdate()	{
-		SetParameters();
-	}
+  void specialUpdate()	{
+    SetParameters();
+  }
 
-	protected:
+protected:
 
-	// needs to be implemented in all random sub matrices
-	// is called before any update
-	// re-setting all the parameters (pointers and values)
-	// by which the matrix can access information from its parents
-	virtual void SetParameters() = 0;
+  // needs to be implemented in all random sub matrices
+  // is called before any update
+  // re-setting all the parameters (pointers and values)
+  // by which the matrix can access information from its parents
+  virtual void SetParameters() = 0;
 
-	void localRestore()	{
-		SetParameters();
-		Dnode::localRestore();
-	}
+  void localRestore()	{
+    SetParameters();
+    Dnode::localRestore();
+  }
 
-	void localCorrupt(bool bk)	{
-		CorruptMatrix();
-		Dnode::localCorrupt(bk);
-	}
+  void localCorrupt(bool bk)	{
+    CorruptMatrix();
+    Dnode::localCorrupt(bk);
+  }
 };
 
 class RandomSubMatrix : public virtual RandomTransitionMatrix, public virtual SubMatrix {
 
-	public:
+public:
 
-	RandomSubMatrix(int Nstate, bool innormalise = false) : SubMatrix(Nstate, innormalise) {}
+  RandomSubMatrix(int Nstate, bool innormalise = false) : SubMatrix(Nstate, innormalise) {}
 
-	virtual ~RandomSubMatrix()	{}
+  virtual ~RandomSubMatrix()	{}
 
-	int GetNstate() {return SubMatrix::GetNstate();}
+  int GetNstate() {return SubMatrix::GetNstate();}
 };
 
 // class RandomTransitionMatrix : public virtual RandomAbstractTransitionMatrix, public virtual
 
 #endif // RANDOMSUBMATRIX_H
-

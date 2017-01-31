@@ -1,7 +1,7 @@
 #ifndef BASETYPE_H
 #define BASETYPE_H
 
-
+#include <iostream>
 #include "Random.hpp"
 
 class DAGnode;
@@ -31,7 +31,7 @@ public:
   // returns the number of components that have been added d
   virtual int ScalarAddition(double d) = 0;
 
-  virtual void Register(DAGnode*)  {        std::cerr << "error in Additive::Register\n"; throw;}
+  virtual void Register(DAGnode*)  {std::cerr << "error in Additive::Register\n"; throw;}
 };
 
 class Multiplicative	{
@@ -41,7 +41,7 @@ public:
   // returns the number of components that have been multiplied
   virtual int ScalarMultiplication(double d) = 0;
 
-  virtual void Register(DAGnode*)  {        std::cerr << "error in Multiplicative::Register\n"; throw;}
+  virtual void Register(DAGnode*)  {std::cerr << "error in Multiplicative::Register\n"; throw;}
 };
 
 /// A wrap-up class for real numbers
@@ -355,7 +355,7 @@ public:
       double total = 0;
       for (int k=0; k<dim; k++)	{
         if (!v[k]>0)	{
-          std::cerr << "error : profiles should be strictly positive\n";
+  std::cerr << "error : profiles should be strictly positive\n";
           exit(1);
         }
         profile[k] = v[k];

@@ -3,7 +3,6 @@
 
 #include <set>
 #include <map>
-using namespace std;
 
 #include "Random.hpp"
 #include "MCMC.hpp"
@@ -11,7 +10,7 @@ using namespace std;
 class DAGnode;
 class ProbModel;
 
-typedef set<DAGnode*>::const_iterator clit;
+typedef std::set<DAGnode*>::const_iterator clit;
 
 
 class DAGnode {
@@ -31,8 +30,8 @@ public:
   //
   int GetChildNumber() {return down.size();}
 
-  void SetName(string inname) { name = inname;}
-  string GetName() {return name;}
+  void SetName(std::string inname) { name = inname;}
+  std::string GetName() {return name;}
 
   virtual void Register(DAGnode* in);
   // virtual void RegisterChild(DAGnode* in) {in->Register(this);}
@@ -57,21 +56,21 @@ public:
 
   // virtual void Initialise() = 0;
   virtual double FullUpdate(bool check = false) = 0;
-  virtual void FullCorrupt(map<DAGnode*,int>& m) = 0;
+  virtual void FullCorrupt(std::map<DAGnode*,int>& m) = 0;
 
   // template <class V> friend class PointerKeeper;
 
 protected:
 
 public:
-  set<DAGnode*>  up;
-  set<DAGnode*>  down;
+  std::set<DAGnode*>  up;
+  std::set<DAGnode*>  down;
 
   void  Detach();
   void  DeregisterFrom(DAGnode* parent);
 
   bool flag;
-  string name;
+  std::string name;
 };
 
 
@@ -117,7 +116,7 @@ public:
   virtual void NotifyRestore();
 
   virtual double FullUpdate(bool check = false);
-  virtual void FullCorrupt(map<DAGnode*,int>& m);
+  virtual void FullCorrupt(std::map<DAGnode*,int>& m);
 
   // virtual void  Initialise();
 
@@ -163,7 +162,7 @@ public:
 
   virtual void specialUpdate() = 0;
 
-  virtual void FullCorrupt(map<DAGnode*,int>& m);
+  virtual void FullCorrupt(std::map<DAGnode*,int>& m);
   virtual double FullUpdate(bool check = false);
 
 protected:
@@ -199,7 +198,7 @@ protected:
   virtual void NotifyRestore() {}
 
   virtual double FullUpdate(bool) {return 0;}
-  virtual void FullCorrupt(map<DAGnode*,int>&) {}
+  virtual void FullCorrupt(std::map<DAGnode*,int>&) {}
 
   // virtual void  Initialise() {}
 };

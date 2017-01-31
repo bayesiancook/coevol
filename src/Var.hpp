@@ -101,7 +101,7 @@ template<class T> class Dvar : public Var<T>, public Dnode {
 	const T& val() {
 		if (! isUpdated())	{
 			if (! DAGnode::initmode)	{
-				cerr << "error : corrupting Dvar\n";
+				std::cerr << "error : corrupting Dvar\n";
 			}
 			localUpdate();
 		}

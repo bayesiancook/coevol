@@ -1,5 +1,6 @@
 #include "ProbModel.hpp"
 #include "RandomTypes.hpp"
+using namespace std;
 
 class PoissonGammaModel : public ProbModel	{
 
