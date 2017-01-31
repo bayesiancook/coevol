@@ -3,4 +3,5 @@
 cscope*
 data/
 dependencies*
+_build/
 
