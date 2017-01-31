@@ -190,7 +190,7 @@ void MCScheduler::ToStream(ostream& os, ostream& osdetail)	{
   os << "total time (s)    : " << totaltime << '\n';
   os << "time per cycle (s)  : " << totaltime / ncycle << '\n';
   os << '\n';
-  os << "#\t\%time\tsuccess\tname\n";
+  os << "#\t%time\tsuccess\tname\n";
   os << '\n';
   for (int i=0; i<size; i++)	{
     // os << i+1 << '\t' << (int) (time[i]/ totaltime * 100)  << '\t' << ((int) (100 * success[i]/ncall[i])) << '\t' << name[i]  << '\n';

@@ -354,7 +354,7 @@ public:
     if (v)	{
       double total = 0;
       for (int k=0; k<dim; k++)	{
-        if (!v[k]>0)	{
+        if (!(v[k]>0))	{
   std::cerr << "error : profiles should be strictly positive\n";
           exit(1);
         }
