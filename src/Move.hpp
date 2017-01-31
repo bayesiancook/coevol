@@ -1,13 +1,11 @@
 #ifndef MOVE_H
 #define MOVE_H
 
-#include "MCMC.hpp"
 #include <vector>
+#include <iostream>
 
-#include "DAGnode.hpp"
+#include "MCMC.hpp"
 #include "RandomTypes.hpp"
-
-// #include "Normal.hpp"
 
 class ProbModel;
 
@@ -42,7 +40,7 @@ public:
 
   virtual double Move(double tuning_modulator = 1) = 0;
 
-  virtual void ToStream(ostream&) {}
+  virtual void ToStream(std::ostream&) {}
 };
 
 
@@ -71,41 +69,41 @@ public:
   void SetRandom(bool inrand)	{
     random = inrand;
   }
-  void Register(MCUpdate* inupdate, int inweight = 1, string inname = "");
+  void Register(MCUpdate* inupdate, int inweight = 1, std::string inname = "");
   void Reset();
 
   double GetTotalTime() {return totaltime;}
   double GetMeanTimePerCycle() {return ncycle ? totaltime / ncycle : 0;}
   double GetTotalCycleNumber() {return ncycle;}
 
-  void ToStream(ostream& os, ostream& osdetail);
+  void ToStream(std::ostream& os, std::ostream& osdetail);
 
   void OpenLoop(int n) {
-    ostringstream oss;
+    std::ostringstream oss;
     oss << '(' << n << ":";
     command += oss.str();
   }
   void CloseLoop() {
     command += ')';
   }
-  vector<int> ReadCommand(unsigned int &n);
+  std::vector<int> ReadCommand(unsigned int &n);
 
 
 protected:
-  vector<MCUpdate*> update;
+  std::vector<MCUpdate*> update;
 
-  vector<int> weight;
-  vector<double> time;
-  vector<double> success;
-  vector<string> name;
-  vector<int> ncall;
+  std::vector<int> weight;
+  std::vector<double> time;
+  std::vector<double> success;
+  std::vector<std::string> name;
+  std::vector<int> ncall;
 
   double totalweight;
   double totaltime;
   int ncycle;
   int size;
 
-  string command;
+  std::string command;
 
   ProbModel* model;
 

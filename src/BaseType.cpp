@@ -13,7 +13,7 @@ double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling,
 		for (int i=0; i<dim; i++)	{
 			profile[i] = Random::sGamma(tuning*oldprofile[i]);
 			if (profile[i] == 0)	{
-				cerr << "error in dirichlet resampling : 0 \n";
+        std::cerr << "error in dirichlet resampling : 0 \n";
 				exit(1);
 			}
 			total += profile[i];
