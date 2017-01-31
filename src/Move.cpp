@@ -7,9 +7,7 @@
 using namespace std;
 
 
-
 void MCScheduler::Reset()	{
-
   size = update.size();
   time = vector<double>(size);
   success = vector<double>(size);
@@ -24,11 +22,9 @@ void MCScheduler::Reset()	{
   totaltime = 0;
   ncycle = 0;
   closed = true;
-
 }
 
 void MCScheduler::Register(MCUpdate* inupdate, int inweight, string inname)	{
-
   if (closed)	{
     cerr << "error in MCScheduler::Register: registration of new updates is closed\n";
     throw;
@@ -40,11 +36,9 @@ void MCScheduler::Register(MCUpdate* inupdate, int inweight, string inname)	{
   ostringstream oss;
   oss << (update.size()-1) << ",";
   command += oss.str();
-
 }
 
 void MCScheduler::Cycle(double tuning_modulator, int nrep, bool verbose, bool check)	{
-
   if (! closed) Reset();
 
   for (int rep = 0; rep<nrep; rep++)	{
@@ -64,8 +58,6 @@ void MCScheduler::Cycle(double tuning_modulator, int nrep, bool verbose, bool ch
       }*/
   }
   ncycle+=nrep;
-
-
 }
 
 vector<int> MCScheduler::ReadCommand(unsigned int &n)	{
@@ -110,7 +102,6 @@ vector<int> MCScheduler::ReadCommand(unsigned int &n)	{
 
 
 void MCScheduler::Move(double tuning_modulator, int i, bool verbose, bool check, int nrep)	{
-
   Chrono chrono;
   chrono.Reset();
   chrono.Start();
@@ -162,12 +153,10 @@ void MCScheduler::Move(double tuning_modulator, int i, bool verbose, bool check,
 }
 
 void MCScheduler::RandomCycle(double tuning_modulator, int nrep, bool verbose, bool check)	{
-
   if (! closed) Reset();
 
   int N = (int) (nrep * totalweight);
   for (int rep = 0; rep<N; rep++)	{
-
     double q = totalweight * Random::Uniform();
     double total = weight[0];
     int choose = 0;
@@ -185,7 +174,6 @@ void MCScheduler::RandomCycle(double tuning_modulator, int nrep, bool verbose, b
 }
 
 void MCScheduler::ToStream(ostream& os, ostream& osdetail)	{
-
   os << '\n';
   os << "total number of cycles : " << ncycle << '\n';
   os << "total time (s)    : " << totaltime << '\n';
@@ -201,11 +189,9 @@ void MCScheduler::ToStream(ostream& os, ostream& osdetail)	{
 
   for(int i=0; i<size; i++)
     update[i]->ToStream(osdetail);
-
 }
 
 RealVectorComponentwiseCompensatoryMove::RealVectorComponentwiseCompensatoryMove(Rvar<RealVector>* ina1, Rvar<RealVector>* ina2, double intuning) : a1(ina1), a2(ina2), tuning(intuning) {
-
   cerr << "error in comp move\n";
   cerr << "register should be the other way around\n";
   exit(1);
@@ -215,7 +201,6 @@ RealVectorComponentwiseCompensatoryMove::RealVectorComponentwiseCompensatoryMove
 }
 
 double RealVectorComponentwiseCompensatoryMove::Move(double tuning_modulator)	{
-
   Corrupt(true);
 
   int dim = a1->GetDim();
@@ -235,40 +220,6 @@ double RealVectorComponentwiseCompensatoryMove::Move(double tuning_modulator)	{
 
   return (double) accepted;
 }
-
-/*
-  OneToManyRealVectorComponentwiseCompensatoryMove::OneToManyRealVectorComponentwiseCompensatoryMove(Rvar<RealVector>* ina1, IIDNormal** ina2, int inK, double intuning) : a1(ina1), a2(ina2), K(inK), tuning(intuning) {
-
-  a1->Register(this);
-  for (int i=0; i<K; i++)	{
-  a2[i]->Register(this);
-  }
-  }
-
-  double OneToManyRealVectorComponentwiseCompensatoryMove::Move(double tuning_modulator)	{
-
-  Corrupt(true);
-
-  int dim = a1->GetDim();
-  for (int i=0; i<dim; i++)	{
-  double h = tuning_modulator * tuning * (Random::Uniform() - 0.5);
-  (*a1)[i] += h;
-  for (int k=0; k<K; k++)	{
-  (*(a2[k]))[i] -= h;
-  }
-  }
-
-  double logratio = Update();
-  bool accepted = (log(Random::Uniform()) < logratio);
-
-  if (! accepted)	{
-  Corrupt(false);
-  Restore();
-  }
-
-  return (double) accepted;
-  }
-*/
 
 RealVectorMove::RealVectorMove(Rvar<RealVector>* invar, double intuning, int inm) : var(invar), tuning(intuning), m(inm) {}
 
@@ -310,7 +261,6 @@ double RealVectorTranslationMove::Move(double tuning_modulator)	{
 ProfileMove::ProfileMove(Rvar<Profile>* invar, double intuning, int inn) : var(invar), tuning(intuning), n(inn) {}
 
 double ProfileMove::Move(double tuning_modulator)	{
-
   if (! var->isClamped())	{
     var->Corrupt(true);
     double logHastings = var->Profile::ProposeMove(tuning * tuning_modulator, n);
@@ -327,7 +277,6 @@ double ProfileMove::Move(double tuning_modulator)	{
 }
 
 MultiplicativeCompensatoryMove::MultiplicativeCompensatoryMove(Multiplicative* inm1, Multiplicative* inm2, double intuning) : m1(inm1), m2(inm2), tuning(intuning) {
-
   if (m1)	{
     m1->Register(this);
   }
@@ -337,7 +286,6 @@ MultiplicativeCompensatoryMove::MultiplicativeCompensatoryMove(Multiplicative* i
 }
 
 double MultiplicativeCompensatoryMove::Move(double tuning_modulator)	{
-
   // if ((! m1->isClamped()) && (! m2->isClamped()))	{
   Corrupt(true);
   double h = tuning_modulator * tuning * (Random::Uniform() - 0.5);
@@ -363,15 +311,12 @@ double MultiplicativeCompensatoryMove::Move(double tuning_modulator)	{
 }
 
 JointSimpleMove::JointSimpleMove(Rnode* ina1, Rnode* ina2, double intuning) : a1(ina1), a2(ina2), tuning(intuning) {
-
   a1->Register(this);
   a2->Register(this);
 }
 
 double JointSimpleMove::Move(double tuning_modulator)	{
-
   if ((! a1->isClamped()) && (! a2->isClamped()))	{
-
     Corrupt(true);
 
     double logHastings = 0;
@@ -392,15 +337,12 @@ double JointSimpleMove::Move(double tuning_modulator)	{
 }
 
 AdditiveCompensatoryMove::AdditiveCompensatoryMove(Additive* ina1, Additive* ina2, double intuning) : a1(ina1), a2(ina2), tuning(intuning) {
-
   a1->Register(this);
   a2->Register(this);
 }
 
 double AdditiveCompensatoryMove::Move(double tuning_modulator)	{
-
   // if ((! a1->isClamped()) && (! a2->isClamped()))	{
-
   Corrupt(true);
 
   double h = tuning_modulator * tuning * (Random::Uniform() - 0.5);
@@ -421,15 +363,12 @@ double AdditiveCompensatoryMove::Move(double tuning_modulator)	{
 }
 
 AdditiveAntiCompensatoryMove::AdditiveAntiCompensatoryMove(Additive* ina1, Additive* ina2, double intuning) : a1(ina1), a2(ina2), tuning(intuning) {
-
   a1->Register(this);
   a2->Register(this);
 }
 
 double AdditiveAntiCompensatoryMove::Move(double tuning_modulator)	{
-
   // if ((! a1->isClamped()) && (! a2->isClamped()))	{
-
   Corrupt(true);
 
   double h = tuning_modulator * tuning * (Random::Uniform() - 0.5);

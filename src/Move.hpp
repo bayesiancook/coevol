@@ -6,8 +6,6 @@
 
 #include "RandomTypes.hpp"
 
-class ProbModel;
-
 
 // MCMC Update mechanisms (Metroplois Hastings, or Gibbs)
 // can be done in 2 different ways
@@ -41,7 +39,6 @@ public:
 
   virtual void ToStream(std::ostream&) {}
 };
-
 
 
 // The MCScheduler class
@@ -116,9 +113,7 @@ protected:
 // it calls the Move() function of the random variable it is associated to
 //
 class SimpleMove : public MCUpdate	{
-
 public:
-
   SimpleMove(MCMC* invar, double intuning) : var(invar), tuning(intuning) {}
 
   double Move(double tuning_modulator = 1)	{
@@ -126,16 +121,13 @@ public:
   }
 
 protected:
-
   MCMC* var;
   double tuning;
 };
 
 
 class JointSimpleMove : public MCUpdate, public Mnode {
-
 public:
-
   JointSimpleMove(Rnode* ina1, Rnode* ina2, double intuning);
 
   double Move(double tuning_modulator = 1);
@@ -148,11 +140,16 @@ private:
 
 };
 
+
 template <class P, class S> class SemiConjugateMove : public MCUpdate	{
-
 public:
-
-  SemiConjugateMove(P* inprior, S* insampling, double intuningprior, int innprior, double intuningsampling, int innsampling) : prior(inprior), sampling(insampling), tuningprior(intuningprior), nprior(innprior), tuningsampling(intuningsampling), nsampling(innsampling) {}
+  SemiConjugateMove(P* inprior, S* insampling, double intuningprior, int innprior, double intuningsampling, int innsampling) :
+    prior(inprior),
+    sampling(insampling),
+    tuningprior(intuningprior),
+    nprior(innprior),
+    tuningsampling(intuningsampling),
+    nsampling(innsampling) {}
 
   double Move(double tuning_modulator = 1)	{
     prior->ActivateSufficientStatistic();
@@ -169,7 +166,6 @@ public:
   }
 
 protected:
-
   P* prior;
   S* sampling;
   double tuningprior;
@@ -178,10 +174,9 @@ protected:
   int nsampling;
 };
 
+
 template <class P, class S> class ConjugateMove : public MCUpdate	{
-
 public:
-
   ConjugateMove(P* inprior, S* insampling, double intuning, int inn) : prior(inprior), sampling(insampling), tuning(intuning), n(inn) {}
 
   double Move(double tuning_modulator = 1)	{
@@ -196,7 +191,6 @@ public:
   }
 
 protected:
-
   P* prior;
   S* sampling;
   double tuning;
@@ -204,11 +198,10 @@ protected:
 
 };
 
+
 // Compensatory compensatory move functions
 class MultiplicativeCompensatoryMove : public MCUpdate, public Mnode {
-
 public:
-
   MultiplicativeCompensatoryMove(Multiplicative* inm1, Multiplicative* inm2, double intuning);
 
   double Move(double tuning_modulator = 1);
@@ -221,11 +214,10 @@ private:
 
 };
 
+
 // Compensatory compensatory move functions
 class AdditiveCompensatoryMove : public MCUpdate, public Mnode {
-
 public:
-
   AdditiveCompensatoryMove(Additive* ina1, Additive* ina2, double intuning);
 
   double Move(double tuning_modulator = 1);
@@ -238,11 +230,10 @@ private:
 
 };
 
+
 // Compensatory compensatory move functions
 class AdditiveAntiCompensatoryMove : public MCUpdate, public Mnode {
-
 public:
-
   AdditiveAntiCompensatoryMove(Additive* ina1, Additive* ina2, double intuning);
 
   double Move(double tuning_modulator = 1);
@@ -255,10 +246,9 @@ private:
 
 };
 
+
 class RealVectorMove : public MCUpdate	{
-
 public:
-
   RealVectorMove(Rvar<RealVector>* invar, double intuning, int inm);
 
   double Move(double tuning_modulator = 1);
@@ -270,10 +260,9 @@ private:
   int m;
 };
 
+
 class RealVectorTranslationMove : public MCUpdate	{
-
 public:
-
   RealVectorTranslationMove(Rvar<RealVector>* invar, double intuning);
 
   double Move(double tuning_modulator = 1);
@@ -284,10 +273,9 @@ private:
   double tuning;
 };
 
+
 class RealVectorComponentwiseCompensatoryMove : public MCUpdate, public Mnode {
-
 public:
-
   RealVectorComponentwiseCompensatoryMove(Rvar<RealVector>* ina1, Rvar<RealVector>* ina2, double intuning);
 
   double Move(double tuning_modulator = 1);
