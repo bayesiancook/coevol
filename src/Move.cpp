@@ -1,5 +1,6 @@
 #include "Chrono.hpp"
 #include "ProbModel.hpp"
+#include "Move.hpp"
 
 #include <iostream>
 using namespace std;

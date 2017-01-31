@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "ProbModel.hpp"
+#include "DAGnode.hpp"
 using namespace std;
 
 bool DAGnode::initmode = true;
