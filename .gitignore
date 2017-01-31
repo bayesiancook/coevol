@@ -1,7 +1,6 @@
 *.o
 *.d
 cscope*
-data/
 dependencies*
 _build/
 
