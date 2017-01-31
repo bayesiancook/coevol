@@ -6,7 +6,7 @@
 #include "DAGnode.hpp"
 #include "Move.hpp"
 
-/// Probabisetic model
+/// Probabilistic model
 /**
  * A model is defined as a Graphical Model:
  * - a directed acyclic graph (DAG) with N nodes
@@ -25,53 +25,53 @@ class MCScheduler;
 
 class ProbModel : public MCMC {
 
-	public:
+public:
 
-	ProbModel();
+  ProbModel();
 
-	virtual			~ProbModel();
+  virtual ~ProbModel();
 
-	/// obtain the set ("state") of all the nodes of the DAG by a recursive traversal from the root nodes to the tips
-	void 			Register();
-	void 			Register(DAGnode* var);
+  /// obtain the set ("state") of all the nodes of the DAG by a recursive traversal from the root nodes to the tips
+  void Register();
+  void Register(DAGnode* var);
 
-	/// registers "var" among the root nodes (i.e. into the set "root")
-	void 			RootRegister(DAGnode* var);
+  /// registers "var" among the root nodes (i.e. into the set "root")
+  void RootRegister(DAGnode* var);
 
-	// returns the log of the probability (or probability density) mentioned above
-	virtual double 		GetLogProb() = 0;
+  // returns the log of the probability (or probability density) mentioned above
+  virtual double GetLogProb() = 0;
 
-	virtual void		MakeScheduler() = 0;
+  virtual void MakeScheduler() = 0;
 
-	// resamples the model's current configuration conditional on the data
-	// returns success rate
-	virtual double		Move(double tuning_modulator = 1) { return Move(tuning_modulator, 1, false, false);}
+  // resamples the model's current configuration conditional on the data
+  // returns success rate
+  virtual double Move(double tuning_modulator = 1) { return Move(tuning_modulator, 1, false, false);}
 
-	virtual double		Move(double tuning_modulator, int ncycle, bool verbose, bool check);
+  virtual double Move(double tuning_modulator, int ncycle, bool verbose, bool check);
 
-	void			Corrupt();
-	virtual double		Update(bool check = false);
+  void 	Corrupt();
+  virtual double Update(bool check = false);
 
-	bool			CheckUpdateFlags();
+  bool 	CheckUpdateFlags();
 
-	// save model configuration to stream
-	virtual void		ToStream(ostream& os) = 0;
-	// get model configuration from stream
-	virtual void		FromStream(istream& is) = 0;
+  // save model configuration to stream
+  virtual void ToStream(ostream& os) = 0;
+  // get model configuration from stream
+  virtual void FromStream(istream& is) = 0;
 
-	// monitoring the run
-	virtual void		Trace(ostream& os) {};
-	virtual void		TraceHeader(ostream& os) {};
-	virtual void		Monitor(ostream& os, ostream& osdetail);
-	// virtual void		Monitor(ostream& os);
+  // monitoring the run
+  virtual void Trace(ostream&) {};
+  virtual void TraceHeader(ostream&) {};
+  virtual void Monitor(ostream& os, ostream& osdetail);
+  // virtual void Monitor(ostream& os);
 
-	virtual void		Details(ostream& os) {};
-	virtual void test() {}
+  virtual void Details(ostream&) {};
+  virtual void test() {};
 
-	set<DAGnode*> state;
-	set<DAGnode*> root;
+  set<DAGnode*> state;
+  set<DAGnode*> root;
 
-	MCScheduler scheduler;
+  MCScheduler scheduler;
 
 };
 

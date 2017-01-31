@@ -317,7 +317,7 @@ void Dnode:: NotifyCorrupt(bool bk)	{
 	Corrupt(bk);
 }
 
-void Dnode::localCorrupt(bool bk)	{
+void Dnode::localCorrupt(bool)	{
 	flag = false;
 }
 
