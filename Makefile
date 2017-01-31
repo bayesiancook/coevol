@@ -8,7 +8,7 @@ _build/Makefile:
 
 clean:
 	@rm -rf _build
-	@rm -f cscope* *.dot tmp*
+	@rm -f cscope* *.dot tmp* src/cscope*
 	@rm -rf data/tmp*
 
 test: all
