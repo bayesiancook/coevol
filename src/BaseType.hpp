@@ -14,9 +14,7 @@ class DAGnode;
 // - propose default kernels (in ProposeMove()) for Metropolis Hastings resampling
 
 class BaseType {
-
 	public:
-
 	virtual ~BaseType() {};
 
 	// default kernel for Metropolis Hastings updates
@@ -28,35 +26,29 @@ class BaseType {
 };
 
 class Additive	{
-
 	public:
-
 	virtual ~Additive() {}
 
 	// returns the number of components that have been added d
 	virtual int ScalarAddition(double d) = 0;
 
-	virtual void Register(DAGnode* in)  {cerr << "error in Additive::Register\n"; throw;}
+	virtual void Register(DAGnode*)  {cerr << "error in Additive::Register\n"; throw;}
 };
 
 class Multiplicative	{
-
 	public:
-
 	virtual ~Multiplicative() {}
 
 	// returns the number of components that have been multiplied
 	virtual int ScalarMultiplication(double d) = 0;
 
-	virtual void Register(DAGnode* in)  {cerr << "error in Multiplicative::Register\n"; throw;}
+	virtual void Register(DAGnode*)  {cerr << "error in Multiplicative::Register\n"; throw;}
 };
 
 /// A wrap-up class for real numbers
 // implements a simple random translational (additive) move
 
 class Real : public BaseType , public Additive {
-
-
 	public:
 			Real(double d=0) : value(d) {}
 			Real(const Real& from) : value(from.value) {}
@@ -110,8 +102,6 @@ class Real : public BaseType , public Additive {
 };
 
 class UnitReal : public BaseType {
-
-
 	public:
 			UnitReal(double d=0) : value(d) {}
 			UnitReal(const UnitReal& from) : value(from.value) {}
@@ -168,8 +158,6 @@ class UnitReal : public BaseType {
 // implements a simple random multiplicative move
 
 class PosReal : public BaseType	, public Multiplicative {
-
-
 	public:
 			PosReal(double d=0) : value(d) {}
 			PosReal(const PosReal& from) : value(from.value) {}
@@ -358,9 +346,7 @@ class Profile : public BaseType	{
 	protected:
 	int		dim;
 	double*		profile;
-
 	public:
-
 			Profile() : dim(0) , profile(0) {}
 
 			Profile(int indim, double* v=0)	{
@@ -660,7 +646,6 @@ class RealVector : public BaseType, public Additive {
 };
 
 class PosRealVector : public RealVector, public Multiplicative	{
-
 	public:
 			PosRealVector() : RealVector()	{}
 
@@ -777,7 +762,6 @@ class PosRealVector : public RealVector, public Multiplicative	{
 
 
 class IntVector : public BaseType	{
-
 	protected:
 
 	int dim;
