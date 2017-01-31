@@ -37,9 +37,7 @@ class ProbModel;
 // a MCUpdate object has a pure virtual Move function
 //
 class MCUpdate	{
-
 public:
-
   virtual ~MCUpdate() {}
 
   virtual double Move(double tuning_modulator = 1) = 0;
@@ -53,9 +51,7 @@ public:
 // a ProbModel has a MCScheduler object called scheduler
 //
 class MCScheduler : public MCUpdate {
-
 public:
-
   MCScheduler(ProbModel* inmodel) : model(inmodel), closed(false) , random(false) {}
 
   virtual void Cycle(double tuning_modulator, int nrep, bool verbose, bool check);
@@ -96,7 +92,6 @@ public:
 
 
 protected:
-
   vector<MCUpdate*> update;
 
   vector<int> weight;
@@ -301,46 +296,23 @@ public:
   double Move(double tuning_modulator = 1);
 
 private :
-
   Rvar<RealVector>* a1;
   Rvar<RealVector>* a2;
   double tuning;
 
 };
 
-/*
-  class OneToManyRealVectorComponentwiseCompensatoryMove : public MCUpdate, public Mnode {
-
-  public:
-
-  OneToManyRealVectorComponentwiseCompensatoryMove(Rvar<RealVector>* ina1, IIDNormal** ina2, int inK, double intuning);
-
-  double Move(double tuning_modulator = 1);
-
-  private :
-
-  Rvar<RealVector>* a1;
-  IIDNormal** a2;
-  int K;
-  double tuning;
-
-  };
-*/
 
 class ProfileMove : public MCUpdate	{
-
 public:
-
   ProfileMove(Rvar<Profile>* invar, double intuning, int inn);
 
   double Move(double tuning_modulator = 1);
 
 private:
-
   Rvar<Profile>* var;
   double tuning;
   int n;
 };
-
 
 #endif
