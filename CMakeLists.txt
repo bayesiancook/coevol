@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 file(GLOB SRC
-    "src/*.cpp"
+    "src/core/*.cpp"
 )
 
 add_executable(PoissonGamma ${SRC})
