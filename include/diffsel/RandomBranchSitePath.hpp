@@ -1,12 +1,13 @@
 #ifndef BRANCHSITESUBPROCESS_H
 #define BRANCHSITESUBPROCESS_H
 
-#include "diffsel/BranchSitePath.hpp"
+#include "BranchSitePath.hpp"
+#include "core/BaseType.hpp"
 #include "core/Var.hpp"
-#include "diffsel/BranchSiteSubstitutionProcess.hpp"
-#include "diffsel/RandomSubMatrix.hpp"
+#include "BranchSiteSubstitutionProcess.hpp"
+#include "RandomSubMatrix.hpp"
 
-#include "diffsel/EmpiricalSubMatrix.hpp"
+// #include "diffsel/EmpiricalSubMatrix.hpp"
 
 // RandomBranchSitePath
 // - represents a branch- and site-specific substitution process (the BranchSiteSubstitutionProcess superclass)

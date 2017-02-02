@@ -1,11 +1,11 @@
 #ifndef ONEMATRIXPHYLOPROCESS_H
 #define ONEMATRIXPHYLOPROCESS_H
 
-#include "diffsel/PhyloProcess.hpp"
+#include "PhyloProcess.hpp"
 // #include "RandomSubMatrix.hpp"
-#include "diffsel/GTRSubMatrix.hpp"
+// #include "diffsel/GTRSubMatrix.hpp"
 // #include "RandomTypes.hpp"
-#include "diffsel/ValArray.hpp"
+#include "ValArray.hpp"
 
 // all branches and all sites are described by one single General Time Reversible (GTR) substitution process
 

@@ -2,14 +2,15 @@
 #define PHYLOPROCESS_H
 
 #include "core/MCMC.hpp"
-#include "diffsel/BranchProcess.hpp"
-#include "diffsel/SiteMapping.hpp"
-#include "diffsel/RandomBranchSitePath.hpp"
-#include "diffsel/SequenceAlignment.hpp"
-#include "diffsel/BranchSiteSubstitutionProcess.hpp"
+// #include "diffsel/BranchProcess.hpp"
+#include "SiteMapping.hpp"
+#include "RandomBranchSitePath.hpp"
+#include "SequenceAlignment.hpp"
+#include "BranchSiteSubstitutionProcess.hpp"
 #include <map>
 
 #include "core/Chrono.hpp"
+
 
 // PhyloProcess is a dispatcher:
 // its responsibility is to create a random branch/site path

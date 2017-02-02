@@ -1,8 +1,10 @@
 #ifndef GTRSUBMATRIX_H
 #define GTRSUBMATRIX_H
 
-#include "diffsel/RandomSubMatrix.hpp"
-#include "diffsel/BiologicalSequences.hpp"
+#include "core/BaseType.hpp"
+#include "core/Var.hpp"
+#include "RandomSubMatrix.hpp"
+#include "BiologicalSequences.hpp" //FIXME only used for Naa (const int)
 
 class GTRSubMatrix : public virtual SubMatrix	{
 

@@ -2,10 +2,10 @@
 #define NORMAL_H
 
 
-#include "core/RandomTypes.hpp"
+// #include "core/RandomTypes.hpp"
 #include "core/Var.hpp"
-#include "diffsel/BiologicalSequences.hpp"
-#include "core/Move.hpp"
+// #include "diffsel/BiologicalSequences.hpp"
+// #include "core/Move.hpp"
 
 
 // iid normal with same mean and variance

@@ -4,6 +4,8 @@
 #include <stdio.h>
 
 #include "core/ProbModel.hpp"
+#include "GTRSubMatrix.hpp"
+#include "BranchProcess.hpp"
 
 
 class DirichletNormalCompMove : public MCUpdate	{

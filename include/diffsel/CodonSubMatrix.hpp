@@ -1,8 +1,10 @@
 #ifndef CODONSUBMATRIX_H
 #define CODONSUBMATRIX_H
 
-#include "diffsel/RandomSubMatrix.hpp"
-#include "diffsel/CodonStateSpace.hpp"
+#include "RandomSubMatrix.hpp"
+#include "CodonStateSpace.hpp"
+#include "core/Var.hpp"
+#include "core/BaseType.hpp"
 
 const double omegamin = 1e-10;
 
