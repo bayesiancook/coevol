@@ -1,3 +1,11 @@
+
+#include "OneMatrixPhyloProcess.hpp"
+#include "MSCodonSubMatrix.hpp"
+#include "CodonSequenceAlignment.hpp"
+#include "IIDNormalIIDArray.hpp"
+
+#include "SelectionPhyloProcess.hpp"
+#include "ProfileConjugatePath.hpp"
 #include "Chain.hpp"
 #include "DirichletNormalCodonUsageSelectionModelMS.hpp"
 #include <cmath>
