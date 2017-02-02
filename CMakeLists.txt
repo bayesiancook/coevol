@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 include_directories("src/core")
+include_directories("src/diffsel")
 
 file(GLOB CORE
   "src/core/*.cpp"
@@ -13,4 +14,4 @@ file (GLOB DIFFSEL
   "src/diffsel/*.cpp"
   )
 
-# add_executable(DiffSel ${DIFFSEL} ${CORE})
+add_executable(DiffSel ${DIFFSEL} ${CORE})
