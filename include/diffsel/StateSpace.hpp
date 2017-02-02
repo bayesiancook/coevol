@@ -1,7 +1,7 @@
 #ifndef STATESPACE_H
 #define STATESPACE_H
 
-#include "diffsel/BiologicalSequences.hpp"
+#include "diffsel/BiologicalSequences.hpp" //FIXME only here because constant unknown
 
 // pure interface
 //
@@ -11,10 +11,10 @@ public:
 
   virtual ~StateSpace() {}
 
-  virtual string GetState(int state) = 0;
+  virtual std::string GetState(int state) = 0;
   virtual int GetNstate() = 0;
 
-  virtual int GetState(string from) = 0;
+  virtual int GetState(std::string from) = 0;
 
   virtual bool isCompatible(int state1, int state2)	{
     return ((state1 == unknown) || (state2 == unknown) || (state1 == state2));
@@ -29,13 +29,13 @@ class SimpleStateSpace : public StateSpace	{
 public:
 
 
-  int GetState(string from);
+  int GetState(std::string from);
 
   int GetNstate() {
     return Nstate;
   }
 
-  string GetState(int state);
+  std::string GetState(int state);
 
 protected:
   int Nstate;

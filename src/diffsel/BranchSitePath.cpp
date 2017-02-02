@@ -1,7 +1,9 @@
 #include <sstream>
+#include <cmath>
+
 #include "diffsel/BranchSitePath.hpp"
 
-#include <cmath>
+using namespace std;
 
 //-------------------------------------------------------------------------
 //	* BranchSitePath

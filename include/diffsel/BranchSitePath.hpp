@@ -58,9 +58,9 @@ public:
   StateSpace*     GetStateSpace();
   void			SetStateSpace(StateSpace* instatespace) {statespace = instatespace;}
   int       GetNsub();
-  string			GetState(Plink* link);
-  string      GetCharInitState();
-  string      GetCharFinalState();
+  std::string			GetState(Plink* link);
+  std::string      GetCharInitState();
+  std::string      GetCharFinalState();
   int       GetInitState();
   int       GetFinalState();
   double      GetAbsoluteTime(Plink* link);
@@ -85,7 +85,7 @@ public:
   // path p is modified accordingly
   void      Prefix(BranchSitePath* p, BranchSitePath* root, double abstime);
 
-  string      ToString(bool redundant = false);
+  std::string      ToString(bool redundant = false);
 
 protected :
 
@@ -154,7 +154,7 @@ inline Plink*  BranchSitePath::Last() {return last;}
 //	* BranchSitePath
 //-------------------------------------------------------------------------
 
-inline StateSpace* BranchSitePath::GetStateSpace() {if (!statespace) {cerr << "null pointer : BranchSitePath::statespace\n"; throw(0); } return statespace;}
+inline StateSpace* BranchSitePath::GetStateSpace() {if (!statespace) {std::cerr << "null pointer : BranchSitePath::statespace\n"; throw(0); } return statespace;}
 
 inline void BranchSitePath::Append(int instate, double reltimelength)	{
   last->SetRelativeTime(reltimelength);
@@ -176,9 +176,9 @@ inline int BranchSitePath::GetNsub()	{
   return nsub;
 }
 
-inline string BranchSitePath::GetState(Plink* link) {return GetStateSpace()->GetState(link->GetState());}
-inline string BranchSitePath::GetCharInitState() {return GetState(init);}
-inline string BranchSitePath::GetCharFinalState() {return GetState(last);}
+inline std::string BranchSitePath::GetState(Plink* link) {return GetStateSpace()->GetState(link->GetState());}
+inline std::string BranchSitePath::GetCharInitState() {return GetState(init);}
+inline std::string BranchSitePath::GetCharFinalState() {return GetState(last);}
 inline int BranchSitePath::GetInitState() {return init->GetState();}
 inline int BranchSitePath::GetFinalState() {return last->GetState();}
 

@@ -3,7 +3,12 @@
 
 #include <iostream>
 #include "diffsel/ValTree.hpp"
-#include "diffsel/BranchSitePath.hpp"
+// #include "diffsel/BranchSitePath.hpp"
+
+class BranchSitePath;
+class Branch;
+class Tree;
+class Link;
 
 class SiteMapping	{
 
