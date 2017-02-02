@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include "ProbModel.hpp"
+#include "core/ProbModel.hpp"
 using namespace std;
 
 ProbModel::ProbModel() : scheduler(this) {}

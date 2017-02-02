@@ -1,7 +1,7 @@
-#include "Chrono.hpp"
-#include "ProbModel.hpp"
-#include "Move.hpp"
-#include "Exception.hpp"
+#include "core/Chrono.hpp"
+#include "core/ProbModel.hpp"
+#include "core/Move.hpp"
+#include "core/Exception.hpp"
 
 #include <iostream>
 using namespace std;

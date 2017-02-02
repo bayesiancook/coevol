@@ -1,4 +1,4 @@
-#include "GTRSubMatrix.hpp"
+#include "diffsel/GTRSubMatrix.hpp"
 #include <iostream>
 using namespace std;
 

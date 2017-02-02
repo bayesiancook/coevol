@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "RandomBranchSitePath.hpp"
-#include "PhyloProcess.hpp"
+#include "diffsel/RandomBranchSitePath.hpp"
+#include "diffsel/PhyloProcess.hpp"
 
 //-------------------------------------------------------------------------
 //	* RandomBranchSitePath

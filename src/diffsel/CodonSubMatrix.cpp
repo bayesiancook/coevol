@@ -1,4 +1,4 @@
-#include "CodonSubMatrix.hpp"
+#include "diffsel/CodonSubMatrix.hpp"
 
 void MGCodonSubMatrix::ComputeArray(int i)	{
 

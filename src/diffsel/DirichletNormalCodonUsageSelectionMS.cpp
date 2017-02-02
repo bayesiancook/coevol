@@ -1,13 +1,11 @@
-
-#include "OneMatrixPhyloProcess.hpp"
-#include "MSCodonSubMatrix.hpp"
-#include "CodonSequenceAlignment.hpp"
-#include "IIDNormalIIDArray.hpp"
-
-#include "SelectionPhyloProcess.hpp"
-#include "ProfileConjugatePath.hpp"
-#include "Chain.hpp"
-#include "DirichletNormalCodonUsageSelectionModelMS.hpp"
+#include "diffsel/OneMatrixPhyloProcess.hpp"
+#include "diffsel/MSCodonSubMatrix.hpp"
+#include "diffsel/CodonSequenceAlignment.hpp"
+#include "diffsel/IIDNormalIIDArray.hpp"
+#include "diffsel/SelectionPhyloProcess.hpp"
+#include "diffsel/ProfileConjugatePath.hpp"
+#include "diffsel/Chain.hpp"
+#include "diffsel/DirichletNormalCodonUsageSelectionModelMS.hpp"
 #include <cmath>
 
 

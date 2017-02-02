@@ -1,4 +1,4 @@
-#include "ProbModel.hpp"
+#include "core/ProbModel.hpp"
 using namespace std;
 
 class PoissonGammaModel : public ProbModel	{

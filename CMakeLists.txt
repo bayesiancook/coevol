@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-include_directories("src/core")
-include_directories("src/diffsel")
+include_directories("include")
 
 file(GLOB CORE
   "src/core/*.cpp"

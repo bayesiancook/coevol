@@ -1,5 +1,5 @@
 #include <sstream>
-#include "BranchSitePath.hpp"
+#include "diffsel/BranchSitePath.hpp"
 
 #include <cmath>
 

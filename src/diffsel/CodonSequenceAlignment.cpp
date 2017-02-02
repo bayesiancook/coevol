@@ -2,9 +2,9 @@
 #include <cstdlib>
 using namespace std;
 
-#include "CodonSequenceAlignment.hpp"
-#include "Exception.hpp"
-#include "Random.hpp"
+#include "diffsel/CodonSequenceAlignment.hpp"
+#include "core/Exception.hpp"
+#include "core/Random.hpp"
 
 CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool force_stops, GeneticCodeType type)	{
 

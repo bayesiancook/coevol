@@ -1,4 +1,4 @@
-#include "SiteMapping.hpp"
+#include "diffsel/SiteMapping.hpp"
 
 //-------------------------------------------------------------------------
 //	* SiteMapping

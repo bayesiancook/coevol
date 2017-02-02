@@ -3,8 +3,8 @@
 #include <cstdlib>
 using namespace std;
 
-#include "CodonStateSpace.hpp"
-#include "Exception.hpp"
+#include "diffsel/CodonStateSpace.hpp"
+#include "core/Exception.hpp"
 
 CodonStateSpace::CodonStateSpace(GeneticCodeType type)	{
 

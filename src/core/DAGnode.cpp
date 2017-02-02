@@ -1,8 +1,8 @@
 #include <algorithm>
 
-#include "ProbModel.hpp"
-#include "DAGnode.hpp"
-#include "Exception.hpp"
+#include "core/ProbModel.hpp"
+#include "core/DAGnode.hpp"
+#include "core/Exception.hpp"
 using namespace std;
 
 bool DAGnode::initmode = true;

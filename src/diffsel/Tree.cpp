@@ -1,7 +1,7 @@
 #include <list>
 #include <sstream>
 #include <fstream>
-#include "Tree.hpp"
+#include "diffsel/Tree.hpp"
 
 bool NewickTree::simplify = false;
 

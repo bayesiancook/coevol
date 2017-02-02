@@ -1,5 +1,5 @@
-#include "linalg.hpp"
-#include "SubMatrix.hpp"
+#include "diffsel/linalg.hpp"
+#include "diffsel/SubMatrix.hpp"
 
 #include <cmath>
 #include <cstdlib>

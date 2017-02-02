@@ -2,9 +2,9 @@
 #include <cstdlib>
 using namespace std;
 
-#include "BiologicalSequences.hpp"
-#include "TaxonSet.hpp"
-#include "Tree.hpp"
+#include "diffsel/BiologicalSequences.hpp"
+#include "diffsel/TaxonSet.hpp"
+#include "diffsel/Tree.hpp"
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
