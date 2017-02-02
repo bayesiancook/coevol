@@ -3,7 +3,7 @@
 
 #include "core/Random.hpp"
 #include "diffsel/SubMatrix.hpp"
-#include "core/Var.hpp"
+// #include "core/Var.hpp"
 
 class BranchSiteSubstitutionProcess	{
 

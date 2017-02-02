@@ -1,7 +1,7 @@
 #ifndef VALARRAY_H
 #define VALARRAY_H
 
-#include "core/BaseType.hpp"
+#include "core/RandomTypes.hpp"
 
 class AbstractArray	{
 
@@ -20,31 +20,31 @@ public:
 
   virtual Var<V>* GetVal(int site) = 0;
 
-  void SetName(string inname)	{
+  void SetName(std::string inname)	{
     for (int i=0; i<GetSize(); i++)	{
       GetVal(i)->SetName(inname);
     }
   }
 
-  void ToStream(ostream& os)	{
+  void ToStream(std::ostream& os)	{
     for (int i=0; i<GetSize(); i++)	{
       os << *(GetVal(i)) << '\t';
     }
     os << '\n';
   }
 
-  void FromStream(istream& is)	{
+  void FromStream(std::istream& is)	{
     for (int i=0; i<GetSize(); i++)	{
       is >> *(GetVal(i));
     }
   }
 
-  friend ostream& operator<<(ostream& os, VarArray<V>& a)	{
+  friend std::ostream& operator<<(std::ostream& os, VarArray<V>& a)	{
     a.ToStream(os);
     return os;
   }
 
-  friend istream& operator>>(istream& is, VarArray<V>& a)  {
+  friend std::istream& operator>>(std::istream& is, VarArray<V>& a)  {
     a.FromStream(is);
     return is;
   }
@@ -134,25 +134,25 @@ public:
   }
 
   /*
-    void ToStream(ostream& os)	{
+    void ToStream(std::ostream& os)	{
     for (int i=0; i<GetSize(); i++)	{
     os << *(array[i]) << '\t';
     }
     os << '\n';
     }
 
-    void FromStream(istream& is)	{
+    void FromStream(std::istream& is)	{
     for (int i=0; i<GetSize(); i++)	{
     is >> *(array[i]);
     }
     }
 
-    friend ostream& operator<<(ostream& os, _ValPtrArray<T>& a)	{
+    friend std::ostream& operator<<(std::ostream& os, _ValPtrArray<T>& a)	{
     a.ToStream(os);
     return os;
     }
 
-    friend istream& operator>>(istream& is, _ValPtrArray<T>& a)  {
+    friend std::istream& operator>>(std::istream& is, _ValPtrArray<T>& a)  {
     a.FromStream(is);
     return is;
     }

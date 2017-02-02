@@ -20,8 +20,6 @@
  * - Move resample the model's current configuration conditional on the data
  */
 
-class MCScheduler;
-
 class ProbModel : public MCMC {
 
 public:

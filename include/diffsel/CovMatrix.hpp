@@ -1,16 +1,14 @@
 #ifndef COVMATRIX_H
 #define COVMATRIX_H
 
-#include "diffsel/linalg.hpp"
+#include "linalg.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
 
-using namespace std;
-
-#include "core/RandomTypes.hpp"
-#include "diffsel/ValArray.hpp"
+// #include "core/RandomTypes.hpp"
+#include "ValArray.hpp"
 
 class CovMatrix : public BaseType, public Multiplicative {
 
@@ -138,8 +136,8 @@ public:
       diagflag = false;
     }
     if (dim != from.dim)	{
-      cerr << "error : non matching dimenstion for matrix\n";
-      cerr << GetDim() << '\t' << from.GetDim() << '\n';
+      std::cerr << "error : non matching dimenstion for matrix\n";
+      std::cerr << GetDim() << '\t' << from.GetDim() << '\n';
       exit(1);
     }
     for (int i=0; i<GetDim(); i++){
@@ -160,8 +158,8 @@ public:
       diagflag = false;
     }
     if (dim != inDim)	{
-      cerr << "error : non matching dimenstion for matrix\n";
-      cerr << GetDim() << '\t' << inDim << '\n';
+      std::cerr << "error : non matching dimenstion for matrix\n";
+      std::cerr << GetDim() << '\t' << inDim << '\n';
       exit(1);
     }
     for (int i=0; i<GetDim(); i++){
@@ -420,7 +418,7 @@ public:
     }
     /*
       if (isnan(ret))	{
-      cerr << "covmatrix det: nan\n";
+      std::cerr << "covmatrix det: nan\n";
       exit(1);
       }
     */
@@ -607,14 +605,14 @@ public:
     // InvertMatrix(a, GetDim(), w, iw, value);
     double logdet = LinAlg::Gauss(a,GetDim(),value);
 
-    // cerr << "check inverse : " << CheckInverse() << '\n';
+    // std::cerr << "check inverse : " << CheckInverse() << '\n';
     for (int i=0; i<GetDim(); i++)	{
       delete[] a[i];
     }
     delete[] a;
     diagflag = false;
-    if (isinf(logdet))	{
-      cerr << "error in cov matrix: non invertible\n";
+    if (std::isinf(logdet))	{
+      std::cerr << "error in cov matrix: non invertible\n";
       return 1;
       exit(1);
     }
@@ -651,13 +649,13 @@ public:
     }
     bool failed = (n == nmax);
     if (failed)	{
-      cerr << "diag failed\n";
-      cerr << n << '\n';
+      std::cerr << "diag failed\n";
+      std::cerr << n << '\n';
       for (int i=0; i<dim; i++)	{
         for (int j=0; j<dim; j++)	{
-          cerr << value[i][j] << '\t';
+          std::cerr << value[i][j] << '\t';
         }
-        cerr << '\n';
+        std::cerr << '\n';
       }
       exit(1);
     }
@@ -715,7 +713,7 @@ public:
     }
     if (effdim < GetDim())	{
 
-    cerr << "effdim < dim in covmatrix\n";
+    std::cerr << "effdim < dim in covmatrix\n";
     exit(1);
 
     double** a = new double*[effdim];
@@ -748,10 +746,10 @@ public:
     }
     failed = (n == nmax);
     if (failed)	{
-    cerr << "diag failed\n";
-    cerr << "in reduced code : " << effdim << '\n';
-    cerr << (*this) << '\n';
-    // oStream(cerr);
+    std::cerr << "diag failed\n";
+    std::cerr << "in reduced code : " << effdim << '\n';
+    std::cerr << (*this) << '\n';
+    // oStream(std::cerr);
     exit(1);
     }
 
@@ -807,9 +805,9 @@ public:
     failed = (n == nmax);
     if (failed)	{
     return failed;
-    cerr << "diag failed\n";
-    cerr << (*this) << '\n';
-    // oStream(cerr);
+    std::cerr << "diag failed\n";
+    std::cerr << (*this) << '\n';
+    // oStream(std::cerr);
     exit(1);
     }
 
@@ -824,8 +822,8 @@ public:
     total += u[j][i] * u[j][i];
     }
     if (fabs(total - 1) > 1e-7)	{
-    cerr << "in CovMatrix::Diagonalize: normalization error\n";
-    cerr << total << '\n';
+    std::cerr << "in CovMatrix::Diagonalize: normalization error\n";
+    std::cerr << total << '\n';
     exit(1);
     }
     }
@@ -864,27 +862,27 @@ public:
     /*
       for (int i=0; i<GetDim(); i++)	{
       for (int j=0; j<GetDim(); j++)	{
-      cerr << GetMatrix()[i][j] << '\t';
+      std::cerr << GetMatrix()[i][j] << '\t';
       }
-      cerr << '\n';
+      std::cerr << '\n';
       }
-      cerr << '\n';
+      std::cerr << '\n';
 
       for (int i=0; i<GetDim(); i++)	{
       for (int j=0; j<GetDim(); j++)	{
-      cerr << u[i][j] << '\t';
+      std::cerr << u[i][j] << '\t';
       }
-      cerr << '\n';
+      std::cerr << '\n';
       }
-      cerr << '\n';
+      std::cerr << '\n';
 
       for (int i=0; i<GetDim(); i++)	{
       for (int j=0; j<GetDim(); j++)	{
-      cerr << invu[i][j] << '\t';
+      std::cerr << invu[i][j] << '\t';
       }
-      cerr << '\n';
+      std::cerr << '\n';
       }
-      cerr << '\n';
+      std::cerr << '\n';
     */
 
     for (int i=0; i<GetDim(); i++)	{
@@ -899,7 +897,7 @@ public:
 
     double max = 0;
 
-    //  cerr << "check diag\n";
+    //  std::cerr << "check diag\n";
     for (int i=0; i<GetDim(); i++)	{
       for (int j=0; j<GetDim(); j++)	{
         double tot = 0;
@@ -912,13 +910,13 @@ public:
             max = fabs(tot);
           }
         }
-        //			cerr << b[i][j] << '\t';
+        //			std::cerr << b[i][j] << '\t';
       }
-      //		cerr << '\n';
+      //		std::cerr << '\n';
     }
 
     /*
-      cerr << "check inverse\n";
+      std::cerr << "check inverse\n";
       for (int i=0; i<GetDim(); i++)	{
       for (int j=0; j<GetDim(); j++)	{
       double tot = 0;
@@ -926,9 +924,9 @@ public:
       tot += invu[i][k] * u[k][j];
       }
       a[i][j] = tot;
-      cerr << a[i][j] << '\t';
+      std::cerr << a[i][j] << '\t';
       }
-      cerr << '\n';
+      std::cerr << '\n';
       }
     */
 
@@ -994,7 +992,7 @@ public:
     diagflag = false;
   }
 
-  void PrintCorrelationCoefficients(ostream& os)	{
+  void PrintCorrelationCoefficients(std::ostream& os)	{
     for (int i=0; i<GetDim(); i++)	{
       for (int j=0; j<GetDim(); j++)	{
         if (i==j)   {
@@ -1008,7 +1006,7 @@ public:
     }
   }
 
-  void PrintEigenVectors(ostream& os)	{
+  void PrintEigenVectors(std::ostream& os)	{
     os << "val";
     for (int j=0; j<GetDim(); j++)	{
       os << '\t' << j;
@@ -1064,7 +1062,7 @@ public:
 
   }
 
-  friend ostream& operator<<(ostream& os, const CovMatrix& r)  {
+  friend std::ostream& operator<<(std::ostream& os, const CovMatrix& r)  {
     for (int i=0; i<r.GetDim(); i++)	{
       for (int j=0; j<r.GetDim(); j++)	{
         os << '\t' << r.GetMatrix()[i][j];
@@ -1074,7 +1072,7 @@ public:
     return os;
   }
 
-  friend istream& operator>>(istream& is, CovMatrix& r)  {
+  friend std::istream& operator>>(std::istream& is, CovMatrix& r)  {
     for (int i=0; i<r.GetDim(); i++)	{
       for (int j=0; j<r.GetDim(); j++)	{
         is >> r.value[i][j];

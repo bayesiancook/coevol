@@ -7,7 +7,7 @@ file(GLOB CORE
   )
 
 add_executable(PoissonGamma "src/PoissonGamma.cpp" ${CORE})
-set(CMAKE_CXX_FLAGS "-O3 -Wall -pedantic")
+# set(CMAKE_CXX_FLAGS "-O3 -Wall -pedantic")
 
 file (GLOB DIFFSEL
   "src/diffsel/*.cpp"

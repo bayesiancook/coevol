@@ -2,10 +2,9 @@
 #define CONJUGATE_H
 
 using namespace std;
-#include "core/MCMC.hpp"
+// #include "core/MCMC.hpp"
+#include "core/DAGnode.hpp"
 #include <set>
-
-class Rnode;
 
 typedef set<DAGnode*>::const_iterator clit;
 

@@ -1,6 +1,9 @@
 #include "diffsel/Chain.hpp"
+#include "core/ProbModel.hpp"
 #include "core/Chrono.hpp"
-#include <cmath>
+// #include <cmath>
+#include <iostream>
+using namespace std;
 
 Chain::Chain()	{
 	every = 1;
