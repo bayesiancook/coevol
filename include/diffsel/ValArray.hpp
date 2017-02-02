@@ -1,7 +1,9 @@
 #ifndef VALARRAY_H
 #define VALARRAY_H
 
-#include "core/RandomTypes.hpp"
+#include "core/Var.hpp"
+#include "core/BaseType.hpp"
+// #include "core/RandomTypes.hpp"
 
 class AbstractArray	{
 
