@@ -278,116 +278,41 @@ protected:
 public:
   Profile() : dim(0) , profile(0) {}
 
-  Profile(int indim, double* v=0) {
-    dim = indim;
-    profile = new double[dim];
-    if (v) {
-      double total = 0;
-      for (int k=0; k<dim; k++) {
-        if (!(v[k]>0)) {
-          std::cerr << "error : profiles should be strictly positive\n";
-          exit(1);
-        }
-        profile[k] = v[k];
-        total += profile[k];
-      }
-      for (int k=0; k<dim; k++) {
-        profile[k] /= total;
-      }
-    }
-  }
+  Profile(int indim, double* v=0) ;
 
-  Profile(const Profile& from) {
-    dim = from.dim;
-    profile = new double[dim];
-    for (int k=0; k<dim; k++) {
-      profile[k] = from.profile[k];
-    }
-  }
+  Profile(const Profile& from) ;
 
-  virtual ~Profile() {
-    delete[] profile;
-  }
+  virtual ~Profile() ;
 
-  Profile& operator=(const Profile& from) {
+  Profile& operator=(const Profile& from) ;
 
-    if (!dim) {
-      dim = from.dim;
-      profile = new double[dim];
-    }
-    if (dim != from.dim) {
-      std::cerr << "error : non matching dimenstion for profiles\n";
-      std::cerr << dim << '\t' << from.dim << '\n';
-      exit(1);
-      dim = from.dim;
-      delete[] profile;
-      profile = new double[dim];
-    }
-    for (int k=0; k<dim; k++) {
-      profile[k] = from.profile[k];
-    }
-    return *this;
-  }
+  void setuniform() ;
 
-  void setuniform() {
-    for (int i=0; i<dim; i++) {
-      profile[i] = 1.0 / dim;
-    }
-  }
-
-  void setarray(double* in) {
-    for (int i=0; i<dim; i++) {
-      profile[i] = in[i];
-    }
-  }
+  void setarray(double* in) ;
 
 
-  const double* GetArray() const {return profile;}
-  double* GetArray() {return profile;}
+  const double* GetArray() const ;
+  double* GetArray() ;
 
-  double& operator[](int i) {
-    return profile[i];
-  }
+  double& operator[](int i) ;
 
-  double& operator[](int i) const  {
-    return profile[i];
-  }
+  double& operator[](int i) const  ;
 
-  int GetDim() const {return dim;}
+  int GetDim() const ;
 
-  void SetAtZero() {
-    for (int i=0; i<dim; i++) {
-      profile[i] = 0;
-    }
-  }
+  void SetAtZero() ;
 
-  void ScalarMultiplication(double d) {
-    for (int i=0; i<dim; i++) {
-      profile[i] *= d;
-    }
-  }
+  void ScalarMultiplication(double d) ;
 
-  void Add(const Profile& in) {
-    for (int i=0; i<dim; i++) {
-      profile[i] += in[i];
-    }
-  }
+  void Add(const Profile& in) ;
 
-  int Check() {return 1;}
+  int Check() ;
 
-  double GetEntropy() const {
-    double total = 0;
-    for (int i=0; i<dim; i++) {
-      total += (profile[i]>1e-8) ? -profile[i]*log(profile[i]) : 0;
-    }
-    return total;
-  }
+  double GetEntropy() const ;
 
   double ProposeMove(double tuning, int dim);
 
-  double ProposeMove(double tuning) {
-    return ProposeMove(tuning,dim);
-  }
+  double ProposeMove(double tuning) ;
 
   friend std::ostream& operator<<(std::ostream& os, const Profile& r) {
     os << r.dim;
