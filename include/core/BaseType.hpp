@@ -4,14 +4,13 @@
 #include <iostream>
 #include "Random.hpp"
 
-class DAGnode;
+class DAGnode; // forward declaration
 
 /// An interface for all base types that will be used to make Random variables
 // e.g. Real, PosReal, Int, Profile
 // base types:
 // - know their domain of definition (which they should check in Check())
 // - propose default kernels (in ProposeMove()) for Metropolis Hastings resampling
-
 class BaseType {
 public:
   virtual ~BaseType() {};
@@ -21,6 +20,7 @@ public:
   // returns the log of the Hastings ratio
   virtual double ProposeMove(double tuning) = 0;
 };
+
 
 class Additive {
 public:
@@ -32,6 +32,7 @@ public:
   virtual void Register(DAGnode*) ;
 };
 
+
 class Multiplicative {
 public:
   virtual ~Multiplicative() {}
@@ -42,9 +43,9 @@ public:
   virtual void Register(DAGnode*) ;
 };
 
+
 /// A wrap-up class for real numbers
 // implements a simple random translational (additive) move
-
 class Real : public BaseType , public Additive {
 public:
   Real(double d=0) : value(d) {}
@@ -53,14 +54,12 @@ public:
   virtual ~Real() {}
 
   Real& operator=(const Real& from) ;
-
   Real& operator=(double from) ;
 
   operator double() {return value;}
   operator double() const {return value;}
 
   Real& operator+=(const Real& from) ;
-
   Real& operator/=(double from) ;
 
   int ScalarAddition(double d) ;
@@ -74,10 +73,10 @@ public:
     return is;
   }
 
-
 protected:
   double value;
 };
+
 
 class UnitReal : public BaseType {
 public:
@@ -87,14 +86,12 @@ public:
   virtual   ~UnitReal() {}
 
   UnitReal& operator=(const UnitReal& from) ;
-
   UnitReal& operator=(double from) ;
 
   operator double() {return value;}
   operator double() const {return value;}
 
   UnitReal& operator+=(const UnitReal from) ;
-
 
   virtual double ProposeMove(double tuning) ;
 
@@ -121,14 +118,12 @@ public:
   virtual ~PosReal() {}
 
   PosReal& operator=(const PosReal& from) ;
-
   PosReal& operator=(const double& from) ;
 
   operator double() {return value;}
   operator double() const {return value;}
 
   PosReal& operator+=(const PosReal from) ;
-
   PosReal& operator/=(double from) ;
 
   int ScalarMultiplication(double d) ;
@@ -159,15 +154,12 @@ protected:
 
 /// A wrap-up class for integers
 // discretized additive move
-
 class Int : public BaseType {
-
-
 public:
   Int(int d=0) : value(d) {}
   Int(const Int& from) : value(from.value) {}
 
-  virtual   ~Int() {}
+  virtual ~Int() {}
 
   Int& operator=(const Int& from) {
     value = from.value;
@@ -266,7 +258,6 @@ protected:
 */
 
 /// A probability profile
-
 class Profile : public BaseType {
 
 public:
@@ -338,9 +329,7 @@ public:
 };
 
 class RealVector : public BaseType, public Additive {
-
 protected:
-
   int dim;
   double* vec;
 
@@ -617,7 +606,6 @@ public:
 
 class IntVector : public BaseType {
 protected:
-
   int dim;
   int* vec;
 
@@ -752,6 +740,5 @@ public:
     return is;
   }
 };
-
 
 #endif // BASETYPE_H
