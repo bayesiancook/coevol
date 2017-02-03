@@ -1,8 +1,8 @@
 #ifndef EMPSUB_H
 #define EMPSUB_H
 
-#include "diffsel/SubMatrix.hpp"
-#include "diffsel/BranchSitePath.hpp"
+#include "SubMatrix.hpp"
+#include "BranchSitePath.hpp"
 #include <vector>
 
 

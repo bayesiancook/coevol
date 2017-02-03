@@ -1,7 +1,7 @@
 #ifndef CODONSTATESPACE_H
 #define CODONSTATESPACE_H
 
-#include "diffsel/StateSpace.hpp"
+#include "StateSpace.hpp"
 #include <map>
 
 class CodonStateSpace : public StateSpace	{

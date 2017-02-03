@@ -1,10 +1,10 @@
 #ifndef PROFILECONJUGATEPATH_H
 #define PROFILECONJUGATEPATH_H
 
-#include "diffsel/RandomBranchSitePath.hpp"
-#include "diffsel/Conjugate.hpp"
-#include "diffsel/RandomSubMatrix.hpp"
-#include "diffsel/PhyloProcess.hpp"
+#include "RandomBranchSitePath.hpp"
+#include "Conjugate.hpp"
+#include "RandomSubMatrix.hpp"
+#include "PhyloProcess.hpp"
 
 #include <utility>
 #include <map>

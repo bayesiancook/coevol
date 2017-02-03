@@ -1,6 +1,8 @@
 #ifndef ALLOCTREE_H
 #define ALLOCTREE_H
 
+#include "Tree.hpp"
+
 class AllocationTree {
 
 public:

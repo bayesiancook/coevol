@@ -1,7 +1,7 @@
 #ifndef SELPHYLO_H
 #define SELPHYLO_H
 
-#include "diffsel/AllocationTree.hpp"
+#include "AllocationTree.hpp"
 
 class SelectionMatrixTree {
 

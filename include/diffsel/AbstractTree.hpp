@@ -1,7 +1,7 @@
 #ifndef ABSTRACTTREE_H
 #define ABSTRACTTREE_H
 
-#include "diffsel/Tree.hpp"
+#include "Tree.hpp"
 
 class AbstractTree	{
 

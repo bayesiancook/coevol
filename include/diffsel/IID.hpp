@@ -6,7 +6,7 @@
 using namespace std;
 
 #include "core/RandomTypes.hpp"
-#include "diffsel/ValArray.hpp"
+#include "ValArray.hpp"
 
 template <class V> class IIDArray : public ValPtrArray< Rvar<V> >	{
 

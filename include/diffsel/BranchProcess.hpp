@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-#include "diffsel/ValTree.hpp"
+#include "ValTree.hpp"
 #include "core/RandomTypes.hpp"
 
 // iid random variables of type Rvar<V>

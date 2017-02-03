@@ -2,7 +2,7 @@
 #define NORMAL_H
 
 
-// #include "core/RandomTypes.hpp"
+#include "core/RandomTypes.hpp" // FIXME not necessary for compilation
 #include "core/Var.hpp"
 // #include "diffsel/BiologicalSequences.hpp"
 // #include "core/Move.hpp"

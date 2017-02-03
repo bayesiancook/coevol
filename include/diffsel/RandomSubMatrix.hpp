@@ -25,8 +25,6 @@
 
 #include "SubMatrix.hpp"
 #include "core/DAGnode.hpp"
-// #include "core/Var.hpp"
-// #include "core/RandomTypes.hpp"
 
 // a RandomSubMatrix is just a SubMatrix (substitution matrix)
 // wrapped up into a Dvar<void*>

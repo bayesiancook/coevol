@@ -1,7 +1,7 @@
 // #include "core/RandomTypes.hpp"
-#include "diffsel/Normal.hpp"
+#include "Normal.hpp"
 #include "core/Move.hpp"
-#include "diffsel/IID.hpp"
+#include "IID.hpp"
 
 class IIDNormalIIDArray : public IIDArray<RealVector>	{
 

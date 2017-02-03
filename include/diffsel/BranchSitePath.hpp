@@ -2,8 +2,7 @@
 #define SITEPATH_H
 
 #include <string>
-// #include "diffsel/Tree.hpp"
-#include "diffsel/StateSpace.hpp"
+#include "StateSpace.hpp"
 
 class Plink	{
 

@@ -1,13 +1,11 @@
 #ifndef WISHART_H
 #define WISHART_H
 
-#include "diffsel/CovMatrix.hpp"
-#include "diffsel/Tree.hpp"
-#include "diffsel/ValArray.hpp"
-
-#include "diffsel/GenericTimeLine.hpp"
-
-#include "diffsel/GlobalScalingFunction.hpp"
+#include "CovMatrix.hpp"
+#include "Tree.hpp"
+#include "ValArray.hpp"
+#include "GenericTimeLine.hpp"
+#include "GlobalScalingFunction.hpp"
 
 class SigmaZero : public Dnode{
 

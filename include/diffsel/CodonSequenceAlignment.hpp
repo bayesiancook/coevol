@@ -2,9 +2,9 @@
 #define CODONSEQUENCEALIGNMENT_H
 
 
-#include "diffsel/ContinuousData.hpp"
-#include "diffsel/SequenceAlignment.hpp"
-#include "diffsel/CodonStateSpace.hpp"
+#include "ContinuousData.hpp"
+#include "SequenceAlignment.hpp"
+#include "CodonStateSpace.hpp"
 #include <cmath>
 
 class CodonSequenceAlignment : public SequenceAlignment	{

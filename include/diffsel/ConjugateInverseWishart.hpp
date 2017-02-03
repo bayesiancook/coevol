@@ -1,8 +1,8 @@
 #ifndef CONJUGATEWISHART_H
 #define CONJUGATEWISHART_H
 
-#include "diffsel/Conjugate.hpp"
-#include "diffsel/InverseWishartMatrix.hpp"
+#include "Conjugate.hpp"
+#include "InverseWishartMatrix.hpp"
 
 
 // the mean parameter of an invert wishart distribution
