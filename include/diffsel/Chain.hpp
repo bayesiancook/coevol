@@ -3,7 +3,6 @@
 
 #include <fstream>
 #include <cstdlib>
-using namespace std;
 
 // #include "core/ProbModel.hpp"
 
@@ -56,8 +55,8 @@ class Chain	{
 			// Move, Monitor amd Save while running status == 1
 
 
-	virtual string 	GetModelType() = 0;
-			// string meant as a check when opening files (model name)
+	virtual std::string 	GetModelType() = 0;
+			// std::string meant as a check when opening files (model name)
 			// you should give different names to chains based on different models
 
 	virtual void 	New(int force = 0) = 0;
@@ -69,7 +68,7 @@ class Chain	{
 	virtual void 	Save() = 0;
 			// save a chain to files
 
-	string		GetName() {return name;}
+	std::string		GetName() {return name;}
 
 	void 		SetEvery(int inevery)	{every = inevery;}
 	void		SetUntil(int inuntil) {until = inuntil;}
@@ -84,7 +83,7 @@ class Chain	{
 	int until;		// intended size of the run (number of saved points)
 	int size;		// current size
 	ProbModel* model;	// the model
-	string name;		// the name of the chain in the filesystem
+	std::string name;		// the name of the chain in the filesystem
 				// all files for this chain will be of the form : <name>.<ext>
 
 };
