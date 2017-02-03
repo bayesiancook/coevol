@@ -261,13 +261,13 @@ void Profile::ScalarMultiplication(double d) {
   for (int i=0; i<dim; i++) {
     profile[i] *= d;
   }
-  }
+}
 
 void Profile::Add(const Profile& in) {
   for (int i=0; i<dim; i++) {
     profile[i] += in[i];
   }
-  }
+}
 
 int Profile::Check() {return 1;}
 
@@ -277,12 +277,10 @@ double Profile::GetEntropy() const {
     total += (profile[i]>1e-8) ? -profile[i]*log(profile[i]) : 0;
   }
   return total;
-  }
+}
 
 double Profile::ProposeMove(double tuning, int dim);
 
 double Profile::ProposeMove(double tuning) {
   return ProposeMove(tuning,dim);
-  }
-
-double Profile::ProposeMove(double tuning) ;
+}
