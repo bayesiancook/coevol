@@ -182,7 +182,7 @@ void SequenceAlignment::ToStreamTriplet(ostream& os)	{
   os << '\n';
 }
 
-FileSequenceAlignment::FileSequenceAlignment(string filename, int fullline)	{
+FileSequenceAlignment::FileSequenceAlignment(string filename, int)	{ //FIXME unused parameter
 
   SpeciesNames = 0;
   // cerr << "read data from file : " << filename << "\n";
@@ -285,7 +285,7 @@ int FileSequenceAlignment::ReadNexus(string filespec)	{
       }
       delete[] Data;
     }
-    Data = new (int *[Ntaxa]);
+    Data = new int*[Ntaxa];
     for (int i=0; i<Ntaxa; i++)	{
       Data[i] = new int[Nsite];
     }
@@ -425,7 +425,7 @@ int FileSequenceAlignment::ReadSpecial(string filename)	{
       }
       delete[] Data;
     }
-    Data = new (int *[Ntaxa]);
+    Data = new int*[Ntaxa];
     for (int i=0; i<Ntaxa; i++)	{
       Data[i] = new int[Nsite];
     }
@@ -638,7 +638,7 @@ void FileSequenceAlignment::ReadPhylipSequential (string filespec)	{
     }
     Nsite = Int(temp);
 
-    Data = new (int *[Ntaxa]);
+    Data = new int*[Ntaxa];
     for (int i=0; i<Ntaxa; i++)	{
       Data[i] = new int[Nsite];
     }
@@ -873,7 +873,7 @@ FileSequenceAlignment::ReadPhylip (string filespec, int repeattaxa)	{
     Nsite = Int(temp);
     // cerr << Ntaxa << '\t' << Nsite << '\n';
 
-    Data = new (int *[Ntaxa]);
+    Data = new int*[Ntaxa];
     for (int i=0; i<Ntaxa; i++)	{
       Data[i] = new int[Nsite];
     }
@@ -1220,7 +1220,7 @@ for (int i=0; i<Nsite; i++)	{
 Orbit[i] = new int[Nstate];
 }
 
-ZipData = new (int *[Ntaxa]);
+ZipData = new int*[Ntaxa];
 for (int i=0; i<Ntaxa; i++)	{
 ZipData[i] = new int[Nsite];
 }

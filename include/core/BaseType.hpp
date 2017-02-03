@@ -52,14 +52,14 @@ public:
   Real(double d=0) : value(d) {}
   Real(const Real& from) : value(from.value) {}
 
-  virtual   ~Real() {}
+  virtual ~Real() {}
 
-  Real&		operator=(const Real& from)	{
+  Real&	operator=(const Real& from)	{
     value = from.value;
     return *this;
   }
 
-  Real&		operator=(double from)	{
+  Real&	operator=(double from)	{
     value = from;
     return *this;
   }
@@ -67,17 +67,17 @@ public:
   operator  double() {return value;}
   operator  double() const {return value;}
 
-  Real&		operator+=(const Real& from)	{
+  Real&	operator+=(const Real& from)	{
     value += from.value;
     return *this;
   }
 
-  Real&		operator/=(double from)	{
+  Real&	operator/=(double from)	{
     value /= from;
     return *this;
   }
 
-  int		ScalarAddition(double d)	{
+  int	ScalarAddition(double d)	{
     value += d;
     return 1;
   }
@@ -89,7 +89,7 @@ public:
     return 0;
   }
 
-  int		Check() {return 1;}
+  int	Check() {return 1;}
 
   friend std::istream& operator>>(std::istream& is, Real& r)  {
     is >> r.value;
@@ -107,12 +107,12 @@ public:
 
   virtual   ~UnitReal() {}
 
-  UnitReal&		operator=(const UnitReal& from)	{
+  UnitReal&	operator=(const UnitReal& from)	{
     value = from.value;
     return *this;
   }
 
-  UnitReal&		operator=(double from)	{
+  UnitReal&	operator=(double from)	{
     value = from;
     return *this;
   }
@@ -120,7 +120,7 @@ public:
   operator  double() {return value;}
   operator  double() const {return value;}
 
-  UnitReal&		operator+=(const UnitReal from)	{
+  UnitReal&	operator+=(const UnitReal from)	{
     value += from.value;
     return *this;
   }
@@ -141,7 +141,7 @@ public:
     return 0.0;
   }
 
-  int		Check() {return 1;}
+  int	Check() {return 1;}
 
   friend std::istream& operator>>(std::istream& is, UnitReal& r)  {
     is >> r.value;
@@ -202,7 +202,7 @@ public:
     return m;
   }
 
-  int		Check()	{
+  int	Check()	{
     if (value<=0)	{
       std::cerr << "error : positive double is not positive : " << value << '\n';
       return 0;
@@ -239,12 +239,12 @@ public:
 
   virtual   ~Int() {}
 
-  Int&		operator=(const Int& from)	{
+  Int&	operator=(const Int& from)	{
     value = from.value;
     return *this;
   }
 
-  Int&		operator=(const int& from)	{
+  Int&	operator=(const int& from)	{
     value = from;
     return *this;
   }
@@ -272,7 +272,7 @@ public:
     return 0;
   }
 
-  int		Check() {return 1;}
+  int	Check() {return 1;}
 
   friend std::istream& operator>>(std::istream& is, Int& r)  {
     is >> r.value;
@@ -323,7 +323,7 @@ protected:
   return 0;
   }
 
-  int		Check() {return 1;}
+  int	Check() {return 1;}
 
   friend std::istream& operator>>(std::istream& is, FinitePosInt& r)  {
   is >> r.value;
@@ -343,8 +343,8 @@ public:
   static const double MIN;
 
 protected:
-  int		dim;
-  double*		profile;
+  int	dim;
+  double*	profile;
 public:
   Profile() : dim(0) , profile(0) {}
 
@@ -355,7 +355,7 @@ public:
       double total = 0;
       for (int k=0; k<dim; k++)	{
         if (!(v[k]>0))	{
-  std::cerr << "error : profiles should be strictly positive\n";
+          std::cerr << "error : profiles should be strictly positive\n";
           exit(1);
         }
         profile[k] = v[k];
@@ -375,7 +375,7 @@ public:
     }
   }
 
-  virtual		~Profile()	{
+  virtual	~Profile()	{
     delete[] profile;
   }
 
@@ -399,31 +399,31 @@ public:
     return *this;
   }
 
-  void		setuniform()	{
+  void	setuniform()	{
     for (int i=0; i<dim; i++)	{
       profile[i] = 1.0 / dim;
     }
   }
 
-  void		setarray(double* in)	{
+  void	setarray(double* in)	{
     for (int i=0; i<dim; i++)	{
       profile[i] = in[i];
     }
   }
 
 
-  const double*		GetArray() const {return profile;}
-  double*		GetArray() {return profile;}
+  const double*	GetArray() const {return profile;}
+  double*	GetArray() {return profile;}
 
-  double&		operator[](int i)	{
+  double&	operator[](int i)	{
     return profile[i];
   }
 
-  double&		operator[](int i) const   {
+  double&	operator[](int i) const   {
     return profile[i];
   }
 
-  int		GetDim() const {return dim;}
+  int	GetDim() const {return dim;}
 
   void SetAtZero()	{
     for (int i=0; i<dim; i++)	{
@@ -431,21 +431,21 @@ public:
     }
   }
 
-  void		ScalarMultiplication(double d)	{
+  void	ScalarMultiplication(double d)	{
     for (int i=0; i<dim; i++)	{
       profile[i] *= d;
     }
   }
 
-  void		Add(const Profile& in)	{
+  void	Add(const Profile& in)	{
     for (int i=0; i<dim; i++)	{
       profile[i] += in[i];
     }
   }
 
-  int		Check() {return 1;}
+  int	Check() {return 1;}
 
-  double		GetEntropy()	const {
+  double	GetEntropy()	const {
     double total = 0;
     for (int i=0; i<dim; i++)	{
       total += (profile[i]>1e-8) ? -profile[i]*log(profile[i]) : 0;
@@ -517,7 +517,7 @@ public:
     delete[] vec;
   }
 
-  RealVector&		operator=(const RealVector& from)	{
+  RealVector&	operator=(const RealVector& from)	{
     if (!dim)	{
       dim = from.dim;
       vec = new double[dim];
@@ -536,20 +536,20 @@ public:
     return *this;
   }
 
-  double*		GetArray() const {return vec;}
+  double*	GetArray() const {return vec;}
 
-  double&		operator[](int i)	{
+  double&	operator[](int i)	{
     return vec[i];
   }
 
-  double&		operator[](int i) const	{
+  double&	operator[](int i) const	{
     return vec[i];
   }
 
-  int		GetDim() {return dim;}
-  int		Check() {return 1;}
+  int	GetDim() {return dim;}
+  int	Check() {return 1;}
 
-  double		GetMean() const	{
+  double	GetMean() const	{
     double total = 0;
     for (int i=0; i<dim; i++)	{
       total += vec[i];
@@ -557,7 +557,7 @@ public:
     return total / dim;
   }
 
-  double		GetVar() const  {
+  double	GetVar() const  {
     double mean = 0;
     double var = 0;
     for (int i=0; i<dim; i++)	{
@@ -570,26 +570,26 @@ public:
     return var;
   }
 
-  int		ScalarAddition(double d)	{
+  int	ScalarAddition(double d)	{
     for (int i=0; i<dim; i++)	{
       vec[i] += d;
     }
     return dim;
   }
 
-  void		ScalarMultiplication(double d)	{
+  void	ScalarMultiplication(double d)	{
     for (int i=0; i<dim; i++)	{
       vec[i] *= d;
     }
   }
 
-  void		Add(const RealVector& in)	{
+  void	Add(const RealVector& in)	{
     for (int i=0; i<dim; i++)	{
       vec[i] += in[i];
     }
   }
 
-  void		Add(const double* in, double f = 1)	{
+  void	Add(const double* in, double f = 1)	{
     for (int i=0; i<dim; i++)	{
       vec[i] += f * in[i];
     }
@@ -671,7 +671,7 @@ public:
 
   virtual   ~PosRealVector() {}
 
-  PosRealVector&		operator=(const PosRealVector& from)	{
+  PosRealVector&	operator=(const PosRealVector& from)	{
     if (!dim)	{
       dim = from.dim;
       vec = new double[dim];
@@ -690,7 +690,7 @@ public:
     return *this;
   }
 
-  double		GetMean()	const {
+  double	GetMean()	const {
     double total = 0;
     for (int i=0; i<dim; i++)	{
       total += vec[i];
@@ -704,7 +704,7 @@ public:
     }
   }
 
-  double		GetVar()	const {
+  double	GetVar()	const {
     double mean = 0;
     double var = 0;
     for (int i=0; i<dim; i++)	{
@@ -717,7 +717,7 @@ public:
     return var;
   }
 
-  double		GetEntropy()	const {
+  double	GetEntropy()	const {
     double total = 0;
     for (int i=0; i<dim; i++)	{
       total += vec[i];
@@ -751,7 +751,7 @@ public:
     return ProposeMove(tuning,dim);
   }
 
-  int		ScalarMultiplication(double d)	{
+  int	ScalarMultiplication(double d)	{
     for (int i=0; i<dim; i++)	{
       vec[i] *= d;
     }
@@ -794,7 +794,7 @@ public:
     delete[] vec;
   }
 
-  IntVector&		operator=(const IntVector& from)	{
+  IntVector&	operator=(const IntVector& from)	{
     if (!dim)	{
       dim = from.dim;
       vec = new int[dim];
@@ -813,7 +813,7 @@ public:
     return *this;
   }
 
-  IntVector&		operator=(const int* from)	{
+  IntVector&	operator=(const int* from)	{
     if (!dim)	{
       std::cerr << "error in IntVector::operator=(const int*)\n";
       exit(1);
@@ -824,18 +824,18 @@ public:
     return *this;
   }
 
-  const int*		GetArray() const {return vec;}
+  const int*	GetArray() const {return vec;}
 
-  int&		operator[](int i)	{
+  int&	operator[](int i)	{
     return vec[i];
   }
 
-  int&		operator[](int i) const {
+  int&	operator[](int i) const {
     return vec[i];
   }
 
-  int		GetDim() {return dim;}
-  int		Check() {return 1;}
+  int	GetDim() {return dim;}
+  int	Check() {return 1;}
 
   double    GetMean() const	{
     double total = 0;
@@ -845,7 +845,7 @@ public:
     return total / dim;
   }
 
-  double		GetVar() const  {
+  double	GetVar() const  {
     double mean = 0;
     double var = 0;
     for (int i=0; i<dim; i++)	{

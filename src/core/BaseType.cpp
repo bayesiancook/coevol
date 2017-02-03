@@ -64,4 +64,3 @@ double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling,
 	}
 	return ret;
 }
-
