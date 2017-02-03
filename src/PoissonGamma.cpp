@@ -2,7 +2,6 @@
 using namespace std;
 
 class PoissonGammaModel : public ProbModel	{
-
   int N;
   int* data;
 
@@ -11,13 +10,11 @@ class PoissonGammaModel : public ProbModel	{
   Exponential* theta;
   Exponential* sigma;
 
-
   Gamma** omega;
   Product** rate;
   Poisson** X;
 
 public:
-
   PoissonGammaModel(int inN, int* indata)	{
 
     N = inN;
@@ -44,9 +41,7 @@ public:
     MakeScheduler();
   }
 
-
   ~PoissonGammaModel() {}
-
 
   virtual void MakeScheduler()	{
 
@@ -102,7 +97,6 @@ public:
   void FromStream(istream&) {}
 
 };
-
 
 int main(int, char* argv[])	{
 
