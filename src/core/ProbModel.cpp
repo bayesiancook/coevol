@@ -40,17 +40,16 @@ double ProbModel::Update(bool check)	{
 }
 
 void ProbModel::Register()	{
-  /*
-    if (! state.empty())	{
+
+  if (! state.empty())	{
     cerr << "error : state is not empty\n";
     exit(1);
-    }
-    Corrupt();
-    for(clit i=root.begin(); i!=root.end(); ++i)	{
+  }
+  Corrupt();
+  for(clit i=root.begin(); i!=root.end(); ++i)	{
     (*i)->RecursiveRegister(this);
-    }
-    cerr << "model size : " << state.size() << '\n';
-  */
+  }
+  cerr << "model size : " << state.size() << '\n';
 }
 
 
