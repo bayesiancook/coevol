@@ -1,6 +1,10 @@
 #include "core/Random.hpp"
 #include <sys/time.h>
 
+
+/* =======================================================
+    (VL) Magical constants, to be used only in this file.
+   ======================================================= */
 #define MT_IA 397
 #define MT_IB (MT_LEN - MT_IA)
 #define UPPER_MASK 0x80000000
@@ -11,7 +15,6 @@
 
 // #define SAFE_EXP(x) ((x)<-200.0 ? 0.0 : exp(x))
 #define SAFE_EXP(x) exp(x)
-
 
 const double gammacoefs[] = {
   0.9999999999995183,
@@ -31,7 +34,6 @@ const double Logroot2pi =0.918938533204673;
 // -------------------------------------------------
 // just a trick for random number initialisation
 // function to be called before entering main()
-
 class random_init	{
 public:
   random_init()	{
@@ -44,7 +46,6 @@ public:
     std::cerr << "random seed : " << Random::GetSeed() << '\n';
     std::cerr << '\n';
   }
-
 };
 
 static random_init init;
@@ -55,12 +56,11 @@ unsigned long long Random::mt_buffer[MT_LEN];
 
 const double Random::INFPROB = 250;
 
+
 // ---------------------------------------------------------------------------------
 //		¥ Random()
 // ---------------------------------------------------------------------------------
-
 void Random::InitRandom(int seed)	{
-
   if (seed == -1)	{
     struct timeval tod;
     gettimeofday(&tod, NULL);
@@ -92,13 +92,11 @@ int Random::GetSeed()	{
   return Seed;
 }
 
+
 // ---------------------------------------------------------------------------------
 //		¥ Uniform()
 // ---------------------------------------------------------------------------------
-
-
 double Random::Uniform() {
-
   // Mersenne twister
   // Matsumora and Nishimora 1996
   // 32-bit generator
@@ -147,8 +145,6 @@ double Random::Uniform() {
     ret /= 65536;
   }
   return ret;
-
-
   // Matsumoto and Nishimura additionally confound the bits returned to the caller
   // but this doesn't increase the randomness, and slows down the generator by
   // as much as 25%.  So I omit these operations here.
@@ -160,13 +156,10 @@ double Random::Uniform() {
 }
 
 
-
 // ---------------------------------------------------------------------------------
 //		¥ GPoisson()
 // ---------------------------------------------------------------------------------
-
 int Random::Poisson(double mu)	{
-
   int n = 0;
   double tottime = Random::sExpo();
   while (tottime < mu)	{
@@ -177,11 +170,9 @@ int Random::Poisson(double mu)	{
 }
 
 
-
 // ---------------------------------------------------------------------------------
 //		¥ Gamma()
 // ---------------------------------------------------------------------------------
-
 int Random::ApproxBinomial(int N, double p)	{
   return Poisson(N * p);
 }
@@ -190,9 +181,7 @@ int Random::ApproxBinomial(int N, double p)	{
 // ---------------------------------------------------------------------------------
 //		¥ Gamma()
 // ---------------------------------------------------------------------------------
-
 double Random::Gamma(double alpha, double beta)	{
-
   return sGamma(alpha) /beta;
 }
 
@@ -200,8 +189,6 @@ double Random::Gamma(double alpha, double beta)	{
 // ---------------------------------------------------------------------------------
 //		¥ DrawFromDiscreteDistribution()
 // ---------------------------------------------------------------------------------
-
-
 int Random::DrawFromDiscreteDistribution(const double* prob, int nstate)	{
   try	{
     double total = 0;
@@ -230,12 +217,11 @@ int Random::DrawFromDiscreteDistribution(const double* prob, int nstate)	{
   }
 }
 
+
 // ---------------------------------------------------------------------------------
 //		¥ DrawFromUrn()
 // ---------------------------------------------------------------------------------
-
 void Random::DrawFromUrn (int* tab , int n, int N)	{	// draw n out of N
-
   // assumes that tab is an Int16[n]
   for (int i=0; i<n; i++)	{
     tab[i] =0;
@@ -265,11 +251,10 @@ void Random::DrawFromUrn (int* tab , int n, int N)	{	// draw n out of N
   delete[] index;
 }
 
+
 // ---------------------------------------------------------------------------------
 //		¥ Choose()
 // ---------------------------------------------------------------------------------
-
-
 int Random::Choose(int scale)	{
   return (int) (Random::Uniform() * scale);
 }
@@ -294,11 +279,10 @@ int Random::FiniteDiscrete(int n, const double* probarray)	{
   return k;
 }
 
+
 // ---------------------------------------------------------------------------------
 //		¥ sNormal()
 // ---------------------------------------------------------------------------------
-
-
 double Random::sNormal(void)	{
 
   double u = Random::Uniform();
@@ -346,7 +330,6 @@ double Random::sNormal(void)	{
 // ---------------------------------------------------------------------------------
 //		¥ sExpo()
 // ---------------------------------------------------------------------------------
-
 double Random::sExpo() {
   return -log(Random::Uniform());
 }
@@ -364,9 +347,7 @@ double fsign( double num, double sign )
 // ---------------------------------------------------------------------------------
 //		¥ sGamma()
 // ---------------------------------------------------------------------------------
-
 double Random::sGamma(double a) {
-
   if (a > 1)	{
 
     static double a1 = 0;
@@ -463,11 +444,9 @@ double Random::sGamma(double a) {
       }
     */
     return x * x;
-
   }
 
   else	{
-
     double x,y;
     do	{
       double u = Random::Uniform();
@@ -480,16 +459,13 @@ double Random::sGamma(double a) {
 
     return e*x/(x+y);
   }
-
 }
+
 
 // ---------------------------------------------------------------------------------
 //		* logGamma()
 // ---------------------------------------------------------------------------------
-
-
 double Random::logGamma(double alpha) {
-
   // adapted from statlib
   if (alpha < 0)	{
     std::cerr << "error in loggamma: only positive argument\n";
@@ -505,7 +481,6 @@ double Random::logGamma(double alpha) {
 }
 
 double Random::logMultivariateGamma(double a, int p)	{
-
   if (2*a <= (p-1))	{
     std::cerr << "error in Random::logMultivariateGamma\n";
     std::cerr << "parameter out of bound: " << a << '\t' << p << '\n';
