@@ -13,4 +13,4 @@ file (GLOB DIFFSEL
   "src/diffsel/*.cpp"
   )
 
-add_executable(DiffSel ${DIFFSEL} ${CORE})
+add_executable(DiffSel "src/DirichletNormalCodonUsageSelectionMS.cpp" ${DIFFSEL} ${CORE})
