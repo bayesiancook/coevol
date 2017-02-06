@@ -14,9 +14,7 @@ typedef std::set<DAGnode*>::const_iterator clit;
 
 
 class DAGnode {
-
 public:
-
   static bool initmode;
 
   friend class ProbModel;
@@ -27,7 +25,6 @@ public:
   virtual  ~DAGnode();
 
   // methods associated to the DAG aspect
-  //
   int GetChildNumber() {return down.size();}
 
   void SetName(std::string inname) { name = inname;}
@@ -42,7 +39,6 @@ public:
   int GetChildrenNumber();
 
   // methods associated to the Graphical Model aspect
-  //
   virtual void Corrupt(bool bk) = 0;
   virtual double Update() = 0;
   virtual void Restore() = 0;
@@ -61,8 +57,7 @@ public:
   // template <class V> friend class PointerKeeper;
 
 protected:
-
-public:
+// public: // (VL): there was both a protected and a public ; the public does not seem necessary
   std::set<DAGnode*>  up;
   std::set<DAGnode*>  down;
 
@@ -75,9 +70,7 @@ public:
 
 
 class Rnode : public virtual DAGnode, public MH {
-
 public:
-
   Rnode() : logprob(0), bklogprob(0), value_updated (false) {}
 
   virtual double GetFastLogProb() {return (flag ? logprob : logProb());}
@@ -110,7 +103,6 @@ public:
   virtual double Update();
   virtual void Restore();
 
-
   virtual void NotifyCorrupt(bool bk);
   virtual double NotifyUpdate();
   virtual void NotifyRestore();
@@ -137,7 +129,6 @@ public:
   virtual double localUpdate();
 
 protected:
-
   virtual double logProb() = 0;
 
   virtual void RestoreBackup() {}
@@ -151,9 +142,7 @@ protected:
 };
 
 class Dnode : public virtual DAGnode {
-
 public:
-
   virtual void Corrupt(bool bk);
   virtual double Update();
   virtual void Restore();
@@ -166,11 +155,9 @@ public:
   virtual double FullUpdate(bool check = false);
 
 protected:
-
   virtual void NotifyCorrupt(bool bk);
   virtual double NotifyUpdate();
   virtual void NotifyRestore();
-
 
   // virtual void  Initialise();
 
@@ -179,10 +166,9 @@ protected:
 
 };
 
+
 class Mnode : public virtual DAGnode {
-
 public:
-
   Mnode(bool inflag = true) {
     flag = inflag;
   }
@@ -192,7 +178,6 @@ public:
   virtual void Restore();
 
 protected:
-
   virtual void NotifyCorrupt(bool) {}
   virtual double NotifyUpdate() {return 0;}
   virtual void NotifyRestore() {}
@@ -202,6 +187,5 @@ protected:
 
   // virtual void  Initialise() {}
 };
-
 
 #endif
