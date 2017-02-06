@@ -1,4 +1,6 @@
 #include "core/ProbModel.hpp"
+#include <fstream>
+
 using namespace std;
 
 class PoissonGammaModel : public ProbModel	{

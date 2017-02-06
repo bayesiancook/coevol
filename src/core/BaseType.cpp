@@ -1,4 +1,5 @@
 #include "core/BaseType.hpp"
+#include <cmath>
 
 const double Profile::MIN = 1e-20;
 
@@ -283,4 +284,33 @@ double Profile::ProposeMove(double tuning, int dim);
 
 double Profile::ProposeMove(double tuning) {
   return ProposeMove(tuning,dim);
+}
+
+double PosRealVector::ProposeMove(double tuning, int n) {
+  if ((n<=0) || (n > dim)) {
+    n = dim;
+  }
+  int* indices = new int[n];
+  Random::DrawFromUrn(indices,n,dim);
+  double ret = 0;
+  for (int i=0; i<n; i++) {
+    double m = tuning * (Random::Uniform() - 0.5);
+    vec[indices[i]] *= exp(m);
+    ret += m;
+  }
+  delete[] indices;
+  return ret;
+}
+
+double PosRealVector::GetEntropy() const {
+  double total = 0;
+  for (int i=0; i<dim; i++) {
+    total += vec[i];
+  }
+  double ent = 0;
+  for (int i=0; i<dim; i++) {
+    double tmp = vec[i]/total;
+    ent += (tmp>1e-8) ? -tmp*log(tmp) : 0;
+  }
+  return ent;
 }

@@ -2,7 +2,7 @@
 #define MOVE_H
 
 #include <vector>
-#include <iostream>
+#include <sstream>
 
 #include "RandomTypes.hpp"
 

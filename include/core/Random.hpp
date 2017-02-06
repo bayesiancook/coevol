@@ -1,13 +1,6 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-#include <cmath>
-#include <cstdlib>
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <fstream>
-
 #define MT_LEN 624
 
 

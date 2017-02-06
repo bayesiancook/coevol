@@ -561,35 +561,10 @@ public:
     return var;
   }
 
-  double GetEntropy() const {
-    double total = 0;
-    for (int i=0; i<dim; i++) {
-      total += vec[i];
-    }
-    double ent = 0;
-    for (int i=0; i<dim; i++) {
-      double tmp = vec[i]/total;
-      ent += (tmp>1e-8) ? -tmp*log(tmp) : 0;
-    }
-    return ent;
-  }
+  double GetEntropy() const ;
 
 
-  double ProposeMove(double tuning, int n) {
-    if ((n<=0) || (n > dim)) {
-      n = dim;
-    }
-    int* indices = new int[n];
-    Random::DrawFromUrn(indices,n,dim);
-    double ret = 0;
-    for (int i=0; i<n; i++) {
-      double m = tuning * (Random::Uniform() - 0.5);
-      vec[indices[i]] *= exp(m);
-      ret += m;
-    }
-    delete[] indices;
-    return ret;
-  }
+  double ProposeMove(double tuning, int n) ;
 
   double ProposeMove(double tuning) {
     return ProposeMove(tuning,dim);
