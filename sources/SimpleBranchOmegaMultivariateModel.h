@@ -99,17 +99,26 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, double priorsigma, int indf, int contdatatype, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
 
+		// if we want the divergence times to be fixed
 		clamptree = inclamptree;
+
+		// arithmetic / geodesic averages (see Poujol et al)
 		meanexp = inmeanexp;
+
+		// number of components of the Brownian process corresponding to rates
+		// here L = 2: dS and dN/dS
 		L = 2;
 
 		// get data from file
 		nucdata = new FileSequenceAlignment(datafile);
+
+		// make codon alignment 
 		codondata = new CodonSequenceAlignment(nucdata, true, type);
 
 		Nsite = GetData()->GetNsite();
 		Nstate = GetData()->GetNstate();
 
+		// number of MCMC cycles per point
 		nrep = innrep;
 		if (nrep == 0)	{
 			nrep = 30;
@@ -139,19 +148,15 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// construction of the graph
 		// ----------
 
-		df = Ncont + L + indf;
 		Zero = new Const<Real>(0);
 		One = new Const<PosReal>(1);
 
 		cerr << "new chrono\n";
 		if (calibfile != "None")	{
 			iscalib = true;
-			cerr << "calibrated chronogram deactivated\n";
-			exit(1);
 			double a = rootage * rootage / rootstdev / rootstdev;
 			double b = rootage / rootstdev / rootstdev;
 			CalibrationSet* calibset = new FileCalibrationSet(calibfile, tree);
-
 			chronogram = new CalibratedChronogram(tree,One,a,b,calibset);
 		}
 		else	{
@@ -180,6 +185,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// create covariance matrix
 		// from an inverse wishart of parameter sigma0
+		// and df degrees of freedom
+		df = Ncont + L + indf;
 		cerr << "sigma\n";
 		sigma = new ConjugateInverseWishart(sigmaZero, df);
 
@@ -265,8 +272,34 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	MeanExpTreeFromMultiVariate* GetOmegaTree() {return omegatree;}
 
 	MultiVariateTreeProcess* GetMultiVariateProcess() {return process;}
+
 	Chronogram* GetChronogram() {return chronogram;}
 
+	bool isCalibrated()	{
+		return iscalib;
+	}
+
+	CalibratedChronogram* GetCalibratedChronogram()	{
+		if (! iscalib)	{
+			cerr << "error : calibrated chronogram does not exist under uncalibrated model\n";
+			exit(1);
+		}
+		return dynamic_cast<CalibratedChronogram*>(chronogram);
+	}
+
+	Var<PosReal>* GetScale()	{
+		if (isCalibrated())	{
+			return GetCalibratedChronogram()->GetScale();
+		}
+		return 0;
+	}
+
+	double GetRootAge()	{
+		if (isCalibrated())	{
+			return GetCalibratedChronogram()->GetScale()->val();
+		}
+		return 1;
+	}
 
 	ContinuousData* GetContinuousData() {return contdata;}
 
@@ -298,6 +331,14 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		return ret;
 	}
 
+	/*
+	double Move(double tuning = 1)	{
+		// Cycle(1,1,verbose,check)
+		scheduler.Cycle(1,1,true,false);
+		return 1;
+	}
+	*/
+
 	// MCMC schedule
 	virtual void MakeScheduler()	{
 
@@ -309,15 +350,22 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new SimpleMove(chronogram,0.1),10,"chrono");
 			scheduler.Register(new SimpleMove(chronogram,0.01),10,"chrono");
 
+			if (isCalibrated())	{
+				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),1),10,"root age");
+				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.1),10,"root age");
+				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.01),10,"root age");
+				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.001),10,"root age");
+			}
+
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,10,10),1,"conjugate sigma - process");
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,1,10),1,"conjugate sigma - process");
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,0.1,10),1,"conjugate sigma - process");
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,0.01,10),1,"conjugate sigma - process");
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,0.001,10),1,"conjugate sigma - process");
 
-			scheduler.Register(new SimpleMove(DiagArray,10),10,"theta");
-			scheduler.Register(new SimpleMove(DiagArray,1),10,"theta");
-			scheduler.Register(new SimpleMove(DiagArray,0.1),10,"theta");
+			scheduler.Register(new SimpleMove(DiagArray,10),10,"kappa");
+			scheduler.Register(new SimpleMove(DiagArray,1),10,"kappa");
+			scheduler.Register(new SimpleMove(DiagArray,0.1),10,"kappa");
 
 			scheduler.Register(new ProfileMove(relrate,0.1,1),10,"relrates");
 			scheduler.Register(new ProfileMove(relrate,0.03,2),10,"relrates");
@@ -357,6 +405,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	void TraceHeader(ostream& os)	{
 		os << "#logprior\tlnL";
 		os << "\tdS\tomega";
+		if (isCalibrated())	{
+			os << "\trootage";
+		}
 
 		for (int k=0; k<Ncont+L; k++)	{
 			for (int l=k+1; l<Ncont+L; l++)	{
@@ -377,6 +428,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << GetLogPrior() << '\t' << GetLogLikelihood();
 		os << '\t' << GetTotalLength();
 		os << '\t' << GetMeanOmega();
+		if (isCalibrated())	{
+			os << '\t' << GetRootAge();
+		}
+
 		for (int k=0; k<Ncont+L; k++)	{
 			for (int l=k+1; l<Ncont+L; l++)	{
 				os << '\t' << (*sigma)[k][l];
@@ -394,6 +449,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	// save current state
 	void ToStream(ostream& os)	{
 		os << *chronogram << '\n';
+		if (isCalibrated())	{
+			os << *GetCalibratedChronogram()->GetScale() << '\n';
+		}
 		os << *DiagArray << '\n';
 		os << *sigma << '\n';
 		os << *process << '\n';
@@ -403,6 +461,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	void FromStream(istream& is)	{
 		is >> *chronogram;
+		if (isCalibrated())	{
+			is >> *GetCalibratedChronogram()->GetScale();
+		}
 		is >> *DiagArray;
 		is >> *sigma;
 		is >> *process;
