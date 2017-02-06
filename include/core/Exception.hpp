@@ -5,19 +5,15 @@
 class Exception	{};
 
 class CheckSumException : public Exception {
+public:
+  CheckSumException(double in) : checksum(in) {}
 
-	public:
-	CheckSumException(double in) : checksum(in) {}
+  inline double GetCheckSum() { return checksum; }
 
-	double GetCheckSum()	{
-		return checksum;
-	}
-
-	private:
-	double checksum;
+private:
+  double checksum;
 
 };
 
 
 #endif
-

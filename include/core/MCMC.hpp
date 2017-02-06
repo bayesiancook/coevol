@@ -1,6 +1,7 @@
 #ifndef MCMC_H
 #define MCMC_H
 
+
 /// An interface for Monte-carlo behavior
 /**
  * is implemented by various components of the model such as
@@ -11,7 +12,7 @@ class MCMC {
 public:
   static const double MAXDIFF;
 
-  MCMC() : clamp(false) {}
+  inline MCMC() : clamp(false) {}
 
   virtual ~MCMC() {}
 
@@ -22,21 +23,16 @@ public:
   // resample current state directly at equilibrium
   // random draws from the prior (i.e. simulations under the model)
   // proceed by recursively calling Sample, from the roots to the tips of the model
-  virtual void	Sample()	{
-    if (! isClamped())	{
-      drawSample();
-    }
-  }
+  inline virtual void	Sample() { if (! isClamped()) drawSample(); }
 
-  virtual void  drawSample() = 0;
+  virtual void drawSample() = 0;
 
-  bool		isClamped() {return clamp;}
-  void		Clamp() {clamp = true;}
-  void		Unclamp() {clamp = false;}
+  inline bool isClamped() { return clamp; }
+  inline void Clamp() { clamp = true; }
+  inline void Unclamp() { clamp = false; }
 
   // returns the probability of the component given the current state of its parents
   virtual double GetLogProb() = 0;
-
 
 private:
   bool clamp;
@@ -45,7 +41,6 @@ private:
 
 
 // A more specific interface, meant for Metropolis Hastings moves
-
 class MH : public MCMC	{
 public:
   virtual ~MH() {}
@@ -56,5 +51,6 @@ protected:
   virtual void Restore() = 0;
 
 };
+
 
 #endif // MCMC_H

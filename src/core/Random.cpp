@@ -1,13 +1,38 @@
 #include "core/Random.hpp"
 #include <sys/time.h>
 
+#define MT_IA 397
+#define MT_IB (MT_LEN - MT_IA)
+#define UPPER_MASK 0x80000000
+#define LOWER_MASK 0x7FFFFFFF
+#define MATRIX_A 0x9908B0DF
+#define TWIST(b,i,j) ((b)[i] & UPPER_MASK) | ((b)[j] & LOWER_MASK)
+#define MAGIC(s) (((s)&1)*MATRIX_A)
+
+// #define SAFE_EXP(x) ((x)<-200.0 ? 0.0 : exp(x))
+#define SAFE_EXP(x) exp(x)
+
+
+const double gammacoefs[] = {
+  0.9999999999995183,
+  676.5203681218835,
+  -1259.139216722289,
+  771.3234287757674,
+  -176.6150291498386,
+  12.50734324009056,
+  -0.1385710331296526,
+  0.9934937113930748e-05,
+  0.1659470187408462e-06
+};
+const double Pi = 3.1415926535897932384626;
+const double Logroot2pi =0.918938533204673;
+
 
 // -------------------------------------------------
 // just a trick for random number initialisation
 // function to be called before entering main()
 
 class random_init	{
-
 public:
   random_init()	{
     std::cerr << '\n';

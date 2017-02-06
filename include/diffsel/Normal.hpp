@@ -235,7 +235,7 @@ public:
         total += tmp * tmp;
       }
     }
-    return -0.5 * GetDim() * log(2 * Pi * variance->val()) -0.5 * total / variance->val();
+    return -0.5 * GetDim() * log(2 * M_PI * variance->val()) -0.5 * total / variance->val();
   }
 
   double ProposeMove(double tuning)	{
