@@ -34,13 +34,11 @@ protected:
 };
 
 class RandomMGFitnessCodonSubMatrix : public MGFitnessCodonSubMatrix, public RandomCodonSubMatrix	{
-
 public:
-
   RandomMGFitnessCodonSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix, Var<Profile>* inRandomFitnessProfile, bool innormalise = false) :
     SubMatrix(instatespace->GetNstate(), innormalise),
     CodonSubMatrix(instatespace, innormalise),
-    MGFitnessCodonSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), innormalise) ,
+    MGFitnessCodonSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), innormalise),
     RandomSubMatrix(instatespace->GetNstate(), innormalise),
     RandomCodonSubMatrix(instatespace, innormalise),
     matrix(inmatrix),

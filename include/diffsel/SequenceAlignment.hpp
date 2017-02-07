@@ -1,6 +1,8 @@
 #ifndef SEQUENCEALIGNMENT_H
 #define SEQUENCEALIGNMENT_H
 
+#include <vector>
+
 #include "diffsel/StateSpace.hpp"
 #include "diffsel/TaxonSet.hpp"
 
@@ -120,7 +122,6 @@ public:
   void MaskOutgroup(string* group1, string* group2, int n1, int n2)	{
     int nrem = 0;
     int npos = 0;
-    int n = 0;
     for (int i=0; i<GetNsite(); i++)	{
       int ok = 0;
       for (int j=0; j<n1; j++)	{
@@ -145,7 +146,7 @@ public:
   void MaskDiversity(string* group, int n)	{
     int nrem = 0;
     int npos = 0;
-    int present[GetStateSpace()->GetNstate()];
+    std::vector<int> present(GetStateSpace()->GetNstate());
     for (int i=0; i<GetNsite(); i++)	{
       for (int k=0; k<GetStateSpace()->GetNstate(); k++)	{
         present[k] = 0;
@@ -220,8 +221,7 @@ public:
   }
 
   bool GroupCompatible(int i, map<string,int>& group, int ngroup)	{
-
-    int presence[ngroup];
+    std::vector<int> presence(ngroup);
     for (int n=0; n<ngroup; n++)	{
       presence[n] = 0;
     }
@@ -449,9 +449,8 @@ public:
   }
 
   double GetMeanDiversity()	{
-
     int Nstate = GetNstate();
-    int found[Nstate];
+    std::vector<int> found(Nstate);
 
     double mean = 0;
     for (int i=0; i<Nsite; i++)	{

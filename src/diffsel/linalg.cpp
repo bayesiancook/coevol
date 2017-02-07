@@ -303,7 +303,7 @@ int LinAlg::DiagonalizeSymmetricMatrix(double** u, int dim, int nmax, double eps
   delete[] q;
   delete[] r;
   return n;
-};
+}
 
 
 // diagonalize a reversible rate matrix
