@@ -2,6 +2,7 @@
 #define VAR_H
 
 #include "DAGnode.hpp"
+#include <iostream>// FIXME could be removed if implementation is moved into a file
 
 
 template<class T> class Var : public virtual DAGnode , public T{
@@ -48,6 +49,7 @@ public:
   inline void RestoreBackup(){ Var<T>::localrestore(); /*value_updated = true;*/ }
 
 };
+
 
 template<class T> class Dvar : public Var<T>, public Dnode {
 public:
