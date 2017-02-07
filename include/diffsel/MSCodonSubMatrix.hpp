@@ -38,14 +38,14 @@ public:
   RandomMGFitnessCodonSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix, Var<Profile>* inRandomFitnessProfile, bool innormalise = false) :
     SubMatrix(instatespace->GetNstate(), innormalise),
     CodonSubMatrix(instatespace, innormalise),
-    MGFitnessCodonSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), innormalise),
     RandomSubMatrix(instatespace->GetNstate(), innormalise),
+    MGFitnessCodonSubMatrix(instatespace,inmatrix, inRandomFitnessProfile->GetArray(), innormalise),
     RandomCodonSubMatrix(instatespace, innormalise),
     matrix(inmatrix),
-    RandomFitnessProfile(inRandomFitnessProfile) {
+    randomFitnessProfile(inRandomFitnessProfile) {
 
     Register(matrix);
-    Register(RandomFitnessProfile);
+    Register(randomFitnessProfile);
     specialUpdate();
 
   }
@@ -56,13 +56,13 @@ public:
   // based on the value stored by the RandomFitnessprofile parent
   void SetParameters()	{
     SetNucMatrix(matrix);
-    SetFitnessProfile(RandomFitnessProfile->GetArray());
+    SetFitnessProfile(randomFitnessProfile->GetArray());
   }
 
 protected:
 
   RandomSubMatrix* matrix;
-  Var<Profile>* RandomFitnessProfile;
+  Var<Profile>* randomFitnessProfile;
 };
 
 
@@ -112,8 +112,8 @@ public:
   RandomMGFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix, Var<Profile>* inRandomFitnessProfile, Var<Profile>* inRandomCodonUsageSelection, bool innormalise = false) :
     SubMatrix(instatespace->GetNstate(), innormalise),
     CodonSubMatrix(instatespace, innormalise),
-    MGFitnessCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomSubMatrix(instatespace->GetNstate(), innormalise),
+    MGFitnessCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomCodonSubMatrix(instatespace, innormalise),
     matrix(inmatrix),
     RandomFitnessProfile(inRandomFitnessProfile),
@@ -191,8 +191,8 @@ public:
   RandomMGSRFitnessNormalCodonUsageSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix, Var<RealVector>* inRandomFitnessProfile, Var<RealVector>* inRandomCodonUsageSelection, bool innormalise = false) :
     SubMatrix(instatespace->GetNstate(), innormalise),
     CodonSubMatrix(instatespace, innormalise),
-    MGSRFitnessNormalCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomSubMatrix(instatespace->GetNstate(), innormalise),
+    MGSRFitnessNormalCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomCodonSubMatrix(instatespace, innormalise),
     matrix(inmatrix),
     RandomFitnessProfile(inRandomFitnessProfile),
@@ -276,8 +276,8 @@ public:
   RandomMGMSFitnessNormalCodonUsageSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix, Var<RealVector>* inRandomFitnessProfile, Var<RealVector>* inRandomCodonUsageSelection, bool innormalise = false) :
     SubMatrix(instatespace->GetNstate(), innormalise),
     CodonSubMatrix(instatespace, innormalise),
-    MGMSFitnessNormalCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomSubMatrix(instatespace->GetNstate(), innormalise),
+    MGMSFitnessNormalCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomCodonSubMatrix(instatespace, innormalise),
     matrix(inmatrix),
     RandomFitnessProfile(inRandomFitnessProfile),
@@ -364,8 +364,8 @@ public:
   RandomMGSRFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix, Var<Profile>* inRandomFitnessProfile, Var<Profile>* inRandomCodonUsageSelection, bool innormalise = false) :
     SubMatrix(instatespace->GetNstate(), innormalise),
     CodonSubMatrix(instatespace, innormalise),
-    MGSRFitnessCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomSubMatrix(instatespace->GetNstate(), innormalise),
+    MGSRFitnessCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomCodonSubMatrix(instatespace, innormalise),
     matrix(inmatrix),
     RandomFitnessProfile(inRandomFitnessProfile),
@@ -432,7 +432,7 @@ protected:
   void		SetFitnessProfile(double* infitness) {fitness = infitness;}
   void		SetCodonUsageSelection(double* incodonusageselection) {codonusageselection = incodonusageselection;}
 
-  void ToStream(ostream& os)	{
+  void ToStream(ostream&)	{ //FIXME unused parameter
     cerr << "nucmatrix : \n";
     NucMatrix->CheckReversibility();
     cerr << '\n';
@@ -505,8 +505,8 @@ public:
   RandomMGMSFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix, Var<Profile>* inRandomFitnessProfile, Var<Profile>* inRandomCodonUsageSelection, bool innormalise = false) :
     SubMatrix(instatespace->GetNstate(), innormalise),
     CodonSubMatrix(instatespace, innormalise),
-    MGMSFitnessCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomSubMatrix(instatespace->GetNstate(), innormalise),
+    MGMSFitnessCodonUsageSubMatrix(instatespace,inmatrix,inRandomFitnessProfile->GetArray(), inRandomCodonUsageSelection->GetArray(), innormalise),
     RandomCodonSubMatrix(instatespace, innormalise),
     matrix(inmatrix),
     RandomFitnessProfile(inRandomFitnessProfile),
