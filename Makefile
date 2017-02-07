@@ -1,7 +1,9 @@
-all: _build/Makefile
+all: cmake
 	@cd _build ; make --no-print-directory
 
-_build/Makefile:
+cmake : _build/Makefile
+
+_build/Makefile: CMakeLists.txt
 	@rm -rf _build
 	@mkdir _build
 	@cd _build ; cmake ..
