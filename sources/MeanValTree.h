@@ -623,9 +623,13 @@ class MeanExpNormTree : public NewickTree {
 
 	void RecursiveAdd(NodeVarTree<RealVector>* sample, LengthTree* chronogram, double* slopes, double offset, Link* from)	{
 		double* nodeval = sample->GetNodeVal(from->GetNode())->GetArray();
-		double tmp = 0;
+		int dim = sample->GetNodeVal(from->GetNode())->GetDim();
 		// compute linear combination, based on nodeval, slopes and offset
 		// store it into tmp
+		double tmp = offset;
+		for (int i=0; i<dim; i++)	{
+			tmp += slopes[i] * nodeval[i];
+		}
 
 		if (from->isRoot())	{
 			meanroot = tmp;
