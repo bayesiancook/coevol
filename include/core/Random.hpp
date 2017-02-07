@@ -1,7 +1,7 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-#define MT_LEN 624
+#define MT_LEN 624 // (VL) required for magic
 
 
 class Random {

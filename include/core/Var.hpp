@@ -1,127 +1,88 @@
-
 #ifndef VAR_H
 #define VAR_H
 
 #include "DAGnode.hpp"
 
+
 template<class T> class Var : public virtual DAGnode , public T{
+public:
+  Var() {}
+  Var(const T& from) : T(from) , bkvalue(from) {}
+  virtual ~Var() {}
 
-	public:
+  inline Var& operator=(const T& from) { return T::operator=(from); }
 
-	Var() {}
+  inline void localcorrupt(bool bk)	{ if (bk) this->bkvalue = *this; }
 
-	Var(const T& from) : T(from) , bkvalue(from) {}
+  inline void localrestore()	{ T::operator=(bkvalue); }
 
-	virtual ~Var() {}
+  // returns the current value
+  inline const T& val() {return *this;}
 
-	Var& operator=(const T& from)	{
-		return T::operator=(from);
-	}
+  // const T& val2() {return *this;}
 
-	void  localcorrupt(bool bk)	{
-		if (bk)	{
-			this->bkvalue = *this;
-		}
-	}
+  // sets the new value
+  inline void setval(const T& inval) {T::operator=(inval);}
 
-	void  localrestore()	{
-		T::operator=(bkvalue);
-	}
+  inline virtual void Register(DAGnode* in) { DAGnode::Register(in); }
 
-	// returns the current value
-	const T& val() {return *this;}
+protected:
+  T bkvalue;
 
-	// const T& val2() {return *this;}
-
-	// sets the new value
-	void setval(const T& inval) {T::operator=(inval);}
-
-	virtual void Register(DAGnode* in) {
-		DAGnode::Register(in);
-	}
-
-	protected:
-
-	T bkvalue;
 };
 
+
 template<class T> class Rvar : public Var<T>, public Rnode	{
+public:
+  Rvar() {}
+  Rvar(const T& from) : Var<T>(from) {}
 
-	public:
+  inline virtual double ProposeMove(double tuning) { return T::ProposeMove(tuning); }
 
-	Rvar() {}
+  inline void ClampAt(const T& inval) { T::operator=(inval); Clamp(); }
 
-	Rvar(const T& from) : Var<T>(from) {}
+  inline virtual void	Corrupt(bool bk) { Var<T>::localcorrupt(bk); Rnode::Corrupt(bk); }
 
-	virtual double ProposeMove(double tuning)	{
-		return T::ProposeMove(tuning);
-	}
+  inline virtual void  Restore()	{ Var<T>::localrestore(); Rnode::Restore(); }
 
-	void ClampAt(const T& inval)	{
-		T::operator=(inval);
-		Clamp();
-	}
-
-	virtual void	Corrupt(bool bk)	{
-		Var<T>::localcorrupt(bk);
-		Rnode::Corrupt(bk);
-	}
-
-	virtual void 	Restore()	{
-		Var<T>::localrestore();
-		Rnode::Restore();
-	}
-
-	void RestoreBackup()	{
-		Var<T>::localrestore();
-		// value_updated = true;
-	}
+  inline void RestoreBackup(){ Var<T>::localrestore(); /*value_updated = true;*/ }
 
 };
 
 template<class T> class Dvar : public Var<T>, public Dnode {
+public:
+  Dvar() {}
 
-	public:
+  Dvar(const T& from) : Var<T>(from) {}
 
-	Dvar() {}
+  inline void	localCorrupt(bool bk)	{ Var<T>::localcorrupt(bk); Dnode::localCorrupt(bk); }
 
-	Dvar(const T& from) : Var<T>(from) {}
+  inline void localRestore() { Var<T>::localrestore(); Dnode::localRestore(); }
 
-	void	localCorrupt(bool bk)	{
-		Var<T>::localcorrupt(bk);
-		Dnode::localCorrupt(bk);
-	}
-
-	void 	localRestore()	{
-		Var<T>::localrestore();
-		Dnode::localRestore();
-	}
-
-	// returns the current value
-	const T& val() {
-		if (! isUpdated())	{
-			if (! DAGnode::initmode)	{
-				std::cerr << "error : corrupting Dvar\n";
-			}
-			localUpdate();
-		}
-		return (*this);
-	}
+  // returns the current value
+  const T& val() {
+    if (! isUpdated())	{
+      if (! DAGnode::initmode)	{
+        std::cerr << "error : corrupting Dvar\n";
+      }
+      localUpdate();
+    }
+    return (*this);
+  }
 };
 
 
 template <class T> class Const : public Dvar<T>	{
+public:
+  Const(const T& from) : Dvar<T>(from) {}
 
-	public:
-
-	Const(const T& from) : Dvar<T>(from) {}
-
-	void specialUpdate() {}
+  void specialUpdate() {}
 
 };
+
 
 template<> class Rvar<void> : public virtual Rnode {};
 template<> class Dvar<void> : public virtual Dnode {};
 
-#endif
 
+#endif
