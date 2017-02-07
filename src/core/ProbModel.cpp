@@ -8,7 +8,7 @@ ProbModel::~ProbModel() {}
 
 bool ProbModel::CheckUpdateFlags()	{
   bool ret = true;
-  for(clit i=root.begin(); i!=root.end(); ++i)	{
+  for(auto i=root.begin(); i!=root.end(); ++i)	{
     ret &= (*i)->CheckUpdateFlags();
   }
   return ret;
@@ -24,7 +24,7 @@ void ProbModel::RootRegister(DAGnode* var)	{
 
 void ProbModel::Corrupt()	{
   map<DAGnode*,int> m;
-  for(clit i=root.begin(); i!=root.end(); ++i)	{
+  for(auto i=root.begin(); i!=root.end(); ++i)	{
     (*i)->FullCorrupt(m);
   }
 }
@@ -32,7 +32,7 @@ void ProbModel::Corrupt()	{
 double ProbModel::Update(bool check)	{
   Corrupt();
   double total = 0;
-  for(clit i=root.begin(); i!=root.end(); ++i)	{
+  for(auto i=root.begin(); i!=root.end(); ++i)	{
     total += (*i)->FullUpdate(check);
   }
   DAGnode::initmode = false;
@@ -46,7 +46,7 @@ void ProbModel::Register()	{
     exit(1);
   }
   Corrupt();
-  for(clit i=root.begin(); i!=root.end(); ++i)	{
+  for(auto i=root.begin(); i!=root.end(); ++i)	{
     (*i)->RecursiveRegister(this);
   }
   cerr << "model size : " << state.size() << '\n';

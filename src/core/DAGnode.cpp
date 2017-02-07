@@ -21,7 +21,7 @@ DAGnode::~DAGnode()	{
 
 int DAGnode::GetChildrenNumber()	{
   int tot = 0;
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
     tot++;
   }
   return tot;
@@ -35,7 +35,7 @@ void DAGnode::Detach()	{
     (*down.begin())->DeregisterFrom(this);
   }
   /*
-    for (clit i=up.begin(); i!=up.end(); i++)	{
+    for (auto i=up.begin(); i!=up.end(); i++)	{
     DeregisterFrom(*i);
     }
   */
@@ -56,17 +56,17 @@ void DAGnode::Register(DAGnode* parent)	{
 }
 
 void DAGnode::RecursiveRegister(ProbModel* model)	{
-  clit i=up.begin();
+  auto i=up.begin();
   while ((i!=up.end()) && (*i)->flag)  i++;
   bool up_ok = (i == up.end());
 
-  for (clit i=up.begin(); i!=up.end(); i++)	{
+  for (auto i=up.begin(); i!=up.end(); i++)	{
     up_ok &= (*i)->flag;
   }
   if (up_ok)	{
     model->Register(this);
     flag = true;
-    for (clit i=down.begin(); i!=down.end(); i++)	{
+    for (auto i=down.begin(); i!=down.end(); i++)	{
       (*i)->RecursiveRegister(model);
     }
   }
@@ -77,7 +77,7 @@ bool DAGnode::CheckUpdateFlags()	{
   if (! flag)	{
     cerr << "flag error : " << GetName() << '\n';
   }
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
     ret &= (*i)->CheckUpdateFlags();
   }
   return ret;
@@ -96,7 +96,7 @@ bool DAGnode::CheckUpdateFlags()	{
 void Rnode::Corrupt(bool bk)	{
   value_updated = false;
   localCorrupt(bk);
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
     (*i)->NotifyCorrupt(bk);
   }
 }
@@ -116,7 +116,7 @@ void Rnode::FullCorrupt(map<DAGnode*,int>& m)	{
   localCorrupt(true);
   if (m.find(this) == m.end())	{
     m[this] = 1;
-    for (clit i=down.begin(); i!=down.end(); i++)	{
+    for (auto i=down.begin(); i!=down.end(); i++)	{
       (*i)->FullCorrupt(m);
     }
   }
@@ -129,12 +129,12 @@ void Rnode::FullCorrupt(map<DAGnode*,int>& m)	{
 double Rnode::Update()	{
   double ret = 0;
   if (! flag)	{
-    clit i=up.begin();
+    auto i=up.begin();
     while ((i!=up.end()) && ((*i)->isValueUpdated())) i++;
     bool up_ok = (i == up.end());
     /*
       bool up_ok = true;
-      for (clit i=up.begin(); i!=up.end(); i++)	{
+      for (auto i=up.begin(); i!=up.end(); i++)	{
       up_ok &= (*i)->isValueUpdated();
       // up_ok &= (*i)->flag;
       }
@@ -142,7 +142,7 @@ double Rnode::Update()	{
     if (up_ok)	{
       ret = localUpdate();
       value_updated = true;
-      for (clit i=down.begin(); i!=down.end(); i++)	{
+      for (auto i=down.begin(); i!=down.end(); i++)	{
         ret += (*i)->NotifyUpdate();
       }
     }
@@ -153,12 +153,12 @@ double Rnode::Update()	{
 double Rnode::NotifyUpdate()	{
   double ret = 0;
   if (! flag)	{
-    clit i=up.begin();
+    auto i=up.begin();
     while ((i!=up.end()) && ((*i)->isValueUpdated())) i++;
     bool up_ok = (i == up.end());
     /*
       bool up_ok = true;
-      for (clit i=up.begin(); i!=up.end(); i++)	{
+      for (auto i=up.begin(); i!=up.end(); i++)	{
       up_ok &= (*i)->isValueUpdated();
       // up_ok &= (*i)->flag;
       }
@@ -170,7 +170,7 @@ double Rnode::NotifyUpdate()	{
       ret = localUpdate();
       if (! value_updated)	{
         value_updated = true;
-        for (clit i=down.begin(); i!=down.end(); i++)	{
+        for (auto i=down.begin(); i!=down.end(); i++)	{
           ret += (*i)->NotifyUpdate();
         }
       }
@@ -188,12 +188,12 @@ double Rnode::localUpdate()	{
 double Rnode::FullUpdate(bool check)	{
   double ret = 0;
   if (! flag)	{
-    clit i=up.begin();
+    auto i=up.begin();
     while ((i!=up.end()) && ((*i)->isValueUpdated())) i++;
     bool up_ok = (i == up.end());
     /*
       bool up_ok = true;
-      for (clit i=up.begin(); i!=up.end(); i++)	{
+      for (auto i=up.begin(); i!=up.end(); i++)	{
       up_ok &= (*i)->isValueUpdated();
       // up_ok &= (*i)->flag;
       }
@@ -206,7 +206,7 @@ double Rnode::FullUpdate(bool check)	{
         cerr << "number of parents : " << up.size() << '\n';
         throw CheckSumException(ret);
       }
-      for (clit i=down.begin(); i!=down.end(); i++)	{
+      for (auto i=down.begin(); i!=down.end(); i++)	{
         ret += (*i)->FullUpdate(check);
       }
     }
@@ -220,13 +220,13 @@ double Rnode::FullUpdate(bool check)	{
 
   if (! flag)	{
   bool up_ok = true;
-  for (clit i=up.begin(); i!=up.end(); i++)	{
+  for (auto i=up.begin(); i!=up.end(); i++)	{
   up_ok &= (*i)->flag;
   }
   if (up_ok)	{
   Sample();
   localUpdate();
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
   (*i)->Initialise();
   }
   }
@@ -240,12 +240,12 @@ double Rnode::FullUpdate(bool check)	{
 
 void Rnode::Restore()	{
   if (! flag)	{
-    clit i=up.begin();
+    auto i=up.begin();
     while ((i!=up.end()) && ((*i)->isValueUpdated())) i++;
     bool up_ok = (i == up.end());
     /*
       bool up_ok = true;
-      for (clit i=up.begin(); i!=up.end(); i++)	{
+      for (auto i=up.begin(); i!=up.end(); i++)	{
       up_ok &= (*i)->isValueUpdated();
       // up_ok &= (*i)->flag;
       }
@@ -253,7 +253,7 @@ void Rnode::Restore()	{
     if (up_ok)	{
       localRestore();
       value_updated = true;
-      for (clit i=down.begin(); i!=down.end(); i++)	{
+      for (auto i=down.begin(); i!=down.end(); i++)	{
         (*i)->NotifyRestore();
       }
     }
@@ -262,12 +262,12 @@ void Rnode::Restore()	{
 
 void Rnode::NotifyRestore()	{
   if (! flag)	{
-    clit i=up.begin();
+    auto i=up.begin();
     while ((i!=up.end()) && ((*i)->isValueUpdated())) i++;
     bool up_ok = (i == up.end());
     /*
       bool up_ok = true;
-      for (clit i=up.begin(); i!=up.end(); i++)	{
+      for (auto i=up.begin(); i!=up.end(); i++)	{
       up_ok &= (*i)->isValueUpdated();
       // up_ok &= (*i)->flag;
       }
@@ -276,7 +276,7 @@ void Rnode::NotifyRestore()	{
       localRestore();
       if (! value_updated)	{
         value_updated = true;
-        for (clit i=down.begin(); i!=down.end(); i++)	{
+        for (auto i=down.begin(); i!=down.end(); i++)	{
           (*i)->NotifyRestore();
         }
       }
@@ -308,7 +308,7 @@ void Rnode::localRestore()	{
 
 void Dnode::Corrupt(bool bk)	{
   localCorrupt(bk);
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
     (*i)->NotifyCorrupt(bk);
   }
 }
@@ -325,7 +325,7 @@ void Dnode::FullCorrupt(map<DAGnode*,int>& m)	{
   localCorrupt(true);
   if (m.find(this) == m.end())	{
     m[this] = 1;
-    for (clit i=down.begin(); i!=down.end(); i++)	{
+    for (auto i=down.begin(); i!=down.end(); i++)	{
       (*i)->FullCorrupt(m);
     }
   }
@@ -338,19 +338,19 @@ void Dnode::FullCorrupt(map<DAGnode*,int>& m)	{
 double Dnode::Update()	{
   double ret = 0;
   if (! flag)	{
-    clit i=up.begin();
+    auto i=up.begin();
     while ((i!=up.end()) && ((*i)->isValueUpdated())) i++;
     bool up_ok = (i == up.end());
     /*
       bool up_ok = true;
-      for (clit i=up.begin(); i!=up.end(); i++)	{
+      for (auto i=up.begin(); i!=up.end(); i++)	{
       up_ok &= (*i)->isValueUpdated();
       // up_ok &= (*i)->flag;
       }
     */
     if (up_ok)	{
       ret = localUpdate();
-      for (clit i=down.begin(); i!=down.end(); i++)	{
+      for (auto i=down.begin(); i!=down.end(); i++)	{
         ret += (*i)->NotifyUpdate();
       }
     }
@@ -371,19 +371,19 @@ double Dnode::localUpdate()	{
 double Dnode::FullUpdate(bool check)	{
   double ret = 0;
   if (! flag)	{
-    clit i=up.begin();
+    auto i=up.begin();
     while ((i!=up.end()) && ((*i)->isValueUpdated())) i++;
     bool up_ok = (i == up.end());
     /*
       bool up_ok = true;
-      for (clit i=up.begin(); i!=up.end(); i++)	{
+      for (auto i=up.begin(); i!=up.end(); i++)	{
       up_ok &= (*i)->isValueUpdated();
       // up_ok &= (*i)->flag;
       }
     */
     if (up_ok)	{
       ret = localUpdate();
-      for (clit i=down.begin(); i!=down.end(); i++)	{
+      for (auto i=down.begin(); i!=down.end(); i++)	{
         ret += (*i)->FullUpdate(check);
       }
     }
@@ -395,12 +395,12 @@ double Dnode::FullUpdate(bool check)	{
   void Dnode::Initialise()	{
   if (! flag)	{
   bool up_ok = true;
-  for (clit i=up.begin(); i!=up.end(); i++)	{
+  for (auto i=up.begin(); i!=up.end(); i++)	{
   up_ok &= (*i)->flag;
   }
   if (up_ok)	{
   localUpdate();
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
   (*i)->Initialise();
   }
   }
@@ -414,19 +414,19 @@ double Dnode::FullUpdate(bool check)	{
 
 void Dnode::Restore()	{
   if (! flag)	{
-    clit i=up.begin();
+    auto i=up.begin();
     while ((i!=up.end()) && ((*i)->isValueUpdated())) i++;
     bool up_ok = (i == up.end());
     /*
       bool up_ok = true;
-      for (clit i=up.begin(); i!=up.end(); i++)	{
+      for (auto i=up.begin(); i!=up.end(); i++)	{
       up_ok &= (*i)->isValueUpdated();
       // up_ok &= (*i)->flag;
       }
     */
     if (up_ok)	{
       localRestore();
-      for (clit i=down.begin(); i!=down.end(); i++)	{
+      for (auto i=down.begin(); i!=down.end(); i++)	{
         (*i)->NotifyRestore();
       }
     }
@@ -454,7 +454,7 @@ void Dnode::localRestore()	{
 
 void Mnode::Corrupt(bool bk)	{
   flag = false;
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
     (*i)->Corrupt(bk);
   }
 }
@@ -466,7 +466,7 @@ void Mnode::Corrupt(bool bk)	{
 double Mnode::Update()	{
   flag = true;
   double ret = 0;
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
     ret += (*i)->Update();
   }
   return ret;
@@ -478,7 +478,7 @@ double Mnode::Update()	{
 
 void Mnode::Restore()	{
   flag = true;
-  for (clit i=down.begin(); i!=down.end(); i++)	{
+  for (auto i=down.begin(); i!=down.end(); i++)	{
     (*i)->Restore();
   }
 }

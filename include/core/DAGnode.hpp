@@ -11,8 +11,6 @@
 class DAGnode;
 class ProbModel;
 
-typedef std::set<DAGnode*>::const_iterator clit;
-
 
 class DAGnode {
 public:
