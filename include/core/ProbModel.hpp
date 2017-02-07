@@ -3,7 +3,9 @@
 
 #include <set>
 #include <iostream>
+
 #include "Move.hpp"
+
 
 /// Probabilistic model
 /**
@@ -17,15 +19,10 @@
  * A model implements MCMC:
  * - GetLogProb returns the log of the probability (or probability density) mentioned above
  * - Sample draws a model configuration from this joint probability
- * - Move resample the model's current configuration conditional on the data
- */
-
+ * - Move resample the model's current configuration conditional on the data */
 class ProbModel : public MCMC {
-
 public:
-
   ProbModel();
-
   virtual ~ProbModel();
 
   /// obtain the set ("state") of all the nodes of the DAG by a recursive traversal from the root nodes to the tips
@@ -42,7 +39,7 @@ public:
 
   // resamples the model's current configuration conditional on the data
   // returns success rate
-  virtual double Move(double tuning_modulator = 1) { return Move(tuning_modulator, 1, false, false);}
+  inline virtual double Move(double tuning_modulator = 1) { return Move(tuning_modulator, 1, false, false);}
 
   virtual double Move(double tuning_modulator, int ncycle, bool verbose, bool check);
 
