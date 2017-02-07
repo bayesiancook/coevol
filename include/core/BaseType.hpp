@@ -497,7 +497,7 @@ public:
     vec = new double[dim];
   }
 
-  PosRealVector(const PosRealVector& from) {
+  PosRealVector(const PosRealVector& from): RealVector() {
     dim = from.dim;
     vec = new double[dim];
     for (int i=0; i<dim; i++) {
