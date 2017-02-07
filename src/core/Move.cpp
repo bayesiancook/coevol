@@ -1,11 +1,20 @@
-#include "core/Chrono.hpp"
-#include "core/ProbModel.hpp"
 #include "core/Move.hpp"
+#include "core/ProbModel.hpp"
+#include "core/Chrono.hpp"
 #include "core/Exception.hpp"
 
 #include <iostream>
 using namespace std;
 
+double MCScheduler::Move(double tuning_modulator) {
+  if (random)	{
+    RandomCycle(tuning_modulator,1,false,false);
+  }
+  else	{
+    Cycle(tuning_modulator,1,false,false);
+  }
+  return 1;
+}
 
 void MCScheduler::Reset()	{
   size = update.size();

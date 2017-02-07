@@ -52,38 +52,21 @@ public:
   void RandomCycle(double tuning_modulator, int nrep, bool verbose, bool check);
   void Move(double tuning_modulator, int i, bool verbose, bool check, int nrep);
 
-  double Move(double tuning_modulator = 1)	{
-    if (random)	{
-      RandomCycle(tuning_modulator,1,false,false);
-    }
-    else	{
-      Cycle(tuning_modulator,1,false,false);
-    }
-    return 1;
-  }
+  double Move(double tuning_modulator = 1)	;
 
-  void SetRandom(bool inrand)	{
-    random = inrand;
-  }
+  inline void SetRandom(bool inrand)	{ random = inrand; }
   void Register(MCUpdate* inupdate, int inweight = 1, std::string inname = "");
   void Reset();
 
-  double GetTotalTime() {return totaltime;}
-  double GetMeanTimePerCycle() {return ncycle ? totaltime / ncycle : 0;}
-  double GetTotalCycleNumber() {return ncycle;}
+  inline double GetTotalTime() {return totaltime;}
+  inline double GetMeanTimePerCycle() {return ncycle ? totaltime / ncycle : 0;}
+  inline double GetTotalCycleNumber() {return ncycle;}
 
   void ToStream(std::ostream& os, std::ostream& osdetail);
 
-  void OpenLoop(int n) {
-    std::ostringstream oss;
-    oss << '(' << n << ":";
-    command += oss.str();
-  }
-  void CloseLoop() {
-    command += ')';
-  }
+  inline void OpenLoop(int n) { std::ostringstream oss; oss << '(' << n << ":"; command += oss.str(); }
+  inline void CloseLoop() { command += ')'; }
   std::vector<int> ReadCommand(unsigned int &n);
-
 
 protected:
   std::vector<MCUpdate*> update;
@@ -105,24 +88,23 @@ protected:
 
   bool closed;
   bool random;
+
 };
 
 
 // The simplest MCUpdate object:
 // when its Move() function is called
 // it calls the Move() function of the random variable it is associated to
-//
 class SimpleMove : public MCUpdate	{
 public:
   SimpleMove(MCMC* invar, double intuning) : var(invar), tuning(intuning) {}
 
-  double Move(double tuning_modulator = 1)	{
-    return var->Move(tuning * tuning_modulator);
-  }
+  inline double Move(double tuning_modulator = 1)	{ return var->Move(tuning * tuning_modulator); }
 
 protected:
   MCMC* var;
   double tuning;
+
 };
 
 
@@ -133,7 +115,6 @@ public:
   double Move(double tuning_modulator = 1);
 
 private:
-
   Rnode* a1;
   Rnode* a2;
   double tuning;
@@ -179,7 +160,7 @@ template <class P, class S> class ConjugateMove : public MCUpdate	{
 public:
   ConjugateMove(P* inprior, S* insampling, double intuning, int inn) : prior(inprior), sampling(insampling), tuning(intuning), n(inn) {}
 
-  double Move(double tuning_modulator = 1)	{
+  double Move(double tuning_modulator = 1)	{ // (VL) left there since it is in a template
     prior->Integrate();
     double total = 0;
     for (int i=0; i<n; i++)	{
@@ -207,7 +188,6 @@ public:
   double Move(double tuning_modulator = 1);
 
 private:
-
   Multiplicative* m1;
   Multiplicative* m2;
   double tuning;
@@ -223,7 +203,6 @@ public:
   double Move(double tuning_modulator = 1);
 
 private:
-
   Additive* a1;
   Additive* a2;
   double tuning;
@@ -239,7 +218,6 @@ public:
   double Move(double tuning_modulator = 1);
 
 private:
-
   Additive* a1;
   Additive* a2;
   double tuning;
@@ -254,10 +232,10 @@ public:
   double Move(double tuning_modulator = 1);
 
 private:
-
   Rvar<RealVector>* var;
   double tuning;
   int m;
+
 };
 
 
@@ -268,9 +246,9 @@ public:
   double Move(double tuning_modulator = 1);
 
 private:
-
   Rvar<RealVector>* var;
   double tuning;
+
 };
 
 
@@ -298,6 +276,7 @@ private:
   Rvar<Profile>* var;
   double tuning;
   int n;
+
 };
 
 #endif
