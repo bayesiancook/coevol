@@ -1,12 +1,68 @@
 #include "core/RandomTypes.hpp"
 using namespace std;
 
+
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//	* Normal
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+Normal::Normal(Var<Real>* inmean, Var<PosReal>* invariance) {
+  meanvec = 0;
+  mean = inmean;
+  variance = invariance;
+  Register(mean);
+  Register(variance);
+  Sample();
+  }
+
+Normal::Normal(Var<RealVector>* inmeanvec, Var<PosReal>* invariance, int inindex) {
+  mean = 0;
+  meanvec = inmeanvec;
+  variance = invariance;
+  index = inindex;
+  Register(meanvec);
+  Register(variance);
+  Sample();
+  }
+
+double Normal::logProb() {
+  if ((! variance) || (!variance->val()))	{
+    return 0;
+  }
+  if (meanvec)	{
+    return -0.5 * log(2 * M_PI * variance->val()) -0.5 * (this->val() - (*meanvec)[index]) * (this->val() - (*meanvec)[index]) / variance->val();
+  }
+  return -0.5 * log(2 * M_PI * variance->val()) -0.5 * (this->val() - mean->val()) * (this->val() - mean->val()) / variance->val();
+  }
+
+void Normal::drawSample() {
+  if (meanvec)	{
+    if ((! variance) || (!variance->val()))	{
+      // this is just for starting the model
+      setval((*meanvec)[index] + Random::sNormal() * sqrt(10));
+    }
+    else	{
+      setval((*meanvec)[index] + Random::sNormal() * sqrt(variance->val()));
+    }
+  }
+  else	{
+    if ((! variance) || (!variance->val()))	{
+      // this is just for starting the model
+      setval(mean->val() + Random::sNormal() * sqrt(10));
+    }
+    else	{
+      setval(mean->val() + Random::sNormal() * sqrt(variance->val()));
+    }
+  }
+  }
+
+
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Gamma
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 const double Gamma::GAMMAMIN = 1e-20;
 
 Gamma::Gamma(Var<PosReal>* inshape, Var<PosReal>* inscale, bool inmeanvar) {
@@ -19,7 +75,7 @@ Gamma::Gamma(Var<PosReal>* inshape, Var<PosReal>* inscale, bool inmeanvar) {
 	Sample();
 }
 
-Gamma::Gamma(const Gamma& from)	{
+Gamma::Gamma(const Gamma& from): Rvar<PosReal>() {
 	SetName("gamma");
 	meanvar = from.meanvar;
 	scale = from.scale;
@@ -58,12 +114,12 @@ double Gamma::logProb()	{
 	return -Random::logGamma(shape->val()) + (shape->val())*log(scale->val()) - *this * (scale->val()) - (1 - (shape->val()))*log(*this);
 }
 
+
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Beta
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 Beta::Beta(Var<PosReal>* inalpha, Var<PosReal>* inbeta) {
 	alpha = inalpha;
 	beta = inbeta;
@@ -72,7 +128,7 @@ Beta::Beta(Var<PosReal>* inalpha, Var<PosReal>* inbeta) {
 	Sample();
 }
 
-Beta::Beta(const Beta& from)	{
+Beta::Beta(const Beta& from): Rvar<UnitReal>() {
 	alpha = from.alpha;
 	beta = from.beta;
 	Register(alpha);
@@ -106,7 +162,6 @@ double Beta::logProb()	{
 //	* Exponential
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 Exponential::Exponential(Var<PosReal>* inscale, ParentType intype) {
 	scale = inscale;
 	type = intype;
@@ -114,7 +169,7 @@ Exponential::Exponential(Var<PosReal>* inscale, ParentType intype) {
 	Sample();
 }
 
-Exponential::Exponential(const Exponential& from) {
+Exponential::Exponential(const Exponential& from): Rvar<PosReal>() {
 	scale = from.scale;
 	Register(scale);
 	Sample();
@@ -136,12 +191,12 @@ double Exponential::logProb()	{
 	return -(scale->val())* val() + log(scale->val());
 }
 
+
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* PosUniform
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 PosUniform::PosUniform(Var<PosReal>* inroot, double inmax)	{
 	root = inroot;
 	max = inmax;
@@ -149,7 +204,7 @@ PosUniform::PosUniform(Var<PosReal>* inroot, double inmax)	{
 	Sample();
 }
 
-PosUniform::PosUniform(const PosUniform& from) {
+PosUniform::PosUniform(const PosUniform& from): Rvar<PosReal>() {
 	root = from.root;
 	max = from.max;
 	Register(root);
@@ -171,6 +226,7 @@ double PosUniform::logProb()	{
 	}
 	return 0;
 }
+
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -204,19 +260,19 @@ double Binomial::logProb()	{
 	return ret;
 }
 
-double Binomial::ProposeMove(double tuning)	{
+double Binomial::ProposeMove(double) { // FIXME unused parameter!
 	bkvalue = *this;
 	flag = false;
 	drawSample();
 	return 0;
 }
 
+
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Poisson
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 Poisson::Poisson(Var<PosReal>* inmu) {
 	mu = inmu;
 	Register(mu);
@@ -246,21 +302,19 @@ double Poisson::logProb()	{
 	}
 	return ret;
 }
-
-/*
-double Poisson::ProposeMove(double tuning)	{
+/*double Poisson::ProposeMove(double tuning)	{
 	bkvalue = *this;
 	flag = false;
 	drawSample();
 	return 0;
-}
-*/
+}*/
+
+
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Dirichlet
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 Dirichlet::Dirichlet(int dimension) {
 	setval(Profile(dimension));
 	bkvalue = Profile(dimension);
@@ -284,7 +338,6 @@ Dirichlet::Dirichlet(Var<Profile>* incenter, Var<PosReal>* inconcentration)	{
 }
 
 void Dirichlet::drawSample()	{
-
 	Profile& profile = *this;
 	double total = 0;
 	for (int k=0; k<GetDim(); k++)	{
@@ -304,8 +357,32 @@ void Dirichlet::drawSample()	{
 	}
 }
 
-double Dirichlet::logProb()	{
+double Dirichlet::Move(double tuning, int n) {
+  if (! isClamped())	{
+    // Metropolis Hastings here
+    Corrupt(true);
+    double logHastings = Profile::ProposeMove(tuning, n);
+    double deltaLogProb = Update();
+    double logRatio = deltaLogProb + logHastings;
+    bool accepted = (log(Random::Uniform()) < logRatio);
+    if (! accepted)	{
+      Corrupt(false);
+      Restore();
+    }
+    return (double) accepted;
+  }
+  return 1;
+  }
 
+double Dirichlet::Move(double tuning) {
+  return Move(tuning, GetDim());
+  }
+
+double Dirichlet::ProposeMove(double tuning) {
+  return Profile::ProposeMove(tuning, GetDim());
+  }
+
+double Dirichlet::logProb()	{
 	double total = 0;
 	if (concentration)	{
 		total = Random::logGamma(concentration->val());
@@ -320,7 +397,6 @@ double Dirichlet::logProb()	{
 }
 
 Multinomial::Multinomial (Var<Profile>* inprobarray, int inN)	{
-
 	probarray = inprobarray;
 	N = inN;
 	setval(IntVector(inprobarray->val().GetDim()));
@@ -329,9 +405,7 @@ Multinomial::Multinomial (Var<Profile>* inprobarray, int inN)	{
 	Sample();
 }
 
-
 double Multinomial::logProb()	{
-
 	double ret = Random::logGamma(N+1);
 	for (int k=0; k<GetDim(); k++)	{
 		ret -= Random::logGamma((*this)[k] + 1);
@@ -341,7 +415,6 @@ double Multinomial::logProb()	{
 }
 
 void Multinomial::drawSample()	{
-
 	for (int k=0; k<GetDim(); k++)	{
 		(*this)[k] = 0;
 	}
@@ -356,30 +429,26 @@ void Multinomial::drawSample()	{
 //	* FiniteDiscrete
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 FiniteDiscrete::FiniteDiscrete(Var<Profile>* inprobarray)	{
-
 	probarray = inprobarray;
 	Register(probarray);
 	Sample();
 }
 
 double FiniteDiscrete::logProb()	{
-
 	return log((*probarray)[*this]);
 }
 
 void FiniteDiscrete::drawSample()	{
-
 	setval(Random::FiniteDiscrete(probarray->GetDim(),probarray->val().GetArray()));
 }
+
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* IIDExp
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 IIDExp::IIDExp(int dimension) {
 	dim = dimension;
 	setval(PosRealVector(dimension));
@@ -398,14 +467,12 @@ IIDExp::IIDExp(int dimension, Var<PosReal>* inmean)	{
 }
 
 void IIDExp::setall(double in)	{
-
 	for (int i=0; i<GetDim(); i++)	{
 		(*this)[i] = in;
 	}
 }
 
 void IIDExp::drawSample()	{
-
 	double m = mean ? (double) mean->val() : 1.0;
 	for (int i=0; i<GetDim(); i++)	{
 		(*this)[i] = Random::sExpo() * m;
@@ -417,7 +484,6 @@ void IIDExp::drawSample()	{
 }
 
 double IIDExp::logProb()	{
-
 	double total = 0;
 	double m = mean ? (double) mean->val() : 1;
 	for (int i=0; i<GetDim(); i++)	{
@@ -427,13 +493,11 @@ double IIDExp::logProb()	{
 }
 
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* IIDGamma
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 IIDGamma::IIDGamma(int dimension) {
 	dim = dimension;
 	setval(PosRealVector(dimension));
@@ -455,14 +519,12 @@ IIDGamma::IIDGamma(int dimension, Var<PosReal>* inalpha, Var<PosReal>* inbeta)	{
 }
 
 void IIDGamma::setall(double in)	{
-
 	for (int i=0; i<GetDim(); i++)	{
 		(*this)[i] = in;
 	}
 }
 
 void IIDGamma::drawSample()	{
-
 	double a = alpha ? (double) alpha->val() : 1.0;
 	double b = beta ? (double) beta->val() : 1.0;
 	for (int i=0; i<GetDim(); i++)	{
@@ -474,7 +536,6 @@ void IIDGamma::drawSample()	{
 }
 
 double IIDGamma::logProb()	{
-
 	double a = alpha ? (double) alpha->val() : 1.0;
 	double b = beta ? (double) beta->val() : 1.0;
 	double loggammaa = Random::logGamma(a);
@@ -485,5 +546,3 @@ double IIDGamma::logProb()	{
 	}
 	return total;
 }
-
-

@@ -7,58 +7,15 @@
 
 // if variance is null (either as a pointer, or as a value), then this is an improper uniform distribution
 // drawSample is then an ad-hoc sampling procedure, just to draw something when first instantiating the variable
-class Normal : public virtual Rvar<Real>	{
+class Normal : public virtual Rvar<Real> {
 public:
-  Normal(Var<Real>* inmean, Var<PosReal>* invariance)	{
-    meanvec = 0;
-    mean = inmean;
-    variance = invariance;
-    Register(mean);
-    Register(variance);
-    Sample();
-  }
+  Normal(Var<Real>* inmean, Var<PosReal>* invariance) ;
+  Normal(Var<RealVector>* inmeanvec, Var<PosReal>* invariance, int inindex) ;
 
-  Normal(Var<RealVector>* inmeanvec, Var<PosReal>* invariance, int inindex)	{
-    mean = 0;
-    meanvec = inmeanvec;
-    variance = invariance;
-    index = inindex;
-    Register(meanvec);
-    Register(variance);
-    Sample();
-  }
-
-  double logProb()	{
-    if ((! variance) || (!variance->val()))	{
-      return 0;
-    }
-    if (meanvec)	{
-      return -0.5 * log(2 * M_PI * variance->val()) -0.5 * (this->val() - (*meanvec)[index]) * (this->val() - (*meanvec)[index]) / variance->val();
-    }
-    return -0.5 * log(2 * M_PI * variance->val()) -0.5 * (this->val() - mean->val()) * (this->val() - mean->val()) / variance->val();
-  }
+  double logProb() ;
 
 protected:
-  void drawSample()	{
-    if (meanvec)	{
-      if ((! variance) || (!variance->val()))	{
-        // this is just for starting the model
-        setval((*meanvec)[index] + Random::sNormal() * sqrt(10));
-      }
-      else	{
-        setval((*meanvec)[index] + Random::sNormal() * sqrt(variance->val()));
-      }
-    }
-    else	{
-      if ((! variance) || (!variance->val()))	{
-        // this is just for starting the model
-        setval(mean->val() + Random::sNormal() * sqrt(10));
-      }
-      else	{
-        setval(mean->val() + Random::sNormal() * sqrt(variance->val()));
-      }
-    }
-  }
+  void drawSample() ;
 
 private:
   int index;
@@ -68,14 +25,15 @@ private:
 
 };
 
-class Exponential : public Rvar<PosReal>	{
+
+class Exponential : public Rvar<PosReal> {
 public:
   enum ParentType {MEAN,RATE};
 
   Exponential(Var<PosReal>* inscale, ParentType intype);
   Exponential(const Exponential& from);
 
-  virtual ~Exponential(){}
+  virtual ~Exponential() {}
 
   void drawSample();
 
@@ -87,7 +45,8 @@ private:
 
 };
 
-class Gamma : public virtual Rvar<PosReal>	{
+
+class Gamma : public virtual Rvar<PosReal> {
 public:
   static const double GAMMAMIN;
 
@@ -107,7 +66,7 @@ protected:
 };
 
 
-class Beta : public Rvar<UnitReal>	{
+class Beta : public Rvar<UnitReal> {
 public:
   Beta(Var<PosReal>* inalpha, Var<PosReal>* inbeta);
   Beta(const Beta& from);
@@ -127,7 +86,7 @@ private:
 };
 
 
-class PosUniform : public Rvar<PosReal>	{
+class PosUniform : public Rvar<PosReal> {
 public:
   PosUniform(Var<PosReal>* inroot, double inmax);
   PosUniform(const PosUniform& from);
@@ -143,38 +102,37 @@ private:
   double max;
 };
 
-class Binomial : public Rvar<Int>	{
+
+class Binomial : public Rvar<Int> {
 public:
   Binomial(int inN, Var<UnitReal>* intheta);
   virtual ~Binomial() {}
 
-
-  void    drawSample();
-  double    ProposeMove(double tuning);
-  // int    Check();
+  void drawSample();
+  double ProposeMove(double tuning);
+  // int Check();
 
 private:
-  virtual double    logProb();
+  virtual double logProb();
 
-  int     N;
+  int N;
   Var<UnitReal>*  theta;
 };
 
-class Poisson : public virtual Rvar<Int>	{
+
+class Poisson : public virtual Rvar<Int> {
 public:
   Poisson(Var<PosReal>* inmu);
-  virtual	~Poisson() {}
+  virtual ~Poisson() {}
 
-  void    drawSample();
-  // double     ProposeMove(double tuning);
-  // int    Check();
+  void drawSample();
 
 protected:
-  virtual double    logProb();
-
+  virtual double logProb();
 
   Var<PosReal>* mu;
 };
+
 
 class Dirichlet : public virtual Rvar<Profile> {
 public:
@@ -185,30 +143,9 @@ public:
 
   void drawSample();
 
-  virtual double	Move(double tuning, int n)	{
-    if (! isClamped())	{
-      // Metropolis Hastings here
-      Corrupt(true);
-      double logHastings = Profile::ProposeMove(tuning, n);
-      double deltaLogProb = Update();
-      double logRatio = deltaLogProb + logHastings;
-      bool accepted = (log(Random::Uniform()) < logRatio);
-      if (! accepted)	{
-        Corrupt(false);
-        Restore();
-      }
-      return (double) accepted;
-    }
-    return 1;
-  }
-
-  virtual double Move(double tuning)	{
-    return Move(tuning, GetDim());
-  }
-
-  virtual double  ProposeMove(double tuning)	{
-    return Profile::ProposeMove(tuning, GetDim());
-  }
+  virtual double Move(double tuning, int n) ;
+  virtual double Move(double tuning) ;
+  virtual double ProposeMove(double tuning) ;
 
 protected:
   Var<Profile>* center;
@@ -217,6 +154,7 @@ protected:
   virtual double logProb();
 
 };
+
 
 class Multinomial : public virtual Rvar<IntVector> {
 public:
@@ -234,7 +172,8 @@ private:
 
 };
 
-class FiniteDiscrete : public virtual Rvar<Int>	{
+
+class FiniteDiscrete : public virtual Rvar<Int> {
 public:
   FiniteDiscrete(Var<Profile>* inprobarray);
   virtual ~FiniteDiscrete() {}
@@ -246,9 +185,11 @@ private :
   Var<Profile>* probarray;
 
   virtual double logProb();
+
 };
 
-class IIDExp : public Rvar<PosRealVector>	{
+
+class IIDExp : public Rvar<PosRealVector> {
 public:
   IIDExp(int indim, Var<PosReal>* inmean);
   IIDExp(int indim);
@@ -267,7 +208,8 @@ private:
 
 };
 
-class IIDGamma : public virtual Rvar<PosRealVector>	{
+
+class IIDGamma : public virtual Rvar<PosRealVector> {
 public:
   IIDGamma(int indim, Var<PosReal>* inalpha, Var<PosReal>* inbeta);
   IIDGamma(int indim);
@@ -287,16 +229,17 @@ protected:
 
 };
 
-class Product : public Dvar<PosReal>	{
+
+class Product : public Dvar<PosReal> {
 public:
-  Product(Var<PosReal>* ina, Var<PosReal>* inb)	{
+  Product(Var<PosReal>* ina, Var<PosReal>* inb) {
     a = ina;
     b = inb;
     Register(a);
     Register(b);
   }
 
-  void specialUpdate()	{
+  void specialUpdate() {
     setval(a->val() * b->val());
   }
 
