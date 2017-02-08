@@ -1,12 +1,13 @@
 #include <algorithm>
+using namespace std;
 
 #include "core/ProbModel.hpp"
 #include "core/DAGnode.hpp"
 #include "core/Exception.hpp"
 
-using namespace std;
 
-bool DAGnode::initmode = true;
+bool DAGnode::initmode = true; // (VL) FIXME
+
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -83,16 +84,32 @@ bool DAGnode::CheckUpdateFlags()	{
   return ret;
 }
 
+
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Rnode
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
+double Rnode::Move(double tuning) {
+  if (! isClamped()) {
+    Corrupt(true);
+    double logHastings = ProposeMove(tuning);
+    double deltaLogProb = Update();
+    double logRatio = deltaLogProb + logHastings;
+    bool accepted = (log(Random::Uniform()) < logRatio);
+    if (! accepted) {
+      Corrupt(false);
+      Restore();
+    }
+    return (double) accepted;
+  }
+  return 1;
+}
+
 //-------------------------------------------------------------------------
 //	* corrupt
 //-------------------------------------------------------------------------
-
 void Rnode::Corrupt(bool bk)	{
   value_updated = false;
   localCorrupt(bk);
@@ -125,7 +142,6 @@ void Rnode::FullCorrupt(map<DAGnode*,int>& m)	{
 //-------------------------------------------------------------------------
 //	* update
 //-------------------------------------------------------------------------
-
 double Rnode::Update()	{
   double ret = 0;
   if (! flag)	{
@@ -215,29 +231,9 @@ double Rnode::FullUpdate(bool check)	{
 
 }
 
-/*
-  void Rnode::Initialise()	{
-
-  if (! flag)	{
-  bool up_ok = true;
-  for (auto i=up.begin(); i!=up.end(); i++)	{
-  up_ok &= (*i)->flag;
-  }
-  if (up_ok)	{
-  Sample();
-  localUpdate();
-  for (auto i=down.begin(); i!=down.end(); i++)	{
-  (*i)->Initialise();
-  }
-  }
-  }
-  }
-*/
-
 //-------------------------------------------------------------------------
 //	* restore
 //-------------------------------------------------------------------------
-
 void Rnode::Restore()	{
   if (! flag)	{
     auto i=up.begin();
@@ -305,7 +301,6 @@ void Rnode::localRestore()	{
 //-------------------------------------------------------------------------
 //	* corrupt
 //-------------------------------------------------------------------------
-
 void Dnode::Corrupt(bool bk)	{
   localCorrupt(bk);
   for (auto i=down.begin(); i!=down.end(); i++)	{
@@ -334,7 +329,6 @@ void Dnode::FullCorrupt(map<DAGnode*,int>& m)	{
 //-------------------------------------------------------------------------
 //	* update
 //-------------------------------------------------------------------------
-
 double Dnode::Update()	{
   double ret = 0;
   if (! flag)	{
@@ -391,27 +385,9 @@ double Dnode::FullUpdate(bool check)	{
   return ret;
 }
 
-/*
-  void Dnode::Initialise()	{
-  if (! flag)	{
-  bool up_ok = true;
-  for (auto i=up.begin(); i!=up.end(); i++)	{
-  up_ok &= (*i)->flag;
-  }
-  if (up_ok)	{
-  localUpdate();
-  for (auto i=down.begin(); i!=down.end(); i++)	{
-  (*i)->Initialise();
-  }
-  }
-  }
-  }
-*/
-
 //-------------------------------------------------------------------------
 //	* restore
 //-------------------------------------------------------------------------
-
 void Dnode::Restore()	{
   if (! flag)	{
     auto i=up.begin();
@@ -451,7 +427,6 @@ void Dnode::localRestore()	{
 //-------------------------------------------------------------------------
 //	* corrupt
 //-------------------------------------------------------------------------
-
 void Mnode::Corrupt(bool bk)	{
   flag = false;
   for (auto i=down.begin(); i!=down.end(); i++)	{
@@ -462,7 +437,6 @@ void Mnode::Corrupt(bool bk)	{
 //-------------------------------------------------------------------------
 //	* update
 //-------------------------------------------------------------------------
-
 double Mnode::Update()	{
   flag = true;
   double ret = 0;
@@ -475,7 +449,6 @@ double Mnode::Update()	{
 //-------------------------------------------------------------------------
 //	* restore
 //-------------------------------------------------------------------------
-
 void Mnode::Restore()	{
   flag = true;
   for (auto i=down.begin(); i!=down.end(); i++)	{
