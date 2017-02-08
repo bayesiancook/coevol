@@ -1,5 +1,3 @@
-#define DEBUG 0
-
 #include <algorithm>
 #include <cstdio>
 using namespace std;
@@ -59,6 +57,14 @@ void DAGnode::Register(DAGnode* parent) {
   }
 }
 
+void DAGnode::getDot() {
+  printf("\t%s%p [label=%s]\n", name.c_str(), (void*)this, name.c_str());
+  for (auto i:down)
+    printf("\t%s%p -> %s%p\n", name.c_str(), (void*)this, i->GetName().c_str(), (void*)&(*i));
+  for (auto i:down)
+    i->getDot();
+}
+
 void DAGnode::RecursiveRegister(ProbModel* model) {
   auto i=up.begin();
   while ((i!=up.end()) && (*i)->flag)  i++;
@@ -68,19 +74,9 @@ void DAGnode::RecursiveRegister(ProbModel* model) {
     up_ok &= i->flag;
   }
   if (up_ok) {
-
-#if DEBUG
-    printf("%s%p [label=%s]\n", name.c_str(), (void*)this, name.c_str());
-    for (auto i:down)
-      printf("%s%p -> %s%p\n", name.c_str(), (void*)this, i->GetName().c_str(), (void*)&(*i));
-#endif
-
     model->Register(this);
     flag = true;
     for (auto i : down) {
-
-
-
       i->RecursiveRegister(model);
     }
   }

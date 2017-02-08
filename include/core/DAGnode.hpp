@@ -27,6 +27,7 @@ public:
 
   virtual void Register(DAGnode* in);
   void RecursiveRegister(ProbModel* model);
+  void getDot();
 
   bool CheckUpdateFlags();
   int GetChildrenNumber();

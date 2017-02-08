@@ -43,7 +43,6 @@ double ProbModel::Update(bool check)	{
 }
 
 void ProbModel::Register()	{
-
   if (! state.empty())	{
     cerr << "error : state is not empty\n";
     exit(1);
@@ -55,6 +54,13 @@ void ProbModel::Register()	{
   cerr << "model size : " << state.size() << '\n';
 }
 
+void ProbModel::getDot() {
+  printf("digraph G {\n");
+  for (auto i: root) {
+    i->getDot();
+  }
+  printf("}\n");
+}
 
 double ProbModel::Move(double tuning_modulator, int ncycle, bool verbose, bool check)	{
   scheduler.Cycle(tuning_modulator,ncycle,verbose,check);

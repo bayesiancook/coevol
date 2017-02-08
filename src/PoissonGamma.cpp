@@ -41,6 +41,7 @@ public:
     Register();
     Update();
     MakeScheduler();
+    getDot();
   }
 
   ~PoissonGammaModel() {}

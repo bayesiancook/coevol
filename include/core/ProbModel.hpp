@@ -28,6 +28,7 @@ public:
   /// obtain the set ("state") of all the nodes of the DAG by a recursive traversal from the root nodes to the tips
   void Register();
   void Register(DAGnode* var);
+  void getDot();
 
   /// registers "var" among the root nodes (i.e. into the set "root")
   void RootRegister(DAGnode* var);
