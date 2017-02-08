@@ -118,6 +118,18 @@ bool DAGnode::CheckUpdateFlags() {
 // * Rnode
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
+set<string> Rnode::getDotNodes() { //FIXME refactor with DAGnode version
+  ostringstream stringStream;
+  set<string> result;
+  stringStream << "\tNode" << dynamic_cast<DAGnode*>(this) << " [label=\"" << name << "\", shape=rectangle]" << endl;;
+  result.insert(stringStream.str());
+  for (auto i:down){
+    set<string> tmp = i->getDotNodes();
+    result.insert(tmp.begin(), tmp.end());
+  }
+  return result;
+}
+
 
 double Rnode::Move(double tuning) {
   if (! isClamped()) {

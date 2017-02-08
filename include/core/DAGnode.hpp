@@ -27,7 +27,7 @@ public:
 
   virtual void Register(DAGnode* in);
   void RecursiveRegister(ProbModel* model);
-  std::set<std::string> getDotNodes();
+  virtual std::set<std::string> getDotNodes();
   std::set<std::string> getDotVertices();
 
   bool CheckUpdateFlags();
@@ -64,6 +64,8 @@ public:
 
   // Metropolis Hastings move
   virtual double Move(double tuning = 1) ;
+
+  virtual std::set<std::string> getDotNodes();
 
   virtual void Corrupt(bool bk);
   virtual double Update();
