@@ -75,7 +75,7 @@ set<string> DAGnode::getDotVertices() {
   for (auto i:down) {
     stringStream << "\t" << name << this << " -> " << i->GetName() << &(*i) << endl;;
     result.insert(stringStream.str());
-    stringStream.clear();
+    stringStream.str("");
   }
   for (auto i:down){
     set<string> tmp = i->getDotVertices();

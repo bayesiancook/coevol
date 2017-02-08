@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <set>
 using namespace std;
@@ -56,10 +57,16 @@ void ProbModel::Register()	{
 }
 
 void ProbModel::getDot() {
+  ofstream myfile("tmp.dot");
+  myfile << "digraph {" << endl;
   for (auto i: root)
-    i->getDotNodes();
+    for (auto j: i->getDotNodes())
+      myfile << j ;
   for (auto i: root)
-    i->getDotVertices();
+    for (auto j :i->getDotVertices())
+      myfile << j ;
+  myfile << "}" << endl;
+  myfile.close();
 }
 
 double ProbModel::Move(double tuning_modulator, int ncycle, bool verbose, bool check)	{
