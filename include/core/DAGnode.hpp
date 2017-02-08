@@ -8,7 +8,6 @@
 #include "Random.hpp"
 #include "MCMC.hpp"
 
-class DAGnode;
 class ProbModel;
 
 

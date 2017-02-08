@@ -194,7 +194,6 @@ public:
   double ProposeMove(double tuning) ;
 
   friend std::ostream& operator<<(std::ostream& os, const Profile& r) ;
-
   friend std::istream& operator>>(std::istream& is, Profile& r) ;
 
 };
