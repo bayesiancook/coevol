@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <set>
 using namespace std;
 
 #include "core/ProbModel.hpp"
@@ -55,12 +56,10 @@ void ProbModel::Register()	{
 }
 
 void ProbModel::getDot() {
-  printf("digraph G {\n");
   for (auto i: root)
     i->getDotNodes();
   for (auto i: root)
     i->getDotVertices();
-  printf("}\n");
 }
 
 double ProbModel::Move(double tuning_modulator, int ncycle, bool verbose, bool check)	{

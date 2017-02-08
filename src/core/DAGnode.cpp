@@ -57,16 +57,31 @@ void DAGnode::Register(DAGnode* parent) {
   }
 }
 
-void DAGnode::getDotNodes() {
-  printf("\t%s%p [label=%s]\n", name.c_str(), (void*)this, name.c_str());
-  for (auto i:down)
-    i->getDotNodes();}
+set<string> DAGnode::getDotNodes() {
+  ostringstream stringStream;
+  set<string> result;
+  stringStream << "\t" << name << this << " [label=" << name << "]" << endl;;
+  result.insert(stringStream.str());
+  for (auto i:down){
+    set<string> tmp = i->getDotNodes();
+    result.insert(tmp.begin(), tmp.end());
+  }
+  return result;
+}
 
-void DAGnode::getDotVertices() {
-  for (auto i:down)
-    printf("\t%s%p -> %s%p\n", name.c_str(), (void*)this, i->GetName().c_str(), (void*)&(*i));
-  for (auto i:down)
-    i->getDotVertices();
+set<string> DAGnode::getDotVertices() {
+  ostringstream stringStream;
+  set<string> result;
+  for (auto i:down) {
+    stringStream << "\t" << name << this << " -> " << i->GetName() << &(*i) << endl;;
+    result.insert(stringStream.str());
+    stringStream.clear();
+  }
+  for (auto i:down){
+    set<string> tmp = i->getDotVertices();
+    result.insert(tmp.begin(), tmp.end());
+  }
+  return result;
 }
 
 void DAGnode::RecursiveRegister(ProbModel* model) {
