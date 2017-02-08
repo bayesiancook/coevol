@@ -57,12 +57,16 @@ void DAGnode::Register(DAGnode* parent) {
   }
 }
 
-void DAGnode::getDot() {
+void DAGnode::getDotNodes() {
   printf("\t%s%p [label=%s]\n", name.c_str(), (void*)this, name.c_str());
+  for (auto i:down)
+    i->getDotNodes();}
+
+void DAGnode::getDotVertices() {
   for (auto i:down)
     printf("\t%s%p -> %s%p\n", name.c_str(), (void*)this, i->GetName().c_str(), (void*)&(*i));
   for (auto i:down)
-    i->getDot();
+    i->getDotVertices();
 }
 
 void DAGnode::RecursiveRegister(ProbModel* model) {
