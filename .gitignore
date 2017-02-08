@@ -2,5 +2,6 @@
 *.d
 cscope*
 dependencies*
+tmp*
 _build/
 
