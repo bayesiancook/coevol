@@ -13,12 +13,13 @@ class DAGnode; // forward declaration
 // - propose default kernels (in ProposeMove()) for Metropolis Hastings resampling
 class BaseType {
 public:
-  virtual ~BaseType() {};
+  virtual ~BaseType() {}
 
   // default kernel for Metropolis Hastings updates
   // smaller tuning: smaller moves
   // returns the log of the Hastings ratio
   virtual double ProposeMove(double tuning) = 0;
+
 };
 
 
@@ -30,6 +31,7 @@ public:
   virtual int ScalarAddition(double d) = 0;
 
   virtual void Register(DAGnode*) ;
+
 };
 
 
@@ -41,6 +43,7 @@ public:
   virtual int ScalarMultiplication(double d) = 0;
 
   virtual void Register(DAGnode*) ;
+
 };
 
 
@@ -50,17 +53,16 @@ class Real : public BaseType , public Additive {
 public:
   Real(double d=0) : value(d) {}
   Real(const Real& from) : value(from.value) {}
-
   virtual ~Real() {}
 
-  Real& operator=(const Real& from) ;
-  Real& operator=(double from) ;
+  inline Real& operator=(const Real& from) { value = from.value; return *this; }
+  inline Real& operator=(double from) { value = from; return *this; }
+  inline Real& operator+=(const Real& from) { value += from.value; return *this; }
+  inline Real& operator/=(double from) { value /= from; return *this; }
+  inline operator double() {return value;}
+  inline operator double() const {return value;}
 
-  operator double() {return value;}
-  operator double() const {return value;}
-
-  Real& operator+=(const Real& from) ;
-  Real& operator/=(double from) ;
+  friend std::istream& operator>>(std::istream& is, Real& r) ;
 
   int ScalarAddition(double d) ;
 
@@ -68,13 +70,9 @@ public:
 
   int Check() ;
 
-  friend std::istream& operator>>(std::istream& is, Real& r) {
-    is >> r.value;
-    return is;
-  }
-
 protected:
   double value;
+
 };
 
 
@@ -82,40 +80,32 @@ class UnitReal : public BaseType {
 public:
   UnitReal(double d=0) : value(d) {}
   UnitReal(const UnitReal& from) : value(from.value) {}
-
   virtual   ~UnitReal() {}
 
-  UnitReal& operator=(const UnitReal& from) ;
-  UnitReal& operator=(double from) ;
-
+  inline UnitReal& operator=(const UnitReal& from) { value = from.value; return *this; }
+  inline UnitReal& operator=(double from) { value = from; return *this; }
+  inline UnitReal& operator+=(const UnitReal from) { value += from.value; return *this; }
   operator double() {return value;}
   operator double() const {return value;}
-
-  UnitReal& operator+=(const UnitReal from) ;
 
   virtual double ProposeMove(double tuning) ;
 
   int Check() ;
 
-  friend std::istream& operator>>(std::istream& is, UnitReal& r) {
-    is >> r.value;
-    return is;
-  }
+  friend std::istream& operator>>(std::istream& is, UnitReal& r) ;
 
 protected:
   double value;
+
 };
 
 
 /// A wrap-up class for positive real numbers
 // implements a simple random multiplicative move
-
 class PosReal : public BaseType , public Multiplicative {
 public:
   PosReal(double d=0) : value(d) {}
-  PosReal(const PosReal& from) : value(from.value) {}
-
-  virtual ~PosReal() {}
+  PosReal(const PosReal& from) : value(from.value) {}  virtual ~PosReal() {}
 
   PosReal& operator=(const PosReal& from) ;
   PosReal& operator=(const double& from) ;
@@ -149,6 +139,7 @@ public:
 
 protected:
   double value;
+
 };
 
 
@@ -158,7 +149,6 @@ class Int : public BaseType {
 public:
   Int(int d=0) : value(d) {}
   Int(const Int& from) : value(from.value) {}
-
   virtual ~Int() {}
 
   Int& operator=(const Int& from) {
@@ -203,6 +193,7 @@ public:
 
 protected:
   int value;
+
 };
 
 /*
@@ -254,6 +245,7 @@ protected:
 
   protected:
   int value;
+
   };
 */
 
@@ -272,7 +264,6 @@ public:
   Profile(int indim, double* v=0) ;
 
   Profile(const Profile& from) ;
-
   virtual ~Profile() ;
 
   Profile& operator=(const Profile& from) ;
@@ -326,6 +317,7 @@ public:
     }
     return is;
   }
+
 };
 
 class RealVector : public BaseType, public Additive {
@@ -486,6 +478,7 @@ public:
     }
     return is;
   }
+
 };
 
 class PosRealVector : public RealVector, public Multiplicative {
@@ -576,6 +569,7 @@ public:
     }
     return dim;
   }
+
 };
 
 
@@ -714,6 +708,7 @@ public:
     }
     return is;
   }
+
 };
 
 #endif // BASETYPE_H

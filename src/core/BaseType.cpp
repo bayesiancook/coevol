@@ -70,26 +70,6 @@ void Additive::Register(DAGnode*) {std::cerr << "error in Additive::Register\n";
 
 void Multiplicative::Register(DAGnode*)  {std::cerr << "error in Multiplicative::Register\n"; throw;}
 
-Real& Real::operator=(const Real& from) {
-  value = from.value;
-  return *this;
-}
-
-Real& Real::operator=(double from) {
-  value = from;
-  return *this;
-}
-
-Real& Real::operator+=(const Real& from) {
-  value += from.value;
-  return *this;
-}
-
-Real& Real::operator/=(double from) {
-  value /= from;
-  return *this;
-}
-
 int Real::ScalarAddition(double d) {
   value += d;
   return 1;
@@ -104,19 +84,9 @@ double Real::ProposeMove(double tuning) {
 
 int Real::Check() {return 1;}
 
-UnitReal& UnitReal::operator=(const UnitReal& from) {
-  value = from.value;
-  return *this;
-}
-
-UnitReal& UnitReal::operator=(double from) {
-  value = from;
-  return *this;
-}
-
-UnitReal& UnitReal::operator+=(const UnitReal from) {
-  value += from.value;
-  return *this;
+std::istream& operator>>(std::istream& is, Real& r) {
+  is >> r.value;
+  return is;
 }
 
 double UnitReal::ProposeMove(double tuning) {
@@ -135,6 +105,11 @@ double UnitReal::ProposeMove(double tuning) {
 }
 
 int UnitReal::Check() {return 1;}
+
+std::istream& operator>>(std::istream& is, UnitReal& r) {
+  is >> r.value;
+  return is;
+}
 
 PosReal& PosReal::operator=(const PosReal& from) {
   value = from.value;
