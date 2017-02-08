@@ -1,3 +1,5 @@
+#define DEBUG 0
+
 #include <algorithm>
 #include <cstdio>
 using namespace std;
@@ -67,11 +69,18 @@ void DAGnode::RecursiveRegister(ProbModel* model) {
   }
   if (up_ok) {
 
-    printf("DEBUG : %s\n", name.c_str());
+#if DEBUG
+    printf("%s%p [label=%s]\n", name.c_str(), (void*)this, name.c_str());
+    for (auto i:down)
+      printf("%s%p -> %s%p\n", name.c_str(), (void*)this, i->GetName().c_str(), (void*)&(*i));
+#endif
 
     model->Register(this);
     flag = true;
     for (auto i : down) {
+
+
+
       i->RecursiveRegister(model);
     }
   }
