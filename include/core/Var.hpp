@@ -3,6 +3,7 @@
 
 #include "DAGnode.hpp"
 #include <iostream>// FIXME could be removed if implementation is moved into a file
+#include <sstream>
 
 
 template<class T> class Var : public virtual DAGnode , public T{
@@ -76,7 +77,11 @@ public:
 
 template <class T> class Const : public Dvar<T>	{
 public:
-  Const(const T& from) : Dvar<T>(from) { Dvar<T>::SetName("const"); }
+  Const(const T& from) : Dvar<T>(from) {
+    std::ostringstream tmp;
+    tmp << "const = " << from ;
+    Dvar<T>::SetName(tmp.str());
+  }
 
   void specialUpdate() {}
 

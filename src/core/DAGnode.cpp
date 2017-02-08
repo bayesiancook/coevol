@@ -60,7 +60,7 @@ void DAGnode::Register(DAGnode* parent) {
 set<string> DAGnode::getDotNodes() {
   ostringstream stringStream;
   set<string> result;
-  stringStream << "\t" << name << this << " [label=" << name << "]" << endl;;
+  stringStream << "\tNode" << this << " [label=\"" << name << "\"]" << endl;;
   result.insert(stringStream.str());
   for (auto i:down){
     set<string> tmp = i->getDotNodes();
@@ -73,7 +73,7 @@ set<string> DAGnode::getDotVertices() {
   ostringstream stringStream;
   set<string> result;
   for (auto i:down) {
-    stringStream << "\t" << name << this << " -> " << i->GetName() << &(*i) << endl;;
+    stringStream << "\tNode" << this << " -> Node" << &(*i) << endl;;
     result.insert(stringStream.str());
     stringStream.str("");
   }
