@@ -59,8 +59,8 @@ public:
   inline Real& operator=(double from) { value = from; return *this; }
   inline Real& operator+=(const Real& from) { value += from.value; return *this; }
   inline Real& operator/=(double from) { value /= from; return *this; }
-  inline operator double() {return value;}
-  inline operator double() const {return value;}
+  inline operator double() { return value; }
+  inline operator double() const { return value; }
 
   friend std::istream& operator>>(std::istream& is, Real& r) ;
 
@@ -85,8 +85,8 @@ public:
   inline UnitReal& operator=(const UnitReal& from) { value = from.value; return *this; }
   inline UnitReal& operator=(double from) { value = from; return *this; }
   inline UnitReal& operator+=(const UnitReal from) { value += from.value; return *this; }
-  operator double() {return value;}
-  operator double() const {return value;}
+  operator double() { return value; }
+  operator double() const { return value; }
 
   virtual double ProposeMove(double tuning) ;
 
@@ -107,35 +107,22 @@ public:
   PosReal(double d=0) : value(d) {}
   PosReal(const PosReal& from) : value(from.value) {}  virtual ~PosReal() {}
 
-  PosReal& operator=(const PosReal& from) ;
-  PosReal& operator=(const double& from) ;
-
-  operator double() {return value;}
-  operator double() const {return value;}
-
-  PosReal& operator+=(const PosReal from) ;
-  PosReal& operator/=(double from) ;
+  inline PosReal& operator=(const PosReal& from) { value = from.value; return *this; }
+  inline PosReal& operator=(const double& from) { value = from; return *this; }
+  inline PosReal& operator+=(const PosReal from) { value += from.value; return *this; }
+  inline PosReal& operator/=(double from) { value /= from; return *this; }
+  operator double() { return value; }
+  operator double() const { return value; }
+  operator Real() { return Real(value); }
+  operator Real() const { return Real(value); }
 
   int ScalarMultiplication(double d) ;
-
-  operator Real() {return Real(value);}
-  operator Real() const {return Real(value);}
 
   virtual double ProposeMove(double tuning) ;
 
   int Check() ;
 
-  friend std::istream& operator>>(std::istream& is, PosReal& r) {
-    is >> r.value;
-    return is;
-  }
-
-  /*
-    friend ostream& operator<<(ostream& os, PosReal& r) {
-    os << r.value;
-    return os;
-    }
-  */
+  friend std::istream& operator>>(std::istream& is, PosReal& r) ;
 
 protected:
   double value;
@@ -161,11 +148,11 @@ public:
     return *this;
   }
 
-  operator int() {return value;}
-  operator int() const {return value;}
+  operator int() { return value; }
+  operator int() const { return value; }
 
-  operator Real() {return Real(double(value));}
-  operator Real() const {return Real(double(value));}
+  operator Real() { return Real(double(value)); }
+  operator Real() const { return Real(double(value)); }
 
   virtual double ProposeMove(double) {
     /*
@@ -184,7 +171,7 @@ public:
     return 0;
   }
 
-  int Check() {return 1;}
+  int Check() { return 1; }
 
   friend std::istream& operator>>(std::istream& is, Int& r) {
     is >> r.value;
@@ -216,11 +203,11 @@ protected:
   return *this;
   }
 
-  operator int() {return value;}
-  operator int() const {return value;}
+  operator int() { return value; }
+  operator int() const { return value; }
 
-  operator Real() {return Real(double(value));}
-  operator Real() const {return Real(double(value));}
+  operator Real() { return Real(double(value)); }
+  operator Real() const { return Real(double(value)); }
 
   virtual double ProposeMove(double tuning) {
   int m = (int) (tuning*(Random::Uniform() - 0.5));
@@ -236,7 +223,7 @@ protected:
   return 0;
   }
 
-  int Check() {return 1;}
+  int Check() { return 1; }
 
   friend std::istream& operator>>(std::istream& is, FinitePosInt& r) {
   is >> r.value;
@@ -372,7 +359,7 @@ public:
     return *this;
   }
 
-  double* GetArray() const {return vec;}
+  double* GetArray() const { return vec; }
 
   double& operator[](int i) {
     return vec[i];
@@ -382,8 +369,8 @@ public:
     return vec[i];
   }
 
-  int GetDim() {return dim;}
-  int Check() {return 1;}
+  int GetDim() { return dim; }
+  int Check() { return 1; }
 
   double GetMean() const {
     double total = 0;
@@ -636,7 +623,7 @@ public:
     return *this;
   }
 
-  const int* GetArray() const {return vec;}
+  const int* GetArray() const { return vec; }
 
   int& operator[](int i) {
     return vec[i];
@@ -646,8 +633,8 @@ public:
     return vec[i];
   }
 
-  int GetDim() {return dim;}
-  int Check() {return 1;}
+  int GetDim() { return dim; }
+  int Check() { return 1; }
 
   double    GetMean() const {
     double total = 0;

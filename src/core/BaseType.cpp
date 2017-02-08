@@ -111,26 +111,6 @@ std::istream& operator>>(std::istream& is, UnitReal& r) {
   return is;
 }
 
-PosReal& PosReal::operator=(const PosReal& from) {
-  value = from.value;
-  return *this;
-}
-
-PosReal& PosReal::operator=(const double& from) {
-  value = from;
-  return *this;
-}
-
-PosReal& PosReal::operator+=(const PosReal from) {
-  value += from.value;
-  return *this;
-}
-
-PosReal& PosReal::operator/=(double from) {
-  value /= from;
-  return *this;
-}
-
 int PosReal::ScalarMultiplication(double d) {
   value *= d;
   return 1;
@@ -149,6 +129,11 @@ int PosReal::Check() {
     return 0;
   }
   return 1;
+}
+
+std::istream& operator>>(std::istream& is, PosReal& r) {
+  is >> r.value;
+  return is;
 }
 
 Profile::Profile(int indim, double* v) {
