@@ -68,7 +68,7 @@ public:
 
   virtual double ProposeMove(double tuning) ;
 
-  int Check() ;
+  int check() ;
 
 protected:
   double value;
@@ -90,7 +90,7 @@ public:
 
   virtual double ProposeMove(double tuning) ;
 
-  int Check() ;
+  int check() ;
 
   friend std::istream& operator>>(std::istream& is, UnitReal& r) ;
 
@@ -120,7 +120,7 @@ public:
 
   virtual double ProposeMove(double tuning) ;
 
-  int Check() ;
+  int check() ;
 
   friend std::istream& operator>>(std::istream& is, PosReal& r) ;
 
@@ -138,172 +138,64 @@ public:
   Int(const Int& from) : value(from.value) {}
   virtual ~Int() {}
 
-  Int& operator=(const Int& from) {
-    value = from.value;
-    return *this;
-  }
+  inline Int& operator=(const Int& from) { value = from.value; return *this; }
+  inline Int& operator=(const int& from) { value = from; return *this; }
+  inline operator int() { return value; }
+  inline operator int() const { return value; }
+  inline operator Real() { return Real(double(value)); }
+  inline operator Real() const { return Real(double(value)); }
 
-  Int& operator=(const int& from) {
-    value = from;
-    return *this;
-  }
+  virtual double ProposeMove(double) ;
 
-  operator int() { return value; }
-  operator int() const { return value; }
+  inline int check() { return 1; }
 
-  operator Real() { return Real(double(value)); }
-  operator Real() const { return Real(double(value)); }
-
-  virtual double ProposeMove(double) {
-    /*
-      int m = (int) (tuning*(Random::Uniform() - 0.5));
-      value += m;
-      if (value < 0) {
-      value = -value;
-      }
-    */
-    if (Random::Uniform() < 0.5) {
-      value++;
-    }
-    else {
-      value --;
-    }
-    return 0;
-  }
-
-  int Check() { return 1; }
-
-  friend std::istream& operator>>(std::istream& is, Int& r) {
-    is >> r.value;
-    return is;
-  }
+  friend std::istream& operator>>(std::istream& is, Int& r) ;
 
 protected:
   int value;
 
 };
 
-/*
-  class FinitePosInt : public Int {
-
-
-  public:
-  FinitePosInt(int inmax) : value(0), max(inmax) {}
-  FinitePosInt(const FinietPosInt& from) : value(from.value), max(from.max) {}
-
-  virtual   ~FinitePosInt() {}
-
-  FinitePosInt& operator=(const FinitePosInt& from) {
-  value = from.value;
-  return *this;
-  }
-
-  FinitePosInt& operator=(const int& from) {
-  value = from;
-  return *this;
-  }
-
-  operator int() { return value; }
-  operator int() const { return value; }
-
-  operator Real() { return Real(double(value)); }
-  operator Real() const { return Real(double(value)); }
-
-  virtual double ProposeMove(double tuning) {
-  int m = (int) (tuning*(Random::Uniform() - 0.5));
-  value += m;
-  while ((value < 0) || (value > max)) {
-  if (value < 0)
-  value = -value;
-  }
-  if (value > max) {
-  value = 2*max - value;
-  }
-  }
-  return 0;
-  }
-
-  int Check() { return 1; }
-
-  friend std::istream& operator>>(std::istream& is, FinitePosInt& r) {
-  is >> r.value;
-  return is;
-  }
-
-  protected:
-  int value;
-
-  };
-*/
 
 /// A probability profile
 class Profile : public BaseType {
-
-public:
-  static const double MIN;
-
 protected:
+  static const double MIN;
   int dim;
   double* profile;
+
 public:
   Profile() : dim(0) , profile(0) {}
-
   Profile(int indim, double* v=0) ;
-
   Profile(const Profile& from) ;
   virtual ~Profile() ;
 
   Profile& operator=(const Profile& from) ;
-
-  void setuniform() ;
-
-  void setarray(double* in) ;
-
-
-  const double* GetArray() const ;
-  double* GetArray() ;
-
   double& operator[](int i) ;
-
   double& operator[](int i) const  ;
 
+  // Getters FIXME (these and the setters below should probably be inlined)
+  const double* GetArray() const ;
+  double* GetArray() ;
   int GetDim() const ;
-
-  void SetAtZero() ;
-
-  void ScalarMultiplication(double d) ;
-
-  void Add(const Profile& in) ;
-
-  int Check() ;
-
   double GetEntropy() const ;
 
-  double ProposeMove(double tuning, int dim);
+  // Setters
+  void setAtZero() ;
+  void setuniform() ;
+  void setarray(double* in) ;
 
+  void scalarMultiplication(double d) ;
+  void add(const Profile& in) ;
+
+  int check() ;
+
+  double ProposeMove(double tuning, int dim);
   double ProposeMove(double tuning) ;
 
-  friend std::ostream& operator<<(std::ostream& os, const Profile& r) {
-    os << r.dim;
-    for (int i=0; i<r.dim; i++) {
-      os << '\t' << r.profile[i];
-    }
-    return os;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const Profile& r) ;
 
-  friend std::istream& operator>>(std::istream& is, Profile& r) {
-    int indim;
-    is >> indim;
-    if (r.dim != indim) {
-      r.dim = indim;
-      delete[] r.profile;
-      r.profile = new double[r.dim];
-    }
-    for (int i=0; i<r.dim; i++) {
-      is >> r.profile[i];
-    }
-    return is;
-  }
+  friend std::istream& operator>>(std::istream& is, Profile& r) ;
 
 };
 
@@ -370,7 +262,7 @@ public:
   }
 
   int GetDim() { return dim; }
-  int Check() { return 1; }
+  int check() { return 1; }
 
   double GetMean() const {
     double total = 0;
@@ -406,13 +298,13 @@ public:
     }
   }
 
-  void Add(const RealVector& in) {
+  void add(const RealVector& in) {
     for (int i=0; i<dim; i++) {
       vec[i] += in[i];
     }
   }
 
-  void Add(const double* in, double f = 1) {
+  void add(const double* in, double f = 1) {
     for (int i=0; i<dim; i++) {
       vec[i] += f * in[i];
     }
@@ -438,7 +330,7 @@ public:
     return ProposeMove(tuning,dim);
   }
 
-  void SetAtZero() {
+  void setAtZero() {
     for (int i=0; i<dim; i++) {
       vec[i] = 0;
     }
@@ -634,7 +526,7 @@ public:
   }
 
   int GetDim() { return dim; }
-  int Check() { return 1; }
+  int check() { return 1; }
 
   double    GetMean() const {
     double total = 0;

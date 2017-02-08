@@ -1,7 +1,127 @@
 #include "core/BaseType.hpp"
 #include <cmath>
 
+
+
+void Additive::Register(DAGnode*) {std::cerr << "error in Additive::Register\n"; throw;}
+
+void Multiplicative::Register(DAGnode*)  {std::cerr << "error in Multiplicative::Register\n"; throw;}
+
+int Real::ScalarAddition(double d) {
+  value += d;
+  return 1;
+}
+
+double Real::ProposeMove(double tuning) {
+  // simple additive move
+  double m = tuning*(Random::Uniform() - 0.5);
+  value += m;
+  return 0;
+}
+
+int Real::check() {return 1;}
+
+std::istream& operator>>(std::istream& is, Real& r) {
+  is >> r.value;
+  return is;
+}
+
+double UnitReal::ProposeMove(double tuning) {
+  // simple additive move
+  double m = tuning*(Random::Uniform() - 0.5);
+  value += m;
+  while ((value<0) || (value>1)) {
+    if (value<0) {
+      value = -value;
+    }
+    if (value>1) {
+      value = 2 - value;
+    }
+  }
+  return 0.0;
+}
+
+int UnitReal::check() {return 1;}
+
+std::istream& operator>>(std::istream& is, UnitReal& r) {
+  is >> r.value;
+  return is;
+}
+
+int PosReal::ScalarMultiplication(double d) {
+  value *= d;
+  return 1;
+}
+
+double PosReal::ProposeMove(double tuning) {
+  // simple multiplicative move
+  double m = tuning*(Random::Uniform() - 0.5);
+  value *= exp(m);
+  return m;
+}
+
+int PosReal::check() {
+  if (value<=0) {
+    std::cerr << "error : positive double is not positive : " << value << '\n';
+    return 0;
+  }
+  return 1;
+}
+
+
+std::istream& operator>>(std::istream& is, PosReal& r) {
+  is >> r.value;
+  return is;
+}
+
+
+double Int::ProposeMove(double) {
+  if (Random::Uniform() < 0.5) {
+    value++;
+  }
+  else {
+    value --;
+  }
+  return 0;
+}
+
+std::istream& operator>>(std::istream& is, Int& r) {
+  is >> r.value;
+  return is;
+}
+
 const double Profile::MIN = 1e-20;
+
+Profile::Profile(int indim, double* v) {
+  dim = indim;
+  profile = new double[dim];
+  if (v) {
+    double total = 0;
+    for (int k=0; k<dim; k++) {
+      if (!(v[k]>0)) {
+        std::cerr << "error : profiles should be strictly positive\n";
+        exit(1);
+      }
+      profile[k] = v[k];
+      total += profile[k];
+    }
+    for (int k=0; k<dim; k++) {
+      profile[k] /= total;
+    }
+  }
+}
+
+Profile::Profile(const Profile& from) {
+  dim = from.dim;
+  profile = new double[dim];
+  for (int k=0; k<dim; k++) {
+    profile[k] = from.profile[k];
+  }
+}
+
+Profile::~Profile() {
+  delete[] profile;
+}
 
 double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling, otherwise, vase communiquants
   double ret = 0;
@@ -66,107 +186,6 @@ double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling,
   return ret;
 }
 
-void Additive::Register(DAGnode*) {std::cerr << "error in Additive::Register\n"; throw;}
-
-void Multiplicative::Register(DAGnode*)  {std::cerr << "error in Multiplicative::Register\n"; throw;}
-
-int Real::ScalarAddition(double d) {
-  value += d;
-  return 1;
-}
-
-double Real::ProposeMove(double tuning) {
-  // simple additive move
-  double m = tuning*(Random::Uniform() - 0.5);
-  value += m;
-  return 0;
-}
-
-int Real::Check() {return 1;}
-
-std::istream& operator>>(std::istream& is, Real& r) {
-  is >> r.value;
-  return is;
-}
-
-double UnitReal::ProposeMove(double tuning) {
-  // simple additive move
-  double m = tuning*(Random::Uniform() - 0.5);
-  value += m;
-  while ((value<0) || (value>1)) {
-    if (value<0) {
-      value = -value;
-    }
-    if (value>1) {
-      value = 2 - value;
-    }
-  }
-  return 0.0;
-}
-
-int UnitReal::Check() {return 1;}
-
-std::istream& operator>>(std::istream& is, UnitReal& r) {
-  is >> r.value;
-  return is;
-}
-
-int PosReal::ScalarMultiplication(double d) {
-  value *= d;
-  return 1;
-}
-
-double PosReal::ProposeMove(double tuning) {
-  // simple multiplicative move
-  double m = tuning*(Random::Uniform() - 0.5);
-  value *= exp(m);
-  return m;
-}
-
-int PosReal::Check() {
-  if (value<=0) {
-    std::cerr << "error : positive double is not positive : " << value << '\n';
-    return 0;
-  }
-  return 1;
-}
-
-std::istream& operator>>(std::istream& is, PosReal& r) {
-  is >> r.value;
-  return is;
-}
-
-Profile::Profile(int indim, double* v) {
-  dim = indim;
-  profile = new double[dim];
-  if (v) {
-    double total = 0;
-    for (int k=0; k<dim; k++) {
-      if (!(v[k]>0)) {
-        std::cerr << "error : profiles should be strictly positive\n";
-        exit(1);
-      }
-      profile[k] = v[k];
-      total += profile[k];
-    }
-    for (int k=0; k<dim; k++) {
-      profile[k] /= total;
-    }
-  }
-}
-
-Profile::Profile(const Profile& from) {
-  dim = from.dim;
-  profile = new double[dim];
-  for (int k=0; k<dim; k++) {
-    profile[k] = from.profile[k];
-  }
-}
-
-Profile::~Profile() {
-  delete[] profile;
-}
-
 Profile& Profile::operator=(const Profile& from) {
   if (!dim) {
     dim = from.dim;
@@ -212,25 +231,25 @@ double& Profile::operator[](int i) const  {
 
 int Profile::GetDim() const {return dim;}
 
-void Profile::SetAtZero() {
+void Profile::setAtZero() {
   for (int i=0; i<dim; i++) {
     profile[i] = 0;
   }
 }
 
-void Profile::ScalarMultiplication(double d) {
+void Profile::scalarMultiplication(double d) {
   for (int i=0; i<dim; i++) {
     profile[i] *= d;
   }
 }
 
-void Profile::Add(const Profile& in) {
+void Profile::add(const Profile& in) {
   for (int i=0; i<dim; i++) {
     profile[i] += in[i];
   }
 }
 
-int Profile::Check() {return 1;}
+int Profile::check() {return 1;}
 
 double Profile::GetEntropy() const {
   double total = 0;
@@ -244,6 +263,28 @@ double Profile::ProposeMove(double tuning, int dim);
 
 double Profile::ProposeMove(double tuning) {
   return ProposeMove(tuning,dim);
+}
+
+std::ostream& operator<<(std::ostream& os, const Profile& r) {
+  os << r.dim;
+  for (int i=0; i<r.dim; i++) {
+    os << '\t' << r.profile[i];
+  }
+  return os;
+}
+
+std::istream& operator>>(std::istream& is, Profile& r) {
+  int indim;
+  is >> indim;
+  if (r.dim != indim) {
+    r.dim = indim;
+    delete[] r.profile;
+    r.profile = new double[r.dim];
+  }
+  for (int i=0; i<r.dim; i++) {
+    is >> r.profile[i];
+  }
+  return is;
 }
 
 double PosRealVector::ProposeMove(double tuning, int n) {
