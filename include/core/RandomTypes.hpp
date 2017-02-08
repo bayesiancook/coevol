@@ -233,6 +233,7 @@ protected:
 class Product : public Dvar<PosReal> {
 public:
   Product(Var<PosReal>* ina, Var<PosReal>* inb) {
+    SetName("product");
     a = ina;
     b = inb;
     Register(a);

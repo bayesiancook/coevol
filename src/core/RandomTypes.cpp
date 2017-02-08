@@ -163,6 +163,7 @@ double Beta::logProb()	{
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 Exponential::Exponential(Var<PosReal>* inscale, ParentType intype) {
+  SetName("exponential");
 	scale = inscale;
 	type = intype;
 	Register(scale);
@@ -170,6 +171,7 @@ Exponential::Exponential(Var<PosReal>* inscale, ParentType intype) {
 }
 
 Exponential::Exponential(const Exponential& from): Rvar<PosReal>() {
+  SetName("exponential");
 	scale = from.scale;
 	Register(scale);
 	Sample();
@@ -274,6 +276,7 @@ double Binomial::ProposeMove(double) { // FIXME unused parameter!
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 Poisson::Poisson(Var<PosReal>* inmu) {
+  SetName("poisson");
 	mu = inmu;
 	Register(mu);
 	Sample();

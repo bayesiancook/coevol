@@ -76,7 +76,7 @@ public:
 
 template <class T> class Const : public Dvar<T>	{
 public:
-  Const(const T& from) : Dvar<T>(from) {}
+  Const(const T& from) : Dvar<T>(from) { Dvar<T>::SetName("const"); }
 
   void specialUpdate() {}
 

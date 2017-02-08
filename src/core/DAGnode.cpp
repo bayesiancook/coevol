@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cstdio>
 using namespace std;
 
 #include "core/ProbModel.hpp"
@@ -65,10 +66,13 @@ void DAGnode::RecursiveRegister(ProbModel* model) {
     up_ok &= i->flag;
   }
   if (up_ok) {
+
+    printf("DEBUG : %s\n", name.c_str());
+
     model->Register(this);
     flag = true;
-    for (auto i=down.begin(); i!=down.end(); i++) {
-      (*i)->RecursiveRegister(model);
+    for (auto i : down) {
+      i->RecursiveRegister(model);
     }
   }
 }
@@ -78,8 +82,8 @@ bool DAGnode::CheckUpdateFlags() {
   if (! flag) {
     cerr << "flag error : " << GetName() << '\n';
   }
-  for (auto i=down.begin(); i!=down.end(); i++) {
-    ret &= (*i)->CheckUpdateFlags();
+  for (auto i: down) {
+    ret &= i->CheckUpdateFlags();
   }
   return ret;
 }
