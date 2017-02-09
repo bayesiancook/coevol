@@ -19,7 +19,6 @@ public:
   // smaller tuning: smaller moves
   // returns the log of the Hastings ratio
   virtual double ProposeMove(double tuning) = 0;
-
 };
 
 
@@ -31,7 +30,6 @@ public:
   virtual int ScalarAddition(double d) = 0;
 
   virtual void Register(DAGnode*) ;
-
 };
 
 
@@ -43,7 +41,6 @@ public:
   virtual int ScalarMultiplication(double d) = 0;
 
   virtual void Register(DAGnode*) ;
-
 };
 
 
@@ -72,7 +69,6 @@ public:
 
 protected:
   double value;
-
 };
 
 
@@ -96,7 +92,6 @@ public:
 
 protected:
   double value;
-
 };
 
 
@@ -126,7 +121,6 @@ public:
 
 protected:
   double value;
-
 };
 
 
@@ -153,7 +147,6 @@ public:
 
 protected:
   int value;
-
 };
 
 
@@ -195,7 +188,6 @@ public:
 
   friend std::ostream& operator<<(std::ostream& os, const Profile& r) ;
   friend std::istream& operator>>(std::istream& is, Profile& r) ;
-
 };
 
 class RealVector : public BaseType, public Additive {
@@ -235,7 +227,6 @@ public:
 
   friend std::ostream& operator<<(std::ostream& os, const RealVector& r) ;
   friend std::istream& operator>>(std::istream& is, RealVector& r) ;
-
 };
 
 
@@ -259,7 +250,6 @@ public:
   inline double ProposeMove(double tuning) { return ProposeMove(tuning,dim); }
 
   inline int ScalarMultiplication(double d) { for (int i=0; i<dim; i++) vec[i] *= d; return dim; }
-
 };
 
 
@@ -293,7 +283,6 @@ public:
 
   friend std::ostream& operator<<(std::ostream& os, const IntVector& r) ;
   friend std::istream& operator>>(std::istream& is, IntVector& r) ;
-
 };
 
 

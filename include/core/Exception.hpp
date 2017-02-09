@@ -12,7 +12,6 @@ public:
 
 private:
   double checksum;
-
 };
 
 

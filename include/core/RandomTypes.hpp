@@ -169,7 +169,6 @@ private:
   int N;
 
   virtual double logProb();
-
 };
 
 
@@ -185,7 +184,6 @@ private :
   Var<Profile>* probarray;
 
   virtual double logProb();
-
 };
 
 
@@ -205,7 +203,6 @@ private:
   int dim;
 
   virtual double logProb();
-
 };
 
 
@@ -226,7 +223,6 @@ protected:
   int dim;
 
   virtual double logProb();
-
 };
 
 
@@ -247,7 +243,6 @@ public:
 protected:
   Var<PosReal>* a;
   Var<PosReal>* b;
-
 };
 
 #endif // RANDOMTYPES_H

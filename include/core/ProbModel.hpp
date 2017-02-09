@@ -55,19 +55,19 @@ public:
   virtual void FromStream(std::istream& is) = 0;
 
   // monitoring the run
-  virtual void Trace(std::ostream&) {};
-  virtual void TraceHeader(std::ostream&) {};
+  virtual void Trace(std::ostream&) {}
+  virtual void TraceHeader(std::ostream&) {}
   virtual void Monitor(std::ostream& os, std::ostream& osdetail);
   // virtual void Monitor(std::ostream& os);
 
-  virtual void Details(std::ostream&) {};
-  virtual void test() {};
+  virtual void Details(std::ostream&) {}
+  virtual void test() {}
 
   std::set<DAGnode*> state;
   std::set<DAGnode*> root;
 
   MCScheduler scheduler;
-
 };
+
 
 #endif // PROBMODEL_H

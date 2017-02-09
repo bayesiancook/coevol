@@ -53,7 +53,6 @@ protected:
 
   bool flag;
   std::string name;
-
 };
 
 
@@ -94,7 +93,6 @@ protected:
   double logprob;
   double bklogprob;
   bool value_updated;
-
 };
 
 
@@ -117,7 +115,6 @@ protected:
 
   virtual void localRestore();
   virtual void localCorrupt(bool bk);
-
 };
 
 
@@ -136,7 +133,6 @@ protected:
 
   inline virtual double FullUpdate(bool) { return 0; }
   inline virtual void FullCorrupt(std::map<DAGnode*,int>&) {}
-
 };
 
 

@@ -36,7 +36,6 @@ private:
   static int Seed;
   static int mt_index;
   static unsigned long long mt_buffer[MT_LEN];
-
 };
 
 

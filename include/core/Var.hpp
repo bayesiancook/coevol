@@ -27,7 +27,6 @@ public:
 
 protected:
   T bkvalue;
-
 };
 
 
@@ -43,7 +42,6 @@ public:
   inline virtual void	Corrupt(bool bk) { Var<T>::localcorrupt(bk); Rnode::Corrupt(bk); }
   inline virtual void  Restore()	{ Var<T>::localrestore(); Rnode::Restore(); }
   inline void RestoreBackup(){ Var<T>::localrestore(); /*value_updated = true;*/ }
-
 };
 
 
@@ -78,7 +76,6 @@ public:
   }
 
   void specialUpdate() {}
-
 };
 
 

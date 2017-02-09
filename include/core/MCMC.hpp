@@ -36,7 +36,6 @@ public:
 
 private:
   bool clamp;
-
 };
 
 
@@ -49,7 +48,6 @@ public:
 
 protected:
   virtual void Restore() = 0;
-
 };
 
 

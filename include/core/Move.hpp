@@ -88,7 +88,6 @@ protected:
 
   bool closed;
   bool random;
-
 };
 
 
@@ -104,7 +103,6 @@ public:
 protected:
   MCMC* var;
   double tuning;
-
 };
 
 
@@ -118,7 +116,6 @@ private:
   Rnode* a1;
   Rnode* a2;
   double tuning;
-
 };
 
 
@@ -176,7 +173,6 @@ protected:
   S* sampling;
   double tuning;
   int n;
-
 };
 
 
@@ -191,7 +187,6 @@ private:
   Multiplicative* m1;
   Multiplicative* m2;
   double tuning;
-
 };
 
 
@@ -206,7 +201,6 @@ private:
   Additive* a1;
   Additive* a2;
   double tuning;
-
 };
 
 
@@ -221,7 +215,6 @@ private:
   Additive* a1;
   Additive* a2;
   double tuning;
-
 };
 
 
@@ -235,7 +228,6 @@ private:
   Rvar<RealVector>* var;
   double tuning;
   int m;
-
 };
 
 
@@ -248,7 +240,6 @@ public:
 private:
   Rvar<RealVector>* var;
   double tuning;
-
 };
 
 
@@ -262,7 +253,6 @@ private :
   Rvar<RealVector>* a1;
   Rvar<RealVector>* a2;
   double tuning;
-
 };
 
 
@@ -276,7 +266,7 @@ private:
   Rvar<Profile>* var;
   double tuning;
   int n;
-
 };
+
 
 #endif
