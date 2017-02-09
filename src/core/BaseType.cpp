@@ -488,4 +488,104 @@ double PosRealVector::GetEntropy() const {
   return ent;
 }
 
+IntVector::IntVector(const IntVector& from) {
+  dim = from.dim;
+  vec = new int[dim];
+  for (int i=0; i<dim; i++) {
+    vec[i] = from.vec[i];
+  }
+}
 
+IntVector::IntVector(const int* from, int indim) {
+  dim = indim;
+  vec = new int[dim];
+  for (int i=0; i<dim; i++) {
+    vec[i] = from[i];
+  }
+}
+
+IntVector& IntVector::operator=(const IntVector& from) {
+  if (!dim) {
+    dim = from.dim;
+    vec = new int[dim];
+  }
+  if (dim != from.dim) {
+    std::cerr << "error : non matching dimenstion for vectors\n";
+    std::cerr << dim << '\t' << from.dim << '\n';
+    exit(1);
+    delete[] vec;
+    dim = from.dim;
+    vec = new int[dim];
+  }
+  for (int i=0; i<dim; i++) {
+    vec[i] = from.vec[i];
+  }
+  return *this;
+}
+
+IntVector& IntVector::operator=(const int* from) {
+  if (!dim) {
+    std::cerr << "error in IntVector::operator=(const int*)\n";
+    exit(1);
+  }
+  for (int i=0; i<dim; i++) {
+    vec[i] = from[i];
+  }
+  return *this;
+}
+
+double IntVector::GetMean() const {
+  double total = 0;
+  for (int i=0; i<dim; i++) {
+    total += vec[i];
+  }
+  return total / dim;
+}
+
+double IntVector::GetVar() const {
+  double mean = 0;
+  double var = 0;
+  for (int i=0; i<dim; i++) {
+    var += vec[i] * vec[i];
+    mean += vec[i];
+  }
+  mean /= dim;
+  var /= dim;
+  var -= mean * mean;
+  return var;
+}
+
+int IntVector::ProposeMove(double tuning, int n) {
+  if ((n<=0) || (n > dim)) {
+    n = dim;
+  }
+  int* indices = new int[n];
+  Random::DrawFromUrn(indices,n,dim);
+  for (int i=0; i<n; i++) {
+    vec[indices[i]] += (int) (tuning * (Random::Uniform() - 0.5));
+  }
+  delete[] indices;
+  return 0;
+}
+
+std::ostream& operator<<(std::ostream& os, const IntVector& r) {
+  os << r.dim;
+  for (int i=0; i<r.dim; i++) {
+    os << '\t' << r.vec[i];
+  }
+  return os;
+}
+
+std::istream& operator>>(std::istream& is, IntVector& r) {
+  int indim;
+  is >> indim;
+  if (r.dim != indim) {
+    r.dim = indim;
+    delete[] r.vec;
+    r.vec = new int[r.dim];
+  }
+  for (int i=0; i<r.dim; i++) {
+    is >> r.vec[i];
+  }
+  return is;
+}

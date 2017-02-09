@@ -85,8 +85,8 @@ public:
   inline UnitReal& operator=(const UnitReal& from) { value = from.value; return *this; }
   inline UnitReal& operator=(double from) { value = from; return *this; }
   inline UnitReal& operator+=(const UnitReal from) { value += from.value; return *this; }
-  operator double() { return value; }
-  operator double() const { return value; }
+  inline operator double() { return value; }
+  inline operator double() const { return value; }
 
   virtual double ProposeMove(double tuning) ;
 
@@ -270,135 +270,31 @@ protected:
 
 public:
   IntVector() : dim(0), vec(0) {}
+  IntVector(int indim) { dim = indim; vec = new int[dim]; }
+  IntVector(const IntVector& from) ;
+  IntVector(const int* from, int indim) ;
+  virtual   ~IntVector() { delete[] vec; }
 
-  IntVector(int indim) {
-    dim = indim;
-    vec = new int[dim];
-  }
+  IntVector& operator=(const IntVector& from) ;
+  IntVector& operator=(const int* from) ;
 
-  IntVector(const IntVector& from) {
-    dim = from.dim;
-    vec = new int[dim];
-    for (int i=0; i<dim; i++) {
-      vec[i] = from.vec[i];
-    }
-  }
+  int& operator[](int i) { return vec[i]; }
+  int& operator[](int i) const { return vec[i]; }
 
-  IntVector(const int* from, int indim) {
-    dim = indim;
-    vec = new int[dim];
-    for (int i=0; i<dim; i++) {
-      vec[i] = from[i];
-    }
-  }
+  inline const int* GetArray() const { return vec; }
+  inline int GetDim() { return dim; }
+  double GetMean() const ;
+  double GetVar() const ;
 
-  virtual   ~IntVector() {
-    delete[] vec;
-  }
+  inline int check() { return 1; }
 
-  IntVector& operator=(const IntVector& from) {
-    if (!dim) {
-      dim = from.dim;
-      vec = new int[dim];
-    }
-    if (dim != from.dim) {
-      std::cerr << "error : non matching dimenstion for vectors\n";
-      std::cerr << dim << '\t' << from.dim << '\n';
-      exit(1);
-      delete[] vec;
-      dim = from.dim;
-      vec = new int[dim];
-    }
-    for (int i=0; i<dim; i++) {
-      vec[i] = from.vec[i];
-    }
-    return *this;
-  }
+  int ProposeMove(double tuning, int n) ;
+  inline double ProposeMove(double tuning) { return ProposeMove(tuning,dim); }
 
-  IntVector& operator=(const int* from) {
-    if (!dim) {
-      std::cerr << "error in IntVector::operator=(const int*)\n";
-      exit(1);
-    }
-    for (int i=0; i<dim; i++) {
-      vec[i] = from[i];
-    }
-    return *this;
-  }
-
-  const int* GetArray() const { return vec; }
-
-  int& operator[](int i) {
-    return vec[i];
-  }
-
-  int& operator[](int i) const {
-    return vec[i];
-  }
-
-  int GetDim() { return dim; }
-  int check() { return 1; }
-
-  double    GetMean() const {
-    double total = 0;
-    for (int i=0; i<dim; i++) {
-      total += vec[i];
-    }
-    return total / dim;
-  }
-
-  double GetVar() const {
-    double mean = 0;
-    double var = 0;
-    for (int i=0; i<dim; i++) {
-      var += vec[i] * vec[i];
-      mean += vec[i];
-    }
-    mean /= dim;
-    var /= dim;
-    var -= mean * mean;
-    return var;
-  }
-
-  int ProposeMove(double tuning, int n) {
-    if ((n<=0) || (n > dim)) {
-      n = dim;
-    }
-    int* indices = new int[n];
-    Random::DrawFromUrn(indices,n,dim);
-    for (int i=0; i<n; i++) {
-      vec[indices[i]] += (int) (tuning * (Random::Uniform() - 0.5));
-    }
-    delete[] indices;
-    return 0;
-  }
-
-  double ProposeMove(double tuning) {
-    return ProposeMove(tuning,dim);
-  }
-
-  friend std::ostream& operator<<(std::ostream& os, const IntVector& r) {
-    os << r.dim;
-    for (int i=0; i<r.dim; i++) {
-      os << '\t' << r.vec[i];
-    }
-    return os;
-  }
-
-  friend std::istream& operator>>(std::istream& is, IntVector& r) {
-    int indim;
-    is >> indim;
-    if (r.dim != indim) {
-      r.dim = indim;
-      delete[] r.vec;
-      r.vec = new int[r.dim];
-    }
-    for (int i=0; i<r.dim; i++) {
-      is >> r.vec[i];
-    }
-    return is;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const IntVector& r) ;
+  friend std::istream& operator>>(std::istream& is, IntVector& r) ;
 
 };
+
 
 #endif // BASETYPE_H
