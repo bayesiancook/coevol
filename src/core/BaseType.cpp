@@ -317,7 +317,7 @@ int RealVector::ScalarAddition(double d) {
 }
 
 void RealVector::ScalarMultiplication(double d) {
-  for (auto i : vec)
+  for (auto& i : vec)
     i *= d;
 }
 
