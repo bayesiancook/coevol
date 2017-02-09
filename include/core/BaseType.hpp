@@ -193,23 +193,21 @@ public:
 
 class RealVector : public BaseType, public Additive {
 protected:
-  int dim;
-  double* vec;
+  std::vector<double> vec;
 
 public:
-  RealVector() : dim(0), vec(0) {}
-  RealVector(int indim) { dim = indim; vec = new double[dim]; }
+  RealVector(int indim = 0) : vec(indim) {}
   RealVector(const RealVector& from) ;
   RealVector(const double* from, int indim) ;
-  virtual ~RealVector() { delete[] vec; }
+  virtual ~RealVector() {}
 
   RealVector& operator=(const RealVector& from) ;
 
   inline double& operator[](int i) { return vec[i]; }
-  inline double& operator[](int i) const { return vec[i]; }
+  inline const double& operator[](int i) const { return vec[i]; }
 
-  inline double* GetArray() const { return vec; }
-  inline int GetDim() { return dim; }
+  inline const double* GetArray() const { return &vec[0]; }
+  inline int GetDim() { return vec.size(); }
   double GetMean() const ;
   double GetVar() const ;
 
@@ -222,9 +220,9 @@ public:
   void add(const double* in, double f = 1) ;
 
   double ProposeMove(double tuning, int n) ;
-  inline double ProposeMove(double tuning) { return ProposeMove(tuning, dim); }
+  inline double ProposeMove(double tuning) { return ProposeMove(tuning, GetDim()); }
 
-  inline void setAtZero() { for (int i=0; i<dim; i++) vec[i] = 0; }
+  inline void setAtZero() { for (auto& i : vec) i = 0; }
 
   friend std::ostream& operator<<(std::ostream& os, const RealVector& r) ;
   friend std::istream& operator>>(std::istream& is, RealVector& r) ;
