@@ -18,7 +18,7 @@ public:
   inline void localrestore()	{ T::operator=(bkvalue); }
 
   // returns the current value
-  inline const T& val() { return *this; }
+  inline T& val() { return *this; }
 
   // sets the new value
   inline void setval(const T& inval) { T::operator=(inval); }

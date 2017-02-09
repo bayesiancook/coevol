@@ -266,6 +266,7 @@ std::ostream& operator<<(std::ostream& os, const Profile& r) {
 std::istream& operator>>(std::istream& is, Profile& r) {
   int indim;
   is >> indim;
+  r.profile.assign(indim, 0);
   for (auto& i : r.profile)
     is >> i;
   return is;
@@ -277,88 +278,61 @@ std::istream& operator>>(std::istream& is, Profile& r) {
 //	* RealVector
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-RealVector::RealVector(const RealVector& from) {
-  dim = from.dim;
-  vec = new double[dim];
-  for (int i=0; i<dim; i++) {
-    vec[i] = from.vec[i];
-  }
-}
-
 RealVector::RealVector(const double* from, int indim) {
-  dim = indim;
-  vec = new double[dim];
-  for (int i=0; i<dim; i++) {
+  vec.assign(indim, 0);
+  for (int i=0; i<indim; i++)
     vec[i] = from[i];
-  }
 }
 
 RealVector& RealVector::operator=(const RealVector& from) {
-  if (!dim) {
-    dim = from.dim;
-    vec = new double[dim];
-  }
-  if (dim != from.dim) {
-    std::cerr << "error : non matching dimenstion for vectors\n";
-    std::cerr << dim << '\t' << from.dim << '\n';
-    exit(1);
-    delete[] vec;
-    dim = from.dim;
-    vec = new double[dim];
-  }
-  for (int i=0; i<dim; i++) {
-    vec[i] = from.vec[i];
-  }
+  vec = from.vec;
   return *this;
 }
 
 double RealVector::GetMean() const {
   double total = 0;
-  for (int i=0; i<dim; i++) {
-    total += vec[i];
+  for (auto i : vec) {
+    total += i;
   }
-  return total / dim;
+  return total / GetDim();
 }
 
 double RealVector::GetVar() const {
   double mean = 0;
   double var = 0;
-  for (int i=0; i<dim; i++) {
-    var += vec[i] * vec[i];
-    mean += vec[i];
+  for (auto i : vec) {
+    var += i * i;
+    mean += i;
   }
-  mean /= dim;
-  var /= dim;
+  mean /= GetDim();
+  var /= GetDim();
   var -= mean * mean;
   return var;
 }
 
 int RealVector::ScalarAddition(double d) {
-  for (int i=0; i<dim; i++) {
-    vec[i] += d;
-  }
-  return dim;
+  for (auto& i : vec)
+    i += d;
+  return GetDim();
 }
 
 void RealVector::ScalarMultiplication(double d) {
-  for (int i=0; i<dim; i++) {
-    vec[i] *= d;
-  }
+  for (auto i : vec)
+    i *= d;
 }
 
 void RealVector::add(const RealVector& in) {
-  for (int i=0; i<dim; i++) {
+  for (int i=0; i<GetDim(); i++)
     vec[i] += in[i];
-  }
 }
 
 void RealVector::add(const double* in, double f) {
-  for (int i=0; i<dim; i++) {
+  for (int i=0; i<GetDim(); i++)
     vec[i] += f * in[i];
-  }
 }
 
 double RealVector::ProposeMove(double tuning, int n) {
+  int dim = GetDim();
   if ((n<=0) || (n > dim)) {
     n = dim;
   }
@@ -368,12 +342,13 @@ double RealVector::ProposeMove(double tuning, int n) {
     vec[indices[i]] += tuning * (Random::Uniform() - 0.5);
   }
   delete[] indices;
-  return 0;
+  return 0; // (VL) does this function do anything ?
 }
 
 std::ostream& operator<<(std::ostream& os, const RealVector& r) {
-  os << r.dim;
-  for (int i=0; i<r.dim; i++) {
+  int rdim = r.GetDim();
+  os << rdim;
+  for (int i=0; i<rdim; i++) {
     os << '\t' << r.vec[i];
   }
   return os;
@@ -382,14 +357,9 @@ std::ostream& operator<<(std::ostream& os, const RealVector& r) {
 std::istream& operator>>(std::istream& is, RealVector& r) {
   int indim;
   is >> indim;
-  if (r.dim != indim) {
-    r.dim = indim;
-    delete[] r.vec;
-    r.vec = new double[r.dim];
-  }
-  for (int i=0; i<r.dim; i++) {
-    is >> r.vec[i];
-  }
+  r.vec.assign(indim, 0);
+  for (auto& i : r.vec)
+    is >> i;
   return is;
 }
 
@@ -399,63 +369,39 @@ std::istream& operator>>(std::istream& is, RealVector& r) {
 //	* PosRealVector
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-PosRealVector::PosRealVector(const PosRealVector& from): RealVector() {
-  dim = from.dim;
-  vec = new double[dim];
-  for (int i=0; i<dim; i++) {
-    vec[i] = from.vec[i];
-  }
-}
-
 PosRealVector::PosRealVector(const double* from, int indim) {
-  dim = indim;
-  vec = new double[dim];
-  for (int i=0; i<dim; i++) {
+  vec.assign(indim, 0);
+  for (int i=0; i<indim; i++)
     vec[i] = from[i];
-  }
 }
 
 PosRealVector& PosRealVector::operator=(const PosRealVector& from) {
-  if (!dim) {
-    dim = from.dim;
-    vec = new double[dim];
-  }
-  if (dim != from.dim) {
-    std::cerr << "error : non matching dimenstion for pos vectors\n";
-    std::cerr << dim << '\t' << from.dim << '\n';
-    exit(1);
-    delete[] vec;
-    dim = from.dim;
-    vec = new double[dim];
-  }
-  for (int i=0; i<dim; i++) {
-    vec[i] = from.vec[i];
-  }
+  vec = from.vec;
   return *this;
 }
 
 double PosRealVector::GetMean() const {
   double total = 0;
-  for (int i=0; i<dim; i++) {
-    total += vec[i];
-  }
-  return total / dim;
+  for (auto i : vec)
+    total += i;
+  return total / GetDim();
 }
 
 double PosRealVector::GetVar() const {
   double mean = 0;
   double var = 0;
-  for (int i=0; i<dim; i++) {
-    var += vec[i] * vec[i];
-    mean += vec[i];
+  for (auto i : vec) {
+    var += i * i;
+    mean += i;
   }
-  mean /= dim;
-  var /= dim;
+  mean /= GetDim();
+  var /= GetDim();
   var -= mean * mean;
   return var;
 }
 
 double PosRealVector::ProposeMove(double tuning, int n) {
+  int dim = GetDim();
   if ((n<=0) || (n > dim)) {
     n = dim;
   }
@@ -473,12 +419,12 @@ double PosRealVector::ProposeMove(double tuning, int n) {
 
 double PosRealVector::GetEntropy() const {
   double total = 0;
-  for (int i=0; i<dim; i++) {
-    total += vec[i];
+  for (auto i : vec) {
+    total += i;
   }
   double ent = 0;
-  for (int i=0; i<dim; i++) {
-    double tmp = vec[i]/total;
+  for (auto i : vec) {
+    double tmp = i/total;
     ent += (tmp>1e-8) ? -tmp*log(tmp) : 0;
   }
   return ent;

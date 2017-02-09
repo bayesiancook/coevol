@@ -1,7 +1,7 @@
 #ifndef NORMAL_H
 #define NORMAL_H
 
-
+#include <cmath>
 #include "core/RandomTypes.hpp" // FIXME not necessary for compilation
 #include "core/Var.hpp"
 // #include "diffsel/BiologicalSequences.hpp"
@@ -49,6 +49,7 @@ public:
   }
 
   virtual double	Move(double tuning, int n)	{
+    int dim = GetDim();
     if (! isClamped())	{
       // Metropolis Hastings here
       Corrupt(true);

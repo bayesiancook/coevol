@@ -197,7 +197,7 @@ protected:
 
 public:
   RealVector(int indim = 0) : vec(indim) {}
-  RealVector(const RealVector& from) ;
+  RealVector(const RealVector& from) : vec(from.vec) {}
   RealVector(const double* from, int indim) ;
   virtual ~RealVector() {}
 
@@ -206,8 +206,8 @@ public:
   inline double& operator[](int i) { return vec[i]; }
   inline const double& operator[](int i) const { return vec[i]; }
 
-  inline const double* GetArray() const { return &vec[0]; }
-  inline int GetDim() { return vec.size(); }
+  inline double* GetArray() { return &vec[0]; }
+  inline int GetDim() const { return vec.size(); }
   double GetMean() const ;
   double GetVar() const ;
 
@@ -232,23 +232,23 @@ public:
 class PosRealVector : public RealVector, public Multiplicative {
 public:
   PosRealVector() : RealVector() {}
-  PosRealVector(int indim) { dim = indim; vec = new double[dim]; }
-  PosRealVector(const PosRealVector& from) ;
+  PosRealVector(int indim) : RealVector(indim) {}
+  PosRealVector(const PosRealVector& from) : RealVector(from) {};
   PosRealVector(const double* from, int indim) ;
-  virtual   ~PosRealVector() {}
+  virtual ~PosRealVector() {}
 
   PosRealVector& operator=(const PosRealVector& from) ;
 
-  inline void SetAtOne() { for (int i=0; i<dim; i++) vec[i] = 1; }
+  inline void SetAtOne() { for (auto& i : vec) i = 1; }
 
   double GetMean() const ;
   double GetVar() const ;
   double GetEntropy() const ;
 
   double ProposeMove(double tuning, int n) ;
-  inline double ProposeMove(double tuning) { return ProposeMove(tuning,dim); }
+  inline double ProposeMove(double tuning) { return ProposeMove(tuning, GetDim()); }
 
-  inline int ScalarMultiplication(double d) { for (int i=0; i<dim; i++) vec[i] *= d; return dim; }
+  inline int ScalarMultiplication(double d) { for (auto& i : vec) i *= d; return GetDim(); }
 };
 
 
