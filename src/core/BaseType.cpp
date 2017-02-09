@@ -8,7 +8,7 @@ using namespace std;
 //	* Additive
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-void Additive::Register(DAGnode*) {std::cerr << "error in Additive::Register\n"; throw;}
+void Additive::Register(DAGnode*) { cerr << "error in Additive::Register\n"; throw; }
 
 
 //-------------------------------------------------------------------------
@@ -16,7 +16,7 @@ void Additive::Register(DAGnode*) {std::cerr << "error in Additive::Register\n";
 //	* Multiplicative
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-void Multiplicative::Register(DAGnode*)  {std::cerr << "error in Multiplicative::Register\n"; throw;}
+void Multiplicative::Register(DAGnode*) { cerr << "error in Multiplicative::Register\n"; throw; }
 
 
 //-------------------------------------------------------------------------
@@ -38,7 +38,7 @@ double Real::ProposeMove(double tuning) {
 
 int Real::check() {return 1;}
 
-std::istream& operator>>(std::istream& is, Real& r) {
+istream& operator>>(istream& is, Real& r) {
   is >> r.value;
   return is;
 }
@@ -66,7 +66,7 @@ double UnitReal::ProposeMove(double tuning) {
 
 int UnitReal::check() {return 1;}
 
-std::istream& operator>>(std::istream& is, UnitReal& r) {
+istream& operator>>(istream& is, UnitReal& r) {
   is >> r.value;
   return is;
 }
@@ -91,13 +91,13 @@ double PosReal::ProposeMove(double tuning) {
 
 int PosReal::check() {
   if (value<=0) {
-    std::cerr << "error : positive double is not positive : " << value << '\n';
+    cerr << "error : positive double is not positive : " << value << '\n';
     return 0;
   }
   return 1;
 }
 
-std::istream& operator>>(std::istream& is, PosReal& r) {
+istream& operator>>(istream& is, PosReal& r) {
   is >> r.value;
   return is;
 }
@@ -118,7 +118,7 @@ double Int::ProposeMove(double) {
   return 0;
 }
 
-std::istream& operator>>(std::istream& is, Int& r) {
+istream& operator>>(istream& is, Int& r) {
   is >> r.value;
   return is;
 }
@@ -137,7 +137,7 @@ Profile::Profile(int indim, double* v) {
     double total = 0;
     for (int k=0; k<indim; k++) { // (VL) copy v into profile + checking everything is positive
       if (!(v[k]>0)) { // (VL) + computing total to normalize afterwards
-        std::cerr << "error : profiles should be strictly positive\n";
+        cerr << "error : profiles should be strictly positive\n";
         exit(1);
       }
       profile[k] = v[k];
@@ -157,7 +157,7 @@ double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling,
     for (int i=0; i<dim; i++)	{
       profile[i] = Random::sGamma(tuning*oldprofile[i]);
       if (profile[i] == 0)	{
-        std::cerr << "error in dirichlet resampling : 0 \n";
+        cerr << "error in dirichlet resampling : 0 \n";
         exit(1);
       }
       total += profile[i];
@@ -166,7 +166,7 @@ double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling,
     for (int i=0; i<dim; i++)	{
       profile[i] /= total;
       logHastings += - Random::logGamma(tuning*oldprofile[i]) + Random::logGamma(tuning*profile[i])
-        -  (tuning*profile[i] -1.0) * log(oldprofile[i]) + (tuning * oldprofile[i] -1.0) * log(profile[i]);
+        - (tuning*profile[i] -1.0) * log(oldprofile[i]) + (tuning * oldprofile[i] -1.0) * log(profile[i]);
     }
     return logHastings;
   }
@@ -229,7 +229,7 @@ double Profile::GetEntropy() const {
   return total;
 }
 
-std::ostream& operator<<(std::ostream& os, const Profile& r) {
+ostream& operator<<(ostream& os, const Profile& r) {
   os << r.GetDim();
   for (int i=0; i<r.GetDim(); i++) {
     os << '\t' << r.profile[i];
@@ -237,7 +237,7 @@ std::ostream& operator<<(std::ostream& os, const Profile& r) {
   return os;
 }
 
-std::istream& operator>>(std::istream& is, Profile& r) {
+istream& operator>>(istream& is, Profile& r) {
   int indim;
   is >> indim;
   r.profile.assign(indim, 0);
@@ -319,7 +319,7 @@ double RealVector::ProposeMove(double tuning, int n) {
   return 0; // (VL) does this function do anything ?
 }
 
-std::ostream& operator<<(std::ostream& os, const RealVector& r) {
+ostream& operator<<(ostream& os, const RealVector& r) {
   int rdim = r.GetDim();
   os << rdim;
   for (int i=0; i<rdim; i++) {
@@ -328,7 +328,7 @@ std::ostream& operator<<(std::ostream& os, const RealVector& r) {
   return os;
 }
 
-std::istream& operator>>(std::istream& is, RealVector& r) {
+istream& operator>>(istream& is, RealVector& r) {
   int indim;
   is >> indim;
   r.vec.assign(indim, 0);
@@ -432,8 +432,8 @@ IntVector& IntVector::operator=(const IntVector& from) {
     vec = new int[dim];
   }
   if (dim != from.dim) {
-    std::cerr << "error : non matching dimenstion for vectors\n";
-    std::cerr << dim << '\t' << from.dim << '\n';
+    cerr << "error : non matching dimenstion for vectors\n";
+    cerr << dim << '\t' << from.dim << '\n';
     exit(1);
     delete[] vec;
     dim = from.dim;
@@ -447,7 +447,7 @@ IntVector& IntVector::operator=(const IntVector& from) {
 
 IntVector& IntVector::operator=(const int* from) {
   if (!dim) {
-    std::cerr << "error in IntVector::operator=(const int*)\n";
+    cerr << "error in IntVector::operator=(const int*)\n";
     exit(1);
   }
   for (int i=0; i<dim; i++) {
@@ -490,7 +490,7 @@ int IntVector::ProposeMove(double tuning, int n) {
   return 0;
 }
 
-std::ostream& operator<<(std::ostream& os, const IntVector& r) {
+ostream& operator<<(ostream& os, const IntVector& r) {
   os << r.dim;
   for (int i=0; i<r.dim; i++) {
     os << '\t' << r.vec[i];
@@ -498,7 +498,7 @@ std::ostream& operator<<(std::ostream& os, const IntVector& r) {
   return os;
 }
 
-std::istream& operator>>(std::istream& is, IntVector& r) {
+istream& operator>>(istream& is, IntVector& r) {
   int indim;
   is >> indim;
   if (r.dim != indim) {
