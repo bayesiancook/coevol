@@ -132,7 +132,7 @@ std::istream& operator>>(std::istream& is, Int& r) {
 const double Profile::MIN = 1e-20;
 
 Profile::Profile(int indim, double* v) {
-  profile.reserve(indim);
+  profile.assign(indim, 0);
   if (v) {
     double total = 0;
     for (int k=0; k<indim; k++) { // (VL) copy v into profile + checking everything is positive
@@ -206,11 +206,6 @@ double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling,
 }
 
 Profile& Profile::operator=(const Profile& from) {
-  if (from.profile.size() != profile.size()) {
-    std::cerr << "error : non matching dimenstion for profiles\n";
-    std::cerr << profile.size() << '\t' << from.profile.size() << '\n';
-    exit(1);
-  }
   profile = from.profile;
   return *this;
 }
@@ -227,31 +222,20 @@ void Profile::setarray(double* in) {
   }
 }
 
-const double* Profile::GetArray() const {
-  return &profile[0];
-}
+/* (VL) TODO inline all thos little methods TODO */
+const double* Profile::GetArray() const { return &profile[0]; }
 
-double* Profile::GetArray() {return &profile[0];}
+double* Profile::GetArray() { return &profile[0]; }
 
-double& Profile::operator[](int i) {
-  return profile[i];
-}
+double& Profile::operator[](int i) { return profile[i]; }
 
-const double& Profile::operator[](int i) const  {
-  return profile[i];
-}
+const double& Profile::operator[](int i) const { return profile[i]; }
 
-int Profile::GetDim() const {return profile.size();}
+int Profile::GetDim() const { return profile.size(); }
 
-void Profile::setAtZero() {
-  for (auto& i : profile)
-    i = 0;
-}
+void Profile::setAtZero() { for (auto& i : profile) i = 0; }
 
-void Profile::scalarMultiplication(double d) {
-  for (auto& i : profile)
-    i *= d;
-}
+void Profile::scalarMultiplication(double d) { for (auto& i : profile) i *= d; }
 
 void Profile::add(const Profile& in) {
   for (unsigned int i=0; i<profile.size(); i++)
@@ -266,8 +250,6 @@ double Profile::GetEntropy() const {
     total += (i>1e-8) ? -i*log(i) : 0;
   return total;
 }
-
-double Profile::ProposeMove(double tuning, int dim);
 
 double Profile::ProposeMove(double tuning) {
   return ProposeMove(tuning, profile.size());

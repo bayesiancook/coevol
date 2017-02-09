@@ -83,7 +83,7 @@ public:
 
 protected:
 
-  Rvar<UnitReal>* CreateVal(int site)	{
+  Rvar<UnitReal>* CreateVal(int)	{
     return new Beta(alpha, beta);
   }
 
@@ -102,7 +102,7 @@ public:
 
 protected:
 
-  Rvar<PosReal>* CreateVal(int site)	{
+  Rvar<PosReal>* CreateVal(int)	{
     return new PosUniform(root, max);
   }
 
@@ -166,7 +166,7 @@ public:
 
 protected:
 
-  Rvar<PosReal>* CreateVal(int site)	{
+  Rvar<PosReal>* CreateVal(int)	{
     return new Gamma(alpha, beta);
   }
 
@@ -235,7 +235,7 @@ public:
 
 protected:
 
-  Rvar<Profile>* CreateVal(int site)	{
+  Rvar<Profile>* CreateVal(int)	{
     return new Dirichlet(center,concentration);
   }
 
@@ -244,7 +244,6 @@ protected:
 };
 
 class DirichletIIDArrayMove : public MCUpdate	{
-
 public:
 
   DirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int inm) : selectarray(inselectarray), tuning(intuning), m(inm)	{}
@@ -311,7 +310,7 @@ public:
 
 protected:
 
-  Rvar<Real>* CreateVal(int site)	{
+  Rvar<Real>* CreateVal(int)	{
     return new Normal(mean,var);
   }
 

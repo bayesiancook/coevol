@@ -9,9 +9,7 @@
 
 
 class DirichletNormalCompMove : public MCUpdate	{
-
 public:
-
   DirichletNormalCompMove(DirichletIIDArray* inglobal, IIDNormalIIDArray* indiff, double intuning, int inn, int innrep)	{
     global = inglobal;
     diff = indiff;
@@ -237,7 +235,7 @@ public:
   RenormalizedIIDStat(Var<Profile>* ina, Var<RealVector>* inb, Var<RealVector>* inc, Var<PosReal>* inbeta)	{
 
     if (ina->GetDim() != inb->GetDim())	{
-      cerr << "error in RenormalizedIIDStat : non matching dimension\n";
+      cerr << "error in RenormalizedIIDStat : non matching dimension (" << ina->GetDim() << " vs " << inb->GetDim() << ")\n" ;
       throw;
     }
     setval(Profile(ina->GetDim()));
