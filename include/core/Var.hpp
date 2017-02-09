@@ -18,12 +18,12 @@ public:
   inline void localrestore()	{ T::operator=(bkvalue); }
 
   // returns the current value
-  inline const T& val() {return *this;}
+  inline const T& val() { return *this; }
 
-  // const T& val2() {return *this;}
+  // const T& val2() { return *this; }
 
   // sets the new value
-  inline void setval(const T& inval) {T::operator=(inval);}
+  inline void setval(const T& inval) { T::operator=(inval); }
 
   inline virtual void Register(DAGnode* in) { DAGnode::Register(in); }
 
