@@ -287,35 +287,6 @@ std::istream& operator>>(std::istream& is, Profile& r) {
   return is;
 }
 
-double PosRealVector::ProposeMove(double tuning, int n) {
-  if ((n<=0) || (n > dim)) {
-    n = dim;
-  }
-  int* indices = new int[n];
-  Random::DrawFromUrn(indices,n,dim);
-  double ret = 0;
-  for (int i=0; i<n; i++) {
-    double m = tuning * (Random::Uniform() - 0.5);
-    vec[indices[i]] *= exp(m);
-    ret += m;
-  }
-  delete[] indices;
-  return ret;
-}
-
-double PosRealVector::GetEntropy() const {
-  double total = 0;
-  for (int i=0; i<dim; i++) {
-    total += vec[i];
-  }
-  double ent = 0;
-  for (int i=0; i<dim; i++) {
-    double tmp = vec[i]/total;
-    ent += (tmp>1e-8) ? -tmp*log(tmp) : 0;
-  }
-  return ent;
-}
-
 RealVector::RealVector(const RealVector& from) {
   dim = from.dim;
   vec = new double[dim];
@@ -431,3 +402,90 @@ std::istream& operator>>(std::istream& is, RealVector& r) {
   }
   return is;
 }
+
+PosRealVector::PosRealVector(const PosRealVector& from): RealVector() {
+  dim = from.dim;
+  vec = new double[dim];
+  for (int i=0; i<dim; i++) {
+    vec[i] = from.vec[i];
+  }
+}
+
+PosRealVector::PosRealVector(const double* from, int indim) {
+  dim = indim;
+  vec = new double[dim];
+  for (int i=0; i<dim; i++) {
+    vec[i] = from[i];
+  }
+}
+
+PosRealVector& PosRealVector::operator=(const PosRealVector& from) {
+  if (!dim) {
+    dim = from.dim;
+    vec = new double[dim];
+  }
+  if (dim != from.dim) {
+    std::cerr << "error : non matching dimenstion for pos vectors\n";
+    std::cerr << dim << '\t' << from.dim << '\n';
+    exit(1);
+    delete[] vec;
+    dim = from.dim;
+    vec = new double[dim];
+  }
+  for (int i=0; i<dim; i++) {
+    vec[i] = from.vec[i];
+  }
+  return *this;
+}
+
+double PosRealVector::GetMean() const {
+  double total = 0;
+  for (int i=0; i<dim; i++) {
+    total += vec[i];
+  }
+  return total / dim;
+}
+
+double PosRealVector::GetVar() const {
+  double mean = 0;
+  double var = 0;
+  for (int i=0; i<dim; i++) {
+    var += vec[i] * vec[i];
+    mean += vec[i];
+  }
+  mean /= dim;
+  var /= dim;
+  var -= mean * mean;
+  return var;
+}
+
+double PosRealVector::ProposeMove(double tuning, int n) {
+  if ((n<=0) || (n > dim)) {
+    n = dim;
+  }
+  int* indices = new int[n];
+  Random::DrawFromUrn(indices,n,dim);
+  double ret = 0;
+  for (int i=0; i<n; i++) {
+    double m = tuning * (Random::Uniform() - 0.5);
+    vec[indices[i]] *= exp(m);
+    ret += m;
+  }
+  delete[] indices;
+  return ret;
+}
+
+double PosRealVector::GetEntropy() const {
+  double total = 0;
+  for (int i=0; i<dim; i++) {
+    total += vec[i];
+  }
+  double ent = 0;
+  for (int i=0; i<dim; i++) {
+    double tmp = vec[i]/total;
+    ent += (tmp>1e-8) ? -tmp*log(tmp) : 0;
+  }
+  return ent;
+}
+
+

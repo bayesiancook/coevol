@@ -242,91 +242,23 @@ public:
 class PosRealVector : public RealVector, public Multiplicative {
 public:
   PosRealVector() : RealVector() {}
-
-  PosRealVector(int indim) {
-    dim = indim;
-    vec = new double[dim];
-  }
-
-  PosRealVector(const PosRealVector& from): RealVector() {
-    dim = from.dim;
-    vec = new double[dim];
-    for (int i=0; i<dim; i++) {
-      vec[i] = from.vec[i];
-    }
-  }
-
-  PosRealVector(const double* from, int indim) {
-    dim = indim;
-    vec = new double[dim];
-    for (int i=0; i<dim; i++) {
-      vec[i] = from[i];
-    }
-  }
-
+  PosRealVector(int indim) { dim = indim; vec = new double[dim]; }
+  PosRealVector(const PosRealVector& from) ;
+  PosRealVector(const double* from, int indim) ;
   virtual   ~PosRealVector() {}
 
-  PosRealVector& operator=(const PosRealVector& from) {
-    if (!dim) {
-      dim = from.dim;
-      vec = new double[dim];
-    }
-    if (dim != from.dim) {
-      std::cerr << "error : non matching dimenstion for pos vectors\n";
-      std::cerr << dim << '\t' << from.dim << '\n';
-      exit(1);
-      delete[] vec;
-      dim = from.dim;
-      vec = new double[dim];
-    }
-    for (int i=0; i<dim; i++) {
-      vec[i] = from.vec[i];
-    }
-    return *this;
-  }
+  PosRealVector& operator=(const PosRealVector& from) ;
 
-  double GetMean() const {
-    double total = 0;
-    for (int i=0; i<dim; i++) {
-      total += vec[i];
-    }
-    return total / dim;
-  }
+  inline void SetAtOne() { for (int i=0; i<dim; i++) vec[i] = 1; }
 
-  void SetAtOne() {
-    for (int i=0; i<dim; i++) {
-      vec[i] = 1;
-    }
-  }
-
-  double GetVar() const {
-    double mean = 0;
-    double var = 0;
-    for (int i=0; i<dim; i++) {
-      var += vec[i] * vec[i];
-      mean += vec[i];
-    }
-    mean /= dim;
-    var /= dim;
-    var -= mean * mean;
-    return var;
-  }
-
+  double GetMean() const ;
+  double GetVar() const ;
   double GetEntropy() const ;
 
-
   double ProposeMove(double tuning, int n) ;
+  inline double ProposeMove(double tuning) { return ProposeMove(tuning,dim); }
 
-  double ProposeMove(double tuning) {
-    return ProposeMove(tuning,dim);
-  }
-
-  int ScalarMultiplication(double d) {
-    for (int i=0; i<dim; i++) {
-      vec[i] *= d;
-    }
-    return dim;
-  }
+  inline int ScalarMultiplication(double d) { for (int i=0; i<dim; i++) vec[i] *= d; return dim; }
 
 };
 
