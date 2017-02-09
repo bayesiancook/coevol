@@ -15,7 +15,6 @@ public:
   inline Var& operator=(const T& from) { return T::operator=(from); }
 
   inline void localcorrupt(bool bk)	{ if (bk) this->bkvalue = *this; }
-
   inline void localrestore()	{ T::operator=(bkvalue); }
 
   // returns the current value
@@ -44,9 +43,7 @@ public:
   inline void ClampAt(const T& inval) { T::operator=(inval); Clamp(); }
 
   inline virtual void	Corrupt(bool bk) { Var<T>::localcorrupt(bk); Rnode::Corrupt(bk); }
-
   inline virtual void  Restore()	{ Var<T>::localrestore(); Rnode::Restore(); }
-
   inline void RestoreBackup(){ Var<T>::localrestore(); /*value_updated = true;*/ }
 
 };
@@ -59,7 +56,6 @@ public:
   Dvar(const T& from) : Var<T>(from) {}
 
   inline void	localCorrupt(bool bk)	{ Var<T>::localcorrupt(bk); Dnode::localCorrupt(bk); }
-
   inline void localRestore() { Var<T>::localrestore(); Dnode::localRestore(); }
 
   // returns the current value (VL: won't move into .cpp for just one function)
