@@ -2,6 +2,7 @@
 #define BASETYPE_H
 
 #include <iostream>
+#include <vector>
 #include "Random.hpp"
 
 class DAGnode; // forward declaration
@@ -154,18 +155,17 @@ protected:
 class Profile : public BaseType {
 protected:
   static const double MIN;
-  int dim;
-  double* profile;
+  std::vector<double> profile;
 
 public:
-  Profile() : dim(0) , profile(0) {}
-  Profile(int indim, double* v=0) ;
-  Profile(const Profile& from) ;
-  virtual ~Profile() ;
+  Profile() : profile(0) {}
+  Profile(int indim, double* v=0) ; //TODO should be deleted when vectorification is done
+  Profile(const Profile& from) : profile(from.profile) {}
+  virtual ~Profile() {}
 
   Profile& operator=(const Profile& from) ;
   double& operator[](int i) ;
-  double& operator[](int i) const  ;
+  const double& operator[](int i) const  ;
 
   // Getters FIXME (these and the setters below should probably be inlined)
   const double* GetArray() const ;
@@ -189,6 +189,7 @@ public:
   friend std::ostream& operator<<(std::ostream& os, const Profile& r) ;
   friend std::istream& operator>>(std::istream& is, Profile& r) ;
 };
+
 
 class RealVector : public BaseType, public Additive {
 protected:

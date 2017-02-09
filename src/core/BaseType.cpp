@@ -1,5 +1,6 @@
 #include "core/BaseType.hpp"
 #include <cmath>
+using namespace std;
 
 
 //-------------------------------------------------------------------------
@@ -131,43 +132,27 @@ std::istream& operator>>(std::istream& is, Int& r) {
 const double Profile::MIN = 1e-20;
 
 Profile::Profile(int indim, double* v) {
-  dim = indim;
-  profile = new double[dim];
+  profile.reserve(indim);
   if (v) {
     double total = 0;
-    for (int k=0; k<dim; k++) {
-      if (!(v[k]>0)) {
+    for (int k=0; k<indim; k++) { // (VL) copy v into profile + checking everything is positive
+      if (!(v[k]>0)) { // (VL) + computing total to normalize afterwards
         std::cerr << "error : profiles should be strictly positive\n";
         exit(1);
       }
       profile[k] = v[k];
       total += profile[k];
     }
-    for (int k=0; k<dim; k++) {
-      profile[k] /= total;
-    }
+    for (auto k : profile)
+      profile[k] /= total; // (VL) Normalizing happens here
   }
-}
-
-Profile::Profile(const Profile& from) {
-  dim = from.dim;
-  profile = new double[dim];
-  for (int k=0; k<dim; k++) {
-    profile[k] = from.profile[k];
-  }
-}
-
-Profile::~Profile() {
-  delete[] profile;
 }
 
 double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling, otherwise, vase communiquants
   double ret = 0;
+  int dim = profile.size();
   if (!n)	{ // dirichlet
-    double* oldprofile = new double[dim];
-    for (int i=0; i<dim; i++)	{
-      oldprofile[i] = profile[i];
-    }
+    vector<double> oldprofile = profile;
     double total = 0;
     for (int i=0; i<dim; i++)	{
       profile[i] = Random::sGamma(tuning*oldprofile[i]);
@@ -177,16 +162,12 @@ double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling,
       }
       total += profile[i];
     }
-
     double logHastings = 0;
     for (int i=0; i<dim; i++)	{
       profile[i] /= total;
-
       logHastings += - Random::logGamma(tuning*oldprofile[i]) + Random::logGamma(tuning*profile[i])
         -  (tuning*profile[i] -1.0) * log(oldprofile[i]) + (tuning * oldprofile[i] -1.0) * log(profile[i]);
     }
-
-    delete[] oldprofile;
     return logHastings;
   }
   else	{
@@ -225,87 +206,76 @@ double	Profile::ProposeMove(double tuning, int n)	{ // n==0dirichlet resampling,
 }
 
 Profile& Profile::operator=(const Profile& from) {
-  if (!dim) {
-    dim = from.dim;
-    profile = new double[dim];
-  }
-  if (dim != from.dim) {
+  if (from.profile.size() != profile.size()) {
     std::cerr << "error : non matching dimenstion for profiles\n";
-    std::cerr << dim << '\t' << from.dim << '\n';
+    std::cerr << profile.size() << '\t' << from.profile.size() << '\n';
     exit(1);
-    dim = from.dim;
-    delete[] profile;
-    profile = new double[dim];
   }
-  for (int k=0; k<dim; k++) {
-    profile[k] = from.profile[k];
-  }
+  profile = from.profile;
   return *this;
 }
 
 void Profile::setuniform() {
-  for (int i=0; i<dim; i++) {
-    profile[i] = 1.0 / dim;
-  }
+  double value = 1.0 /profile.size();
+  for (auto& i: profile)
+    i = value;
 }
 
 void Profile::setarray(double* in) {
-  for (int i=0; i<dim; i++) {
+  for (unsigned int i=0; i<profile.size(); i++) {
     profile[i] = in[i];
   }
 }
 
-const double* Profile::GetArray() const {return profile;}
+const double* Profile::GetArray() const {
+  return &profile[0];
+}
 
-double* Profile::GetArray() {return profile;}
+double* Profile::GetArray() {return &profile[0];}
 
 double& Profile::operator[](int i) {
   return profile[i];
 }
 
-double& Profile::operator[](int i) const  {
+const double& Profile::operator[](int i) const  {
   return profile[i];
 }
 
-int Profile::GetDim() const {return dim;}
+int Profile::GetDim() const {return profile.size();}
 
 void Profile::setAtZero() {
-  for (int i=0; i<dim; i++) {
-    profile[i] = 0;
-  }
+  for (auto& i : profile)
+    i = 0;
 }
 
 void Profile::scalarMultiplication(double d) {
-  for (int i=0; i<dim; i++) {
-    profile[i] *= d;
-  }
+  for (auto& i : profile)
+    i *= d;
 }
 
 void Profile::add(const Profile& in) {
-  for (int i=0; i<dim; i++) {
+  for (unsigned int i=0; i<profile.size(); i++)
     profile[i] += in[i];
-  }
 }
 
-int Profile::check() {return 1;}
+int Profile::check() { return 1; }
 
 double Profile::GetEntropy() const {
   double total = 0;
-  for (int i=0; i<dim; i++) {
-    total += (profile[i]>1e-8) ? -profile[i]*log(profile[i]) : 0;
-  }
+  for (auto i : profile)
+    total += (i>1e-8) ? -i*log(i) : 0;
   return total;
 }
 
 double Profile::ProposeMove(double tuning, int dim);
 
 double Profile::ProposeMove(double tuning) {
-  return ProposeMove(tuning,dim);
+  return ProposeMove(tuning, profile.size());
 }
 
 std::ostream& operator<<(std::ostream& os, const Profile& r) {
-  os << r.dim;
-  for (int i=0; i<r.dim; i++) {
+  os << r.GetDim();
+  for (int i=0; i<r.GetDim(); i++) {
     os << '\t' << r.profile[i];
   }
   return os;
@@ -314,14 +284,8 @@ std::ostream& operator<<(std::ostream& os, const Profile& r) {
 std::istream& operator>>(std::istream& is, Profile& r) {
   int indim;
   is >> indim;
-  if (r.dim != indim) {
-    r.dim = indim;
-    delete[] r.profile;
-    r.profile = new double[r.dim];
-  }
-  for (int i=0; i<r.dim; i++) {
-    is >> r.profile[i];
-  }
+  for (auto& i : r.profile)
+    is >> i;
   return is;
 }
 

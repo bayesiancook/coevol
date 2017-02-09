@@ -20,28 +20,25 @@
 
 class PhyloProcess;
 
-class RandomBranchSitePath : public virtual Rnode, public BranchSitePath, public BranchSiteSubstitutionProcess	{
-
-
+class RandomBranchSitePath : public virtual Rnode, public BranchSitePath, public BranchSiteSubstitutionProcess {
 public:
-
   RandomBranchSitePath(PhyloProcess* inprocess) : rate(0), length(0), matrix(0), stationary(0), myprocess(inprocess), propmatrix(0), matswap(false) {
     SetName("path");
   }
 
-  RandomBranchSitePath(PhyloProcess* inprocess, Var<PosReal>* inlength, Var<PosReal>* inrate, RandomSubMatrix* inmatrix, Var<Profile>* instationary) : myprocess(inprocess), propmatrix(0), matswap(false)	{
+  RandomBranchSitePath(PhyloProcess* inprocess, Var<PosReal>* inlength, Var<PosReal>* inrate, RandomSubMatrix* inmatrix, Var<Profile>* instationary) : myprocess(inprocess), propmatrix(0), matswap(false) {
     SetName("path");
     length = inlength;
     rate = inrate;
     matrix = inmatrix;
     stationary = instationary;
     active_flag = true;
-    if (stationary)	{
+    if (stationary) {
       cerr << "in random branch site path: stat is non null\n";
       exit(1);
     }
 
-    if ((! matrix) && (! stationary))	{
+    if ((! matrix) && (! stationary)) {
       cerr << "error in RandomBranchSitePath: should specify a matrix or a stationary\n";
       exit(1);
     }
@@ -63,7 +60,7 @@ public:
     transitionmatrix = inmatrix;
     stationary = instationary;
     Register(transitionmatrix);
-    if (stationary)	{
+    if (stationary) {
       cerr << "non null stat in random branch site path\n";
       exit(1);
     }
@@ -71,31 +68,31 @@ public:
     // Register(length);
   }
 
-  PhyloProcess*			GetPhyloProcess()   {return myprocess;}
+  PhyloProcess*   GetPhyloProcess()   {return myprocess;}
 
   bool SampleBranchMapping();
 
-  virtual AbstractTransitionMatrix*	GetTransitionMatrix()	{
+  virtual AbstractTransitionMatrix* GetTransitionMatrix() {
     return transitionmatrix;
   }
 
-  virtual SubMatrix*    GetSubMatrix()		{
-    if (matswap)	{
-      if (! propmatrix)	{
+  virtual SubMatrix*    GetSubMatrix()  {
+    if (matswap) {
+      if (! propmatrix) {
         cerr << "error in random branch site path: null prop matrix\n";
         exit(1);
       }
       return propmatrix;
     }
-    if (! matrix)	{
+    if (! matrix) {
       cerr << "error in random branch site path: getsubmatrix\n";
       exit(1);
     }
     return matrix;
   }
 
-  virtual void			SwapMatrices()	{
-    if ((! matswap) && (! propmatrix))	{
+  virtual void   SwapMatrices() {
+    if ((! matswap) && (! propmatrix)) {
       cerr << "error in random branch site path swap matrix: null prop matrix\n";
       exit(1);
     }
@@ -107,102 +104,103 @@ public:
     */
   }
 
-  // void	SetProposalMatrix(EmpiricalSubMatrix* inmatrix)	{
-  void	SetProposalMatrix(SubMatrix* inmatrix)	{
+  // void SetProposalMatrix(EmpiricalSubMatrix* inmatrix) {
+  void SetProposalMatrix(SubMatrix* inmatrix) {
     propmatrix = inmatrix;
   }
 
-  void BackwardPropagate(const double* down, double* up)	{
-    if (SampleBranchMapping())	{
+  void BackwardPropagate(const double* down, double* up) {
+    if (SampleBranchMapping()) {
       BranchSiteSubstitutionProcess::BackwardPropagate(down,up);
     }
-    else	{
+    else {
       transitionmatrix->BackwardPropagate(down,up,0);
     }
   }
 
-  void ForwardPropagate(const double* up, double* down)	{
-    if (SampleBranchMapping())	{
+  void ForwardPropagate(const double* up, double* down) {
+    if (SampleBranchMapping()) {
       BranchSiteSubstitutionProcess::ForwardPropagate(up,down);
     }
-    else	{
+    else {
       transitionmatrix->ForwardPropagate(up,down,0);
     }
   }
 
-  void GetFiniteTimeTransitionProb(int state, double* aux)	{
-    if (SampleBranchMapping())	{
+  void GetFiniteTimeTransitionProb(int state, double* aux) {
+    if (SampleBranchMapping()) {
       BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(state,aux);
     }
-    else	{
+    else {
       TransitionGetFiniteTimeTransitionProb(state,aux);
     }
   }
 
-  int DrawStationary()	{
-    if (SampleBranchMapping())	{
+  int DrawStationary() {
+    if (SampleBranchMapping()) {
       return BranchSiteSubstitutionProcess::DrawStationary();
     }
     return TransitionDrawStationary();
   }
 
-  int DrawFiniteTime(int state)	{
-    if (SampleBranchMapping())	{
+  int DrawFiniteTime(int state) {
+    if (SampleBranchMapping()) {
       return BranchSiteSubstitutionProcess::DrawFiniteTime(state);
     }
     return TransitionDrawFiniteTime(state);
   }
 
-  void TransitionGetFiniteTimeTransitionProb(int state, double* aux)	{
+  void TransitionGetFiniteTimeTransitionProb(int state, double* aux) {
     const double* p = transitionmatrix->GetRow(state);
-    for (int i=0; i<GetNstate(); i++)	{
+    for (int i=0; i<GetNstate(); i++) {
       aux[i] = p[i];
     }
   }
 
-  int TransitionDrawStationary()	{
+  int TransitionDrawStationary() {
     const double* p = transitionmatrix->GetStationary();
     int newstate = Random::DrawFromDiscreteDistribution(p,GetNstate());
     return newstate;
   }
 
-  int TransitionDrawFiniteTime(int state)	{
+  int TransitionDrawFiniteTime(int state) {
     const double* p = transitionmatrix->GetRow(state);
     int newstate = Random::DrawFromDiscreteDistribution(p,GetNstate());
     return newstate;
   }
 
   virtual int GetNstate() {
-    if (matrix)	{
+    if (matrix) {
       return GetSubMatrix()->GetNstate();
     }
-    else if (transitionmatrix)	{
+    else if (transitionmatrix) {
       return transitionmatrix->GetNstate();
     }
-    else	{
+    else {
       cerr << "error in RandomBranchSitePath: GetNstate\n";
       exit(1);
     }
   }
 
-  virtual double      GetRate()     {return rate ?((double) rate->val()) : 1;}
-  virtual const double*     GetStationary()		{
-    if (stationary)	{
+  virtual double GetRate() {return rate ?((double) rate->val()) : 1;}
+
+  virtual const double* GetStationary() {
+    if (stationary) {
       cerr << "error : non null stationary in log prob path\n";
       exit(1);
       return stationary->GetArray();
     }
-    if (SampleBranchMapping())	{
+    if (SampleBranchMapping()) {
       return GetSubMatrix()->GetStationary();
     }
     return transitionmatrix->GetStationary();
   }
   // return stationary ? stationary->GetArray() : matrix->GetStationary();}
 
-  virtual double      GetTime()		{
+  virtual double GetTime()  {
     //    return return length ? ((double) length->val()) : 0;}
-    if (length)	{
-      if (isnan(((double) (length->val()))))	{
+    if (length) {
+      if (isnan(((double) (length->val())))) {
         cerr << "length is nan\n";
       }
       return length->val();
@@ -211,53 +209,53 @@ public:
   }
 
 
-  bool        isRoot()    {return (length == 0);}
+  bool   isRoot()    {return (length == 0);}
 
-  bool				isActivated()		{return active_flag;}
+  bool    isActivated()  {return active_flag;}
 
-  void				SetActivated(bool inflag)	{active_flag = inflag;}
+  void    SetActivated(bool inflag) {active_flag = inflag;}
 
   StateSpace* GetStateSpace();
 
-  void      SetUp(RandomBranchSitePath* inup);
+  void SetUp(RandomBranchSitePath* inup);
 
-  double      GetTotalTime() {return GetTime();}
-  void			SetTotalTime(double intime) {
+  double GetTotalTime() {return GetTime();}
+  void   SetTotalTime(double intime) {
     // what about corruption ?
-    if (! length)	{
+    if (! length) {
       cerr << "error in RandomBranchSitePath::SetTotalTime\n";
       exit(1);
     }
     length->setval(intime);
   }
 
-  int			GetMaxTrial();
+  int   GetMaxTrial();
 
-  virtual void      Resample()	{
-    if (! SampleBranchMapping())	{
+  virtual void Resample() {
+    if (! SampleBranchMapping()) {
       cerr << "error in random branch site path : resample map called\n";
       exit(1);
     }
-    if (isRoot())	{
+    if (isRoot()) {
       cerr << "error in RandomBranchSitePath::Resample : called on root\n";
       exit(1);
     }
-    else	{
-      if (GetTime() == 0)	{
+    else {
+      if (GetTime() == 0) {
         cerr << "error in resample : null bl\n";
         exit(1);
       }
       bool ok = ResampleAcceptReject(GetMaxTrial());
-      if (! ok)	{
+      if (! ok) {
         ResampleUniformized();
       }
       /*
-        if (propmatrix)	{
+        if (propmatrix) {
         ResampleUniformized();
         }
-        else	{
+        else {
         bool ok = ResampleAcceptReject(GetMaxTrial());
-        if (! ok)	{
+        if (! ok) {
         ResampleUniformized();
         }
         }
@@ -265,22 +263,22 @@ public:
     }
   }
 
-  double      Move(double tuning)	{
-    if (!propmatrix)	{
+  double Move(double tuning) {
+    if (!propmatrix) {
       Resample();
       return 1;
     }
     return Rnode::Move(tuning);
   }
 
-  virtual void	localRestore()	{
-    if (propmatrix)	{
+  virtual void localRestore() {
+    if (propmatrix) {
       stateup = bkstateup;
       statedown = bkstatedown;
       RestorePath();
       logprob = bklogprob;
       /*
-        if (logprob != logProb())	{
+        if (logprob != logProb()) {
         cerr << "error in local restore\n";
         cerr << logprob - logProb() << '\n';
         exit(1);
@@ -288,14 +286,14 @@ public:
       */
       flag = true;
     }
-    else	{
+    else {
       Rnode::localRestore();
     }
   }
 
-  virtual void	localCorrupt(bool bk)	{
-    if (propmatrix)	{
-      if (bk)	{
+  virtual void localCorrupt(bool bk) {
+    if (propmatrix) {
+      if (bk) {
         bkstateup = stateup;
         bkstatedown = statedown;
         BackupPath();
@@ -303,54 +301,54 @@ public:
       }
       flag = false;
     }
-    else	{
+    else {
       Rnode::localCorrupt(bk);
     }
   }
 
-  void      drawSample()	{
+  void drawSample() {
     cerr << "in random branch site path drawsample\n";
     exit(1);
     Resample();
   }
 
-  double      logProb();
-  double			PathLogProb();
-  double			NoPathLogProb();
+  double logProb();
+  double   PathLogProb();
+  double   NoPathLogProb();
 
-  void      ResampleRoot(int state)	{
+  void ResampleRoot(int state) {
     stateup = statedown = state;
     Reset(state);
     localUpdate();
   }
 
-  void      Resample(int instateup, int instatedown)	{
+  void Resample(int instateup, int instatedown) {
     stateup = instateup;
     statedown = instatedown;
-    if (SampleBranchMapping())	{
-      if (propmatrix)	{
+    if (SampleBranchMapping()) {
+      if (propmatrix) {
         SwapMatrices();
         Resample();
         SwapMatrices();
       }
-      else	{
+      else {
         Resample();
       }
     }
-    else	{
+    else {
       Reset(stateup);
     }
     localUpdate();
   }
 
-  void      SetMatrix(RandomSubMatrix* inmatrix) {matrix = inmatrix;}
+  void SetMatrix(RandomSubMatrix* inmatrix) {matrix = inmatrix;}
 
-  double ProposeMove(double tuning)	{
+  double ProposeMove(double tuning) {
     cerr << "error : in random branch site path propose move(tuning)\n";
     exit(1);
   }
 
-  double ProposeMove(int instateup, int instatedown)	{
+  double ProposeMove(int instateup, int instatedown) {
     double logbefore = logProb();
     stateup = instateup;
     statedown = instatedown;
@@ -359,7 +357,7 @@ public:
     return logbefore-logafter;
   }
 
-  double ProposeMoveRoot(int instate)	{
+  double ProposeMoveRoot(int instate) {
     double logbefore = logProb();
     stateup = statedown = instate;
     Reset(instate);
@@ -369,9 +367,9 @@ public:
 
 protected:
 
-  bool      ResampleAcceptReject(int maxtrial);
-  void			ResampleUniformized();
-  // double			RecordResampleUniformizedLogProb();
+  bool ResampleAcceptReject(int maxtrial);
+  void   ResampleUniformized();
+  // double   RecordResampleUniformizedLogProb();
 
   // RandomBranchSitePath* pathup;
   Var<PosReal>* rate;

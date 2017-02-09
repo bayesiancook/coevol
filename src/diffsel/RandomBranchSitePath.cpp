@@ -15,7 +15,7 @@ bool RandomBranchSitePath::SampleBranchMapping()	{
   return myprocess->SampleBranchMapping();
 }
 
-void RandomBranchSitePath::SetUp(RandomBranchSitePath* inup)	{
+void RandomBranchSitePath::SetUp(RandomBranchSitePath*)	{
   // pathup = inup;
   // Register(up);
 }
