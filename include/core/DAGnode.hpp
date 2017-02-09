@@ -3,7 +3,6 @@
 
 #include <set>
 #include <map>
-#include <cmath>// FIXME possibly better to remove and move log to cpp
 
 #include "Random.hpp"
 #include "MCMC.hpp"
@@ -139,5 +138,6 @@ protected:
   inline virtual void FullCorrupt(std::map<DAGnode*,int>&) {}
 
 };
+
 
 #endif

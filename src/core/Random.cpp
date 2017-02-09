@@ -5,7 +5,7 @@
 
 
 /* =======================================================
-    (VL) Magical constants, to be used only in this file.
+   (VL) Magical constants, to be used only in this file.
    ======================================================= */
 #define MT_IA 397
 #define MT_IB (MT_LEN - MT_IA)
