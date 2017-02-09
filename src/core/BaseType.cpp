@@ -315,3 +315,119 @@ double PosRealVector::GetEntropy() const {
   }
   return ent;
 }
+
+RealVector::RealVector(const RealVector& from) {
+  dim = from.dim;
+  vec = new double[dim];
+  for (int i=0; i<dim; i++) {
+    vec[i] = from.vec[i];
+  }
+}
+
+RealVector::RealVector(const double* from, int indim) {
+  dim = indim;
+  vec = new double[dim];
+  for (int i=0; i<dim; i++) {
+    vec[i] = from[i];
+  }
+}
+
+RealVector& RealVector::operator=(const RealVector& from) {
+  if (!dim) {
+    dim = from.dim;
+    vec = new double[dim];
+  }
+  if (dim != from.dim) {
+    std::cerr << "error : non matching dimenstion for vectors\n";
+    std::cerr << dim << '\t' << from.dim << '\n';
+    exit(1);
+    delete[] vec;
+    dim = from.dim;
+    vec = new double[dim];
+  }
+  for (int i=0; i<dim; i++) {
+    vec[i] = from.vec[i];
+  }
+  return *this;
+}
+
+double RealVector::GetMean() const {
+  double total = 0;
+  for (int i=0; i<dim; i++) {
+    total += vec[i];
+  }
+  return total / dim;
+}
+
+double RealVector::GetVar() const {
+  double mean = 0;
+  double var = 0;
+  for (int i=0; i<dim; i++) {
+    var += vec[i] * vec[i];
+    mean += vec[i];
+  }
+  mean /= dim;
+  var /= dim;
+  var -= mean * mean;
+  return var;
+}
+
+int RealVector::ScalarAddition(double d) {
+  for (int i=0; i<dim; i++) {
+    vec[i] += d;
+  }
+  return dim;
+}
+
+void RealVector::ScalarMultiplication(double d) {
+  for (int i=0; i<dim; i++) {
+    vec[i] *= d;
+  }
+}
+
+void RealVector::add(const RealVector& in) {
+  for (int i=0; i<dim; i++) {
+    vec[i] += in[i];
+  }
+}
+
+void RealVector::add(const double* in, double f) {
+  for (int i=0; i<dim; i++) {
+    vec[i] += f * in[i];
+  }
+}
+
+double RealVector::ProposeMove(double tuning, int n) {
+  if ((n<=0) || (n > dim)) {
+    n = dim;
+  }
+  int* indices = new int[n];
+  Random::DrawFromUrn(indices,n,dim);
+  for (int i=0; i<n; i++) {
+    vec[indices[i]] += tuning * (Random::Uniform() - 0.5);
+  }
+  delete[] indices;
+  return 0;
+}
+
+std::ostream& operator<<(std::ostream& os, const RealVector& r) {
+  os << r.dim;
+  for (int i=0; i<r.dim; i++) {
+    os << '\t' << r.vec[i];
+  }
+  return os;
+}
+
+std::istream& operator>>(std::istream& is, RealVector& r) {
+  int indim;
+  is >> indim;
+  if (r.dim != indim) {
+    r.dim = indim;
+    delete[] r.vec;
+    r.vec = new double[r.dim];
+  }
+  for (int i=0; i<r.dim; i++) {
+    is >> r.vec[i];
+  }
+  return is;
+}

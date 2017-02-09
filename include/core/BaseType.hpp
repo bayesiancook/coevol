@@ -205,159 +205,39 @@ protected:
 
 public:
   RealVector() : dim(0), vec(0) {}
+  RealVector(int indim) { dim = indim; vec = new double[dim]; }
+  RealVector(const RealVector& from) ;
+  RealVector(const double* from, int indim) ;
+  virtual ~RealVector() { delete[] vec; }
 
-  RealVector(int indim) {
-    dim = indim;
-    vec = new double[dim];
-  }
+  RealVector& operator=(const RealVector& from) ;
 
-  RealVector(const RealVector& from) {
-    dim = from.dim;
-    vec = new double[dim];
-    for (int i=0; i<dim; i++) {
-      vec[i] = from.vec[i];
-    }
-  }
+  inline double& operator[](int i) { return vec[i]; }
+  inline double& operator[](int i) const { return vec[i]; }
 
-  RealVector(const double* from, int indim) {
-    dim = indim;
-    vec = new double[dim];
-    for (int i=0; i<dim; i++) {
-      vec[i] = from[i];
-    }
-  }
+  inline double* GetArray() const { return vec; }
+  inline int GetDim() { return dim; }
+  double GetMean() const ;
+  double GetVar() const ;
 
-  virtual   ~RealVector() {
-    delete[] vec;
-  }
+  inline int check() { return 1; }
 
-  RealVector& operator=(const RealVector& from) {
-    if (!dim) {
-      dim = from.dim;
-      vec = new double[dim];
-    }
-    if (dim != from.dim) {
-      std::cerr << "error : non matching dimenstion for vectors\n";
-      std::cerr << dim << '\t' << from.dim << '\n';
-      exit(1);
-      delete[] vec;
-      dim = from.dim;
-      vec = new double[dim];
-    }
-    for (int i=0; i<dim; i++) {
-      vec[i] = from.vec[i];
-    }
-    return *this;
-  }
+  int ScalarAddition(double d) ;
+  void ScalarMultiplication(double d) ;
 
-  double* GetArray() const { return vec; }
+  void add(const RealVector& in) ;
+  void add(const double* in, double f = 1) ;
 
-  double& operator[](int i) {
-    return vec[i];
-  }
+  double ProposeMove(double tuning, int n) ;
+  inline double ProposeMove(double tuning) { return ProposeMove(tuning, dim); }
 
-  double& operator[](int i) const {
-    return vec[i];
-  }
+  inline void setAtZero() { for (int i=0; i<dim; i++) vec[i] = 0; }
 
-  int GetDim() { return dim; }
-  int check() { return 1; }
-
-  double GetMean() const {
-    double total = 0;
-    for (int i=0; i<dim; i++) {
-      total += vec[i];
-    }
-    return total / dim;
-  }
-
-  double GetVar() const {
-    double mean = 0;
-    double var = 0;
-    for (int i=0; i<dim; i++) {
-      var += vec[i] * vec[i];
-      mean += vec[i];
-    }
-    mean /= dim;
-    var /= dim;
-    var -= mean * mean;
-    return var;
-  }
-
-  int ScalarAddition(double d) {
-    for (int i=0; i<dim; i++) {
-      vec[i] += d;
-    }
-    return dim;
-  }
-
-  void ScalarMultiplication(double d) {
-    for (int i=0; i<dim; i++) {
-      vec[i] *= d;
-    }
-  }
-
-  void add(const RealVector& in) {
-    for (int i=0; i<dim; i++) {
-      vec[i] += in[i];
-    }
-  }
-
-  void add(const double* in, double f = 1) {
-    for (int i=0; i<dim; i++) {
-      vec[i] += f * in[i];
-    }
-  }
-
-
-
-
-  double ProposeMove(double tuning, int n) {
-    if ((n<=0) || (n > dim)) {
-      n = dim;
-    }
-    int* indices = new int[n];
-    Random::DrawFromUrn(indices,n,dim);
-    for (int i=0; i<n; i++) {
-      vec[indices[i]] += tuning * (Random::Uniform() - 0.5);
-    }
-    delete[] indices;
-    return 0;
-  }
-
-  double ProposeMove(double tuning) {
-    return ProposeMove(tuning,dim);
-  }
-
-  void setAtZero() {
-    for (int i=0; i<dim; i++) {
-      vec[i] = 0;
-    }
-  }
-
-  friend std::ostream& operator<<(std::ostream& os, const RealVector& r) {
-    os << r.dim;
-    for (int i=0; i<r.dim; i++) {
-      os << '\t' << r.vec[i];
-    }
-    return os;
-  }
-
-  friend std::istream& operator>>(std::istream& is, RealVector& r) {
-    int indim;
-    is >> indim;
-    if (r.dim != indim) {
-      r.dim = indim;
-      delete[] r.vec;
-      r.vec = new double[r.dim];
-    }
-    for (int i=0; i<r.dim; i++) {
-      is >> r.vec[i];
-    }
-    return is;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const RealVector& r) ;
+  friend std::istream& operator>>(std::istream& is, RealVector& r) ;
 
 };
+
 
 class PosRealVector : public RealVector, public Multiplicative {
 public:
