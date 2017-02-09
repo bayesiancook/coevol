@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstdio>
+#include <cmath>
 using namespace std;
 
 #include "core/ProbModel.hpp"

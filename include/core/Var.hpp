@@ -20,8 +20,6 @@ public:
   // returns the current value
   inline const T& val() { return *this; }
 
-  // const T& val2() { return *this; }
-
   // sets the new value
   inline void setval(const T& inval) { T::operator=(inval); }
 
