@@ -164,27 +164,27 @@ public:
   virtual ~Profile() {}
 
   Profile& operator=(const Profile& from) ;
-  double& operator[](int i) ;
-  const double& operator[](int i) const  ;
+  inline double& operator[](int i) { return profile[i]; }
+  inline const double& operator[](int i) const { return profile[i]; }
 
   // Getters FIXME (these and the setters below should probably be inlined)
-  const double* GetArray() const ;
-  double* GetArray() ;
-  int GetDim() const ;
+  inline const double* GetArray() const { return &profile[0]; }
+  inline double* GetArray() { return &profile[0]; }
+  inline int GetDim() const { return profile.size(); }
   double GetEntropy() const ;
 
   // Setters
-  void setAtZero() ;
+  inline void setAtZero() { for (auto& i : profile) i = 0; }
   void setuniform() ;
   void setarray(double* in) ;
 
-  void scalarMultiplication(double d) ;
-  void add(const Profile& in) ;
+  inline void scalarMultiplication(double d) { for (auto& i : profile) i *= d; }
+  inline void add(const Profile& in) { for (unsigned int i=0; i<profile.size(); i++) profile[i] += in[i]; }
 
-  int check() ;
+  inline int check() { return 1; }
 
   double ProposeMove(double tuning, int dim);
-  double ProposeMove(double tuning) ;
+  double ProposeMove(double tuning) { return ProposeMove(tuning, profile.size()); }
 
   friend std::ostream& operator<<(std::ostream& os, const Profile& r) ;
   friend std::istream& operator>>(std::istream& is, Profile& r) ;

@@ -222,37 +222,11 @@ void Profile::setarray(double* in) {
   }
 }
 
-/* (VL) TODO inline all thos little methods TODO */
-const double* Profile::GetArray() const { return &profile[0]; }
-
-double* Profile::GetArray() { return &profile[0]; }
-
-double& Profile::operator[](int i) { return profile[i]; }
-
-const double& Profile::operator[](int i) const { return profile[i]; }
-
-int Profile::GetDim() const { return profile.size(); }
-
-void Profile::setAtZero() { for (auto& i : profile) i = 0; }
-
-void Profile::scalarMultiplication(double d) { for (auto& i : profile) i *= d; }
-
-void Profile::add(const Profile& in) {
-  for (unsigned int i=0; i<profile.size(); i++)
-    profile[i] += in[i];
-}
-
-int Profile::check() { return 1; }
-
 double Profile::GetEntropy() const {
   double total = 0;
   for (auto i : profile)
     total += (i>1e-8) ? -i*log(i) : 0;
   return total;
-}
-
-double Profile::ProposeMove(double tuning) {
-  return ProposeMove(tuning, profile.size());
 }
 
 std::ostream& operator<<(std::ostream& os, const Profile& r) {
