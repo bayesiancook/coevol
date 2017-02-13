@@ -1,8 +1,8 @@
 #ifndef PROBMODEL_H
 #define PROBMODEL_H
 
-#include <set>
 #include <iostream>
+#include <set>
 
 #include "Move.hpp"
 
@@ -21,53 +21,56 @@
  * - Sample draws a model configuration from this joint probability
  * - Move resample the model's current configuration conditional on the data */
 class ProbModel : public MCMC {
-public:
-  ProbModel();
-  virtual ~ProbModel();
+  public:
+    ProbModel();
+    virtual ~ProbModel();
 
-  /// obtain the set ("state") of all the nodes of the DAG by a recursive traversal from the root nodes to the tips
-  void Register();
-  void Register(DAGnode* var);
-  void getDot();
+    /// obtain the set ("state") of all the nodes of the DAG by a recursive traversal from the root
+    /// nodes to the tips
+    void Register();
+    void Register(DAGnode* var);
+    void getDot();
 
-  /// registers "var" among the root nodes (i.e. into the set "root")
-  void RootRegister(DAGnode* var);
+    /// registers "var" among the root nodes (i.e. into the set "root")
+    void RootRegister(DAGnode* var);
 
-  // returns the log of the probability (or probability density) mentioned above
-  virtual double GetLogProb() = 0;
+    // returns the log of the probability (or probability density) mentioned above
+    virtual double GetLogProb() = 0;
 
-  virtual void MakeScheduler() = 0;
+    virtual void MakeScheduler() = 0;
 
-  // resamples the model's current configuration conditional on the data
-  // returns success rate
-  inline virtual double Move(double tuning_modulator = 1) { return Move(tuning_modulator, 1, false, false);}
+    // resamples the model's current configuration conditional on the data
+    // returns success rate
+    inline virtual double Move(double tuning_modulator = 1) {
+        return Move(tuning_modulator, 1, false, false);
+    }
 
-  virtual double Move(double tuning_modulator, int ncycle, bool verbose, bool check);
+    virtual double Move(double tuning_modulator, int ncycle, bool verbose, bool check);
 
-  void 	Corrupt();
-  virtual double Update(bool check = false);
+    void Corrupt();
+    virtual double Update(bool check = false);
 
-  bool 	CheckUpdateFlags();
+    bool CheckUpdateFlags();
 
-  // save model configuration to stream
-  virtual void ToStream(std::ostream& os) = 0;
-  // get model configuration from stream
-  virtual void FromStream(std::istream& is) = 0;
+    // save model configuration to stream
+    virtual void ToStream(std::ostream& os) = 0;
+    // get model configuration from stream
+    virtual void FromStream(std::istream& is) = 0;
 
-  // monitoring the run
-  virtual void Trace(std::ostream&) {}
-  virtual void TraceHeader(std::ostream&) {}
-  virtual void Monitor(std::ostream& os, std::ostream& osdetail);
-  // virtual void Monitor(std::ostream& os);
+    // monitoring the run
+    virtual void Trace(std::ostream&) {}
+    virtual void TraceHeader(std::ostream&) {}
+    virtual void Monitor(std::ostream& os, std::ostream& osdetail);
+    // virtual void Monitor(std::ostream& os);
 
-  virtual void Details(std::ostream&) {}
-  virtual void test() {}
+    virtual void Details(std::ostream&) {}
+    virtual void test() {}
 
-  std::set<DAGnode*> state;
-  std::set<DAGnode*> root;
+    std::set<DAGnode*> state;
+    std::set<DAGnode*> root;
 
-  MCScheduler scheduler;
+    MCScheduler scheduler;
 };
 
 
-#endif // PROBMODEL_H
+#endif  // PROBMODEL_H
