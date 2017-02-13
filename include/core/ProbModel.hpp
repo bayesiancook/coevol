@@ -23,7 +23,7 @@
 class ProbModel : public MCMC {
   public:
     ProbModel();
-    virtual ~ProbModel();
+    ~ProbModel() override;
 
     /// obtain the set ("state") of all the nodes of the DAG by a recursive traversal from the root
     /// nodes to the tips
@@ -35,13 +35,13 @@ class ProbModel : public MCMC {
     void RootRegister(DAGnode* var);
 
     // returns the log of the probability (or probability density) mentioned above
-    virtual double GetLogProb() = 0;
+    double GetLogProb() override = 0;
 
     virtual void MakeScheduler() = 0;
 
     // resamples the model's current configuration conditional on the data
     // returns success rate
-    inline virtual double Move(double tuning_modulator = 1) {
+    inline double Move(double tuning_modulator = 1) override {
         return Move(tuning_modulator, 1, false, false);
     }
 

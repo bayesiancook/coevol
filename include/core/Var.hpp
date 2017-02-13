@@ -9,9 +9,9 @@
 template <class T>
 class Var : public virtual DAGnode, public T {
   public:
-    Var() {}
+    Var() = default;
     Var(const T& from) : T(from), bkvalue(from) {}
-    virtual ~Var() {}
+    ~Var() override = default;
 
     inline Var& operator=(const T& from) { return T::operator=(from); }
 
@@ -26,7 +26,7 @@ class Var : public virtual DAGnode, public T {
     // sets the new value
     inline void setval(const T& inval) { T::operator=(inval); }
 
-    inline virtual void Register(DAGnode* in) { DAGnode::Register(in); }
+    inline void Register(DAGnode* in) override { DAGnode::Register(in); }
 
   protected:
     T bkvalue;
@@ -36,21 +36,21 @@ class Var : public virtual DAGnode, public T {
 template <class T>
 class Rvar : public Var<T>, public Rnode {
   public:
-    Rvar() {}
+    Rvar() = default;
     Rvar(const T& from) : Var<T>(from) {}
 
-    inline virtual double ProposeMove(double tuning) override { return T::ProposeMove(tuning); }
+    inline double ProposeMove(double tuning) override { return T::ProposeMove(tuning); }
 
     inline void ClampAt(const T& inval) {
         T::operator=(inval);
         Clamp();
     }
 
-    inline virtual void Corrupt(bool bk) override {
+    inline void Corrupt(bool bk) override {
         Var<T>::localcorrupt(bk);
         Rnode::Corrupt(bk);
     }
-    inline virtual void Restore() override {
+    inline void Restore() override {
         Var<T>::localrestore();
         Rnode::Restore();
     }
@@ -61,15 +61,15 @@ class Rvar : public Var<T>, public Rnode {
 template <class T>
 class Dvar : public Var<T>, public Dnode {
   public:
-    Dvar() {}
+    Dvar() = default;
 
     Dvar(const T& from) : Var<T>(from) {}
 
-    inline void localCorrupt(bool bk) {
+    inline void localCorrupt(bool bk) override {
         Var<T>::localcorrupt(bk);
         Dnode::localCorrupt(bk);
     }
-    inline void localRestore() {
+    inline void localRestore() override {
         Var<T>::localrestore();
         Dnode::localRestore();
     }

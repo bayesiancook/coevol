@@ -14,7 +14,7 @@ class MCMC {
 
     inline MCMC() : clamp(false) {}
 
-    virtual ~MCMC() {}
+    virtual ~MCMC() = default;
 
     /// resample current state, conditional on parents and children.
     // monte carlo sampling of a model proceeds by repeatedly calling the Move function of all its
@@ -45,7 +45,7 @@ class MCMC {
 // A more specific interface, meant for Metropolis Hastings moves
 class MH : public MCMC {
   public:
-    virtual ~MH() {}
+    ~MH() override = default;
 
     virtual double ProposeMove(double tuning = 1) = 0;
 

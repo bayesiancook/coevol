@@ -35,7 +35,7 @@
 //
 class MCUpdate {
   public:
-    virtual ~MCUpdate() {}
+    virtual ~MCUpdate() = default;
 
     virtual double Move(double tuning_modulator = 1) = 0;
 
@@ -54,7 +54,7 @@ class MCScheduler : public MCUpdate {
     void RandomCycle(double tuning_modulator, int nrep, bool verbose, bool check);
     void Move(double tuning_modulator, int i, bool verbose, bool check, int nrep);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
     inline void SetRandom(bool inrand) { random = inrand; }
     void Register(MCUpdate* inupdate, int inweight = 1, std::string inname = "");
@@ -104,7 +104,9 @@ class SimpleMove : public MCUpdate {
   public:
     SimpleMove(MCMC* invar, double intuning) : var(invar), tuning(intuning) {}
 
-    inline double Move(double tuning_modulator = 1) { return var->Move(tuning * tuning_modulator); }
+    inline double Move(double tuning_modulator = 1) override {
+        return var->Move(tuning * tuning_modulator);
+    }
 
   protected:
     MCMC* var;
@@ -116,7 +118,7 @@ class JointSimpleMove : public MCUpdate, public Mnode {
   public:
     JointSimpleMove(Rnode* ina1, Rnode* ina2, double intuning);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
   private:
     Rnode* a1;
@@ -137,7 +139,7 @@ class SemiConjugateMove : public MCUpdate {
           tuningsampling(intuningsampling),
           nsampling(innsampling) {}
 
-    double Move(double tuning_modulator = 1) {
+    double Move(double tuning_modulator = 1) override {
         prior->ActivateSufficientStatistic();
         double total = 0;
         for (int i = 0; i < nprior; i++) {
@@ -167,7 +169,8 @@ class ConjugateMove : public MCUpdate {
     ConjugateMove(P* inprior, S* insampling, double intuning, int inn)
         : prior(inprior), sampling(insampling), tuning(intuning), n(inn) {}
 
-    double Move(double tuning_modulator = 1) {  // (VL) left there since it is in a template
+    double Move(
+        double tuning_modulator = 1) override {  // (VL) left there since it is in a template
         prior->Integrate();
         double total = 0;
         for (int i = 0; i < n; i++) {
@@ -191,7 +194,7 @@ class MultiplicativeCompensatoryMove : public MCUpdate, public Mnode {
   public:
     MultiplicativeCompensatoryMove(Multiplicative* inm1, Multiplicative* inm2, double intuning);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
   private:
     Multiplicative* m1;
@@ -205,7 +208,7 @@ class AdditiveCompensatoryMove : public MCUpdate, public Mnode {
   public:
     AdditiveCompensatoryMove(Additive* ina1, Additive* ina2, double intuning);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
   private:
     Additive* a1;
@@ -219,7 +222,7 @@ class AdditiveAntiCompensatoryMove : public MCUpdate, public Mnode {
   public:
     AdditiveAntiCompensatoryMove(Additive* ina1, Additive* ina2, double intuning);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
   private:
     Additive* a1;
@@ -232,7 +235,7 @@ class RealVectorMove : public MCUpdate {
   public:
     RealVectorMove(Rvar<RealVector>* invar, double intuning, int inm);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
   private:
     Rvar<RealVector>* var;
@@ -245,7 +248,7 @@ class RealVectorTranslationMove : public MCUpdate {
   public:
     RealVectorTranslationMove(Rvar<RealVector>* invar, double intuning);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
   private:
     Rvar<RealVector>* var;
@@ -258,7 +261,7 @@ class RealVectorComponentwiseCompensatoryMove : public MCUpdate, public Mnode {
     RealVectorComponentwiseCompensatoryMove(Rvar<RealVector>* ina1, Rvar<RealVector>* ina2,
                                             double intuning);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
   private:
     Rvar<RealVector>* a1;
@@ -271,7 +274,7 @@ class ProfileMove : public MCUpdate {
   public:
     ProfileMove(Rvar<Profile>* invar, double intuning, int inn);
 
-    double Move(double tuning_modulator = 1);
+    double Move(double tuning_modulator = 1) override;
 
   private:
     Rvar<Profile>* var;

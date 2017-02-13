@@ -14,10 +14,10 @@ class Normal : public virtual Rvar<Real> {
     Normal(Var<Real>* inmean, Var<PosReal>* invariance);
     Normal(Var<RealVector>* inmeanvec, Var<PosReal>* invariance, int inindex);
 
-    double logProb();
+    double logProb() override;
 
   protected:
-    void drawSample();
+    void drawSample() override;
 
   private:
     int index;
@@ -34,12 +34,12 @@ class Exponential : public Rvar<PosReal> {
     Exponential(Var<PosReal>* inscale, ParentType intype);
     Exponential(const Exponential& from);
 
-    virtual ~Exponential() {}
+    ~Exponential() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
   private:
-    virtual double logProb();
+    double logProb() override;
 
     Var<PosReal>* scale;
     ParentType type;
@@ -53,12 +53,12 @@ class Gamma : public virtual Rvar<PosReal> {
     Gamma(Var<PosReal>* inshape, Var<PosReal>* inscale, bool inmeanvar = false);
     Gamma(const Gamma& from);
 
-    virtual ~Gamma() {}
+    ~Gamma() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
   protected:
-    virtual double logProb();
+    double logProb() override;
 
     Var<PosReal>* scale;
     Var<PosReal>* shape;
@@ -71,15 +71,15 @@ class Beta : public Rvar<UnitReal> {
     Beta(Var<PosReal>* inalpha, Var<PosReal>* inbeta);
     Beta(const Beta& from);
 
-    virtual ~Beta() {}
+    ~Beta() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
     double GetAlpha() { return alpha->val(); }
     double GetBeta() { return beta->val(); }
 
   private:
-    virtual double logProb();
+    double logProb() override;
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -91,12 +91,12 @@ class PosUniform : public Rvar<PosReal> {
     PosUniform(Var<PosReal>* inroot, double inmax);
     PosUniform(const PosUniform& from);
 
-    virtual ~PosUniform() {}
+    ~PosUniform() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
   private:
-    virtual double logProb();
+    double logProb() override;
 
     Var<PosReal>* root;
     double max;
@@ -106,14 +106,14 @@ class PosUniform : public Rvar<PosReal> {
 class Binomial : public Rvar<Int> {
   public:
     Binomial(int inN, Var<UnitReal>* intheta);
-    virtual ~Binomial() {}
+    ~Binomial() override = default;
 
-    void drawSample();
-    double ProposeMove(double tuning);
+    void drawSample() override;
+    double ProposeMove(double tuning) override;
     // int Check();
 
   private:
-    virtual double logProb();
+    double logProb() override;
 
     int N;
     Var<UnitReal>* theta;
@@ -123,12 +123,12 @@ class Binomial : public Rvar<Int> {
 class Poisson : public virtual Rvar<Int> {
   public:
     Poisson(Var<PosReal>* inmu);
-    virtual ~Poisson() {}
+    ~Poisson() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
   protected:
-    virtual double logProb();
+    double logProb() override;
 
     Var<PosReal>* mu;
 };
@@ -139,48 +139,48 @@ class Dirichlet : public virtual Rvar<Profile> {
     Dirichlet(int dimension);
     Dirichlet(Var<Profile>* incenter, Var<PosReal>* inconcentration);
 
-    virtual ~Dirichlet() {}
+    ~Dirichlet() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
     virtual double Move(double tuning, int n);
-    virtual double Move(double tuning);
-    virtual double ProposeMove(double tuning);
+    double Move(double tuning) override;
+    double ProposeMove(double tuning) override;
 
   protected:
     Var<Profile>* center;
     Var<PosReal>* concentration;
 
-    virtual double logProb();
+    double logProb() override;
 };
 
 
 class Multinomial : public virtual Rvar<IntVector> {
   public:
     Multinomial(Var<Profile>* inprobarray, int inN);
-    virtual ~Multinomial() {}
+    ~Multinomial() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
   private:
     Var<Profile>* probarray;
     int N;
 
-    virtual double logProb();
+    double logProb() override;
 };
 
 
 class FiniteDiscrete : public virtual Rvar<Int> {
   public:
     FiniteDiscrete(Var<Profile>* inprobarray);
-    virtual ~FiniteDiscrete() {}
+    ~FiniteDiscrete() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
   private:
     Var<Profile>* probarray;
 
-    virtual double logProb();
+    double logProb() override;
 };
 
 
@@ -189,9 +189,9 @@ class IIDExp : public Rvar<PosRealVector> {
     IIDExp(int indim, Var<PosReal>* inmean);
     IIDExp(int indim);
 
-    virtual ~IIDExp() {}
+    ~IIDExp() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
     void setall(double in);
 
@@ -199,7 +199,7 @@ class IIDExp : public Rvar<PosRealVector> {
     Var<PosReal>* mean;
     int dim;
 
-    virtual double logProb();
+    double logProb() override;
 };
 
 
@@ -208,9 +208,9 @@ class IIDGamma : public virtual Rvar<PosRealVector> {
     IIDGamma(int indim, Var<PosReal>* inalpha, Var<PosReal>* inbeta);
     IIDGamma(int indim);
 
-    virtual ~IIDGamma() {}
+    ~IIDGamma() override = default;
 
-    void drawSample();
+    void drawSample() override;
 
     void setall(double in);
 
@@ -219,7 +219,7 @@ class IIDGamma : public virtual Rvar<PosRealVector> {
     Var<PosReal>* beta;
     int dim;
 
-    virtual double logProb();
+    double logProb() override;
 };
 
 
@@ -233,7 +233,7 @@ class Product : public Dvar<PosReal> {
         Register(b);
     }
 
-    void specialUpdate() { setval(a->val() * b->val()); }
+    void specialUpdate() override { setval(a->val() * b->val()); }
 
   protected:
     Var<PosReal>* a;

@@ -61,26 +61,26 @@ class Rnode : public virtual DAGnode, public MH {
     Rnode() : logprob(0), bklogprob(0), value_updated(false) {}
 
     // Metropolis Hastings move
-    virtual double Move(double tuning = 1);
+    double Move(double tuning = 1) override;
 
-    virtual std::set<std::string> getDotNodes();
+    std::set<std::string> getDotNodes() override;
 
-    virtual void Corrupt(bool bk);
-    virtual double Update();
-    virtual void Restore();
+    void Corrupt(bool bk) override;
+    double Update() override;
+    void Restore() override;
 
-    virtual void NotifyCorrupt(bool bk);
-    virtual double NotifyUpdate();
-    virtual void NotifyRestore();
+    void NotifyCorrupt(bool bk) override;
+    double NotifyUpdate() override;
+    void NotifyRestore() override;
 
-    virtual double FullUpdate(bool check = false);
-    virtual void FullCorrupt(std::map<DAGnode*, int>& m);
+    double FullUpdate(bool check = false) override;
+    void FullCorrupt(std::map<DAGnode*, int>& m) override;
     virtual double localUpdate();
 
     // Getters
     inline virtual double GetFastLogProb() { return (flag ? logprob : logProb()); }
-    inline virtual double GetLogProb() { return logProb(); }
-    inline bool isValueUpdated() { return value_updated; }
+    inline double GetLogProb() override { return logProb(); }
+    inline bool isValueUpdated() override { return value_updated; }
 
   protected:
     virtual double logProb() = 0;
@@ -98,20 +98,20 @@ class Rnode : public virtual DAGnode, public MH {
 
 class Dnode : public virtual DAGnode {
   public:
-    virtual void Corrupt(bool bk);
-    virtual double Update();
-    virtual void Restore();
+    void Corrupt(bool bk) override;
+    double Update() override;
+    void Restore() override;
 
     virtual double localUpdate();
     virtual void specialUpdate() = 0;
 
-    virtual void FullCorrupt(std::map<DAGnode*, int>& m);
-    virtual double FullUpdate(bool check = false);
+    void FullCorrupt(std::map<DAGnode*, int>& m) override;
+    double FullUpdate(bool check = false) override;
 
   protected:
-    virtual void NotifyCorrupt(bool bk);
-    virtual double NotifyUpdate();
-    virtual void NotifyRestore();
+    void NotifyCorrupt(bool bk) override;
+    double NotifyUpdate() override;
+    void NotifyRestore() override;
 
     virtual void localRestore();
     virtual void localCorrupt(bool bk);
@@ -122,17 +122,17 @@ class Mnode : public virtual DAGnode {
   public:
     Mnode(bool inflag = true) { flag = inflag; }
 
-    virtual void Corrupt(bool bk);
-    virtual double Update();
-    virtual void Restore();
+    void Corrupt(bool bk) override;
+    double Update() override;
+    void Restore() override;
 
   protected:
-    inline virtual void NotifyCorrupt(bool) {}
-    inline virtual double NotifyUpdate() { return 0; }
-    inline virtual void NotifyRestore() {}
+    inline void NotifyCorrupt(bool) override {}
+    inline double NotifyUpdate() override { return 0; }
+    inline void NotifyRestore() override {}
 
-    inline virtual double FullUpdate(bool) { return 0; }
-    inline virtual void FullCorrupt(std::map<DAGnode*, int>&) {}
+    inline double FullUpdate(bool) override { return 0; }
+    inline void FullCorrupt(std::map<DAGnode*, int>&) override {}
 };
 
 

@@ -14,7 +14,7 @@ class DAGnode;  // forward declaration
 // - propose default kernels (in ProposeMove()) for Metropolis Hastings resampling
 class BaseType {
   public:
-    virtual ~BaseType() {}
+    virtual ~BaseType() = default;
 
     // default kernel for Metropolis Hastings updates
     // smaller tuning: smaller moves
@@ -27,7 +27,7 @@ class BaseType {
 
 class Additive {
   public:
-    virtual ~Additive() {}
+    virtual ~Additive() = default;
 
     // returns the number of components that have been added d
     virtual int ScalarAddition(double d) = 0;
@@ -38,7 +38,7 @@ class Additive {
 
 class Multiplicative {
   public:
-    virtual ~Multiplicative() {}
+    virtual ~Multiplicative() = default;
 
     // returns the number of components that have been multiplied
     virtual int ScalarMultiplication(double d) = 0;
@@ -53,7 +53,7 @@ class Real : public BaseType, public Additive {
   public:
     Real(double d = 0) : value(d) {}
     Real(const Real& from) : value(from.value) {}
-    virtual ~Real() {}
+    ~Real() override = default;
 
     /* (VL) Operators */
     inline Real& operator=(const Real& from) {
@@ -92,7 +92,7 @@ class UnitReal : public BaseType {
   public:
     UnitReal(double d = 0) : value(d) {}
     UnitReal(const UnitReal& from) : value(from.value) {}
-    virtual ~UnitReal() {}
+    ~UnitReal() override = default;
 
     /* (VL) Operators */
     inline UnitReal& operator=(const UnitReal& from) {
@@ -128,7 +128,7 @@ class PosReal : public BaseType, public Multiplicative {
   public:
     PosReal(double d = 0) : value(d) {}
     PosReal(const PosReal& from) : value(from.value) {}
-    virtual ~PosReal() {}
+    ~PosReal() override = default;
 
     /* (VL) Operators */
     inline PosReal& operator=(const PosReal& from) {
@@ -171,7 +171,7 @@ class Int : public BaseType {
   public:
     Int(int d = 0) : value(d) {}
     Int(const Int& from) : value(from.value) {}
-    virtual ~Int() {}
+    ~Int() override = default;
 
     /* (VL) Operators */
     inline Int& operator=(const Int& from) {
@@ -207,9 +207,9 @@ class Profile : public BaseType {
 
   public:
     Profile() : profile(0) {}
-    Profile(int indim, double* v = 0);  // TODO should be deleted when vectorification is done
+    Profile(int indim, double* v = nullptr);  // TODO should be deleted when vectorification is done
     Profile(const Profile& from) : profile(from.profile) {}
-    virtual ~Profile() {}
+    ~Profile() override = default;
 
     /* (VL) Operators */
     Profile& operator=(const Profile& from);
@@ -256,7 +256,7 @@ class RealVector : public BaseType, public Additive {
     RealVector(int indim = 0) : vec(indim) {}
     RealVector(const RealVector& from) : vec(from.vec) {}
     RealVector(const double* from, int indim);
-    virtual ~RealVector() {}  // (VL) this class is not final
+    ~RealVector() override = default;  // (VL) this class is not final
 
     /* (VL) Operators */
     RealVector& operator=(const RealVector& from);
@@ -281,9 +281,7 @@ class RealVector : public BaseType, public Additive {
     /* (VL) Base classes overrides + random overload */
     inline int check() final { return 1; }
     double ProposeMove(double tuning, int n);
-    virtual inline double ProposeMove(double tuning) override {
-        return ProposeMove(tuning, GetDim());
-    }
+    inline double ProposeMove(double tuning) override { return ProposeMove(tuning, GetDim()); }
 
     /* (VL) Stream operator friend functions */
     friend std::ostream& operator<<(std::ostream& os, const RealVector& r);
@@ -297,7 +295,7 @@ class PosRealVector : public RealVector, public Multiplicative {
     PosRealVector(int indim) : RealVector(indim) {}
     PosRealVector(const PosRealVector& from) : RealVector(from){};
     PosRealVector(const double* from, int indim);
-    ~PosRealVector() {}
+    ~PosRealVector() override = default;
 
     PosRealVector& operator=(const PosRealVector& from);
 
@@ -325,14 +323,14 @@ class IntVector : public BaseType {
     int* vec;
 
   public:
-    IntVector() : dim(0), vec(0) {}
+    IntVector() : dim(0), vec(nullptr) {}
     IntVector(int indim) {
         dim = indim;
         vec = new int[dim];
     }
     IntVector(const IntVector& from);
     IntVector(const int* from, int indim);
-    virtual ~IntVector() { delete[] vec; }
+    ~IntVector() override { delete[] vec; }
 
     /* (VL) Operators */
     IntVector& operator=(const IntVector& from);
