@@ -51,8 +51,9 @@ class Real : public BaseType , public Additive {
 public:
   Real(double d=0) : value(d) {}
   Real(const Real& from) : value(from.value) {}
-  virtual ~Real() {}
+  ~Real() {}
 
+  /* (VL) Operators */
   inline Real& operator=(const Real& from) { value = from.value; return *this; }
   inline Real& operator=(double from) { value = from; return *this; }
   inline Real& operator+=(const Real& from) { value += from.value; return *this; }
@@ -60,12 +61,14 @@ public:
   inline operator double() { return value; }
   inline operator double() const { return value; }
 
+  /* (VL) Stream operator friend function */
   friend std::istream& operator>>(std::istream& is, Real& r) ;
 
-  int ScalarAddition(double d) ;
+  /* (VL) Overriding virtual methods from parents */
+  int ScalarAddition(double d) override;
+  double ProposeMove(double tuning) override ;
 
-  virtual double ProposeMove(double tuning) ;
-
+  /* (VL) what exactly are check functions? */
   int check() ;
 
 protected:
@@ -77,19 +80,23 @@ class UnitReal : public BaseType {
 public:
   UnitReal(double d=0) : value(d) {}
   UnitReal(const UnitReal& from) : value(from.value) {}
-  virtual   ~UnitReal() {}
+  ~UnitReal() {}
 
+  /* (VL) Operators */
   inline UnitReal& operator=(const UnitReal& from) { value = from.value; return *this; }
   inline UnitReal& operator=(double from) { value = from; return *this; }
   inline UnitReal& operator+=(const UnitReal from) { value += from.value; return *this; }
   inline operator double() { return value; }
   inline operator double() const { return value; }
 
-  virtual double ProposeMove(double tuning) ;
+  /* (VL) Stream operator friend function */
+  friend std::istream& operator>>(std::istream& is, UnitReal& r) ;
+
+  /* (VL) Overriding ProposeMove from BaseType class */
+  double ProposeMove(double tuning) override ;
 
   int check() ;
 
-  friend std::istream& operator>>(std::istream& is, UnitReal& r) ;
 
 protected:
   double value;
@@ -103,6 +110,7 @@ public:
   PosReal(double d=0) : value(d) {}
   PosReal(const PosReal& from) : value(from.value) {}  virtual ~PosReal() {}
 
+  /* (VL) Operators */
   inline PosReal& operator=(const PosReal& from) { value = from.value; return *this; }
   inline PosReal& operator=(const double& from) { value = from; return *this; }
   inline PosReal& operator+=(const PosReal from) { value += from.value; return *this; }
@@ -112,13 +120,15 @@ public:
   operator Real() { return Real(value); }
   operator Real() const { return Real(value); }
 
-  int ScalarMultiplication(double d) ;
+  /* (VL) Stream operator friend function */
+  friend std::istream& operator>>(std::istream& is, PosReal& r) ;
 
-  virtual double ProposeMove(double tuning) ;
+  /* (VL) Overriding virtual methods from base classes */
+  int ScalarMultiplication(double d) override ;
+  double ProposeMove(double tuning) override ;
 
   int check() ;
 
-  friend std::istream& operator>>(std::istream& is, PosReal& r) ;
 
 protected:
   double value;
@@ -131,8 +141,9 @@ class Int : public BaseType {
 public:
   Int(int d=0) : value(d) {}
   Int(const Int& from) : value(from.value) {}
-  virtual ~Int() {}
+  ~Int() {}
 
+  /* (VL) Operators */
   inline Int& operator=(const Int& from) { value = from.value; return *this; }
   inline Int& operator=(const int& from) { value = from; return *this; }
   inline operator int() { return value; }
@@ -140,11 +151,13 @@ public:
   inline operator Real() { return Real(double(value)); }
   inline operator Real() const { return Real(double(value)); }
 
-  virtual double ProposeMove(double) ;
+  /* (VL) Stream operator friend function */
+  friend std::istream& operator>>(std::istream& is, Int& r) ;
+
+  /* (VL) Overriding virtual methods from base classes */
+  virtual double ProposeMove(double) override ;
 
   inline int check() { return 1; }
-
-  friend std::istream& operator>>(std::istream& is, Int& r) ;
 
 protected:
   int value;
@@ -184,7 +197,7 @@ public:
   inline int check() { return 1; }
 
   double ProposeMove(double tuning, int dim);
-  double ProposeMove(double tuning) { return ProposeMove(tuning, profile.size()); }
+  double ProposeMove(double tuning) override { return ProposeMove(tuning, profile.size()); }
 
   friend std::ostream& operator<<(std::ostream& os, const Profile& r) ;
   friend std::istream& operator>>(std::istream& is, Profile& r) ;
