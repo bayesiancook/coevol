@@ -4,10 +4,15 @@ set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic -Wno-unused-parameter")
 
 include_directories("include")
 
+# Utils static library
+set(UTILS src/utils/Chrono.cpp src/utils/linalg.cpp)
+add_library (coevol_utils STATIC ${UTILS})
+
 # Core static library
 file(GLOB CORE "src/core/*.cpp")
 add_library (coevol_core STATIC ${CORE})
 target_compile_features(coevol_core INTERFACE cxx_auto_type)
+target_link_libraries(coevol_core coevol_utils)
 
 # PoissonGamma executable
 add_executable(poisson_gamma "src/PoissonGamma.cpp")

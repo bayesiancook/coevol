@@ -5,10 +5,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
-#include "linalg.hpp"
-
-// #include "core/RandomTypes.hpp"
 #include "ValArray.hpp"
+#include "utils/linalg.hpp"
 
 class CovMatrix : public BaseType, public Multiplicative {
   protected:

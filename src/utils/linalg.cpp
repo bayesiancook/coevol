@@ -1,4 +1,4 @@
-#include "diffsel/linalg.hpp"
+#include "utils/linalg.hpp"
 
 #include <cmath>
 #include <cstdlib>

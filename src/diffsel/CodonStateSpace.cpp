@@ -1,10 +1,10 @@
+#include "diffsel/CodonStateSpace.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include "utils/Exception.hpp"
 using namespace std;
 
-#include "core/Exception.hpp"
-#include "diffsel/CodonStateSpace.hpp"
 
 CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
     nucstatespace = new DNAStateSpace;

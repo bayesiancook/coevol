@@ -1,8 +1,7 @@
 #include "diffsel/Chain.hpp"
-#include "core/Chrono.hpp"
-#include "core/ProbModel.hpp"
-// #include <cmath>
 #include <iostream>
+#include "core/ProbModel.hpp"
+#include "utils/Chrono.hpp"
 using namespace std;
 
 Chain::Chain() {

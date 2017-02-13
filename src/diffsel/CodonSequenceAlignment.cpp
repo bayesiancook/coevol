@@ -1,10 +1,10 @@
+#include "diffsel/CodonSequenceAlignment.hpp"
 #include <cstdlib>
 #include <iostream>
+#include "core/Random.hpp"
+#include "utils/Exception.hpp"
 using namespace std;
 
-#include "core/Exception.hpp"
-#include "core/Random.hpp"
-#include "diffsel/CodonSequenceAlignment.hpp"
 
 CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool force_stops,
                                                GeneticCodeType type) {

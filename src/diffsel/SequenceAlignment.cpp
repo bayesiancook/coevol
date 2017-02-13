@@ -1,18 +1,15 @@
 #include "diffsel/SequenceAlignment.hpp"
-#include "diffsel/BiologicalSequences.hpp"
-#include "diffsel/StringStreamUtils.hpp"
-
-#include "core/Random.hpp"
-
 #include <fstream>
+#include "core/Random.hpp"
+#include "diffsel/BiologicalSequences.hpp"
+#include "utils/StringStreamUtils.hpp"
+
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 //     SequenceAlignment
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
 int Int(string s) { return atoi(s.c_str()); }
 
 double Double(string s) { return atof(s.c_str()); }

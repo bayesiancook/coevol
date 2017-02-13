@@ -1,10 +1,9 @@
 #include "diffsel/SubMatrix.hpp"
-#include "diffsel/linalg.hpp"
-
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include "utils/linalg.hpp"
 using namespace std;
 
 int SubMatrix::nuni = 0;

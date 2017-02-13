@@ -4,8 +4,8 @@
 using namespace std;
 
 #include "core/DAGnode.hpp"
-#include "core/Exception.hpp"
 #include "core/ProbModel.hpp"
+#include "utils/Exception.hpp"
 
 
 bool DAGnode::initmode = true;  // (VL) FIXME
