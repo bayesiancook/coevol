@@ -47,7 +47,9 @@ class SelectionPhyloProcess : public PhyloProcess {
 
   protected:
     Var<PosReal>* GetRate(int site) {
-        if (rate) { return rate->GetVal(site); }
+        if (rate) {
+            return rate->GetVal(site);
+        }
         return 0;
     }
 

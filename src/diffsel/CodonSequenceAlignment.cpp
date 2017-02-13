@@ -79,14 +79,20 @@ void CodonSequenceAlignment::ToStreamRandomJackknife(ostream& os, double p) {
     int max = 0;
     for (int i = 0; i < Ntaxa; i++) {
         int l = taxset->GetTaxon(i).length();
-        if (max < l) { max = l; }
+        if (max < l) {
+            max = l;
+        }
     }
 
     for (int i = 0; i < Ntaxa; i++) {
         os << taxset->GetTaxon(i);
-        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) { os << ' '; }
+        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) {
+            os << ' ';
+        }
         for (int j = 0; j < Nsite; j++) {
-            if (included[j]) { os << statespace->GetState(GetState(i, j)); }
+            if (included[j]) {
+                os << statespace->GetState(GetState(i, j));
+            }
         }
         os << '\n';
     }
@@ -99,13 +105,19 @@ void CodonSequenceAlignment::ToStream(ostream& os) {
     int max = 0;
     for (int i = 0; i < Ntaxa; i++) {
         int l = taxset->GetTaxon(i).length();
-        if (max < l) { max = l; }
+        if (max < l) {
+            max = l;
+        }
     }
 
     for (int i = 0; i < Ntaxa; i++) {
         os << taxset->GetTaxon(i);
-        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) { os << ' '; }
-        for (int j = 0; j < Nsite; j++) { os << statespace->GetState(GetState(i, j)); }
+        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) {
+            os << ' ';
+        }
+        for (int j = 0; j < Nsite; j++) {
+            os << statespace->GetState(GetState(i, j));
+        }
         os << '\n';
     }
     os << '\n';
@@ -114,19 +126,25 @@ void CodonSequenceAlignment::ToStream(ostream& os) {
 void CodonSequenceAlignment::ToStream(ostream& os, int pos) {
     int included = 0;
     for (int i = 0; i < Nsite; i++) {
-        if (!AllMissingColumn(i)) { included++; }
+        if (!AllMissingColumn(i)) {
+            included++;
+        }
     }
     os << Ntaxa << '\t' << included << '\n';
     // os << Ntaxa << '\t' << Nsite << '\n';
     int max = 0;
     for (int i = 0; i < Ntaxa; i++) {
         int l = taxset->GetTaxon(i).length();
-        if (max < l) { max = l; }
+        if (max < l) {
+            max = l;
+        }
     }
 
     for (int i = 0; i < Ntaxa; i++) {
         os << taxset->GetTaxon(i);
-        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) { os << ' '; }
+        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) {
+            os << ' ';
+        }
         for (int j = 0; j < Nsite; j++) {
             if (!AllMissingColumn(j)) {
                 os << GetCodonStateSpace()->GetDNAStateSpace()->GetState(
@@ -160,12 +178,16 @@ void CodonSequenceAlignment::ToStreamFourFoldThird(ostream& os) {
     int max = 0;
     for (int i = 0; i < Ntaxa; i++) {
         int l = taxset->GetTaxon(i).length();
-        if (max < l) { max = l; }
+        if (max < l) {
+            max = l;
+        }
     }
 
     for (int i = 0; i < Ntaxa; i++) {
         os << taxset->GetTaxon(i);
-        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) { os << ' '; }
+        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) {
+            os << ' ';
+        }
         for (int j = 0; j < Nsite; j++) {
             if (included[j]) {
                 os << GetCodonStateSpace()->GetDNAStateSpace()->GetState(
@@ -199,14 +221,20 @@ void CodonSequenceAlignment::ToStreamFourFoldTriplet(ostream& os) {
     int max = 0;
     for (int i = 0; i < Ntaxa; i++) {
         int l = taxset->GetTaxon(i).length();
-        if (max < l) { max = l; }
+        if (max < l) {
+            max = l;
+        }
     }
 
     for (int i = 0; i < Ntaxa; i++) {
         os << taxset->GetTaxon(i);
-        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) { os << ' '; }
+        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) {
+            os << ' ';
+        }
         for (int j = 0; j < Nsite; j++) {
-            if (included[j]) { os << GetCodonStateSpace()->GetState(GetState(i, j)); }
+            if (included[j]) {
+                os << GetCodonStateSpace()->GetState(GetState(i, j));
+            }
         }
         os << '\n';
     }
@@ -272,12 +300,16 @@ void CodonSequenceAlignment::ToStreamFourFoldThirdwoCpG(ostream& os) {
     int max = 0;
     for (int i = 0; i < Ntaxa; i++) {
         int l = taxset->GetTaxon(i).length();
-        if (max < l) { max = l; }
+        if (max < l) {
+            max = l;
+        }
     }
 
     for (int i = 0; i < Ntaxa; i++) {
         os << taxset->GetTaxon(i);
-        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) { os << ' '; }
+        for (unsigned int j = 0; j < 5 + max - taxset->GetTaxon(i).length(); j++) {
+            os << ' ';
+        }
         for (int j = 0; j < Nsite - 1; j++) {
             if (included[j]) {
                 os << GetCodonStateSpace()->GetDNAStateSpace()->GetState(

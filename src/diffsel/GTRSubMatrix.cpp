@@ -11,11 +11,15 @@ GTRSubMatrix::GTRSubMatrix(int inNstate, const double* rr, const double* stat, b
     : SubMatrix(inNstate, innormalise) {
     Nrr = Nstate * (Nstate - 1) / 2;
     mRelativeRate = rr;
-    if (stat) { CopyStationary(stat); }
+    if (stat) {
+        CopyStationary(stat);
+    }
 }
 
 void GTRSubMatrix::CopyStationary(const double* instat) {
-    for (int k = 0; k < Nstate; k++) { mStationary[k] = instat[k]; }
+    for (int k = 0; k < Nstate; k++) {
+        mStationary[k] = instat[k];
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -36,7 +40,9 @@ void GTRSubMatrix::ComputeArray(int i) {
         // the sum over all entries of the row is equal to 0
         Q[i][i] = -total;
     } else {
-        for (int j = 0; j < Nstate; j++) { Q[i][j] = mStationary[j]; }
+        for (int j = 0; j < Nstate; j++) {
+            Q[i][j] = mStationary[j];
+        }
         Q[i][i] -= 1;
     }
 }

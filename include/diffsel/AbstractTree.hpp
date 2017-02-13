@@ -205,20 +205,28 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
   protected:
     double RecursiveGetMin(const Link* from) {
         double min = -1;
-        if (!from->isRoot()) { min = GetBranchVal(from->GetBranch())->val(); }
+        if (!from->isRoot()) {
+            min = GetBranchVal(from->GetBranch())->val();
+        }
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             double tmp = RecursiveGetMin(link->Out());
-            if ((min == -1) || (min > tmp)) { min = tmp; }
+            if ((min == -1) || (min > tmp)) {
+                min = tmp;
+            }
         }
         return min;
     }
 
     double RecursiveGetMax(const Link* from) {
         double max = 0;
-        if (!from->isRoot()) { max = GetBranchVal(from->GetBranch())->val(); }
+        if (!from->isRoot()) {
+            max = GetBranchVal(from->GetBranch())->val();
+        }
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             double tmp = RecursiveGetMax(link->Out());
-            if (max < tmp) { max = tmp; }
+            if (max < tmp) {
+                max = tmp;
+            }
         }
         return max;
     }
@@ -243,7 +251,9 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
                 n++;
                 if (!fromup->isRoot()) {
                     double tmpup = GetBranchVal(fromup->GetBranch())->val();
-                    if (tmpup > value) { totjoint++; }
+                    if (tmpup > value) {
+                        totjoint++;
+                    }
                 }
             }
         }

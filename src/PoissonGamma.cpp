@@ -60,7 +60,9 @@ class PoissonGammaModel : public ProbModel {
 
     double GetMeanOmega() {
         double mean = 0;
-        for (int i = 0; i < N; i++) { mean += omega[i]->val(); }
+        for (int i = 0; i < N; i++) {
+            mean += omega[i]->val();
+        }
 
         mean /= N;
         return mean;
@@ -83,7 +85,9 @@ class PoissonGammaModel : public ProbModel {
     void drawSample() {
         sigma->Sample();
         theta->Sample();
-        for (int i = 0; i < N; i++) { omega[i]->Sample(); }
+        for (int i = 0; i < N; i++) {
+            omega[i]->Sample();
+        }
     }
 
     void ToStream(ostream&) {}
@@ -97,7 +101,9 @@ int main(int, char* argv[]) {
     int N;
     is >> N;
     int* data = new int[N];
-    for (int i = 0; i < N; i++) { is >> data[i]; }
+    for (int i = 0; i < N; i++) {
+        is >> data[i];
+    }
 
     PoissonGammaModel* model = new PoissonGammaModel(N, data);
     ofstream os((name + ".trace").c_str());

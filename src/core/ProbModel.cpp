@@ -13,7 +13,9 @@ ProbModel::~ProbModel() {}
 
 bool ProbModel::CheckUpdateFlags() {
     bool ret = true;
-    for (auto i = root.begin(); i != root.end(); ++i) { ret &= (*i)->CheckUpdateFlags(); }
+    for (auto i = root.begin(); i != root.end(); ++i) {
+        ret &= (*i)->CheckUpdateFlags();
+    }
     return ret;
 }
 
@@ -23,13 +25,17 @@ void ProbModel::RootRegister(DAGnode* var) { root.insert(var); }
 
 void ProbModel::Corrupt() {
     map<DAGnode*, int> m;
-    for (auto i = root.begin(); i != root.end(); ++i) { (*i)->FullCorrupt(m); }
+    for (auto i = root.begin(); i != root.end(); ++i) {
+        (*i)->FullCorrupt(m);
+    }
 }
 
 double ProbModel::Update(bool check) {
     Corrupt();
     double total = 0;
-    for (auto i = root.begin(); i != root.end(); ++i) { total += (*i)->FullUpdate(check); }
+    for (auto i = root.begin(); i != root.end(); ++i) {
+        total += (*i)->FullUpdate(check);
+    }
     DAGnode::initmode = false;
     return total;
 }
@@ -40,7 +46,9 @@ void ProbModel::Register() {
         exit(1);
     }
     Corrupt();
-    for (auto i = root.begin(); i != root.end(); ++i) { (*i)->RecursiveRegister(this); }
+    for (auto i = root.begin(); i != root.end(); ++i) {
+        (*i)->RecursiveRegister(this);
+    }
     cerr << "model size : " << state.size() << '\n';
 }
 

@@ -65,9 +65,13 @@ void Random::InitRandom(int seed) {
     int i;
 
     if (RAND_MAX == 32767) {
-        for (i = 0; i < MT_LEN; i++) { mt_buffer[i] = rand() * 32768 + rand(); }
+        for (i = 0; i < MT_LEN; i++) {
+            mt_buffer[i] = rand() * 32768 + rand();
+        }
     } else {
-        for (i = 0; i < MT_LEN; i++) { mt_buffer[i] = rand(); }
+        for (i = 0; i < MT_LEN; i++) {
+            mt_buffer[i] = rand();
+        }
     }
     mt_index = 0;
 }
@@ -172,7 +176,9 @@ double Random::Gamma(double alpha, double beta) { return sGamma(alpha) / beta; }
 int Random::DrawFromDiscreteDistribution(const double* prob, int nstate) {
     try {
         double total = 0;
-        for (int k = 0; k < nstate; k++) { total += prob[k]; }
+        for (int k = 0; k < nstate; k++) {
+            total += prob[k];
+        }
         double p = total * Random::Uniform();
         double tot = 0;
         int k = -1;
@@ -182,7 +188,9 @@ int Random::DrawFromDiscreteDistribution(const double* prob, int nstate) {
         } while ((k < nstate) && (tot < p));
         if (k == nstate) {
             std::cerr << "finite discrete overflow\n";
-            for (int k = 0; k < nstate; k++) { std::cerr << prob[k] << '\n'; }
+            for (int k = 0; k < nstate; k++) {
+                std::cerr << prob[k] << '\n';
+            }
             throw;
         }
         return k;
@@ -198,9 +206,13 @@ int Random::DrawFromDiscreteDistribution(const double* prob, int nstate) {
 // ---------------------------------------------------------------------------------
 void Random::DrawFromUrn(int* tab, int n, int N) {  // draw n out of N
     // assumes that tab is an Int16[n]
-    for (int i = 0; i < n; i++) { tab[i] = 0; }
+    for (int i = 0; i < n; i++) {
+        tab[i] = 0;
+    }
     int* index = new int[N];
-    for (int i = 0; i < N; i++) { index[i] = 0; }
+    for (int i = 0; i < N; i++) {
+        index[i] = 0;
+    }
     for (int i = 0; i < n; i++) {
         int trial = (int)(Random::Uniform() * (N - i));
         for (int k = 0; k < N; k++) {
@@ -269,7 +281,9 @@ double Random::sNormal(void) {
         } while (x * v * v > 4.5);
         // double ret = (u - 0.9986501) > 0 ? sqrt(2 * x) : - sqrt(2 * x);
         double ret = sqrt(2 * x);
-        if (u - 0.9986501 > 0) { ret = -ret; }
+        if (u - 0.9986501 > 0) {
+            ret = -ret;
+        }
         return ret;
     }
     double x, v, w, tot;
@@ -279,8 +293,12 @@ double Random::sNormal(void) {
         v = (x > 0) ? x : -x;
         w = 6.6313339 * (3 - v) * (3 - v);
         tot = 0;
-        if (v < 1.5) { tot += 6.0432809 * (1.5 - v); }
-        if (v < 1) { tot += 13.2626678 * (3 - v * v) - w; }
+        if (v < 1.5) {
+            tot += 6.0432809 * (1.5 - v);
+        }
+        if (v < 1) {
+            tot += 13.2626678 * (3 - v * v) - w;
+        }
     } while (u > 49.0024445 * SAFE_EXP(-0.5 * v * v) - tot - w);
     return x;
 }
@@ -324,14 +342,18 @@ double Random::sGamma(double a) {
         t = sNormal();
         x = s + 0.5 * t;
         if (t > 0) {
-            if (!x) { std::cerr << "1\n"; }
+            if (!x) {
+                std::cerr << "1\n";
+            }
             return x * x;
         }
 
         // step 3
         u = Uniform();
         if (d * u < t * t * t) {
-            if (!x) { std::cerr << "2\n"; }
+            if (!x) {
+                std::cerr << "2\n";
+            }
             return x * x;
         }
 
@@ -359,7 +381,9 @@ double Random::sGamma(double a) {
             v = 0.5 * t / s;
             q = q0 - s * t + 0.25 * t * t + 2 * s2 * log(1.0 + v);
             if (log(1 - u) < q) {
-                if (!x) { std::cerr << "3\n"; }
+                if (!x) {
+                    std::cerr << "3\n";
+                }
                 return x * x;
             }
         }
@@ -370,7 +394,9 @@ double Random::sGamma(double a) {
                 u = Uniform();
                 u = u + u - 1;
                 t = fabs(e * sigma);
-                if (u < 0) { t = -t; }
+                if (u < 0) {
+                    t = -t;
+                }
                 t += b;
             } while (t <= -0.71874483771719);
 
@@ -420,7 +446,9 @@ double Random::logGamma(double alpha) {
 
     double tot = gammacoefs[0];
     double f = alpha;
-    for (int i = 1; i < 8; i++) { tot += gammacoefs[i] / (f++); }
+    for (int i = 1; i < 8; i++) {
+        tot += gammacoefs[i] / (f++);
+    }
     return log(tot * sqrt(2 * Pi)) - alpha - 6.5 + (alpha - 0.5) * log(alpha + 6.5);
 }
 
@@ -431,6 +459,8 @@ double Random::logMultivariateGamma(double a, int p) {
         exit(1);
     }
     double ret = p * (p - 1) / 4 * log(Pi);
-    for (int j = 1; j <= p; j++) { ret += logGamma(a + (1 - j) / 2); }
+    for (int j = 1; j <= p; j++) {
+        ret += logGamma(a + (1 - j) / 2);
+    }
     return ret;
 }

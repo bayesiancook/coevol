@@ -73,7 +73,9 @@ class OneMatrixRASPhyloProcess : public OneMatrixPhyloProcess {
     }
 
     Var<PosReal>* GetRate(int site) {
-        if (!rate) { return 0; }
+        if (!rate) {
+            return 0;
+        }
         return rate->GetVal(site);
     }
 

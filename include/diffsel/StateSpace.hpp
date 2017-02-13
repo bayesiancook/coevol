@@ -67,10 +67,14 @@ class GenericStateSpace : public SimpleStateSpace {
     GenericStateSpace(int inNstate, char* inAlphabet, int inNAlphabetSet, char* inAlphabetSet) {
         Nstate = inNstate;
         Alphabet = new char[Nstate];
-        for (int i = 0; i < Nstate; i++) { Alphabet[i] = inAlphabet[i]; }
+        for (int i = 0; i < Nstate; i++) {
+            Alphabet[i] = inAlphabet[i];
+        }
         NAlphabetSet = inNAlphabetSet;
         AlphabetSet = new char[NAlphabetSet];
-        for (int i = 0; i < NAlphabetSet; i++) { AlphabetSet[i] = inAlphabetSet[i]; }
+        for (int i = 0; i < NAlphabetSet; i++) {
+            AlphabetSet[i] = inAlphabetSet[i];
+        }
     }
 
     ~GenericStateSpace() {

@@ -75,35 +75,49 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
     int GetNstate() { return Nstate; }
 
     double** GetR() {
-        if (!matflag) { ComputeArrayAndStat(); }
+        if (!matflag) {
+            ComputeArrayAndStat();
+        }
         return R;
     }
 
     const double* GetStationary() {
-        if (!matflag) { ComputeArrayAndStat(); }
+        if (!matflag) {
+            ComputeArrayAndStat();
+        }
         return stationary;
     }
 
     const double* GetRow(int i) {
-        if (!matflag) { ComputeArrayAndStat(); }
+        if (!matflag) {
+            ComputeArrayAndStat();
+        }
         return R[i];
     }
 
     double Stationary(int i) {
-        if (!matflag) { ComputeArrayAndStat(); }
+        if (!matflag) {
+            ComputeArrayAndStat();
+        }
         return stationary[i];
     }
 
     double operator()(int i, int j) {
-        if (!matflag) { ComputeArrayAndStat(); }
+        if (!matflag) {
+            ComputeArrayAndStat();
+        }
         return R[i][j];
     }
 
     virtual void BackwardPropagate(const double* down, double* up, double length) {
-        if (!matflag) { ComputeArrayAndStat(); }
+        if (!matflag) {
+            ComputeArrayAndStat();
+        }
         for (int i = 0; i < Nstate; i++) {
             double tmp = 0;
-            for (int j = 0; j < Nstate; j++) { tmp += R[i][j] * down[j]; }
+            for (int j = 0; j < Nstate; j++) {
+                tmp += R[i][j] * down[j];
+            }
             up[i] = tmp;
         }
         up[Nstate] = down[Nstate];
@@ -112,10 +126,14 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
     virtual void ForwardPropagate(const double* up, double* down, double length) {
         cerr << "in forward\n";
         exit(1);
-        if (!matflag) { ComputeArrayAndStat(); }
+        if (!matflag) {
+            ComputeArrayAndStat();
+        }
         for (int i = 0; i < Nstate; i++) {
             double tmp = 0;
-            for (int j = 0; j < Nstate; j++) { tmp += up[j] * R[j][i]; }
+            for (int j = 0; j < Nstate; j++) {
+                tmp += up[j] * R[j][i];
+            }
             down[i] = tmp;
         }
     }
@@ -319,22 +337,30 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
 //-------------------------------------------------------------------------
 
 inline double SubMatrix::operator()(int i, int j) {
-    if (!flagarray[i]) { UpdateRow(i); }
+    if (!flagarray[i]) {
+        UpdateRow(i);
+    }
     return Q[i][j];
 }
 
 inline const double* SubMatrix::GetRow(int i) {
-    if (!flagarray[i]) { UpdateRow(i); }
+    if (!flagarray[i]) {
+        UpdateRow(i);
+    }
     return Q[i];
 }
 
 inline const double* SubMatrix::GetStationary() {
-    if (!statflag) { UpdateStationary(); }
+    if (!statflag) {
+        UpdateStationary();
+    }
     return mStationary;
 }
 
 inline double SubMatrix::Stationary(int i) {
-    if (!statflag) { UpdateStationary(); }
+    if (!statflag) {
+        UpdateStationary();
+    }
     return mStationary[i];
 }
 
@@ -342,13 +368,17 @@ inline double SubMatrix::Stationary(int i) {
 inline void SubMatrix::CorruptMatrix() {
     diagflag = false;
     statflag = false;
-    for (int k = 0; k < Nstate; k++) { flagarray[k] = false; }
+    for (int k = 0; k < Nstate; k++) {
+        flagarray[k] = false;
+    }
     InactivatePowers();
 }
 
 inline bool SubMatrix::ArrayUpdated() {
     bool qflag = true;
-    for (int k = 0; k < Nstate; k++) { qflag &= flagarray[k]; }
+    for (int k = 0; k < Nstate; k++) {
+        qflag &= flagarray[k];
+    }
     return qflag;
 }
 
@@ -361,7 +391,9 @@ inline void SubMatrix::UpdateRow(int state) {
     if (isNormalised()) {
         UpdateMatrix();
     } else {
-        if (!statflag) { UpdateStationary(); }
+        if (!statflag) {
+            UpdateStationary();
+        }
         ComputeArray(state);
         flagarray[state] = true;
     }
@@ -374,17 +406,27 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
 
     double* aux = new double[GetNstate()];
 
-    for (int i = 0; i < GetNstate(); i++) { aux[i] = 0; }
     for (int i = 0; i < GetNstate(); i++) {
-        for (int j = 0; j < GetNstate(); j++) { aux[i] += inveigenvect[i][j] * up[j]; }
+        aux[i] = 0;
+    }
+    for (int i = 0; i < GetNstate(); i++) {
+        for (int j = 0; j < GetNstate(); j++) {
+            aux[i] += inveigenvect[i][j] * up[j];
+        }
     }
 
-    for (int i = 0; i < GetNstate(); i++) { aux[i] *= exp(length * eigenval[i]); }
-
-    for (int i = 0; i < GetNstate(); i++) { down[i] = 0; }
+    for (int i = 0; i < GetNstate(); i++) {
+        aux[i] *= exp(length * eigenval[i]);
+    }
 
     for (int i = 0; i < GetNstate(); i++) {
-        for (int j = 0; j < GetNstate(); j++) { down[i] += eigenvect[i][j] * aux[j]; }
+        down[i] = 0;
+    }
+
+    for (int i = 0; i < GetNstate(); i++) {
+        for (int j = 0; j < GetNstate(); j++) {
+            down[i] += eigenvect[i][j] * aux[j];
+        }
     }
 
 
@@ -403,12 +445,18 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
             cerr << "error in backward propagate: negative prob : " << up[k] << "\n";
             // down[k] = 0;
         }
-        if (maxup < up[k]) { maxup = up[k]; }
+        if (maxup < up[k]) {
+            maxup = up[k];
+        }
     }
     double max = 0;
     for (int k = 0; k < GetNstate(); k++) {
-        if (down[k] < 0) { down[k] = 0; }
-        if (max < down[k]) { max = down[k]; }
+        if (down[k] < 0) {
+            down[k] = 0;
+        }
+        if (max < down[k]) {
+            max = down[k];
+        }
     }
     if (maxup == 0) {
         cerr << "error in backward propagate: null up array\n";
@@ -416,7 +464,9 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
     }
     if (max == 0) {
         cerr << "error in backward propagate: null array\n";
-        for (int k = 0; k < GetNstate(); k++) { cerr << up[k] << '\t' << down[k] << '\n'; }
+        for (int k = 0; k < GetNstate(); k++) {
+            cerr << up[k] << '\t' << down[k] << '\n';
+        }
         cerr << '\n';
         exit(1);
     }
@@ -432,18 +482,28 @@ inline void SubMatrix::ForwardPropagate(const double* down, double* up, double l
 
     double* aux = new double[GetNstate()];
 
-    for (int i = 0; i < GetNstate(); i++) { aux[i] = 0; }
-
     for (int i = 0; i < GetNstate(); i++) {
-        for (int j = 0; j < GetNstate(); j++) { aux[i] += down[j] * eigenvect[j][i]; }
+        aux[i] = 0;
     }
 
-    for (int i = 0; i < GetNstate(); i++) { aux[i] *= exp(length * eigenval[i]); }
-
-    for (int i = 0; i < GetNstate(); i++) { up[i] = 0; }
+    for (int i = 0; i < GetNstate(); i++) {
+        for (int j = 0; j < GetNstate(); j++) {
+            aux[i] += down[j] * eigenvect[j][i];
+        }
+    }
 
     for (int i = 0; i < GetNstate(); i++) {
-        for (int j = 0; j < GetNstate(); j++) { up[i] += aux[j] * inveigenvect[j][i]; }
+        aux[i] *= exp(length * eigenval[i]);
+    }
+
+    for (int i = 0; i < GetNstate(); i++) {
+        up[i] = 0;
+    }
+
+    for (int i = 0; i < GetNstate(); i++) {
+        for (int j = 0; j < GetNstate(); j++) {
+            up[i] += aux[j] * inveigenvect[j][i];
+        }
     }
 
     delete[] aux;

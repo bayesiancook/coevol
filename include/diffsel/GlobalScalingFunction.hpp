@@ -30,7 +30,9 @@ class BurstScalingFunction : public GlobalScalingFunction {
         double v = time1 - time2;
         if (time2 < t0->val()) {
             double tmax = time1 - t0->val();
-            if (time1 > t0->val()) { tmax = 0; }
+            if (time1 > t0->val()) {
+                tmax = 0;
+            }
             double tmin = time2 - t0->val();
             // factor * int_tmin^tmax exp(-r(t0-t)) dt = factor / r * (exp(r tmax) - exp(r tmin));
             v += factor->val() / rate->val() * (exp(rate->val() * tmax) - exp(rate->val() * tmin));

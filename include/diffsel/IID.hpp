@@ -28,17 +28,23 @@ class IIDArray : public ValPtrArray<Rvar<V> > {
     }
 
     void drawSample() {
-        for (int i = 0; i < this->GetSize(); i++) { this->GetVal(i)->Sample(); }
+        for (int i = 0; i < this->GetSize(); i++) {
+            this->GetVal(i)->Sample();
+        }
     }
 
     double GetLogProb() {
         double total = 0;
-        for (int i = 0; i < this->GetSize(); i++) { total += this->GetVal(i)->GetLogProb(); }
+        for (int i = 0; i < this->GetSize(); i++) {
+            total += this->GetVal(i)->GetLogProb();
+        }
         return total;
     }
 
     void Register(DAGnode* in) {
-        for (int i = 0; i < this->GetSize(); i++) { this->GetVal(i)->Register(in); }
+        for (int i = 0; i < this->GetSize(); i++) {
+            this->GetVal(i)->Register(in);
+        }
     }
 };
 
@@ -53,7 +59,9 @@ class BetaIIDArray : public IIDArray<UnitReal> {
 
     double GetMean() {
         double mean = 0;
-        for (int i = 0; i < GetSize(); i++) { mean += GetVal(i)->val(); }
+        for (int i = 0; i < GetSize(); i++) {
+            mean += GetVal(i)->val();
+        }
         mean /= GetSize();
         return mean;
     }
@@ -104,12 +112,16 @@ class GammaIIDArray : public IIDArray<PosReal> {
     }
 
     double* SetVals(double* ptr) {
-        for (int i = 0; i < GetSize(); i++) { GetVal(i)->setval(*ptr++); }
+        for (int i = 0; i < GetSize(); i++) {
+            GetVal(i)->setval(*ptr++);
+        }
         return ptr;
     }
 
     double* GetVals(double* ptr) {
-        for (int i = 0; i < GetSize(); i++) { (*ptr++) = GetVal(i)->val(); }
+        for (int i = 0; i < GetSize(); i++) {
+            (*ptr++) = GetVal(i)->val();
+        }
         return ptr;
     }
 
@@ -119,7 +131,9 @@ class GammaIIDArray : public IIDArray<PosReal> {
 
     double GetMean() {
         double mean = 0;
-        for (int i = 0; i < GetSize(); i++) { mean += GetVal(i)->val(); }
+        for (int i = 0; i < GetSize(); i++) {
+            mean += GetVal(i)->val();
+        }
         mean /= GetSize();
         return mean;
     }
@@ -156,14 +170,18 @@ class DirichletIIDArray : public IIDArray<Profile> {
 
     double* SetVals(double* ptr) {
         for (int i = 0; i < GetSize(); i++) {
-            for (int k = 0; k < GetDim(); k++) { (*GetVal(i))[k] = (*ptr++); }
+            for (int k = 0; k < GetDim(); k++) {
+                (*GetVal(i))[k] = (*ptr++);
+            }
         }
         return ptr;
     }
 
     double* GetVals(double* ptr) {
         for (int i = 0; i < GetSize(); i++) {
-            for (int k = 0; k < GetDim(); k++) { (*ptr++) = (*GetVal(i))[k]; }
+            for (int k = 0; k < GetDim(); k++) {
+                (*ptr++) = (*GetVal(i))[k];
+            }
         }
         return ptr;
     }
@@ -172,13 +190,17 @@ class DirichletIIDArray : public IIDArray<Profile> {
 
     double GetMeanEntropy() {
         double mean = 0;
-        for (int i = 0; i < GetSize(); i++) { mean += GetDirichletVal(i)->GetEntropy(); }
+        for (int i = 0; i < GetSize(); i++) {
+            mean += GetDirichletVal(i)->GetEntropy();
+        }
         mean /= GetSize();
         return mean;
     }
 
     void SetUniform() {
-        for (int i = 0; i < GetSize(); i++) { GetDirichletVal(i)->setuniform(); }
+        for (int i = 0; i < GetSize(); i++) {
+            GetDirichletVal(i)->setuniform();
+        }
     }
 
     /*
@@ -234,17 +256,23 @@ class NormalIIDArray : public IIDArray<Real> {
     }
 
     double* SetVals(double* ptr) {
-        for (int i = 0; i < GetSize(); i++) { GetVal(i)->setval(*ptr++); }
+        for (int i = 0; i < GetSize(); i++) {
+            GetVal(i)->setval(*ptr++);
+        }
         return ptr;
     }
 
     double* GetVals(double* ptr) {
-        for (int i = 0; i < GetSize(); i++) { (*ptr++) = GetVal(i)->val(); }
+        for (int i = 0; i < GetSize(); i++) {
+            (*ptr++) = GetVal(i)->val();
+        }
         return ptr;
     }
 
     void Reset() {
-        for (int i = 0; i < GetSize(); i++) { GetVal(i)->setval(0); }
+        for (int i = 0; i < GetSize(); i++) {
+            GetVal(i)->setval(0);
+        }
     }
 
     Normal* GetNormal(int site) {

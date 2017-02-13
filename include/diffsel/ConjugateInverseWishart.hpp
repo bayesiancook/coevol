@@ -17,7 +17,9 @@ class MultiNormalSemiConjugate : virtual public SemiConjugatePrior<CovMatrix> {
     void ResetSufficientStatistic() {
         shapestat = 0;
         for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) { scalestat[i][j] = 0; }
+            for (int j = 0; j < dim; j++) {
+                scalestat[i][j] = 0;
+            }
         }
     }
 
@@ -26,7 +28,9 @@ class MultiNormalSemiConjugate : virtual public SemiConjugatePrior<CovMatrix> {
         bkshapestat = shapestat;
         for (int i = 0; i < dim; i++) {
             bkscalestat[i][i] = scalestat[i][i];
-            for (int j = 0; j < i; j++) { bkscalestat[i][j] = scalestat[i][j]; }
+            for (int j = 0; j < i; j++) {
+                bkscalestat[i][j] = scalestat[i][j];
+            }
         }
     }
 
@@ -57,7 +61,9 @@ class MultiNormalSemiConjugate : virtual public SemiConjugatePrior<CovMatrix> {
 
     void AddToScale(double** in) {
         for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) { scalestat[i][j] += in[i][j]; }
+            for (int j = 0; j < dim; j++) {
+                scalestat[i][j] += in[i][j];
+            }
         }
     }
 
@@ -65,7 +71,9 @@ class MultiNormalSemiConjugate : virtual public SemiConjugatePrior<CovMatrix> {
         double t, trace = 0;
         for (int i = 0; i < dim; i++) {
             t = 0;
-            for (int j = 0; j < dim; j++) { t += scalestat[i][j] * GetInvMatrix()[j][i]; }
+            for (int j = 0; j < dim; j++) {
+                t += scalestat[i][j] * GetInvMatrix()[j][i];
+            }
             trace += t;
         }
         return -0.5 * (shapestat * GetLogDeterminant() + trace);
@@ -102,7 +110,9 @@ class SemiConjugateInverseWishart : virtual public InverseWishartMatrix,
     }
 
     void localCorrupt(bool bk) {
-        if (bk) { SaveSufficientStatistic(); }
+        if (bk) {
+            SaveSufficientStatistic();
+        }
         InverseWishartMatrix::localCorrupt(bk);
     }
 };
@@ -121,11 +131,15 @@ class ConjugateInverseWishart : public ConjugatePrior<CovMatrix>,
           SemiConjugateInverseWishart(inDiagonalMatrix, inP) {}
 
     void GibbsResample() {
-        for (int i = 0; i < GetDim(); i++) { scalestat[i][i] += diagonalMatrix->val(i); }
+        for (int i = 0; i < GetDim(); i++) {
+            scalestat[i][i] += diagonalMatrix->val(i);
+        }
         P += shapestat;
         scalestat.Diagonalise();
         drawSample(&scalestat);
-        for (int i = 0; i < GetDim(); i++) { scalestat[i][i] -= diagonalMatrix->val(i); }
+        for (int i = 0; i < GetDim(); i++) {
+            scalestat[i][i] -= diagonalMatrix->val(i);
+        }
         P -= shapestat;
         // just be careful about mathematical errors
         if (!isPositiveDefine()) {
@@ -138,13 +152,17 @@ class ConjugateInverseWishart : public ConjugatePrior<CovMatrix>,
         if (isActive()) {
             // if in integrated (conjugate) mode, return the integrated log probability
             if (isIntegrated()) {
-                for (int i = 0; i < GetDim(); i++) { scalestat[i][i] += diagonalMatrix->val(i); }
+                for (int i = 0; i < GetDim(); i++) {
+                    scalestat[i][i] += diagonalMatrix->val(i);
+                }
                 CovMatrix* postscale = new CovMatrix(scalestat);
                 int postshape = P + shapestat;
                 double l = diagonalMatrix->GetLogDeterminant() * P * 0.5 -
                            postscale->GetLogDeterminant() * postshape * 0.5;
                 delete postscale;
-                for (int i = 0; i < GetDim(); i++) { scalestat[i][i] -= diagonalMatrix->val(i); }
+                for (int i = 0; i < GetDim(); i++) {
+                    scalestat[i][i] -= diagonalMatrix->val(i);
+                }
                 return l;
             }
 
@@ -255,12 +273,16 @@ class ConjugateMultiNormal : public ConjugateSampling<RealVector>, public MultiN
     // overriding simple behavior, because this simple behavior assumes a specified covmatrix
     double ProposeMove(double tuning) {
         // return SimpleProposeMove(tuning);
-        if (isUpActive()) { return SimpleProposeMove(tuning); }
+        if (isUpActive()) {
+            return SimpleProposeMove(tuning);
+        }
         return MultiNormal::ProposeMove(tuning);
     }
 
     void ComputeContrast() {
-        if (!contrast) { contrast = new double[GetDim()]; }
+        if (!contrast) {
+            contrast = new double[GetDim()];
+        }
         double tt = time->val();
         if (scalefunction) {
             double t2 = date->val() * agescale->val();
@@ -287,7 +309,9 @@ class ConjugateMultiNormal : public ConjugateSampling<RealVector>, public MultiN
                 }
             }
         } else {
-            for (int i = 0; i < GetDim(); i++) { contrast[i] = ((*this)[i] - (*up)[i]) / roott; }
+            for (int i = 0; i < GetDim(); i++) {
+                contrast[i] = ((*this)[i] - (*up)[i]) / roott;
+            }
         }
     }
 

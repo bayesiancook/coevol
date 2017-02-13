@@ -13,7 +13,9 @@ void MGFitnessCodonSubMatrix::ComputeStationary() {
     }
 
     // renormalize stationary probabilities
-    for (int i = 0; i < GetNstate(); i++) { mStationary[i] /= total; }
+    for (int i = 0; i < GetNstate(); i++) {
+        mStationary[i] /= total;
+    }
 }
 
 
@@ -64,7 +66,9 @@ void MGFitnessCodonUsageSubMatrix::ComputeStationary() {
     }
 
     // renormalize stationary probabilities
-    for (int i = 0; i < GetNstate(); i++) { mStationary[i] /= total; }
+    for (int i = 0; i < GetNstate(); i++) {
+        mStationary[i] /= total;
+    }
 }
 
 
@@ -117,7 +121,9 @@ void MGSRFitnessNormalCodonUsageSubMatrix::ComputeStationary() {
         total += mStationary[i];
     }
     // renormalize stationary probabilities
-    for (int i = 0; i < GetNstate(); i++) { mStationary[i] /= total; }
+    for (int i = 0; i < GetNstate(); i++) {
+        mStationary[i] /= total;
+    }
 }
 
 
@@ -170,7 +176,9 @@ void MGMSFitnessNormalCodonUsageSubMatrix::ComputeStationary() {
         total += mStationary[i];
     }
     // renormalize stationary probabilities
-    for (int i = 0; i < GetNstate(); i++) { mStationary[i] /= total; }
+    for (int i = 0; i < GetNstate(); i++) {
+        mStationary[i] /= total;
+    }
 }
 
 
@@ -261,7 +269,9 @@ void MGSRFitnessCodonUsageSubMatrix::ComputeStationary() {
     }
 
     // renormalize stationary probabilities
-    for (int i = 0; i < GetNstate(); i++) { mStationary[i] /= total; }
+    for (int i = 0; i < GetNstate(); i++) {
+        mStationary[i] /= total;
+    }
 }
 
 

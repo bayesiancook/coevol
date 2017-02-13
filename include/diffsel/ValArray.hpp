@@ -20,16 +20,22 @@ class VarArray : public virtual AbstractArray {
     virtual Var<V>* GetVal(int site) = 0;
 
     void SetName(std::string inname) {
-        for (int i = 0; i < GetSize(); i++) { GetVal(i)->SetName(inname); }
+        for (int i = 0; i < GetSize(); i++) {
+            GetVal(i)->SetName(inname);
+        }
     }
 
     void ToStream(std::ostream& os) {
-        for (int i = 0; i < GetSize(); i++) { os << *(GetVal(i)) << '\t'; }
+        for (int i = 0; i < GetSize(); i++) {
+            os << *(GetVal(i)) << '\t';
+        }
         os << '\n';
     }
 
     void FromStream(std::istream& is) {
-        for (int i = 0; i < GetSize(); i++) { is >> *(GetVal(i)); }
+        for (int i = 0; i < GetSize(); i++) {
+            is >> *(GetVal(i));
+        }
     }
 
     friend std::ostream& operator<<(std::ostream& os, VarArray<V>& a) {
@@ -43,11 +49,15 @@ class VarArray : public virtual AbstractArray {
     }
 
     void RegisterChild(DAGnode* node) {
-        for (int i = 0; i < this->GetSize(); i++) { node->Register(this->GetVal(i)); }
+        for (int i = 0; i < this->GetSize(); i++) {
+            node->Register(this->GetVal(i));
+        }
     }
 
     virtual void RegisterArray(DAGnode* in) {
-        for (int i = 0; i < GetSize(); i++) { GetVal(i)->Register(in); }
+        for (int i = 0; i < GetSize(); i++) {
+            GetVal(i)->Register(in);
+        }
     }
 };
 
@@ -62,7 +72,9 @@ class RandomVarArray<PosReal> : public VarArray<PosReal>, public MCMC, public Mu
     virtual void Register(DAGnode* in) { RegisterArray(in); }
 
     int ScalarMultiplication(double d) {
-        for (int i = 0; i < GetSize(); i++) { GetVal(i)->ScalarMultiplication(d); }
+        for (int i = 0; i < GetSize(); i++) {
+            GetVal(i)->ScalarMultiplication(d);
+        }
         return GetSize();
     }
 };
@@ -74,7 +86,9 @@ class _ValPtrArray : public virtual AbstractArray {
     _ValPtrArray(int insize) {
         size = insize;
         array = new T*[size];
-        for (int i = 0; i < GetSize(); i++) { array[i] = 0; }
+        for (int i = 0; i < GetSize(); i++) {
+            array[i] = 0;
+        }
     }
 
     virtual ~_ValPtrArray() {
@@ -93,7 +107,9 @@ class _ValPtrArray : public virtual AbstractArray {
     void SetVal(int site, T* in) { array[site] = in; }
 
     void Create() {
-        for (int i = 0; i < GetSize(); i++) { array[i] = CreateVal(i); }
+        for (int i = 0; i < GetSize(); i++) {
+            array[i] = CreateVal(i);
+        }
     }
 
     void Delete() {

@@ -41,10 +41,14 @@ class DirichletNormalCompMove : public MCUpdate {
                 double logHastings = 0;
 
                 int dim = normal->GetDim();
-                if (2 * n > dim) { n = dim / 2; }
+                if (2 * n > dim) {
+                    n = dim / 2;
+                }
 
                 double* bkprofile = new double[dim];
-                for (int k = 0; k < dim; k++) { bkprofile[k] = (*profile)[k]; }
+                for (int k = 0; k < dim; k++) {
+                    bkprofile[k] = (*profile)[k];
+                }
                 int* indices = new int[2 * n];
                 Random::DrawFromUrn(indices, 2 * n, dim);
                 for (int i = 0; i < n; i++) {
@@ -56,15 +60,21 @@ class DirichletNormalCompMove : public MCUpdate {
                     double h = tot * tuning * (Random::Uniform() - 0.5);
                     x += h;
                     while ((x < 0) || (x > tot)) {
-                        if (x < 0) { x = -x; }
-                        if (x > tot) { x = 2 * tot - x; }
+                        if (x < 0) {
+                            x = -x;
+                        }
+                        if (x > tot) {
+                            x = 2 * tot - x;
+                        }
                     }
 
                     (*profile)[i1] = x;
                     (*profile)[i2] = tot - x;
                 }
 
-                for (int k = 0; k < dim; k++) { (*normal)[k] += log(bkprofile[k] / (*profile)[k]); }
+                for (int k = 0; k < dim; k++) {
+                    (*normal)[k] += log(bkprofile[k] / (*profile)[k]);
+                }
                 delete[] indices;
                 delete[] bkprofile;
 
@@ -123,7 +133,9 @@ class NormalNormalCompMove : public MCUpdate {
                 double logHastings = 0;
 
                 int dim = normal1->GetDim();
-                if (n > dim) { n = dim; }
+                if (n > dim) {
+                    n = dim;
+                }
 
                 int* indices = new int[n];
                 Random::DrawFromUrn(indices, n, dim);
@@ -164,7 +176,9 @@ class ComplexDirichletIIDArrayMove : public MCUpdate {
 
     double Move(double tuning_modulator) {
         double* tot = new double[selectarray->GetSize()];
-        for (int i = 0; i < selectarray->GetSize(); i++) { tot[i] = 0; }
+        for (int i = 0; i < selectarray->GetSize(); i++) {
+            tot[i] = 0;
+        }
 
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -183,7 +197,9 @@ class ComplexDirichletIIDArrayMove : public MCUpdate {
         }
 
         double total = 0;
-        for (int i = 0; i < selectarray->GetSize(); i++) { total += tot[i]; }
+        for (int i = 0; i < selectarray->GetSize(); i++) {
+            total += tot[i];
+        }
         delete[] tot;
 
         return total / selectarray->GetSize() / nrep / 6;
@@ -233,7 +249,9 @@ class RenormalizedIIDStat : public Dvar<Profile> {
         }
 
         // renormalize
-        for (int i = 0; i < GetDim(); i++) { (*this)[i] /= total; }
+        for (int i = 0; i < GetDim(); i++) {
+            (*this)[i] /= total;
+        }
     }
 
   private:
@@ -408,10 +426,14 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
         // prepare a temporary real vector with entries all = 1/20
         Profile tmp(Naa);
-        for (int k = 0; k < Naa; k++) { tmp[k] = 1.0 / Naa; }
+        for (int k = 0; k < Naa; k++) {
+            tmp[k] = 1.0 / Naa;
+        }
 
         zero = new Const<RealVector>(Naa);
-        for (int i = 0; i < Naa; i++) { (*zero)[i] = 0; }
+        for (int i = 0; i < Naa; i++) {
+            (*zero)[i] = 0;
+        }
 
         PriorConcentration = new Const<PosReal>(Naa);
         concentration = new Exponential(PriorConcentration, Exponential::MEAN);
@@ -440,7 +462,9 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         if (type == "clamp_MCMC_var") {
             center->Clamp();
             concentration->Clamp();
-            for (int k = 1; k < K; k++) { var[k]->Clamp(); }
+            for (int k = 1; k < K; k++) {
+                var[k]->Clamp();
+            }
         }
 
 
@@ -755,7 +779,9 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             os << k << '\n';
             for (int i = sitemin; i < sitemax; i++) {
                 os << i << '\t';
-                for (int j = 0; j < Naa; j++) { os << (*selectionnormal[k]->GetVal(i))[j] << '\t'; }
+                for (int j = 0; j < Naa; j++) {
+                    os << (*selectionnormal[k]->GetVal(i))[j] << '\t';
+                }
                 os << '\n';
             }
             os << '\n';
@@ -782,7 +808,9 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
                   }
                 */
 
-                for (int j = 0; j < Naa; j++) { is >> (*selectionnormal[k]->GetVal(i))[j]; }
+                for (int j = 0; j < Naa; j++) {
+                    is >> (*selectionnormal[k]->GetVal(i))[j];
+                }
             }
         }
     }
@@ -791,7 +819,9 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         int k = cat;
         int i = site;
         int j = state;
-        if (cat) { return exp((*selectionnormal[k]->GetVal(i))[j]); }
+        if (cat) {
+            return exp((*selectionnormal[k]->GetVal(i))[j]);
+        }
         return (*globalselectionprofile->GetVal(i))[j];
     }
 

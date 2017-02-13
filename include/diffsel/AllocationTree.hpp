@@ -12,7 +12,9 @@ class AllocationTree {
 
     int GetBranchAllocation(const Branch* branch) {
         // if root : return 0
-        if (!branch) { return 0; }
+        if (!branch) {
+            return 0;
+        }
 
         int k = atoi(branch->GetName().c_str());
 
@@ -22,7 +24,9 @@ class AllocationTree {
           }
         */
 
-        if (k >= K) { k = K - 1; }
+        if (k >= K) {
+            k = K - 1;
+        }
         if (k < 0 || k >= K) {
             cerr << "error : allocation out of bound\n";
             cerr << "k" << '\t' << "K" << '\n';

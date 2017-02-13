@@ -140,7 +140,9 @@ class SemiConjugateMove : public MCUpdate {
     double Move(double tuning_modulator = 1) {
         prior->ActivateSufficientStatistic();
         double total = 0;
-        for (int i = 0; i < nprior; i++) { total += prior->Move(tuningprior * tuning_modulator); }
+        for (int i = 0; i < nprior; i++) {
+            total += prior->Move(tuningprior * tuning_modulator);
+        }
         for (int i = 0; i < nsampling; i++) {
             total += sampling->Move(tuningsampling * tuning_modulator);
         }
@@ -168,7 +170,9 @@ class ConjugateMove : public MCUpdate {
     double Move(double tuning_modulator = 1) {  // (VL) left there since it is in a template
         prior->Integrate();
         double total = 0;
-        for (int i = 0; i < n; i++) { total += sampling->Move(tuning * tuning_modulator); }
+        for (int i = 0; i < n; i++) {
+            total += sampling->Move(tuning * tuning_modulator);
+        }
         total /= n;
         prior->Resample();
         return total;

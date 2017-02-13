@@ -100,7 +100,9 @@ class Link {
     void SetNext(Link* innext) { next = innext; }
 
     void AppendTo(Link* link) {
-        if (link) { link->next = this; }
+        if (link) {
+            link->next = this;
+        }
     }
 
     void Insert(Link* link) {  // insert link after this
@@ -156,26 +158,38 @@ class NewickTree {
     double ToStreamSimplified(ostream& os, const Link* from) const;
 
     const Link* GetLeftMostLink(const Link* from) const {
-        if (from->isLeaf()) { return from; }
+        if (from->isLeaf()) {
+            return from;
+        }
         return GetLeftMostLink(from->Next()->Out());
     }
 
     const Link* GetRightMostLink(const Link* from) const {
-        if (from->isLeaf()) { return from; }
+        if (from->isLeaf()) {
+            return from;
+        }
         const Link* link = from->Next();
-        while (link->Next() != from) { link = link->Next(); }
+        while (link->Next() != from) {
+            link = link->Next();
+        }
         return GetRightMostLink(link->Out());
     }
 
     string GetLeftMost(const Link* from) const {
-        if (from->isLeaf()) { return GetNodeName(from); }
+        if (from->isLeaf()) {
+            return GetNodeName(from);
+        }
         return GetLeftMost(from->Next()->Out());
     }
 
     string GetRightMost(const Link* from) const {
-        if (from->isLeaf()) { return GetNodeName(from); }
+        if (from->isLeaf()) {
+            return GetNodeName(from);
+        }
         const Link* link = from->Next();
-        while (link->Next() != from) { link = link->Next(); }
+        while (link->Next() != from) {
+            link = link->Next();
+        }
         return GetRightMost(link->Out());
     }
 
@@ -196,7 +210,9 @@ class NewickTree {
 
     int RecursiveGetNinternalNode(const Link* from) {
         int n = 0;
-        if (!from->isLeaf()) { n++; }
+        if (!from->isLeaf()) {
+            n++;
+        }
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             n += RecursiveGetNinternalNode(link->Out());
         }
@@ -268,9 +284,13 @@ class Tree : public NewickTree {
         double max = 0;
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             double tmp = GetMaxHeight(link->Out());
-            if (max < tmp) { max = tmp; }
+            if (max < tmp) {
+                max = tmp;
+            }
         }
-        if (!from->isRoot()) { max += GetBranchLength(from); }
+        if (!from->isRoot()) {
+            max += GetBranchLength(from);
+        }
         return max;
     }
 
@@ -278,9 +298,13 @@ class Tree : public NewickTree {
         double min = -1;
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             double tmp = GetMinHeight(link->Out());
-            if ((min == -1) || (min > tmp)) { min = tmp; }
+            if ((min == -1) || (min > tmp)) {
+                min = tmp;
+            }
         }
-        if (!from->isRoot()) { min += GetBranchLength(from); }
+        if (!from->isRoot()) {
+            min += GetBranchLength(from);
+        }
         return min;
     }
 
@@ -291,7 +315,9 @@ class Tree : public NewickTree {
             os << "(";
             for (const Link* link = from->Next(); link != from; link = link->Next()) {
                 ToStreamRenorm(link->Out(), os, normfactor);
-                if (link->Next() != from) { os << ","; }
+                if (link->Next() != from) {
+                    os << ",";
+                }
             }
             os << ")";
             os << GetNodeName(from);
@@ -400,7 +426,9 @@ class Tree : public NewickTree {
     void Subdivide(Link* from, int Ninterpol);
 
     string Reduce(Link* from = 0) {
-        if (!from) { from = GetRoot(); }
+        if (!from) {
+            from = GetRoot();
+        }
         if (from->isLeaf()) {
             cerr << from->GetNode()->GetName() << '\n';
             ;
@@ -425,18 +453,24 @@ class Tree : public NewickTree {
     }
 
     void PrintReduced(ostream& os, const Link* from = 0) {
-        if (!from) { from = GetRoot(); }
+        if (!from) {
+            from = GetRoot();
+        }
         if (from->GetNode()->GetName() != "diff") {
             os << from->GetNode()->GetName();
         } else {
             os << '(';
             for (const Link* link = from->Next(); link != from; link = link->Next()) {
                 PrintReduced(os, link->Out());
-                if (link->Next() != from) { os << ','; }
+                if (link->Next() != from) {
+                    os << ',';
+                }
             }
             os << ')';
         }
-        if (from->isRoot()) { os << ";\n"; }
+        if (from->isRoot()) {
+            os << ";\n";
+        }
     }
 
     const Link* ChooseInternalNode() {
@@ -474,7 +508,9 @@ class Tree : public NewickTree {
               found2 |= (GetLeafNodeName(from) == tax2);
             */
             if (!ret) {
-                if (found1 && found2) { ret = from; }
+                if (found1 && found2) {
+                    ret = from;
+                }
             }
         } else {
             for (const Link* link = from->Next(); link != from; link = link->Next()) {
@@ -497,7 +533,9 @@ class Tree : public NewickTree {
                 }
             }
             if (!ret) {
-                if (found1 && found2) { ret = from; }
+                if (found1 && found2) {
+                    ret = from;
+                }
             }
         }
         return ret;
@@ -509,7 +547,9 @@ class Tree : public NewickTree {
         found1 |= (from == from1);
         found2 |= (from == from2);
         if (!ret) {
-            if (found1 && found2) { ret = from; }
+            if (found1 && found2) {
+                ret = from;
+            }
         }
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             bool tmp1 = false;
@@ -531,7 +571,9 @@ class Tree : public NewickTree {
             }
         }
         if (!ret) {
-            if (found1 && found2) { ret = from; }
+            if (found1 && found2) {
+                ret = from;
+            }
         }
         return ret;
     }

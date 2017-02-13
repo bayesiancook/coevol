@@ -123,7 +123,9 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
 
 
     void Move() {
-        for (int i = 0; i < every; i++) { model->Move(1); }
+        for (int i = 0; i < every; i++) {
+            model->Move(1);
+        }
 
         SavePoint();
         Save();

@@ -77,7 +77,9 @@ class Dvar : public Var<T>, public Dnode {
     // returns the current value (VL: won't move into .cpp for just one function)
     const T& val() {
         if (!isUpdated()) {
-            if (!DAGnode::initmode) { std::cerr << "error : corrupting Dvar\n"; }
+            if (!DAGnode::initmode) {
+                std::cerr << "error : corrupting Dvar\n";
+            }
             localUpdate();
         }
         return (*this);

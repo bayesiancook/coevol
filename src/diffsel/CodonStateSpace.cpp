@@ -27,7 +27,9 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
             CodonCodeWithStops[i] = UniCodonCode[i];
             if (CodonCodeWithStops[i] != -1) {
                 CodonCode[k] = CodonCodeWithStops[i];
-                for (int pos = 0; pos < Npos; pos++) { CodonPos[pos][k] = codonpos[pos][i]; }
+                for (int pos = 0; pos < Npos; pos++) {
+                    CodonPos[pos][k] = codonpos[pos][i];
+                }
                 k++;
             }
         }
@@ -60,7 +62,9 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
             CodonCodeWithStops[i] = MtInvCodonCode[i];
             if (CodonCodeWithStops[i] != -1) {
                 CodonCode[k] = CodonCodeWithStops[i];
-                for (int pos = 0; pos < Npos; pos++) { CodonPos[pos][k] = codonpos[pos][i]; }
+                for (int pos = 0; pos < Npos; pos++) {
+                    CodonPos[pos][k] = codonpos[pos][i];
+                }
                 k++;
             }
         }
@@ -92,7 +96,9 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
             CodonCodeWithStops[i] = MtMamCodonCode[i];
             if (CodonCodeWithStops[i] != -1) {
                 CodonCode[k] = CodonCodeWithStops[i];
-                for (int pos = 0; pos < Npos; pos++) { CodonPos[pos][k] = codonpos[pos][i]; }
+                for (int pos = 0; pos < Npos; pos++) {
+                    CodonPos[pos][k] = codonpos[pos][i];
+                }
                 k++;
             }
         }
@@ -118,7 +124,9 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
 CodonStateSpace::~CodonStateSpace() {
     delete[] CodonCode;
     delete[] CodonCodeWithStops;
-    for (int pos = 0; pos < Npos; pos++) { delete[] CodonPos[pos]; }
+    for (int pos = 0; pos < Npos; pos++) {
+        delete[] CodonPos[pos];
+    }
     delete[] CodonPos;
 
     delete nucstatespace;
@@ -147,7 +155,9 @@ int CodonStateSpace::GetState(string word) {
 }
 
 bool CodonStateSpace::CheckStop(int pos1, int pos2, int pos3) {
-    if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown)) { return false; }
+    if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown)) {
+        return false;
+    }
     int l = 0;
     while ((l < Nstop) &&
            ((pos1 != StopPos1[l]) || (pos2 != StopPos2[l]) || (pos3 != StopPos3[l]))) {
@@ -157,7 +167,9 @@ bool CodonStateSpace::CheckStop(int pos1, int pos2, int pos3) {
 }
 
 int CodonStateSpace::GetCodonFromDNA(int pos1, int pos2, int pos3) {
-    if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown)) { return unknown; }
+    if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown)) {
+        return unknown;
+    }
     int l = 0;
     while ((l < GetNstate()) &&
            ((pos1 != GetCodonPosition(0, l)) || (pos2 != GetCodonPosition(1, l)) ||
@@ -219,8 +231,12 @@ int CodonStateSpace::GetDifferingPosition(int i, int j) {
 }
 
 int CodonStateSpace::GetDegeneracy(int codon) {
-    if (!degeneracy.size()) { MakeDegeneracyMap(); }
-    if (codon == -1) { return -1; }
+    if (!degeneracy.size()) {
+        MakeDegeneracyMap();
+    }
+    if (codon == -1) {
+        return -1;
+    }
     return degeneracy[codon];
 }
 
@@ -233,7 +249,9 @@ void CodonStateSpace::MakeDegeneracyMap() {
         int d = 0;
         for (int n = 0; n < Nnuc; n++) {
             int cod = GetCodonFromDNA(pos1, pos2, n);
-            if ((cod != -1) && (Translation(cod) == aa)) { d++; }
+            if ((cod != -1) && (Translation(cod) == aa)) {
+                d++;
+            }
             cerr << GetState(cod);
             if (cod == -1) {
                 cerr << " $ ";
@@ -260,13 +278,17 @@ int CodonStateSpace::IsNonCTNearest(int a, int b) {
                         nn = true;
                         int n1 = GetCodonPosition(pos, c1);
                         int n2 = GetCodonPosition(pos, c2);
-                        if (((n1 == 1) && (n2 == 3)) || ((n1 == 3) && (n2 == 1))) { noct = false; }
+                        if (((n1 == 1) && (n2 == 3)) || ((n1 == 3) && (n2 == 1))) {
+                            noct = false;
+                        }
                     }
                 }
             }
         }
     }
-    if (!nn) { return -1; }
+    if (!nn) {
+        return -1;
+    }
     return noct;
 }
 

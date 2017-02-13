@@ -298,7 +298,9 @@ inline BranchSitePath* PhyloProcess::PhyloProcessSiteMapping::GetPath(const Bran
 inline int PhyloProcess::GetNsite() { return data->GetNsite(); }
 inline int PhyloProcess::GetNtaxa() { return data->GetNtaxa(); }
 inline int PhyloProcess::GetNstate(int site) {
-    if (isMissing(GetRoot(), site)) { return 0; }
+    if (isMissing(GetRoot(), site)) {
+        return 0;
+    }
     return GetBranchSiteSubstitutionProcess(0, site)->GetNstate();
 }
 

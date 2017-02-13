@@ -18,10 +18,14 @@ class ContinuousData {
         Data = new double*[GetNtaxa()];
         for (int i = 0; i < GetNtaxa(); i++) {
             Data[i] = new double[Nsite];
-            for (int j = 0; j < Nsite; j++) { Data[i][j] = 0; }
+            for (int j = 0; j < Nsite; j++) {
+                Data[i][j] = 0;
+            }
         }
         charname = new string[GetNsite()];
-        for (int j = 0; j < Nsite; j++) { charname[j] = "none"; }
+        for (int j = 0; j < Nsite; j++) {
+            charname[j] = "none";
+        }
     }
 
     ContinuousData(ContinuousData* from) {
@@ -30,10 +34,14 @@ class ContinuousData {
         Data = new double*[GetNtaxa()];
         for (int i = 0; i < GetNtaxa(); i++) {
             Data[i] = new double[Nsite];
-            for (int j = 0; j < Nsite; j++) { Data[i][j] = from->Data[i][j]; }
+            for (int j = 0; j < Nsite; j++) {
+                Data[i][j] = from->Data[i][j];
+            }
         }
         charname = new string[GetNsite()];
-        for (int j = 0; j < Nsite; j++) { charname[j] = from->charname[j]; }
+        for (int j = 0; j < Nsite; j++) {
+            charname[j] = from->charname[j];
+        }
     }
 
     void ToStream(ostream& os, TaxonSet* taxset = 0) {
@@ -72,14 +80,18 @@ class ContinuousData {
         } else {
             int ntaxa = 0;
             for (int i = 0; i < GetNtaxa(); i++) {
-                if (taxset->GetTaxonIndex(GetTaxonSet()->GetTaxon(i)) != -1) { ntaxa++; }
+                if (taxset->GetTaxonIndex(GetTaxonSet()->GetTaxon(i)) != -1) {
+                    ntaxa++;
+                }
             }
 
             os << ntaxa << '\t' << GetNsite() << '\n';
             for (int i = 0; i < GetNtaxa(); i++) {
                 if (taxset->GetTaxonIndex(GetTaxonSet()->GetTaxon(i)) != -1) {
                     os << GetTaxonSet()->GetTaxon(i);
-                    for (int j = 0; j < GetNsite(); j++) { os << '\t' << Data[i][j]; }
+                    for (int j = 0; j < GetNsite(); j++) {
+                        os << '\t' << Data[i][j];
+                    }
                     os << '\n';
                 }
             }
@@ -124,7 +136,9 @@ class ContinuousData {
 
     bool isMissing(int taxon) {
         bool mis = true;
-        for (int i = 0; i < Nsite; i++) { mis &= (Data[taxon][i] == -1); }
+        for (int i = 0; i < Nsite; i++) {
+            mis &= (Data[taxon][i] == -1);
+        }
         return mis;
     }
 
@@ -190,7 +204,9 @@ class FileContinuousData : public ContinuousData {
             is >> Ntaxa;
             is >> Nsite;
             charname = new string[Nsite];
-            for (int j = 0; j < Nsite; j++) { is >> charname[j]; }
+            for (int j = 0; j < Nsite; j++) {
+                is >> charname[j];
+            }
         } else {
             Ntaxa = atoi(temp.c_str());
             is >> Nsite;
@@ -208,7 +224,9 @@ class FileContinuousData : public ContinuousData {
         for (int i = 0; i < Ntaxa; i++) {
             is >> name[i];
             Data[i] = new double[Nsite];
-            for (int j = 0; j < Nsite; j++) { is >> Data[i][j]; }
+            for (int j = 0; j < Nsite; j++) {
+                is >> Data[i][j];
+            }
         }
         taxset = new TaxonSet(name, Ntaxa);
         delete[] name;

@@ -43,7 +43,9 @@ class BranchProcess : public MCMC, public virtual BranchValPtrTree<Rvar<V> > {
 
   protected:
     virtual void drawSample(const Link* from) {
-        if (this->WithRoot() && (from->isRoot())) { this->GetBranchVal(0)->Sample(); }
+        if (this->WithRoot() && (from->isRoot())) {
+            this->GetBranchVal(0)->Sample();
+        }
         for (Link* link = from->Next(); link != from; link = link->Next()) {
             this->GetBranchVal(link->GetBranch())->Sample();
             drawSample(link->Out());
@@ -67,7 +69,9 @@ class BranchProcess : public MCMC, public virtual BranchValPtrTree<Rvar<V> > {
 
     virtual double GetLogProb(const Link* from) {
         double total = 0;
-        if (this->WithRoot() && (from->isRoot())) { total += this->GetBranchVal(0)->GetLogProb(); }
+        if (this->WithRoot() && (from->isRoot())) {
+            total += this->GetBranchVal(0)->GetLogProb();
+        }
         for (Link* link = from->Next(); link != from; link = link->Next()) {
             total += this->GetBranchVal(link->GetBranch())->GetLogProb();
             total += GetLogProb(link->Out());

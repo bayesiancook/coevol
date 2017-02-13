@@ -13,7 +13,9 @@ class SigmaZero : public Dnode {
         diag = 0;
         dim = indim;
         array = inarray;
-        for (int i = 0; i < GetDim(); i++) { Register(array[i]); }
+        for (int i = 0; i < GetDim(); i++) {
+            Register(array[i]);
+        }
         specialUpdate();
     }
 
@@ -21,34 +23,44 @@ class SigmaZero : public Dnode {
         array = 0;
         diag = indiag;
         dim = diag->GetSize();
-        for (int i = 0; i < GetDim(); i++) { Register(diag->GetVal(i)); }
+        for (int i = 0; i < GetDim(); i++) {
+            Register(diag->GetVal(i));
+        }
         specialUpdate();
     }
 
     ~SigmaZero() {}
 
     double val(int index) {
-        if (diag) { return diag->GetVal(index)->val(); }
+        if (diag) {
+            return diag->GetVal(index)->val();
+        }
         return array[index]->val();
     }
 
 
     // this actually draws a value based on the INVERSE of the matrix
     void drawValInv(double* x) {
-        for (int i = 0; i < GetDim(); i++) { x[i] = Random::sNormal() / sqrt(val(i)); }
+        for (int i = 0; i < GetDim(); i++) {
+            x[i] = Random::sNormal() / sqrt(val(i));
+        }
     }
 
     int GetDim() { return dim; }
 
     double GetDeterminant() {
         double p = 1;
-        for (int i = 0; i < GetDim(); i++) { p *= val(i); }
+        for (int i = 0; i < GetDim(); i++) {
+            p *= val(i);
+        }
         return p;
     }
 
     double GetLogDeterminant() {
         double logp = 0;
-        for (int i = 0; i < GetDim(); i++) { logp += log(val(i)); }
+        for (int i = 0; i < GetDim(); i++) {
+            logp += log(val(i));
+        }
         return logp;
     }
 
@@ -82,12 +94,16 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
     void drawSample() {
         int cont = 1;
         double** echantillon = new double*[P];
-        for (int i = 0; i < P; i++) { echantillon[i] = new double[GetDim()]; }
+        for (int i = 0; i < P; i++) {
+            echantillon[i] = new double[GetDim()];
+        }
 
         while (cont) {
             // draws a sample of P vectors from a normal distribution of variance covariance equal
             // to the inverse of SigmaZero
-            for (int i = 0; i < P; i++) { diagonalMatrix->drawValInv(echantillon[i]); }
+            for (int i = 0; i < P; i++) {
+                diagonalMatrix->drawValInv(echantillon[i]);
+            }
 
             // compute the scatter matrix, invert it, and this gives the sample
             ScatterizeOnZero(echantillon, P);
@@ -120,14 +136,18 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
             */
         }
 
-        for (int i = 0; i < P; i++) { delete[] echantillon[i]; }
+        for (int i = 0; i < P; i++) {
+            delete[] echantillon[i];
+        }
         delete[] echantillon;
     }
 
     void drawSample(CovMatrix* A) {
         // algorithm of Odell and Feiveson, 1966
         double* v = new double[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { v[i] = Random::Gamma(0.5 * (P - i), 0.5); }
+        for (int i = 0; i < GetDim(); i++) {
+            v[i] = Random::Gamma(0.5 * (P - i), 0.5);
+        }
         double** n = new double*[GetDim()];
         double** b = new double*[GetDim()];
         double** a = new double*[GetDim()];
@@ -138,16 +158,22 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
         }
 
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = i + 1; j < GetDim(); j++) { n[i][j] = Random::sNormal(); }
+            for (int j = i + 1; j < GetDim(); j++) {
+                n[i][j] = Random::sNormal();
+            }
         }
         for (int i = 0; i < GetDim(); i++) {
             b[i][i] = v[i];
-            for (int k = 0; k < i; k++) { b[i][i] += n[k][i] * n[k][i]; }
+            for (int k = 0; k < i; k++) {
+                b[i][i] += n[k][i] * n[k][i];
+            }
         }
         for (int i = 0; i < GetDim(); i++) {
             for (int j = i + 1; j < GetDim(); j++) {
                 b[i][j] = n[i][j] * sqrt(v[i]);
-                for (int k = 0; k < i; k++) { b[i][j] += n[k][i] * n[k][j]; }
+                for (int k = 0; k < i; k++) {
+                    b[i][j] += n[k][i] * n[k][j];
+                }
                 b[j][i] = b[i][j];
             }
         }
@@ -161,13 +187,17 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
 
 
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = 0; j < GetDim(); j++) { a[i][j] = p[i][j] / sqrt(d[j]); }
+            for (int j = 0; j < GetDim(); j++) {
+                a[i][j] = p[i][j] / sqrt(d[j]);
+            }
         }
 
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 double tmp = 0;
-                for (int k = 0; k < GetDim(); k++) { tmp += b[i][k] * a[j][k]; }
+                for (int k = 0; k < GetDim(); k++) {
+                    tmp += b[i][k] * a[j][k];
+                }
                 n[i][j] = tmp;
             }
         }
@@ -175,7 +205,9 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 double tmp = 0;
-                for (int k = 0; k < GetDim(); k++) { tmp += a[i][k] * n[k][j]; }
+                for (int k = 0; k < GetDim(); k++) {
+                    tmp += a[i][k] * n[k][j];
+                }
                 (*this)[i][j] = tmp;
             }
         }
@@ -201,7 +233,9 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
             A->drawValInv(echantillon[i]);
         }
         ScatterizeOnZero(echantillon, P);
-        for (int i = 0; i < P; i++) { delete[] echantillon[i]; }
+        for (int i = 0; i < P; i++) {
+            delete[] echantillon[i];
+        }
         delete[] echantillon;
         if (Invert()) {
             cerr << "in draw sample cov matrix A\n";
@@ -262,33 +296,45 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
     }
 
     double MarginalLogProb(CovMatrix& scalestat, int shapestat) {
-        for (int i = 0; i < dim; i++) { scalestat[i][i] += diagonalMatrix->val(i); }
+        for (int i = 0; i < dim; i++) {
+            scalestat[i][i] += diagonalMatrix->val(i);
+        }
         CovMatrix* postscale = new CovMatrix(scalestat);
         int postshape = P + shapestat;
         double l = diagonalMatrix->GetLogDeterminant() * P * 0.5 -
                    postscale->GetLogDeterminant() * postshape * 0.5;
         delete postscale;
-        for (int i = 0; i < dim; i++) { scalestat[i][i] -= diagonalMatrix->val(i); }
+        for (int i = 0; i < dim; i++) {
+            scalestat[i][i] -= diagonalMatrix->val(i);
+        }
         return l;
     }
 
     void GibbsResample(CovMatrix& scalestat, int shapestat) {
-        for (int i = 0; i < dim; i++) { scalestat[i][i] += diagonalMatrix->val(i); }
+        for (int i = 0; i < dim; i++) {
+            scalestat[i][i] += diagonalMatrix->val(i);
+        }
         P += shapestat;
         scalestat.Diagonalise();
         drawSample(&scalestat);
-        for (int i = 0; i < GetDim(); i++) { scalestat[i][i] -= diagonalMatrix->val(i); }
+        for (int i = 0; i < GetDim(); i++) {
+            scalestat[i][i] -= diagonalMatrix->val(i);
+        }
         P -= shapestat;
     }
 
     void LeftRightMultiply(double** P) {
         double** aux = new double*[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { aux[i] = new double[GetDim()]; }
+        for (int i = 0; i < GetDim(); i++) {
+            aux[i] = new double[GetDim()];
+        }
 
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 double tmp = 0;
-                for (int k = 0; k < GetDim(); k++) { tmp += (*this)[i][k] * P[j][k]; }
+                for (int k = 0; k < GetDim(); k++) {
+                    tmp += (*this)[i][k] * P[j][k];
+                }
                 aux[i][j] = tmp;
             }
         }
@@ -296,12 +342,16 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 double tmp = 0;
-                for (int k = 0; k < GetDim(); k++) { tmp += P[i][k] * aux[k][j]; }
+                for (int k = 0; k < GetDim(); k++) {
+                    tmp += P[i][k] * aux[k][j];
+                }
                 (*this)[i][j] = tmp;
             }
         }
 
-        for (int i = 0; i < GetDim(); i++) { delete[] aux[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            delete[] aux[i];
+        }
         delete[] aux;
     }
 };
@@ -353,13 +403,17 @@ class DiagonalCovMatrix : public virtual Rvar<CovMatrix> {
 
     double GetLogDeterminant() {
         double total = 0;
-        for (int i = 0; i < GetDim(); i++) { total += log(diagonalMatrix->val(i)); }
+        for (int i = 0; i < GetDim(); i++) {
+            total += log(diagonalMatrix->val(i));
+        }
         return total;
     }
 
     double GetDeterminant() {
         double total = 1;
-        for (int i = 0; i < GetDim(); i++) { total *= diagonalMatrix->val(i); }
+        for (int i = 0; i < GetDim(); i++) {
+            total *= diagonalMatrix->val(i);
+        }
         return total;
     }
 
@@ -538,7 +592,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
         }
         hasbounds = false;
         rootmax = 1000;
-        for (int i = 0; i < GetDim(); i++) { UnClamp(i); }
+        for (int i = 0; i < GetDim(); i++) {
+            UnClamp(i);
+        }
         Sample();
     }
 
@@ -561,8 +617,12 @@ class MultiNormal : public virtual Rvar<RealVector> {
         rootmean = inrootmean;
         rootvar = inrootvar;
         Register(sigma);
-        if (rootmean) { Register(rootmean); }
-        if (rootvar) { Register(rootvar); }
+        if (rootmean) {
+            Register(rootmean);
+        }
+        if (rootvar) {
+            Register(rootvar);
+        }
 
         setval(RealVector(insigma->GetDim()));
         ClampVector = new bool[GetDim()];
@@ -576,7 +636,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
         }
         hasbounds = false;
         rootmax = 1000;
-        for (int i = 0; i < GetDim(); i++) { UnClamp(i); }
+        for (int i = 0; i < GetDim(); i++) {
+            UnClamp(i);
+        }
         Sample();
     }
 
@@ -623,9 +685,15 @@ class MultiNormal : public virtual Rvar<RealVector> {
             Register(time);
         }
         Register(sigma);
-        if (alpha) { Register(alpha); }
-        if (scale) { Register(scale); }
-        if (drift) { Register(drift); }
+        if (alpha) {
+            Register(alpha);
+        }
+        if (scale) {
+            Register(scale);
+        }
+        if (drift) {
+            Register(drift);
+        }
         if (driftphi) {
             Register(driftphi);
             if (!date) {
@@ -634,10 +702,18 @@ class MultiNormal : public virtual Rvar<RealVector> {
             }
             Register(date);
         }
-        if (drift2) { Register(drift2); }
-        if (driftphi2) { Register(driftphi2); }
-        if (agescale) { Register(agescale); }
-        for (int i = 0; i < GetDim(); i++) { UnClamp(i); }
+        if (drift2) {
+            Register(drift2);
+        }
+        if (driftphi2) {
+            Register(driftphi2);
+        }
+        if (agescale) {
+            Register(agescale);
+        }
+        for (int i = 0; i < GetDim(); i++) {
+            UnClamp(i);
+        }
         Sample();
     }
 
@@ -687,13 +763,21 @@ class MultiNormal : public virtual Rvar<RealVector> {
         for (int i = 0; i < GetDim(); i++) {
             if (haslowerbound[i] && hasupperbound[i]) {
                 while ((val()[i] > hasupperbound[i]) && (val()[i] < haslowerbound[i])) {
-                    if (val()[i] > upperbound[i]) { val()[i] = 2 * upperbound[i] - val()[i]; }
-                    if (val()[i] < lowerbound[i]) { val()[i] = 2 * lowerbound[i] - val()[i]; }
+                    if (val()[i] > upperbound[i]) {
+                        val()[i] = 2 * upperbound[i] - val()[i];
+                    }
+                    if (val()[i] < lowerbound[i]) {
+                        val()[i] = 2 * lowerbound[i] - val()[i];
+                    }
                 }
             } else if (haslowerbound[i]) {
-                if (val()[i] < lowerbound[i]) { val()[i] = 2 * lowerbound[i] - val()[i]; }
+                if (val()[i] < lowerbound[i]) {
+                    val()[i] = 2 * lowerbound[i] - val()[i];
+                }
             } else if (hasupperbound[i]) {
-                if (val()[i] > upperbound[i]) { val()[i] = 2 * upperbound[i] - val()[i]; }
+                if (val()[i] > upperbound[i]) {
+                    val()[i] = 2 * upperbound[i] - val()[i];
+                }
             }
         }
     }
@@ -851,7 +935,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
     void DrawNormalFromPrecisionWithConstraint(double** mean, CovMatrix* cov) {
         int K = 0;
         for (int i = 0; i < GetDim(); i++) {
-            if (!ClampVector[i]) { K++; }
+            if (!ClampVector[i]) {
+                K++;
+            }
         }
         int L = GetDim() - K;
         int* index1 = new int[K];
@@ -876,7 +962,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
         CovMatrix* Cov11 = new CovMatrix(K);
         double** cov11 = Cov11->GetMatrix();
         for (int i = 0; i < K; i++) {
-            for (int j = 0; j < K; j++) { cov11[i][j] = (*cov)[index1[i]][index1[j]]; }
+            for (int j = 0; j < K; j++) {
+                cov11[i][j] = (*cov)[index1[i]][index1[j]];
+            }
         }
         Cov11->CorruptDiag();
         Cov11->Diagonalise();
@@ -885,22 +973,32 @@ class MultiNormal : public virtual Rvar<RealVector> {
         double** cov12 = new double*[K];
         for (int i = 0; i < K; i++) {
             cov12[i] = new double[L];
-            for (int j = 0; j < L; j++) { cov12[i][j] = (*cov)[index1[i]][index2[j]]; }
+            for (int j = 0; j < L; j++) {
+                cov12[i][j] = (*cov)[index1[i]][index2[j]];
+            }
         }
         double* tmp = new double[K];
         for (int i = 0; i < K; i++) {
             tmp[i] = 0;
-            for (int j = 0; j < L; j++) { tmp[i] += cov12[i][j] * mean2[j]; }
+            for (int j = 0; j < L; j++) {
+                tmp[i] += cov12[i][j] * mean2[j];
+            }
         }
         for (int i = 0; i < K; i++) {
             double temp = 0;
-            for (int j = 0; j < K; j++) { temp += invcov11[i][j] * tmp[j]; }
+            for (int j = 0; j < K; j++) {
+                temp += invcov11[i][j] * tmp[j];
+            }
             mean1[i] += temp;
         }
         Cov11->drawValInv(tmp);
-        for (int i = 0; i < K; i++) { (*this)[index1[i]] = mean1[i] + tmp[i]; }
+        for (int i = 0; i < K; i++) {
+            (*this)[index1[i]] = mean1[i] + tmp[i];
+        }
 
-        for (int i = 0; i < K; i++) { delete[] cov12[i]; }
+        for (int i = 0; i < K; i++) {
+            delete[] cov12[i];
+        }
         delete[] cov12;
         delete cov11;
         delete[] tmp;
@@ -914,10 +1012,14 @@ class MultiNormal : public virtual Rvar<RealVector> {
         double* aux = new double[GetDim()];
         for (int i = 0; i < GetDim(); i++) {
             double tmp = 0;
-            for (int j = 0; j < GetDim(); j++) { tmp += P[i][j] * (*this)[j]; }
+            for (int j = 0; j < GetDim(); j++) {
+                tmp += P[i][j] * (*this)[j];
+            }
             aux[i] = tmp;
         }
-        for (int i = 0; i < GetDim(); i++) { (*this)[i] = aux[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            (*this)[i] = aux[i];
+        }
         delete[] aux;
     }
 
@@ -927,7 +1029,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
             exit(1);
         }
         bool ok = true;
-        for (int i = 0; i < GetDim(); i++) { ok &= (fabs((*this)[i] - (bkvalue)[i]) < 1e-8); }
+        for (int i = 0; i < GetDim(); i++) {
+            ok &= (fabs((*this)[i] - (bkvalue)[i]) < 1e-8);
+        }
         if (!ok) {
             for (int i = 0; i < GetDim(); i++) {
                 cerr << (*this)[i] << '\t' << (bkvalue)[i] << '\n';
@@ -978,7 +1082,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
                      << '\t' << GetDim() << "\n";
                 exit(1);
             }
-            if ((!isClamped()) && (!ClampVector[index + i])) { (*this)[index + i] += u; }
+            if ((!isClamped()) && (!ClampVector[index + i])) {
+                (*this)[index + i] += u;
+            }
         }
         /*
           bool noclamped = true;
@@ -1004,12 +1110,16 @@ class MultiNormal : public virtual Rvar<RealVector> {
 
     void Shift(double* delta, double f = 1) {
         for (int i = 0; i < GetDim(); i++) {
-            if (!ClampVector[i]) { val()[i] += f * delta[i]; }
+            if (!ClampVector[i]) {
+                val()[i] += f * delta[i];
+            }
         }
     }
 
     virtual double ProposeMove(double tuning) {
-        if (HasBounds()) { return SimpleProposeMove(tuning); }
+        if (HasBounds()) {
+            return SimpleProposeMove(tuning);
+        }
 
         if ((!isRoot()) && Random::Uniform() < 0.5) {
             return MatrixBasedProposeMove(tuning);
@@ -1025,7 +1135,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
         for (int i = 0; i < GetDim(); i++) {
             if (!ClampVector[i]) {
                 double tt = time->val();
-                if (scale) { tt *= scale->val(); }
+                if (scale) {
+                    tt *= scale->val();
+                }
                 val()[i] += tuning * t[i] * sqrt(tt);
             }
         }
@@ -1043,16 +1155,22 @@ class MultiNormal : public virtual Rvar<RealVector> {
         int choose = (int)(3 * Random::Uniform());
         if (choose == 0) {
             for (int i = imin; i < imin + size; i++) {
-                if (!ClampVector[i]) { val()[i] += tuning * (Random::Uniform() - 0.5); }
+                if (!ClampVector[i]) {
+                    val()[i] += tuning * (Random::Uniform() - 0.5);
+                }
             }
         } else if (choose == 1) {
             double u = tuning * (Random::Uniform() - 0.5);
             for (int i = imin; i < imin + size; i++) {
-                if (!ClampVector[i]) { val()[i] += u; }
+                if (!ClampVector[i]) {
+                    val()[i] += u;
+                }
             }
         } else {
             int i = (int)(size * Random::Uniform()) + imin;
-            if (!ClampVector[i]) { val()[i] += tuning * (Random::Uniform() - 0.5); }
+            if (!ClampVector[i]) {
+                val()[i] += tuning * (Random::Uniform() - 0.5);
+            }
         }
         CheckBounds();
         return 0;
@@ -1062,16 +1180,22 @@ class MultiNormal : public virtual Rvar<RealVector> {
         int choose = (int)(3 * Random::Uniform());
         if (choose == 0) {
             for (int i = 0; i < GetDim(); i++) {
-                if (!ClampVector[i]) { val()[i] += tuning * (Random::Uniform() - 0.5); }
+                if (!ClampVector[i]) {
+                    val()[i] += tuning * (Random::Uniform() - 0.5);
+                }
             }
         } else if (choose == 1) {
             double u = tuning * (Random::Uniform() - 0.5);
             for (int i = 0; i < GetDim(); i++) {
-                if (!ClampVector[i]) { val()[i] += u; }
+                if (!ClampVector[i]) {
+                    val()[i] += u;
+                }
             }
         } else {
             int i = (int)(GetDim() * Random::Uniform());
-            if (!ClampVector[i]) { val()[i] += tuning * (Random::Uniform() - 0.5); }
+            if (!ClampVector[i]) {
+                val()[i] += tuning * (Random::Uniform() - 0.5);
+            }
         }
         CheckBounds();
         return 0;
@@ -1104,7 +1228,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
 
     double GetTrend(double t, int index) {
         if (drift2) {
-            if (t > kt) { return 0; }
+            if (t > kt) {
+                return 0;
+            }
             return (*drift)[index] * exp(-driftphi->val() * t) +
                    (*drift2)[index] * (1 - exp(-driftphi2->val() * (kt - t)));
         }
@@ -1187,7 +1313,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
                     }
                 }
             } else {
-                for (int i = 0; i < GetDim(); i++) { dval[i] = (val()[i] - up->val()[i]) / roott; }
+                for (int i = 0; i < GetDim(); i++) {
+                    dval[i] = (val()[i] - up->val()[i]) / roott;
+                }
             }
             for (int i = 0; i < GetDim(); i++) {
                 tXSX += sigma->GetInvMatrix()[i][i] * dval[i] * dval[i];
@@ -1249,10 +1377,14 @@ class MultivariateNormal : public virtual Rvar<RealVector> {
 
     double ProposeMove(double tuning) {
         if (Random::Uniform() < 0.3) {
-            for (int i = 0; i < GetDim(); i++) { val()[i] += tuning * (Random::Uniform() - 0.5); }
+            for (int i = 0; i < GetDim(); i++) {
+                val()[i] += tuning * (Random::Uniform() - 0.5);
+            }
         } else if (Random::Uniform() < 0.6) {
             double u = tuning * (Random::Uniform() - 0.5);
-            for (int i = 0; i < GetDim(); i++) { val()[i] += u; }
+            for (int i = 0; i < GetDim(); i++) {
+                val()[i] += u;
+            }
         } else {
             int i = (int)(GetDim() * Random::Uniform());
             val()[i] += tuning * (Random::Uniform() - 0.5);

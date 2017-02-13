@@ -76,7 +76,9 @@ void BranchSitePath::RestorePath() {
 
 string BranchSitePath::ToString(bool redundant) {
     ostringstream s;
-    if (redundant) { s << GetCharFinalState() << ':'; }
+    if (redundant) {
+        s << GetCharFinalState() << ':';
+    }
     Plink* link = last;
     while (link) {
         if (link != last) {
@@ -92,7 +94,9 @@ string BranchSitePath::ToString(bool redundant) {
         */
         link = link->prev;
     }
-    if (redundant) { s << ':' << GetCharInitState(); }
+    if (redundant) {
+        s << ':' << GetCharInitState();
+    }
     return s.str();
 }
 

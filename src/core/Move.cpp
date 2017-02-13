@@ -113,18 +113,26 @@ void MCScheduler::Move(double tuning_modulator, int i, bool verbose, bool check,
     chrono.Reset();
     chrono.Start();
     double meansuccess = 0;
-    if (verbose) { cerr << i << ' ' << name[i] << '\n'; }
-    for (int k = 0; k < nrep; k++) { meansuccess += update[i]->Move(tuning_modulator); }
+    if (verbose) {
+        cerr << i << ' ' << name[i] << '\n';
+    }
+    for (int k = 0; k < nrep; k++) {
+        meansuccess += update[i]->Move(tuning_modulator);
+    }
     chrono.Stop();
     totaltime += chrono.GetTime() / 1000;
     time[i] += chrono.GetTime() / 1000;
     ncall[i] += nrep;
     success[i] += meansuccess;
 
-    if (verbose) { cerr << "success " << meansuccess << '\n'; }
+    if (verbose) {
+        cerr << "success " << meansuccess << '\n';
+    }
     if (check) {
         try {
-            if (verbose) { cerr << "check\n"; }
+            if (verbose) {
+                cerr << "check\n";
+            }
             /*
               if (! model->CheckUpdateFlags())	{
               cerr << "error : flags are not all up\n";
@@ -139,7 +147,9 @@ void MCScheduler::Move(double tuning_modulator, int i, bool verbose, bool check,
                 throw CheckSumException(tmp);
             }
 
-            if (verbose) { cerr << "check ok\n"; }
+            if (verbose) {
+                cerr << "check ok\n";
+            }
         } catch (CheckSumException e) {
             cerr << "NON ZERO CHECKSUM. After " << name[i] << " : " << e.GetCheckSum() << '\n';
 
@@ -282,8 +292,12 @@ MultiplicativeCompensatoryMove::MultiplicativeCompensatoryMove(Multiplicative* i
                                                                Multiplicative* inm2,
                                                                double intuning)
     : m1(inm1), m2(inm2), tuning(intuning) {
-    if (m1) { m1->Register(this); }
-    if (m2) { m2->Register(this); }
+    if (m1) {
+        m1->Register(this);
+    }
+    if (m2) {
+        m2->Register(this);
+    }
 }
 
 double MultiplicativeCompensatoryMove::Move(double tuning_modulator) {
@@ -292,8 +306,12 @@ double MultiplicativeCompensatoryMove::Move(double tuning_modulator) {
     double h = tuning_modulator * tuning * (Random::Uniform() - 0.5);
     double e = exp(h);
     double loghastings = 0;
-    if (m1) { loghastings += h * m1->ScalarMultiplication(e); }
-    if (m2) { loghastings -= h * m2->ScalarMultiplication(1.0 / e); }
+    if (m1) {
+        loghastings += h * m1->ScalarMultiplication(e);
+    }
+    if (m2) {
+        loghastings -= h * m2->ScalarMultiplication(1.0 / e);
+    }
 
     double logratio = Update();
     logratio += loghastings;

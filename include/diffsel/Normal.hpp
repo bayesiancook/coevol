@@ -19,7 +19,9 @@ class IIDUniform : public virtual Rvar<RealVector> {
         setval(RealVector(dim));
         bkvalue = RealVector(dim);
         ClampVector = new bool[dim];
-        for (int i = 0; i < dim; i++) { ClampVector[i] = false; }
+        for (int i = 0; i < dim; i++) {
+            ClampVector[i] = false;
+        }
         Sample();
     }
 
@@ -45,7 +47,9 @@ class IIDUniform : public virtual Rvar<RealVector> {
         if (!isClamped()) {
             // Metropolis Hastings here
             Corrupt(true);
-            if ((n <= 0) || (n > dim)) { n = dim; }
+            if ((n <= 0) || (n > dim)) {
+                n = dim;
+            }
             int* indices = new int[n];
             Random::DrawFromUrn(indices, n, dim);
             for (int i = 0; i < n; i++) {
@@ -53,8 +57,12 @@ class IIDUniform : public virtual Rvar<RealVector> {
                     double& d = vec[indices[i]];
                     d += tuning * (Random::Uniform() - 0.5);
                     while (fabs(d) > max) {
-                        if (d > max) { d = 2 * max - d; }
-                        if (d < -max) { d = -2 * max - d; }
+                        if (d > max) {
+                            d = 2 * max - d;
+                        }
+                        if (d < -max) {
+                            d = -2 * max - d;
+                        }
                     }
                 }
             }
@@ -104,15 +112,21 @@ class IIDUniform : public virtual Rvar<RealVector> {
 
     double GetMean() {
         double total = 0;
-        for (int i = 0; i < GetDim(); i++) { total += (*this)[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            total += (*this)[i];
+        }
         return total / GetDim();
     }
 
     double GetVar() {
         double mean = 0;
-        for (int i = 0; i < GetDim(); i++) { mean += (*this)[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            mean += (*this)[i];
+        }
         double var = 0;
-        for (int i = 0; i < GetDim(); i++) { var += (*this)[i] * (*this)[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            var += (*this)[i] * (*this)[i];
+        }
         mean /= GetDim();
         var /= GetDim();
         var -= mean * mean;
@@ -122,7 +136,9 @@ class IIDUniform : public virtual Rvar<RealVector> {
   protected:
     void drawSample() {
         for (int i = 0; i < GetDim(); i++) {
-            if (!ClampVector[i]) { (*this)[i] = Random::sNormal() * 2 * max - max; }
+            if (!ClampVector[i]) {
+                (*this)[i] = Random::sNormal() * 2 * max - max;
+            }
         }
     }
 
@@ -138,7 +154,9 @@ class IIDNormal : public virtual Rvar<RealVector> {
         setval(RealVector(dim));
         bkvalue = RealVector(dim);
         ClampVector = new bool[dim];
-        for (int i = 0; i < dim; i++) { ClampVector[i] = false; }
+        for (int i = 0; i < dim; i++) {
+            ClampVector[i] = false;
+        }
     }
 
     IIDNormal(int dim, Var<Real>* inmean, Var<PosReal>* invariance) {
@@ -150,7 +168,9 @@ class IIDNormal : public virtual Rvar<RealVector> {
         Register(mean);
         Register(variance);
         ClampVector = new bool[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { ClampVector[i] = false; }
+        for (int i = 0; i < GetDim(); i++) {
+            ClampVector[i] = false;
+        }
         Sample();
     }
 
@@ -163,7 +183,9 @@ class IIDNormal : public virtual Rvar<RealVector> {
         Register(meanvector);
         Register(variance);
         ClampVector = new bool[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { ClampVector[i] = false; }
+        for (int i = 0; i < GetDim(); i++) {
+            ClampVector[i] = false;
+        }
         Sample();
     }
 
@@ -208,16 +230,22 @@ class IIDNormal : public virtual Rvar<RealVector> {
         int choose = (int)(3 * Random::Uniform());
         if (choose == 0) {
             for (int i = 0; i < GetDim(); i++) {
-                if (!ClampVector[i]) { val()[i] += tuning * (Random::Uniform() - 0.5); }
+                if (!ClampVector[i]) {
+                    val()[i] += tuning * (Random::Uniform() - 0.5);
+                }
             }
         } else if (choose == 1) {
             double u = tuning * (Random::Uniform() - 0.5);
             for (int i = 0; i < GetDim(); i++) {
-                if (!ClampVector[i]) { val()[i] += u; }
+                if (!ClampVector[i]) {
+                    val()[i] += u;
+                }
             }
         } else {
             int i = (int)(GetDim() * Random::Uniform());
-            if (!ClampVector[i]) { val()[i] += tuning * (Random::Uniform() - 0.5); }
+            if (!ClampVector[i]) {
+                val()[i] += tuning * (Random::Uniform() - 0.5);
+            }
         }
         return 0;
     }
@@ -245,7 +273,9 @@ class IIDNormal : public virtual Rvar<RealVector> {
 
     double PiecewiseTranslation(double u, int index, int n) {
         for (int i = 0; i < n; i++) {
-            if (!ClampVector[i]) { (*this)[index + i] += u; }
+            if (!ClampVector[i]) {
+                (*this)[index + i] += u;
+            }
         }
         return 0;
     }
@@ -270,15 +300,21 @@ class IIDNormal : public virtual Rvar<RealVector> {
 
     double GetMean() {
         double total = 0;
-        for (int i = 0; i < GetDim(); i++) { total += (*this)[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            total += (*this)[i];
+        }
         return total / GetDim();
     }
 
     double GetVar() {
         double mean = 0;
-        for (int i = 0; i < GetDim(); i++) { mean += (*this)[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            mean += (*this)[i];
+        }
         double var = 0;
-        for (int i = 0; i < GetDim(); i++) { var += (*this)[i] * (*this)[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            var += (*this)[i] * (*this)[i];
+        }
         mean /= GetDim();
         var /= GetDim();
         var -= mean * mean;
@@ -320,7 +356,9 @@ class IIDAddition : public Dvar<RealVector> {
     }
 
     void specialUpdate() {
-        for (int i = 0; i < GetDim(); i++) { (*this)[i] = (*a)[i] + (*b)[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            (*this)[i] = (*a)[i] + (*b)[i];
+        }
     }
 
   private:

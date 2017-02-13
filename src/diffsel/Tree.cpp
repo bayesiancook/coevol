@@ -25,7 +25,9 @@ double NewickTree::ToStreamSimplified(ostream& os, const Link* from) const {
             for (const Link* link = from->Next(); link != from; link = link->Next()) {
                 double tmp = ToStreamSimplified(os, link->Out());
                 os << ':' << tmp;
-                if (link->Next() != from) { os << ','; }
+                if (link->Next() != from) {
+                    os << ',';
+                }
             }
             os << ')';
         }
@@ -40,7 +42,9 @@ double NewickTree::ToStreamSimplified(ostream& os, const Link* from) const {
       }
       }
     */
-    if (from->isRoot()) { return 0; }
+    if (from->isRoot()) {
+        return 0;
+    }
     return atof(GetBranchName(from).c_str());
 }
 
@@ -49,7 +53,9 @@ void NewickTree::ToStream(ostream& os, const Link* from) const {
         os << '(';
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             ToStream(os, link->Out());
-            if (link->Next() != from) { os << ','; }
+            if (link->Next() != from) {
+                os << ',';
+            }
         }
         os << ')';
     }
@@ -58,7 +64,9 @@ void NewickTree::ToStream(ostream& os, const Link* from) const {
     // }
     if (!from->isRoot()) {
         string brval = GetBranchName(from);
-        if (brval != "") { os << ':' << brval; }
+        if (brval != "") {
+            os << ':' << brval;
+        }
     }
 }
 
@@ -188,7 +196,9 @@ void Tree::RootAt(Link* from) {
 void Tree::EraseInternalNodeName() { EraseInternalNodeName(GetRoot()); }
 
 void Tree::EraseInternalNodeName(Link* from) {
-    if (!from->isLeaf()) { from->GetNode()->SetName(""); }
+    if (!from->isLeaf()) {
+        from->GetNode()->SetName("");
+    }
     for (Link* link = from->Next(); link != from; link = link->Next()) {
         EraseInternalNodeName(link->Out());
     }
@@ -345,7 +355,9 @@ Link* Tree::ParseGroup(string input, Link* from) {
         string nodeval = input.substr(b, k - b);
 
         string branchval = "";
-        if (k < input.length()) { branchval = input.substr(k + 1, input.length() - k); }
+        if (k < input.length()) {
+            branchval = input.substr(k + 1, input.length() - k);
+        }
 
         // make a new node and a new branch
         Node* node = new Node(nodeval);
@@ -430,7 +442,9 @@ int Tree::CountInternalNodes(const Link* from) {
 }
 
 const Link* Tree::ChooseInternalNode(const Link* from, const Link*& fromup, int& n) {
-    if (from->isLeaf()) { return 0; }
+    if (from->isLeaf()) {
+        return 0;
+    }
     const Link* ret = 0;
     if (!n) {
         ret = from;
@@ -439,10 +453,14 @@ const Link* Tree::ChooseInternalNode(const Link* from, const Link*& fromup, int&
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             if (!ret) {
                 const Link* tmp = ChooseInternalNode(link->Out(), fromup, n);
-                if (tmp) { ret = tmp; }
+                if (tmp) {
+                    ret = tmp;
+                }
             }
         }
-        if (ret && (!fromup)) { fromup = from; }
+        if (ret && (!fromup)) {
+            fromup = from;
+        }
     }
     return ret;
 }
@@ -463,9 +481,13 @@ const Link* Tree::ChooseNode(const Link* from, const Link*& fromup, int& n) {
         n--;
         for (const Link* link = from->Next(); (!ret && (link != from)); link = link->Next()) {
             const Link* tmp = ChooseNode(link->Out(), fromup, n);
-            if (tmp) { ret = tmp; }
+            if (tmp) {
+                ret = tmp;
+            }
         }
-        if (ret && (!fromup)) { fromup = from; }
+        if (ret && (!fromup)) {
+            fromup = from;
+        }
     }
     return ret;
 }

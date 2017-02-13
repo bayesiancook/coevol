@@ -30,7 +30,9 @@ TaxonSet::~TaxonSet() { delete[] taxlist; }
 TaxonSet::TaxonSet(const Tree* tree, const Link* subgroup) {
     Ntaxa = tree->GetSize(subgroup);
     taxlist = new string[Ntaxa];
-    if (!subgroup) { subgroup = tree->GetRoot(); }
+    if (!subgroup) {
+        subgroup = tree->GetRoot();
+    }
     int i = 0;
     RecursiveGetSubSet(subgroup, i);
 }
@@ -49,7 +51,9 @@ void TaxonSet::RecursiveGetSubSet(const Link* from, int& i) {
 
 void TaxonSet::ToStream(ostream& os) const {
     os << Ntaxa << '\n';
-    for (int i = 0; i < Ntaxa; i++) { os << taxlist[i] << '\n'; }
+    for (int i = 0; i < Ntaxa; i++) {
+        os << taxlist[i] << '\n';
+    }
 }
 
 int TaxonSet::GetTaxonIndexWithIncompleteName(string taxname) const {

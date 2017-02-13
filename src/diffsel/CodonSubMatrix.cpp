@@ -29,7 +29,9 @@ void MGCodonSubMatrix::ComputeStationary() {
     }
 
     // renormalize stationary probabilities
-    for (int i = 0; i < GetNstate(); i++) { mStationary[i] /= total; }
+    for (int i = 0; i < GetNstate(); i++) {
+        mStationary[i] /= total;
+    }
 }
 
 void MGCodonSubMatrix::ComputeNucArrays() {
@@ -68,7 +70,9 @@ void MGOmegaCodonSubMatrix::ComputeArray(int i) {
                     exit(1);
                 }
                 Q[i][j] = (*NucMatrix)(a, b);
-                if (!Synonymous(i, j)) { Q[i][j] *= GetOmega(); }
+                if (!Synonymous(i, j)) {
+                    Q[i][j] *= GetOmega();
+                }
             } else {
                 Q[i][j] = 0;
             }
@@ -106,7 +110,9 @@ void MGOmegaCodonSubMatrix::ComputeNucArrays() {
 void AminoAcidReducedCodonSubMatrix::ComputeStationary() {
     // Stat[a] = \sum_{i|a} CodonStat[i]
 
-    for (int a = 0; a < GetNstate(); a++) { mStationary[a] = 0; }
+    for (int a = 0; a < GetNstate(); a++) {
+        mStationary[a] = 0;
+    }
 
     for (int i = 0; i < GetCodonStateSpace()->GetNstate(); i++) {
         mStationary[GetCodonStateSpace()->Translation(i)] += GetCodonSubMatrix()->Stationary(i);
@@ -116,7 +122,9 @@ void AminoAcidReducedCodonSubMatrix::ComputeStationary() {
 void AminoAcidReducedCodonSubMatrix::ComputeArray(int a) {
     // Q[a][[b] = [ \sum _{i|a, j|b} CodonQ[i][j] ] / [ \sum_{i|a} CodonStat[i] ]
 
-    for (int b = 0; b < GetNstate(); b++) { Q[a][b] = 0; }
+    for (int b = 0; b < GetNstate(); b++) {
+        Q[a][b] = 0;
+    }
 
     for (int i = 0; i < GetCodonStateSpace()->GetNstate(); i++) {
         if (GetCodonStateSpace()->Translation(i) == a) {
@@ -130,12 +138,16 @@ void AminoAcidReducedCodonSubMatrix::ComputeArray(int a) {
     }
 
     for (int b = 0; b < GetNstate(); b++) {
-        if (b != a) { Q[a][b] /= mStationary[a]; }
+        if (b != a) {
+            Q[a][b] /= mStationary[a];
+        }
     }
 
     double total = 0;
     for (int b = 0; b < GetNstate(); b++) {
-        if (b != a) { total += Q[a][b]; }
+        if (b != a) {
+            total += Q[a][b];
+        }
     }
     Q[a][a] = -total;
 }

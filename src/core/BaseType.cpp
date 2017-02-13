@@ -60,8 +60,12 @@ double UnitReal::ProposeMove(double tuning) {
     double m = tuning * (Random::Uniform() - 0.5);
     value += m;
     while ((value < 0) || (value > 1)) {
-        if (value < 0) { value = -value; }
-        if (value > 1) { value = 2 - value; }
+        if (value < 0) {
+            value = -value;
+        }
+        if (value > 1) {
+            value = 2 - value;
+        }
     }
     return 0.0;
 }
@@ -174,7 +178,9 @@ double Profile::ProposeMove(double tuning,
         }
         return logHastings;
     } else {
-        if (2 * n > dim) { n = dim / 2; }
+        if (2 * n > dim) {
+            n = dim / 2;
+        }
         int* indices = new int[2 * n];
         Random::DrawFromUrn(indices, 2 * n, dim);
         for (int i = 0; i < n; i++) {
@@ -191,8 +197,12 @@ double Profile::ProposeMove(double tuning,
             */
             x += h;
             while ((x < 0) || (x > tot)) {
-                if (x < 0) { x = -x; }
-                if (x > tot) { x = 2 * tot - x; }
+                if (x < 0) {
+                    x = -x;
+                }
+                if (x > tot) {
+                    x = 2 * tot - x;
+                }
             }
             profile[i1] = x;
             profile[i2] = tot - x;
@@ -213,7 +223,9 @@ void Profile::setuniform() {
 }
 
 void Profile::setarray(double* in) {
-    for (unsigned int i = 0; i < profile.size(); i++) { profile[i] = in[i]; }
+    for (unsigned int i = 0; i < profile.size(); i++) {
+        profile[i] = in[i];
+    }
 }
 
 double Profile::GetEntropy() const {
@@ -224,7 +236,9 @@ double Profile::GetEntropy() const {
 
 ostream& operator<<(ostream& os, const Profile& r) {
     os << r.GetDim();
-    for (int i = 0; i < r.GetDim(); i++) { os << '\t' << r.profile[i]; }
+    for (int i = 0; i < r.GetDim(); i++) {
+        os << '\t' << r.profile[i];
+    }
     return os;
 }
 
@@ -254,7 +268,9 @@ RealVector& RealVector::operator=(const RealVector& from) {
 
 double RealVector::GetMean() const {
     double total = 0;
-    for (auto i : vec) { total += i; }
+    for (auto i : vec) {
+        total += i;
+    }
     return total / GetDim();
 }
 
@@ -290,10 +306,14 @@ void RealVector::add(const double* in, double f) {
 
 double RealVector::ProposeMove(double tuning, int n) {
     int dim = GetDim();
-    if ((n <= 0) || (n > dim)) { n = dim; }
+    if ((n <= 0) || (n > dim)) {
+        n = dim;
+    }
     int* indices = new int[n];
     Random::DrawFromUrn(indices, n, dim);
-    for (int i = 0; i < n; i++) { vec[indices[i]] += tuning * (Random::Uniform() - 0.5); }
+    for (int i = 0; i < n; i++) {
+        vec[indices[i]] += tuning * (Random::Uniform() - 0.5);
+    }
     delete[] indices;
     return 0;  // (VL) does this function do anything ?
 }
@@ -301,7 +321,9 @@ double RealVector::ProposeMove(double tuning, int n) {
 ostream& operator<<(ostream& os, const RealVector& r) {
     int rdim = r.GetDim();
     os << rdim;
-    for (int i = 0; i < rdim; i++) { os << '\t' << r.vec[i]; }
+    for (int i = 0; i < rdim; i++) {
+        os << '\t' << r.vec[i];
+    }
     return os;
 }
 
@@ -350,7 +372,9 @@ double PosRealVector::GetVar() const {
 
 double PosRealVector::ProposeMove(double tuning, int n) {
     int dim = GetDim();
-    if ((n <= 0) || (n > dim)) { n = dim; }
+    if ((n <= 0) || (n > dim)) {
+        n = dim;
+    }
     int* indices = new int[n];
     Random::DrawFromUrn(indices, n, dim);
     double ret = 0;
@@ -365,7 +389,9 @@ double PosRealVector::ProposeMove(double tuning, int n) {
 
 double PosRealVector::GetEntropy() const {
     double total = 0;
-    for (auto i : vec) { total += i; }
+    for (auto i : vec) {
+        total += i;
+    }
     double ent = 0;
     for (auto i : vec) {
         double tmp = i / total;
@@ -383,13 +409,17 @@ double PosRealVector::GetEntropy() const {
 IntVector::IntVector(const IntVector& from) {
     dim = from.dim;
     vec = new int[dim];
-    for (int i = 0; i < dim; i++) { vec[i] = from.vec[i]; }
+    for (int i = 0; i < dim; i++) {
+        vec[i] = from.vec[i];
+    }
 }
 
 IntVector::IntVector(const int* from, int indim) {
     dim = indim;
     vec = new int[dim];
-    for (int i = 0; i < dim; i++) { vec[i] = from[i]; }
+    for (int i = 0; i < dim; i++) {
+        vec[i] = from[i];
+    }
 }
 
 IntVector& IntVector::operator=(const IntVector& from) {
@@ -405,7 +435,9 @@ IntVector& IntVector::operator=(const IntVector& from) {
         dim = from.dim;
         vec = new int[dim];
     }
-    for (int i = 0; i < dim; i++) { vec[i] = from.vec[i]; }
+    for (int i = 0; i < dim; i++) {
+        vec[i] = from.vec[i];
+    }
     return *this;
 }
 
@@ -414,13 +446,17 @@ IntVector& IntVector::operator=(const int* from) {
         cerr << "error in IntVector::operator=(const int*)\n";
         exit(1);
     }
-    for (int i = 0; i < dim; i++) { vec[i] = from[i]; }
+    for (int i = 0; i < dim; i++) {
+        vec[i] = from[i];
+    }
     return *this;
 }
 
 double IntVector::GetMean() const {
     double total = 0;
-    for (int i = 0; i < dim; i++) { total += vec[i]; }
+    for (int i = 0; i < dim; i++) {
+        total += vec[i];
+    }
     return total / dim;
 }
 
@@ -438,17 +474,23 @@ double IntVector::GetVar() const {
 }
 
 int IntVector::ProposeMove(double tuning, int n) {
-    if ((n <= 0) || (n > dim)) { n = dim; }
+    if ((n <= 0) || (n > dim)) {
+        n = dim;
+    }
     int* indices = new int[n];
     Random::DrawFromUrn(indices, n, dim);
-    for (int i = 0; i < n; i++) { vec[indices[i]] += (int)(tuning * (Random::Uniform() - 0.5)); }
+    for (int i = 0; i < n; i++) {
+        vec[indices[i]] += (int)(tuning * (Random::Uniform() - 0.5));
+    }
     delete[] indices;
     return 0;
 }
 
 ostream& operator<<(ostream& os, const IntVector& r) {
     os << r.dim;
-    for (int i = 0; i < r.dim; i++) { os << '\t' << r.vec[i]; }
+    for (int i = 0; i < r.dim; i++) {
+        os << '\t' << r.vec[i];
+    }
     return os;
 }
 
@@ -460,6 +502,8 @@ istream& operator>>(istream& is, IntVector& r) {
         delete[] r.vec;
         r.vec = new int[r.dim];
     }
-    for (int i = 0; i < r.dim; i++) { is >> r.vec[i]; }
+    for (int i = 0; i < r.dim; i++) {
+        is >> r.vec[i];
+    }
     return is;
 }

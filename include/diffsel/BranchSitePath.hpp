@@ -116,14 +116,20 @@ inline bool Plink::IsLast() { return next == 0; }
 
 inline void Plink::Insert(Plink* link) {
     link->next = next;
-    if (next) { next->prev = link; }
+    if (next) {
+        next->prev = link;
+    }
     link->prev = this;
     next = link;
 }
 
 inline void Plink::Splice() {
-    if (prev) { prev->next = next; }
-    if (next) { next->prev = prev; }
+    if (prev) {
+        prev->next = next;
+    }
+    if (next) {
+        next->prev = prev;
+    }
     prev = next = 0;
 }
 

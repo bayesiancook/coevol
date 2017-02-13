@@ -21,7 +21,9 @@ class SequenceAlignment {
         Data = new int*[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
-            for (int j = 0; j < Nsite; j++) { Data[i][j] = from->Data[i][j]; }
+            for (int j = 0; j < Nsite; j++) {
+                Data[i][j] = from->Data[i][j];
+            }
         }
     }
 
@@ -38,7 +40,9 @@ class SequenceAlignment {
         Data = new int*[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
-            for (int j = 0; j < Nsite; j++) { Data[i][j] = from->Data[i][j + start]; }
+            for (int j = 0; j < Nsite; j++) {
+                Data[i][j] = from->Data[i][j + start];
+            }
         }
     }
 
@@ -46,9 +50,13 @@ class SequenceAlignment {
         int** Data2 = new int*[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data2[i] = new int[sitemax - sitemin];
-            for (int j = sitemin; j < sitemax; j++) { Data2[i][j - sitemin] = Data[i][j]; }
+            for (int j = sitemin; j < sitemax; j++) {
+                Data2[i][j - sitemin] = Data[i][j];
+            }
         }
-        for (int i = 0; i < Ntaxa; i++) { delete[] Data[i]; }
+        for (int i = 0; i < Ntaxa; i++) {
+            delete[] Data[i];
+        }
         delete[] Data;
         Data = Data2;
         Nsite = sitemax - sitemin;
@@ -60,11 +68,15 @@ class SequenceAlignment {
         statespace = from->statespace;
         taxset = subset;
         Data = new int*[Ntaxa];
-        for (int k = 0; k < Ntaxa; k++) { Data[k] = new int[Nsite]; }
+        for (int k = 0; k < Ntaxa; k++) {
+            Data[k] = new int[Nsite];
+        }
         for (int i = 0; i < from->GetNtaxa(); i++) {
             int k = subset->GetTaxonIndex(from->GetTaxonSet()->GetTaxon(i));
             if (k != -1) {
-                for (int j = 0; j < Nsite; j++) { Data[k][j] = from->Data[i][j]; }
+                for (int j = 0; j < Nsite; j++) {
+                    Data[k][j] = from->Data[i][j];
+                }
                 if (k >= Ntaxa) {
                     cerr << "error in sequence alignment subset\n";
                     cerr << Ntaxa << '\n';
@@ -77,18 +89,24 @@ class SequenceAlignment {
     SequenceAlignment(SequenceAlignment* from, map<string, int>& group, int ngroup) {
         int n = 0;
         for (int i = 0; i < from->GetNsite(); i++) {
-            if (from->GroupCompatible(i, group, ngroup)) { n++; }
+            if (from->GroupCompatible(i, group, ngroup)) {
+                n++;
+            }
         }
         statespace = from->statespace;
         taxset = from->taxset;
         Ntaxa = from->GetNtaxa();
         Nsite = n;
         Data = new int*[Ntaxa];
-        for (int k = 0; k < Ntaxa; k++) { Data[k] = new int[Nsite]; }
+        for (int k = 0; k < Ntaxa; k++) {
+            Data[k] = new int[Nsite];
+        }
         int j = 0;
         for (int i = 0; i < from->GetNsite(); i++) {
             if (from->GroupCompatible(i, group, ngroup)) {
-                for (int k = 0; k < Ntaxa; k++) { Data[k][j] = from->Data[k][i]; }
+                for (int k = 0; k < Ntaxa; k++) {
+                    Data[k][j] = from->Data[k][i];
+                }
                 j++;
             }
         }
@@ -100,7 +118,9 @@ class SequenceAlignment {
         for (int i = 0; i < GetNsite(); i++) {
             int ok = 0;
             for (int j = 0; j < n1; j++) {
-                if (Data[GetTaxonSet()->GetTaxonIndex(group1[j])][i] != unknown) { ok = 1; }
+                if (Data[GetTaxonSet()->GetTaxonIndex(group1[j])][i] != unknown) {
+                    ok = 1;
+                }
             }
             if (!ok) {
                 npos++;
@@ -121,14 +141,20 @@ class SequenceAlignment {
         int npos = 0;
         std::vector<int> present(GetStateSpace()->GetNstate());
         for (int i = 0; i < GetNsite(); i++) {
-            for (int k = 0; k < GetStateSpace()->GetNstate(); k++) { present[k] = 0; }
+            for (int k = 0; k < GetStateSpace()->GetNstate(); k++) {
+                present[k] = 0;
+            }
             for (int j = 0; j < GetNtaxa(); j++) {
                 int fromgroup = 0;
                 for (int k = 0; k < n; k++) {
-                    if (GetTaxonSet()->GetTaxon(j) == group[k]) { fromgroup = 1; }
+                    if (GetTaxonSet()->GetTaxon(j) == group[k]) {
+                        fromgroup = 1;
+                    }
                 }
                 if (!fromgroup) {
-                    if (Data[j][i] != unknown) { present[Data[j][i]] = 1; }
+                    if (Data[j][i] != unknown) {
+                        present[Data[j][i]] = 1;
+                    }
                 }
             }
 
@@ -142,7 +168,9 @@ class SequenceAlignment {
                     }
                 }
             }
-            if (pos) { npos++; }
+            if (pos) {
+                npos++;
+            }
         }
         cerr << "number of positions masked   : " << npos << '\n';
         cerr << "total number of cells masked : " << nrem << '\n';
@@ -151,18 +179,24 @@ class SequenceAlignment {
     SequenceAlignment(SequenceAlignment* from, double missingfrac) {
         int n = 0;
         for (int i = 0; i < from->GetNsite(); i++) {
-            if (from->MissingFrac(i) < missingfrac) { n++; }
+            if (from->MissingFrac(i) < missingfrac) {
+                n++;
+            }
         }
         statespace = from->statespace;
         taxset = from->taxset;
         Ntaxa = from->GetNtaxa();
         Nsite = n;
         Data = new int*[Ntaxa];
-        for (int k = 0; k < Ntaxa; k++) { Data[k] = new int[Nsite]; }
+        for (int k = 0; k < Ntaxa; k++) {
+            Data[k] = new int[Nsite];
+        }
         int j = 0;
         for (int i = 0; i < from->GetNsite(); i++) {
             if (from->MissingFrac(i) < missingfrac) {
-                for (int k = 0; k < Ntaxa; k++) { Data[k][j] = from->Data[k][i]; }
+                for (int k = 0; k < Ntaxa; k++) {
+                    Data[k][j] = from->Data[k][i];
+                }
                 j++;
             }
         }
@@ -171,14 +205,18 @@ class SequenceAlignment {
     void Mask(SequenceAlignment* from) {
         for (int i = 0; i < from->GetNsite(); i++) {
             for (int j = 0; j < Ntaxa; j++) {
-                if (from->Data[j][i] == unknown) { Data[j][i] = unknown; }
+                if (from->Data[j][i] == unknown) {
+                    Data[j][i] = unknown;
+                }
             }
         }
     }
 
     bool GroupCompatible(int i, map<string, int>& group, int ngroup) {
         std::vector<int> presence(ngroup);
-        for (int n = 0; n < ngroup; n++) { presence[n] = 0; }
+        for (int n = 0; n < ngroup; n++) {
+            presence[n] = 0;
+        }
         for (int k = 0; k < GetNtaxa(); k++) {
             if (Data[k][i] != unknown) {
                 // cerr << GetTaxonSet()->GetTaxon(k) << '\t' << group[GetTaxonSet()->GetTaxon(k)]
@@ -187,14 +225,18 @@ class SequenceAlignment {
             }
         }
         int ok = 1;
-        for (int n = 1; n < ngroup; n++) { ok *= presence[n]; }
+        for (int n = 1; n < ngroup; n++) {
+            ok *= presence[n];
+        }
         return ok;
     }
 
     double MissingFrac(int i) {
         double n = 0;
         for (int k = 0; k < GetNtaxa(); k++) {
-            if (Data[k][i] != unknown) { n++; }
+            if (Data[k][i] != unknown) {
+                n++;
+            }
         }
         return n / GetNtaxa();
     }
@@ -207,10 +249,14 @@ class SequenceAlignment {
         statespace = instatespace;
 
         Data = new int*[Ntaxa];
-        for (int i = 0; i < Ntaxa; i++) { Data[i] = new int[Nsite]; }
+        for (int i = 0; i < Ntaxa; i++) {
+            Data[i] = new int[Nsite];
+        }
         for (int i = 0; i < Ntaxa; i++) {
             int mapi = taxset->GetTaxonIndex(names[i]);
-            for (int j = 0; j < Nsite; j++) { Data[mapi][j] = inData[i][j]; }
+            for (int j = 0; j < Nsite; j++) {
+                Data[mapi][j] = inData[i][j];
+            }
         }
     }
 
@@ -228,14 +274,18 @@ class SequenceAlignment {
         int** tmp = new int*[GetNtaxa()];
         for (int i = 0; i < GetNtaxa(); i++) {
             int k = 0;
-            while ((k < GetNtaxa()) && (taxset->GetTaxon(k) != intaxset->GetTaxon(i))) { k++; }
+            while ((k < GetNtaxa()) && (taxset->GetTaxon(k) != intaxset->GetTaxon(i))) {
+                k++;
+            }
             if (k == GetNtaxa()) {
                 cerr << "error in register seq : overflow\n";
                 exit(1);
             }
             tmp[i] = Data[k];
         }
-        for (int i = 0; i < GetNtaxa(); i++) { Data[i] = tmp[i]; }
+        for (int i = 0; i < GetNtaxa(); i++) {
+            Data[i] = tmp[i];
+        }
         delete taxset;
         taxset = intaxset;
         delete[] tmp;
@@ -244,7 +294,9 @@ class SequenceAlignment {
 
     void Unclamp() {
         for (int i = 0; i < Ntaxa; i++) {
-            for (int j = 0; j < Nsite; j++) { Data[i][j] = unknown; }
+            for (int j = 0; j < Nsite; j++) {
+                Data[i][j] = unknown;
+            }
         }
     }
 
@@ -301,13 +353,17 @@ class SequenceAlignment {
     bool ConstantColumn(int site) {
         bool ret = true;
         int tax = 0;
-        while ((tax < GetNtaxa()) && (Data[tax][site] == unknown)) { tax++; }
+        while ((tax < GetNtaxa()) && (Data[tax][site] == unknown)) {
+            tax++;
+        }
 
         if (tax < GetNtaxa()) {
             int refstate = Data[tax][site];
 
             while ((tax < GetNtaxa()) && ret) {
-                if (Data[tax][site] != -1) { ret &= (Data[tax][site] == refstate); }
+                if (Data[tax][site] != -1) {
+                    ret &= (Data[tax][site] == refstate);
+                }
                 tax++;
             }
         }
@@ -341,7 +397,9 @@ class SequenceAlignment {
                 if (k == Ntaxa) {
                     Eliminated++;
                 } else {
-                    for (int k = 0; k < Ntaxa; k++) { Data[k][j] = Data[k][i]; }
+                    for (int k = 0; k < Ntaxa; k++) {
+                        Data[k][j] = Data[k][i];
+                    }
                     j++;
                 }
             }
@@ -358,7 +416,9 @@ class SequenceAlignment {
             for (int j = 0; j < Ntaxa; j++) {
                 int ii = i % fromnsite;
                 int state = from->GetState(j, ii);
-                if (state == unknown) { Data[j][i] = unknown; }
+                if (state == unknown) {
+                    Data[j][i] = unknown;
+                }
             }
         }
     }
@@ -369,13 +429,19 @@ class SequenceAlignment {
 
         double mean = 0;
         for (int i = 0; i < Nsite; i++) {
-            for (int k = 0; k < Nstate; k++) { found[k] = 0; }
+            for (int k = 0; k < Nstate; k++) {
+                found[k] = 0;
+            }
             for (int j = 0; j < Ntaxa; j++) {
                 int state = GetState(j, i);
-                if (state != unknown) { found[state] = 1; }
+                if (state != unknown) {
+                    found[state] = 1;
+                }
             }
             double div = 0;
-            for (int k = 0; k < Nstate; k++) { div += found[k]; }
+            for (int k = 0; k < Nstate; k++) {
+                div += found[k];
+            }
             mean += div;
         }
         mean /= Nsite;
@@ -385,20 +451,28 @@ class SequenceAlignment {
     void GetTaxEmpiricalFreq(double** taxfreq) {
         int Nstate = GetNstate();
         for (int j = 0; j < Ntaxa; j++) {
-            for (int k = 0; k < Nstate; k++) { taxfreq[j][k] = 0; }
+            for (int k = 0; k < Nstate; k++) {
+                taxfreq[j][k] = 0;
+            }
         }
 
         for (int i = 0; i < Nsite; i++) {
             for (int j = 0; j < Ntaxa; j++) {
                 int state = GetState(j, i);
-                if (state != unknown) { taxfreq[j][state]++; }
+                if (state != unknown) {
+                    taxfreq[j][state]++;
+                }
             }
         }
 
         for (int j = 0; j < Ntaxa; j++) {
             double total = 0;
-            for (int k = 0; k < Nstate; k++) { total += taxfreq[j][k]; }
-            for (int k = 0; k < Nstate; k++) { taxfreq[j][k] /= total; }
+            for (int k = 0; k < Nstate; k++) {
+                total += taxfreq[j][k];
+            }
+            for (int k = 0; k < Nstate; k++) {
+                taxfreq[j][k] /= total;
+            }
         }
     }
 
@@ -407,13 +481,17 @@ class SequenceAlignment {
         double** taxfreq = new double*[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq[j] = new double[Nstate];
-            for (int k = 0; k < Nstate; k++) { taxfreq[j][k] = 0; }
+            for (int k = 0; k < Nstate; k++) {
+                taxfreq[j][k] = 0;
+            }
         }
 
         for (int i = 0; i < Nsite; i++) {
             for (int j = 0; j < Ntaxa; j++) {
                 int state = GetState(j, i);
-                if (state != unknown) { taxfreq[j][state]++; }
+                if (state != unknown) {
+                    taxfreq[j][state]++;
+                }
             }
         }
 
@@ -421,23 +499,37 @@ class SequenceAlignment {
         double* globalfreq = new double[Nstate];
         for (int k = 0; k < Nstate; k++) {
             globalfreq[k] = 0;
-            for (int j = 0; j < Ntaxa; j++) { globalfreq[k] += taxfreq[j][k]; }
+            for (int j = 0; j < Ntaxa; j++) {
+                globalfreq[k] += taxfreq[j][k];
+            }
         }
 
         // normalise
         double total = 0;
-        for (int k = 0; k < Nstate; k++) { total += globalfreq[k]; }
-        for (int k = 0; k < Nstate; k++) { globalfreq[k] /= total; }
+        for (int k = 0; k < Nstate; k++) {
+            total += globalfreq[k];
+        }
+        for (int k = 0; k < Nstate; k++) {
+            globalfreq[k] /= total;
+        }
         for (int j = 0; j < Ntaxa; j++) {
             double total = 0;
-            for (int k = 0; k < Nstate; k++) { total += taxfreq[j][k]; }
+            for (int k = 0; k < Nstate; k++) {
+                total += taxfreq[j][k];
+            }
             for (int k = 0; k < Nstate; k++) {
                 taxfreq[j][k] /= total;
-                if (os) { (*os) << taxfreq[j][k] << '\t'; }
+                if (os) {
+                    (*os) << taxfreq[j][k] << '\t';
+                }
             }
-            if (os) { (*os) << '\n'; }
+            if (os) {
+                (*os) << '\n';
+            }
         }
-        if (os) { (*os) << '\n'; }
+        if (os) {
+            (*os) << '\n';
+        }
 
         // compute max distance
         double maxdist = 0;
@@ -447,11 +539,15 @@ class SequenceAlignment {
                 double tmp = (taxfreq[j][k] - globalfreq[k]);
                 dist += tmp * tmp;
             }
-            if (maxdist < dist) { maxdist = dist; }
+            if (maxdist < dist) {
+                maxdist = dist;
+            }
         }
 
         delete[] globalfreq;
-        for (int j = 0; j < Ntaxa; j++) { delete[] taxfreq[j]; }
+        for (int j = 0; j < Ntaxa; j++) {
+            delete[] taxfreq[j];
+        }
         delete[] taxfreq;
 
         return maxdist;

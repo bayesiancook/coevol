@@ -23,7 +23,9 @@ void SiteMapping::Print(ostream& os, Link* from, bool redundant) {
         os << '(';
         for (Link* link = from->Next(); link != from; link = link->Next()) {
             Print(os, link->Out(), redundant);
-            if (link->Next() != from) { os << ','; }
+            if (link->Next() != from) {
+                os << ',';
+            }
         }
         os << ')';
     }

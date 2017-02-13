@@ -65,7 +65,9 @@ class ConjSampling {
     //
     virtual void ConjugateCorrupt(bool bk) {
         for (cplit i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
-            if ((*i)->isActive()) { (*i)->ConjugateNotifyCorrupt(bk); }
+            if ((*i)->isActive()) {
+                (*i)->ConjugateNotifyCorrupt(bk);
+            }
         }
     }
 
@@ -105,7 +107,9 @@ class ConjSampling {
     void NotifyActivateSufficientStatistic(SemiConjPrior* from) {
         // should also check that the type matches
         for (cplit i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
-            if (*(i) != from) { (*i)->InactivateSufficientStatistic(); }
+            if (*(i) != from) {
+                (*i)->InactivateSufficientStatistic();
+            }
         }
     }
 
@@ -155,7 +159,9 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
               }
             */
             this->localCorrupt(bk);
-            if (bk) { bklogprob = logprob; }
+            if (bk) {
+                bklogprob = logprob;
+            }
             // ???
             // value_updated = false;
         }
@@ -216,7 +222,9 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
               }
             */
             this->localCorrupt(bk);
-            if (bk) { bklogprob = logprob; }
+            if (bk) {
+                bklogprob = logprob;
+            }
             // ???
             // value_updated = false;
         }
@@ -296,10 +304,14 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
             exit(1);
         }
         if (!corrupt_counter) {
-            if (bk) { SaveSufficientStatistic(); }
+            if (bk) {
+                SaveSufficientStatistic();
+            }
             CorruptSufficientStatistic();
             this->localCorrupt(bk);
-            if (bk) { bklogprob = logprob; }
+            if (bk) {
+                bklogprob = logprob;
+            }
             this->flag = true;
         }
         corrupt_counter++;
@@ -345,7 +357,9 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
                         exit(1);
                     }
                 }
-                if (p) { p->NotifyActivateSufficientStatistic(this); }
+                if (p) {
+                    p->NotifyActivateSufficientStatistic(this);
+                }
             }
             suffstat_flag = false;
             active_flag = true;
@@ -370,7 +384,9 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
                 ResetSufficientStatistic();
                 for (clit i = this->down.begin(); i != this->down.end(); i++) {
                     ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
-                    if (p) { p->AddSufficientStatistic(this); }
+                    if (p) {
+                        p->AddSufficientStatistic(this);
+                    }
                 }
                 suffstat_flag = true;
             }
@@ -401,7 +417,9 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         if (!isActive()) {
             Rvar<T>::Corrupt(bk);
         } else {
-            if (bk) { this->bkvalue = *this; }
+            if (bk) {
+                this->bkvalue = *this;
+            }
             this->localCorrupt(bk);
             // ???
             // value_updated = false;
@@ -418,7 +436,9 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
                 for (clit i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
                 }
-                if (up_ok) { ret = this->localUpdate(); }
+                if (up_ok) {
+                    ret = this->localUpdate();
+                }
             }
         }
         return ret;
@@ -468,7 +488,9 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
             exit(1);
         }
         if (!corrupt_counter) {
-            if (bk) { SaveSufficientStatistic(); }
+            if (bk) {
+                SaveSufficientStatistic();
+            }
             CorruptSufficientStatistic();
             this->localCorrupt(bk);
             this->flag = true;
@@ -514,7 +536,9 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
                       exit(1);
                       }
                       }*/
-                    if (p) { p->NotifyActivateSufficientStatistic(this); }
+                    if (p) {
+                        p->NotifyActivateSufficientStatistic(this);
+                    }
                 }
                 suffstat_flag = false;
                 active_flag = true;
@@ -539,7 +563,9 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
                 ResetSufficientStatistic();
                 for (clit i = this->down.begin(); i != this->down.end(); i++) {
                     ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
-                    if (p) { p->AddSufficientStatistic(this); }
+                    if (p) {
+                        p->AddSufficientStatistic(this);
+                    }
                 }
                 suffstat_flag = true;
             }
@@ -694,7 +720,9 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                 bool active = false;
                 ConjugateRestore(active);
                 if (!active) {
-                    if (!this->value_updated) { Rvar<T>::RestoreBackup(); }
+                    if (!this->value_updated) {
+                        Rvar<T>::RestoreBackup();
+                    }
                     this->localRestore();
                     if (!this->value_updated) {
                         this->value_updated = true;

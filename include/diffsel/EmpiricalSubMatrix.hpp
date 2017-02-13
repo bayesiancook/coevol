@@ -11,13 +11,17 @@ class EmpiricalSubMatrix : public virtual SubMatrix {
   public:
     EmpiricalSubMatrix(int Nstate, bool innormalise = false) : SubMatrix(Nstate, innormalise) {
         paircounts = new int*[GetNstate()];
-        for (int i = 0; i < GetNstate(); i++) { paircounts[i] = new int[GetNstate()]; }
+        for (int i = 0; i < GetNstate(); i++) {
+            paircounts[i] = new int[GetNstate()];
+        }
         statecounts = new int[GetNstate()];
     }
 
     virtual ~EmpiricalSubMatrix() {
         delete[] statecounts;
-        for (int i = 0; i < GetNstate(); i++) { delete[] paircounts[i]; }
+        for (int i = 0; i < GetNstate(); i++) {
+            delete[] paircounts[i];
+        }
         delete[] paircounts;
     }
 
@@ -26,7 +30,9 @@ class EmpiricalSubMatrix : public virtual SubMatrix {
     void RefreshStatistics() {
         for (int i = 0; i < GetNstate(); i++) {
             statecounts[i] = 0;
-            for (int j = 0; j < GetNstate(); j++) { paircounts[i][j] = 0; }
+            for (int j = 0; j < GetNstate(); j++) {
+                paircounts[i][j] = 0;
+            }
         }
         for (unsigned int i = 0; i < pathlist.size(); i++) {
             pathlist[i]->AddCounts(paircounts, statecounts);
@@ -79,19 +85,29 @@ class EmpiricalGTRSubMatrix : public EmpiricalSubMatrix {
             stat[i] = statecounts[i];
             total += stat[i];
         }
-        for (int i = 0; i < GetNstate(); i++) { stat[i] /= total; }
+        for (int i = 0; i < GetNstate(); i++) {
+            stat[i] /= total;
+        }
     }
 
     void UpdateRelRates() {
-        for (int i = 0; i < GetNrr(); i++) { rr[i] = 0; }
+        for (int i = 0; i < GetNrr(); i++) {
+            rr[i] = 0;
+        }
         for (int i = 0; i < GetNstate(); i++) {
             for (int j = 0; j < GetNstate(); j++) {
-                if (i != j) { rr[rrindex(i, j, GetNstate())] += paircounts[i][j]; }
+                if (i != j) {
+                    rr[rrindex(i, j, GetNstate())] += paircounts[i][j];
+                }
             }
         }
         double total = 0;
-        for (int i = 0; i < GetNrr(); i++) { total += rr[i]; }
-        for (int i = 0; i < GetNrr(); i++) { rr[i] /= total; }
+        for (int i = 0; i < GetNrr(); i++) {
+            total += rr[i];
+        }
+        for (int i = 0; i < GetNrr(); i++) {
+            rr[i] /= total;
+        }
     }
 
   protected:

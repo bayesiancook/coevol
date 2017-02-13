@@ -97,7 +97,9 @@ inline int BranchSiteSubstitutionProcess::DrawOneStep(int state) {
     double tot = 0;
     do {
         k++;
-        if (k != state) { tot += row[k]; }
+        if (k != state) {
+            tot += row[k];
+        }
     } while ((k < GetNstate()) && (tot < p));
     if (k == GetNstate()) {
         cerr << "error in BranchSiteSubstitutionProcess::DrawOneStep\n";
@@ -108,12 +110,16 @@ inline int BranchSiteSubstitutionProcess::DrawOneStep(int state) {
 
 inline void BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int state, double* p) {
     double* p1 = new double[GetNstate()];
-    for (int k = 0; k < GetNstate(); k++) { p1[k] = 0; }
+    for (int k = 0; k < GetNstate(); k++) {
+        p1[k] = 0;
+    }
     p1[state] = 1;
     // GetSubMatrix()->FiniteTime(state,p,GetTime()*GetRate());
     GetSubMatrix()->ForwardPropagate(p1, p, GetTime() * GetRate());
     double tot = 0;
-    for (int k = 0; k < GetNstate(); k++) { tot += p[k]; }
+    for (int k = 0; k < GetNstate(); k++) {
+        tot += p[k];
+    }
     if (fabs(1 - tot) > 1e-5) {
         cerr << "error in forward propagate: normalization : " << tot << '\t' << fabs(1 - tot)
              << '\n';
@@ -128,13 +134,17 @@ inline double BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int sta
                                                                          int statedown) {
     double* p = new double[GetNstate()];
     double* p1 = new double[GetNstate()];
-    for (int k = 0; k < GetNstate(); k++) { p1[k] = 0; }
+    for (int k = 0; k < GetNstate(); k++) {
+        p1[k] = 0;
+    }
     p1[stateup] = 1;
     // GetSubMatrix()->FiniteTime(stateup,p,GetTime()*GetRate());
     GetSubMatrix()->ForwardPropagate(p1, p, GetTime() * GetRate());
     // ForwardPropagate(p1,p);
     double tot = 0;
-    for (int k = 0; k < GetNstate(); k++) { tot += p[k]; }
+    for (int k = 0; k < GetNstate(); k++) {
+        tot += p[k];
+    }
     if (fabs(1 - tot) > 1e-5) {
         cerr << "error in forward propagate: normalization : " << tot << '\t' << fabs(1 - tot)
              << '\n';
@@ -257,7 +267,9 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedTransition(int state, i
 
     double s = tot * Random::Uniform();
     int k = 0;
-    while ((k < GetNstate()) && (s > p[k])) { k++; }
+    while ((k < GetNstate()) && (s > p[k])) {
+        k++;
+    }
     if (k == GetNstate()) {
         cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedTransition: overflow\n";
         throw;

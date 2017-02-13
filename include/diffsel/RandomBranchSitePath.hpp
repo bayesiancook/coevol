@@ -147,18 +147,24 @@ class RandomBranchSitePath : public virtual Rnode,
     }
 
     int DrawStationary() {
-        if (SampleBranchMapping()) { return BranchSiteSubstitutionProcess::DrawStationary(); }
+        if (SampleBranchMapping()) {
+            return BranchSiteSubstitutionProcess::DrawStationary();
+        }
         return TransitionDrawStationary();
     }
 
     int DrawFiniteTime(int state) {
-        if (SampleBranchMapping()) { return BranchSiteSubstitutionProcess::DrawFiniteTime(state); }
+        if (SampleBranchMapping()) {
+            return BranchSiteSubstitutionProcess::DrawFiniteTime(state);
+        }
         return TransitionDrawFiniteTime(state);
     }
 
     void TransitionGetFiniteTimeTransitionProb(int state, double* aux) {
         const double* p = transitionmatrix->GetRow(state);
-        for (int i = 0; i < GetNstate(); i++) { aux[i] = p[i]; }
+        for (int i = 0; i < GetNstate(); i++) {
+            aux[i] = p[i];
+        }
     }
 
     int TransitionDrawStationary() {
@@ -192,7 +198,9 @@ class RandomBranchSitePath : public virtual Rnode,
             exit(1);
             return stationary->GetArray();
         }
-        if (SampleBranchMapping()) { return GetSubMatrix()->GetStationary(); }
+        if (SampleBranchMapping()) {
+            return GetSubMatrix()->GetStationary();
+        }
         return transitionmatrix->GetStationary();
     }
     // return stationary ? stationary->GetArray() : matrix->GetStationary();}
@@ -200,7 +208,9 @@ class RandomBranchSitePath : public virtual Rnode,
     virtual double GetTime() {
         //    return return length ? ((double) length->val()) : 0;}
         if (length) {
-            if (isnan(((double)(length->val())))) { cerr << "length is nan\n"; }
+            if (isnan(((double)(length->val())))) {
+                cerr << "length is nan\n";
+            }
             return length->val();
         }
         return 0;
@@ -243,7 +253,9 @@ class RandomBranchSitePath : public virtual Rnode,
                 exit(1);
             }
             bool ok = ResampleAcceptReject(GetMaxTrial());
-            if (!ok) { ResampleUniformized(); }
+            if (!ok) {
+                ResampleUniformized();
+            }
             /*
               if (propmatrix) {
               ResampleUniformized();

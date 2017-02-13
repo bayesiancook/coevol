@@ -30,7 +30,9 @@ class CovMatrix : public BaseType, public Multiplicative {
 
   public:
     static double GetMeanDiagError() {
-        if (ndiag) { return toterror / ndiag; }
+        if (ndiag) {
+            return toterror / ndiag;
+        }
         return 0;
     }
 
@@ -72,17 +74,25 @@ class CovMatrix : public BaseType, public Multiplicative {
         value = new double*[GetDim()];
         for (int i = 0; i < GetDim(); i++) {
             value[i] = new double[GetDim()];
-            for (int j = 0; j < GetDim(); j++) { value[i][j] = 0; }
+            for (int j = 0; j < GetDim(); j++) {
+                value[i][j] = 0;
+            }
         }
 
         invvalue = new double*[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { invvalue[i] = new double[GetDim()]; }
+        for (int i = 0; i < GetDim(); i++) {
+            invvalue[i] = new double[GetDim()];
+        }
 
         u = new double*[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { u[i] = new double[GetDim()]; }
+        for (int i = 0; i < GetDim(); i++) {
+            u[i] = new double[GetDim()];
+        }
 
         invu = new double*[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { invu[i] = new double[GetDim()]; }
+        for (int i = 0; i < GetDim(); i++) {
+            invu[i] = new double[GetDim()];
+        }
 
         v = new double[GetDim()];
         logv = new double[GetDim()];
@@ -222,19 +232,27 @@ class CovMatrix : public BaseType, public Multiplicative {
             for (int k = 0; k < GetDim(); k++) {
                 if (k != i) {
                     double tmp = value[i][k] * value[i][k] / value[k][k];
-                    if (infbound < tmp) { infbound = tmp; }
+                    if (infbound < tmp) {
+                        infbound = tmp;
+                    }
                 }
             }
             double m = tuning * (Random::Uniform() - 0.5);
             value[i][i] += m;
-            if (value[i][i] < infbound) { value[i][i] = 2 * infbound - value[i][i]; }
+            if (value[i][i] < infbound) {
+                value[i][i] = 2 * infbound - value[i][i];
+            }
         } else {
             double bound = sqrt(value[i][i] * value[j][j]);
             double m = tuning * (Random::Uniform() - 0.5);
             value[i][j] += m;
             while ((value[i][j] < -bound) || (value[i][j] > bound)) {
-                if (value[i][j] < -bound) { value[i][j] = -2 * bound - value[i][j]; }
-                if (value[i][j] > bound) { value[i][j] = 2 * bound - value[i][j]; }
+                if (value[i][j] < -bound) {
+                    value[i][j] = -2 * bound - value[i][j];
+                }
+                if (value[i][j] > bound) {
+                    value[i][j] = 2 * bound - value[i][j];
+                }
             }
             value[j][i] = value[i][j];
         }
@@ -301,7 +319,9 @@ class CovMatrix : public BaseType, public Multiplicative {
             vec[i] = 0;
         }
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = 0; j < GetDim(); j++) { vec[j] += randomvalues[i] * GetEigenVect()[j][i]; }
+            for (int j = 0; j < GetDim(); j++) {
+                vec[j] += randomvalues[i] * GetEigenVect()[j][i];
+            }
         }
         delete[] randomvalues;
     }
@@ -313,7 +333,9 @@ class CovMatrix : public BaseType, public Multiplicative {
             vec[i] = 0;
         }
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = 0; j < GetDim(); j++) { vec[j] += randomvalues[i] * GetEigenVect()[j][i]; }
+            for (int j = 0; j < GetDim(); j++) {
+                vec[j] += randomvalues[i] * GetEigenVect()[j][i];
+            }
         }
         delete[] randomvalues;
     }
@@ -322,7 +344,9 @@ class CovMatrix : public BaseType, public Multiplicative {
         double tXSX = 0;
         for (int i = 0; i < GetDim(); i++) {
             tXSX += GetInvMatrix()[i][i] * dval[i] * dval[i];
-            for (int j = 0; j < i; j++) { tXSX += 2 * GetInvMatrix()[i][j] * dval[j] * dval[i]; }
+            for (int j = 0; j < i; j++) {
+                tXSX += 2 * GetInvMatrix()[i][j] * dval[j] * dval[i];
+            }
         }
         return -0.5 * (GetLogDeterminant() + tXSX);
     }
@@ -351,20 +375,26 @@ class CovMatrix : public BaseType, public Multiplicative {
     }
 
     double** GetEigenVect() {
-        if (!diagflag) { Diagonalise(); }
+        if (!diagflag) {
+            Diagonalise();
+        }
 
         return u;
     }
 
     double GetDeterminant() {
         double ret = 1;
-        for (int i = 0; i < GetDim(); i++) { ret *= GetEigenVal()[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            ret *= GetEigenVal()[i];
+        }
         return ret;
     }
 
     double GetLogDeterminant() {
         double ret = 0;
-        for (int i = 0; i < GetDim(); i++) { ret += GetLogEigenVal()[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            ret += GetLogEigenVal()[i];
+        }
         /*
           if (isnan(ret))	{
           std::cerr << "covmatrix det: nan\n";
@@ -383,15 +413,21 @@ class CovMatrix : public BaseType, public Multiplicative {
 
     void Reset() {
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = 0; j < GetDim(); j++) { value[i][j] = 0; }
+            for (int j = 0; j < GetDim(); j++) {
+                value[i][j] = 0;
+            }
         }
     }
 
     void SetIdentity() {
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = 0; j < GetDim(); j++) { value[i][j] = 0; }
+            for (int j = 0; j < GetDim(); j++) {
+                value[i][j] = 0;
+            }
         }
-        for (int i = 0; i < GetDim(); i++) { value[i][i] = 1; }
+        for (int i = 0; i < GetDim(); i++) {
+            value[i][i] = 1;
+        }
     }
 
     void Project(int index, double** m) {
@@ -478,7 +514,9 @@ class CovMatrix : public BaseType, public Multiplicative {
 
     int ScalarMultiplication(double scal) {
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = 0; j < GetDim(); j++) { value[i][j] *= scal; }
+            for (int j = 0; j < GetDim(); j++) {
+                value[i][j] *= scal;
+            }
         }
         diagflag = false;
         return GetDim();
@@ -498,7 +536,9 @@ class CovMatrix : public BaseType, public Multiplicative {
         if (!diagflag) Diagonalise();
         bool r = true;
         for (int i = 0; i < GetDim(); i++) {
-            if (GetEigenVal()[i] <= 1e-6) { r = false; }
+            if (GetEigenVal()[i] <= 1e-6) {
+                r = false;
+            }
         }
         return r;
     }
@@ -510,7 +550,9 @@ class CovMatrix : public BaseType, public Multiplicative {
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 double tmp = fabs(value[i][j]);
-                if (max < tmp) { max = tmp; }
+                if (max < tmp) {
+                    max = tmp;
+                }
             }
         }
         return max;
@@ -519,11 +561,15 @@ class CovMatrix : public BaseType, public Multiplicative {
     // Set the matrix to it s inverse //loook si diagflag
     int Invert() {
         double** a = new double*[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { a[i] = new double[GetDim()]; }
+        for (int i = 0; i < GetDim(); i++) {
+            a[i] = new double[GetDim()];
+        }
 
         // copy value into a :
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = 0; j < GetDim(); j++) { a[i][j] = value[i][j]; }
+            for (int j = 0; j < GetDim(); j++) {
+                a[i][j] = value[i][j];
+            }
         }
 
         // invert a into value
@@ -531,7 +577,9 @@ class CovMatrix : public BaseType, public Multiplicative {
         double logdet = LinAlg::Gauss(a, GetDim(), value);
 
         // std::cerr << "check inverse : " << CheckInverse() << '\n';
-        for (int i = 0; i < GetDim(); i++) { delete[] a[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            delete[] a[i];
+        }
         delete[] a;
         diagflag = false;
         if (std::isinf(logdet)) {
@@ -547,9 +595,15 @@ class CovMatrix : public BaseType, public Multiplicative {
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 double tot = 0;
-                for (int k = 0; k < GetDim(); k++) { tot += value[i][k] * GetInvMatrix()[k][j]; }
-                if (i == j) { tot--; }
-                if (max < fabs(tot)) { max = fabs(tot); }
+                for (int k = 0; k < GetDim(); k++) {
+                    tot += value[i][k] * GetInvMatrix()[k][j];
+                }
+                if (i == j) {
+                    tot--;
+                }
+                if (max < fabs(tot)) {
+                    max = fabs(tot);
+                }
             }
         }
         return max;
@@ -561,13 +615,17 @@ class CovMatrix : public BaseType, public Multiplicative {
         double epsilon = 1e-10;
 
         int n = LinAlg::DiagonalizeSymmetricMatrix(value, dim, nmax, epsilon, v, u);
-        if (maxn < n) { maxn = n; }
+        if (maxn < n) {
+            maxn = n;
+        }
         bool failed = (n == nmax);
         if (failed) {
             std::cerr << "diag failed\n";
             std::cerr << n << '\n';
             for (int i = 0; i < dim; i++) {
-                for (int j = 0; j < dim; j++) { std::cerr << value[i][j] << '\t'; }
+                for (int j = 0; j < dim; j++) {
+                    std::cerr << value[i][j] << '\t';
+                }
                 std::cerr << '\n';
             }
             exit(1);
@@ -576,20 +634,28 @@ class CovMatrix : public BaseType, public Multiplicative {
         // normalise u
         for (int i = 0; i < dim; i++) {
             double total = 0;
-            for (int j = 0; j < dim; j++) { total += u[j][i] * u[j][i]; }
+            for (int j = 0; j < dim; j++) {
+                total += u[j][i] * u[j][i];
+            }
         }
         // u-1 = tu
         for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) { invu[j][i] = u[i][j]; }
+            for (int j = 0; j < dim; j++) {
+                invu[j][i] = u[i][j];
+            }
         }
 
-        for (int i = 0; i < GetDim(); i++) { logv[i] = log(v[i]); }
+        for (int i = 0; i < GetDim(); i++) {
+            logv[i] = log(v[i]);
+        }
 
         LinAlg::Gauss(value, GetDim(), invvalue);
 
         diagflag = true;
         double tmp = CheckDiag();
-        if (maxerror < tmp) { maxerror = tmp; }
+        if (maxerror < tmp) {
+            maxerror = tmp;
+        }
         toterror += tmp;
         ndiag++;
         return failed;
@@ -793,7 +859,9 @@ class CovMatrix : public BaseType, public Multiplicative {
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 double tot = 0;
-                for (int k = 0; k < GetDim(); k++) { tot += invu[i][k] * GetMatrix()[k][j]; }
+                for (int k = 0; k < GetDim(); k++) {
+                    tot += invu[i][k] * GetMatrix()[k][j];
+                }
                 a[i][j] = tot;
             }
         }
@@ -804,10 +872,14 @@ class CovMatrix : public BaseType, public Multiplicative {
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 double tot = 0;
-                for (int k = 0; k < GetDim(); k++) { tot += a[i][k] * u[k][j]; }
+                for (int k = 0; k < GetDim(); k++) {
+                    tot += a[i][k] * u[k][j];
+                }
                 b[i][j] = tot;
                 if (i != j) {
-                    if (max < fabs(tot)) { max = fabs(tot); }
+                    if (max < fabs(tot)) {
+                        max = fabs(tot);
+                    }
                 }
                 //			std::cerr << b[i][j] << '\t';
             }
@@ -870,7 +942,9 @@ class CovMatrix : public BaseType, public Multiplicative {
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 value[i][j] = 0;
-                for (int l = 0; l < Nval; l++) { value[i][j] += inValues[l][i] * inValues[l][j]; }
+                for (int l = 0; l < Nval; l++) {
+                    value[i][j] += inValues[l][i] * inValues[l][j];
+                }
             }
         }
         diagflag = false;
@@ -904,24 +978,32 @@ class CovMatrix : public BaseType, public Multiplicative {
 
     void PrintEigenVectors(std::ostream& os) {
         os << "val";
-        for (int j = 0; j < GetDim(); j++) { os << '\t' << j; }
+        for (int j = 0; j < GetDim(); j++) {
+            os << '\t' << j;
+        }
         os << '\n';
         for (int i = 0; i < GetDim(); i++) {
             os << v[i] << '\t';
-            for (int j = 0; j < GetDim(); j++) { os << '\t' << u[i][j]; }
+            for (int j = 0; j < GetDim(); j++) {
+                os << '\t' << u[i][j];
+            }
             os << '\n';
         }
         os << '\n';
         os << "inverse eigenvector matrix\n";
         for (int i = 0; i < GetDim(); i++) {
-            for (int j = 0; j < GetDim(); j++) { os << '\t' << invu[i][j]; }
+            for (int j = 0; j < GetDim(); j++) {
+                os << '\t' << invu[i][j];
+            }
             os << '\n';
         }
         os << '\n';
 
         // proportion of variance explained
         double** prop = new double*[GetDim()];
-        for (int i = 0; i < GetDim(); i++) { prop[i] = new double[GetDim()]; }
+        for (int i = 0; i < GetDim(); i++) {
+            prop[i] = new double[GetDim()];
+        }
         for (int i = 0; i < GetDim(); i++) {
             double total = 0;
             for (int j = 0; j < GetDim(); j++) {
@@ -930,22 +1012,30 @@ class CovMatrix : public BaseType, public Multiplicative {
                 // prop[j][i] = invu[j][i] * invu[j][i] * v[j];
                 total += prop[i][j];
             }
-            for (int j = 0; j < GetDim(); j++) { prop[i][j] /= total; }
+            for (int j = 0; j < GetDim(); j++) {
+                prop[i][j] /= total;
+            }
         }
         os << "proportion of variance explained\n";
         for (int i = 0; i < GetDim(); i++) {
             os << i;
-            for (int j = 0; j < GetDim(); j++) { os << '\t' << prop[i][j]; }
+            for (int j = 0; j < GetDim(); j++) {
+                os << '\t' << prop[i][j];
+            }
             os << '\n';
         }
         os << '\n';
-        for (int i = 0; i < GetDim(); i++) { delete[] prop[i]; }
+        for (int i = 0; i < GetDim(); i++) {
+            delete[] prop[i];
+        }
         delete[] prop;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const CovMatrix& r) {
         for (int i = 0; i < r.GetDim(); i++) {
-            for (int j = 0; j < r.GetDim(); j++) { os << '\t' << r.GetMatrix()[i][j]; }
+            for (int j = 0; j < r.GetDim(); j++) {
+                os << '\t' << r.GetMatrix()[i][j];
+            }
             os << '\n';
         }
         return os;
@@ -953,7 +1043,9 @@ class CovMatrix : public BaseType, public Multiplicative {
 
     friend std::istream& operator>>(std::istream& is, CovMatrix& r) {
         for (int i = 0; i < r.GetDim(); i++) {
-            for (int j = 0; j < r.GetDim(); j++) { is >> r.value[i][j]; }
+            for (int j = 0; j < r.GetDim(); j++) {
+                is >> r.value[i][j];
+            }
         }
         return is;
     }

@@ -57,7 +57,9 @@ void RandomBranchSitePath::ResampleUniformized() {
     int m = DrawUniformizedSubstitutionNumber(stateup, statedown);
 
     vector<double> y(m + 1);
-    for (int r = 0; r < m; r++) { y[r] = Random::Uniform(); }
+    for (int r = 0; r < m; r++) {
+        y[r] = Random::Uniform();
+    }
     y[m] = 1;
     sort(y.begin(), y.end());
 
@@ -128,18 +130,26 @@ void RandomBranchSitePath::ResampleUniformized() {
 */
 
 double RandomBranchSitePath::logProb() {
-    if (SampleBranchMapping()) { return PathLogProb(); }
+    if (SampleBranchMapping()) {
+        return PathLogProb();
+    }
     return NoPathLogProb();
 }
 
 double RandomBranchSitePath::NoPathLogProb() {
-    if (isRoot()) { return log((GetStationary())[stateup]); }
+    if (isRoot()) {
+        return log((GetStationary())[stateup]);
+    }
     return log((*GetTransitionMatrix())(stateup, statedown));
 }
 
 double RandomBranchSitePath::PathLogProb() {
-    if (!isActivated()) { return 0; }
-    if (isRoot()) { return StationaryLogProb(init->GetState()); }
+    if (!isActivated()) {
+        return 0;
+    }
+    if (isRoot()) {
+        return StationaryLogProb(init->GetState());
+    }
     double total = 0;
     Plink* link = init;
     while (link) {

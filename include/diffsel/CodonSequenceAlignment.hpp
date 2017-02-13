@@ -35,7 +35,9 @@ class CodonSequenceAlignment : public SequenceAlignment {
                 if (k == Ntaxa) {
                     Eliminated++;
                 } else {
-                    for (int k = 0; k < Ntaxa; k++) { Data[k][j] = Data[k][i]; }
+                    for (int k = 0; k < Ntaxa; k++) {
+                        Data[k][j] = Data[k][i];
+                    }
                     j++;
                 }
             }
@@ -70,14 +72,22 @@ class CodonSequenceAlignment : public SequenceAlignment {
 
         for (int j = 0; j < Ntaxa; j++) {
             double total = 0;
-            for (int k = 0; k < Nnuc; k++) { total += taxfreq12[j][k]; }
-            for (int k = 0; k < Nnuc; k++) { taxfreq12[j][k] /= total; }
+            for (int k = 0; k < Nnuc; k++) {
+                total += taxfreq12[j][k];
+            }
+            for (int k = 0; k < Nnuc; k++) {
+                taxfreq12[j][k] /= total;
+            }
         }
 
         for (int j = 0; j < Ntaxa; j++) {
             double total = 0;
-            for (int k = 0; k < Nnuc; k++) { total += taxfreq3[j][k]; }
-            for (int k = 0; k < Nnuc; k++) { taxfreq3[j][k] /= total; }
+            for (int k = 0; k < Nnuc; k++) {
+                total += taxfreq3[j][k];
+            }
+            for (int k = 0; k < Nnuc; k++) {
+                taxfreq3[j][k] /= total;
+            }
         }
 
         // compute max distance
@@ -88,7 +98,9 @@ class CodonSequenceAlignment : public SequenceAlignment {
                 double tmp = (taxfreq12[j][k] - taxfreq3[j][k]);
                 dist += tmp * tmp;
             }
-            if (maxdist < dist) { maxdist = dist; }
+            if (maxdist < dist) {
+                maxdist = dist;
+            }
         }
 
         for (int j = 0; j < Ntaxa; j++) {
@@ -110,12 +122,16 @@ class CodonSequenceAlignment : public SequenceAlignment {
             taxfreq = new double*[Ntaxa];
             for (int j = 0; j < Ntaxa; j++) {
                 taxfreq[j] = new double[Nnuc];
-                for (int k = 0; k < Nnuc; k++) { taxfreq[j][k] = 0; }
+                for (int k = 0; k < Nnuc; k++) {
+                    taxfreq[j][k] = 0;
+                }
             }
         }
 
         for (int j = 0; j < Ntaxa; j++) {
-            for (int k = 0; k < Nnuc; k++) { taxfreq[j][k] = 0; }
+            for (int k = 0; k < Nnuc; k++) {
+                taxfreq[j][k] = 0;
+            }
         }
 
         for (int i = 0; i < Nsite; i++) {
@@ -142,23 +158,43 @@ class CodonSequenceAlignment : public SequenceAlignment {
         double* globalfreq = new double[Nnuc];
         for (int k = 0; k < Nnuc; k++) {
             globalfreq[k] = 0;
-            for (int j = 0; j < Ntaxa; j++) { globalfreq[k] += taxfreq[j][k]; }
+            for (int j = 0; j < Ntaxa; j++) {
+                globalfreq[k] += taxfreq[j][k];
+            }
         }
 
         // normalise
         double total = 0;
-        for (int k = 0; k < Nnuc; k++) { total += globalfreq[k]; }
-        for (int k = 0; k < Nnuc; k++) { globalfreq[k] /= total; }
-        if (os) { (*os) << Ntaxa << '\t' << 4 << '\n'; }
-        if (os2) { (*os2) << Ntaxa << '\t' << 3 << '\n'; }
+        for (int k = 0; k < Nnuc; k++) {
+            total += globalfreq[k];
+        }
+        for (int k = 0; k < Nnuc; k++) {
+            globalfreq[k] /= total;
+        }
+        if (os) {
+            (*os) << Ntaxa << '\t' << 4 << '\n';
+        }
+        if (os2) {
+            (*os2) << Ntaxa << '\t' << 3 << '\n';
+        }
         for (int j = 0; j < Ntaxa; j++) {
-            if (os) { (*os) << GetTaxonSet()->GetTaxon(j); }
-            if (os2) { (*os2) << GetTaxonSet()->GetTaxon(j); }
-            double total = 0;
-            for (int k = 0; k < Nnuc; k++) { total += taxfreq[j][k]; }
-            for (int k = 0; k < Nnuc; k++) { taxfreq[j][k] /= total; }
             if (os) {
-                for (int k = 0; k < Nnuc; k++) { (*os) << '\t' << taxfreq[j][k]; }
+                (*os) << GetTaxonSet()->GetTaxon(j);
+            }
+            if (os2) {
+                (*os2) << GetTaxonSet()->GetTaxon(j);
+            }
+            double total = 0;
+            for (int k = 0; k < Nnuc; k++) {
+                total += taxfreq[j][k];
+            }
+            for (int k = 0; k < Nnuc; k++) {
+                taxfreq[j][k] /= total;
+            }
+            if (os) {
+                for (int k = 0; k < Nnuc; k++) {
+                    (*os) << '\t' << taxfreq[j][k];
+                }
                 (*os) << '\n';
             }
             if (os2) {
@@ -178,12 +214,16 @@ class CodonSequenceAlignment : public SequenceAlignment {
                 double tmp = (taxfreq[j][k] - globalfreq[k]);
                 dist += tmp * tmp;
             }
-            if (maxdist < dist) { maxdist = dist; }
+            if (maxdist < dist) {
+                maxdist = dist;
+            }
         }
 
         delete[] globalfreq;
         if (!comp) {
-            for (int j = 0; j < Ntaxa; j++) { delete[] taxfreq[j]; }
+            for (int j = 0; j < Ntaxa; j++) {
+                delete[] taxfreq[j];
+            }
             delete[] taxfreq;
         }
 
@@ -198,12 +238,16 @@ class CodonSequenceAlignment : public SequenceAlignment {
             taxfreq = new double*[Ntaxa];
             for (int j = 0; j < Ntaxa; j++) {
                 taxfreq[j] = new double[Nnuc];
-                for (int k = 0; k < Nnuc; k++) { taxfreq[j][k] = 0; }
+                for (int k = 0; k < Nnuc; k++) {
+                    taxfreq[j][k] = 0;
+                }
             }
         }
 
         for (int j = 0; j < Ntaxa; j++) {
-            for (int k = 0; k < Nnuc; k++) { taxfreq[j][k] = 0; }
+            for (int k = 0; k < Nnuc; k++) {
+                taxfreq[j][k] = 0;
+            }
         }
 
         for (int i = 0; i < Nsite; i++) {
@@ -230,23 +274,37 @@ class CodonSequenceAlignment : public SequenceAlignment {
         double* globalfreq = new double[Nnuc];
         for (int k = 0; k < Nnuc; k++) {
             globalfreq[k] = 0;
-            for (int j = 0; j < Ntaxa; j++) { globalfreq[k] += taxfreq[j][k]; }
+            for (int j = 0; j < Ntaxa; j++) {
+                globalfreq[k] += taxfreq[j][k];
+            }
         }
 
         // normalise
         double total = 0;
-        for (int k = 0; k < Nnuc; k++) { total += globalfreq[k]; }
-        for (int k = 0; k < Nnuc; k++) { globalfreq[k] /= total; }
+        for (int k = 0; k < Nnuc; k++) {
+            total += globalfreq[k];
+        }
+        for (int k = 0; k < Nnuc; k++) {
+            globalfreq[k] /= total;
+        }
         for (int j = 0; j < Ntaxa; j++) {
             double total = 0;
-            for (int k = 0; k < Nnuc; k++) { total += taxfreq[j][k]; }
+            for (int k = 0; k < Nnuc; k++) {
+                total += taxfreq[j][k];
+            }
             for (int k = 0; k < Nnuc; k++) {
                 taxfreq[j][k] /= total;
-                if (os) { (*os) << taxfreq[j][k] << '\t'; }
+                if (os) {
+                    (*os) << taxfreq[j][k] << '\t';
+                }
             }
-            if (os) { (*os) << '\n'; }
+            if (os) {
+                (*os) << '\n';
+            }
         }
-        if (os) { (*os) << '\n'; }
+        if (os) {
+            (*os) << '\n';
+        }
 
         // compute max distance
         double maxdist = 0;
@@ -256,12 +314,16 @@ class CodonSequenceAlignment : public SequenceAlignment {
                 double tmp = (taxfreq[j][k] - globalfreq[k]);
                 dist += tmp * tmp;
             }
-            if (maxdist < dist) { maxdist = dist; }
+            if (maxdist < dist) {
+                maxdist = dist;
+            }
         }
 
         delete[] globalfreq;
         if (!comp) {
-            for (int j = 0; j < Ntaxa; j++) { delete[] taxfreq[j]; }
+            for (int j = 0; j < Ntaxa; j++) {
+                delete[] taxfreq[j];
+            }
             delete[] taxfreq;
         }
 
@@ -272,13 +334,17 @@ class CodonSequenceAlignment : public SequenceAlignment {
         double** taxfreq = new double*[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq[j] = new double[Naa];
-            for (int k = 0; k < Naa; k++) { taxfreq[j][k] = 0; }
+            for (int k = 0; k < Naa; k++) {
+                taxfreq[j][k] = 0;
+            }
         }
 
         for (int i = 0; i < Nsite; i++) {
             for (int j = 0; j < Ntaxa; j++) {
                 int state = GetState(j, i);
-                if (state != unknown) { taxfreq[j][GetCodonStateSpace()->Translation(state)]++; }
+                if (state != unknown) {
+                    taxfreq[j][GetCodonStateSpace()->Translation(state)]++;
+                }
             }
         }
 
@@ -286,23 +352,37 @@ class CodonSequenceAlignment : public SequenceAlignment {
         double* globalfreq = new double[Naa];
         for (int k = 0; k < Naa; k++) {
             globalfreq[k] = 0;
-            for (int j = 0; j < Ntaxa; j++) { globalfreq[k] += taxfreq[j][k]; }
+            for (int j = 0; j < Ntaxa; j++) {
+                globalfreq[k] += taxfreq[j][k];
+            }
         }
 
         // normalise
         double total = 0;
-        for (int k = 0; k < Naa; k++) { total += globalfreq[k]; }
-        for (int k = 0; k < Naa; k++) { globalfreq[k] /= total; }
+        for (int k = 0; k < Naa; k++) {
+            total += globalfreq[k];
+        }
+        for (int k = 0; k < Naa; k++) {
+            globalfreq[k] /= total;
+        }
         for (int j = 0; j < Ntaxa; j++) {
             double total = 0;
-            for (int k = 0; k < Naa; k++) { total += taxfreq[j][k]; }
+            for (int k = 0; k < Naa; k++) {
+                total += taxfreq[j][k];
+            }
             for (int k = 0; k < Naa; k++) {
                 taxfreq[j][k] /= total;
-                if (os) { (*os) << taxfreq[j][k] << '\t'; }
+                if (os) {
+                    (*os) << taxfreq[j][k] << '\t';
+                }
             }
-            if (os) { (*os) << '\n'; }
+            if (os) {
+                (*os) << '\n';
+            }
         }
-        if (os) { (*os) << '\n'; }
+        if (os) {
+            (*os) << '\n';
+        }
 
         // compute max distance
         double maxdist = 0;
@@ -312,11 +392,15 @@ class CodonSequenceAlignment : public SequenceAlignment {
                 double tmp = (taxfreq[j][k] - globalfreq[k]);
                 dist += tmp * tmp;
             }
-            if (maxdist < dist) { maxdist = dist; }
+            if (maxdist < dist) {
+                maxdist = dist;
+            }
         }
 
         delete[] globalfreq;
-        for (int j = 0; j < Ntaxa; j++) { delete[] taxfreq[j]; }
+        for (int j = 0; j < Ntaxa; j++) {
+            delete[] taxfreq[j];
+        }
         delete[] taxfreq;
 
         return maxdist;
@@ -345,7 +429,9 @@ class GCContinuousData : public ContinuousData {
     GCContinuousData(CodonSequenceAlignment* from, int pos) {
         taxset = from->GetTaxonSet();
         double** freq = new double*[taxset->GetNtaxa()];
-        for (int i = 0; i < taxset->GetNtaxa(); i++) { freq[i] = new double[Nnuc]; }
+        for (int i = 0; i < taxset->GetNtaxa(); i++) {
+            freq[i] = new double[Nnuc];
+        }
         from->NucleotideCompositionalHeterogeneity(0, pos, freq);
         Data = new double*[taxset->GetNtaxa()];
         Nsite = 1;

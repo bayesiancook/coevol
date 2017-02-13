@@ -419,7 +419,9 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
         NucMatrix->CheckReversibility();
         cerr << '\n';
 
-        for (int i = 0; i < Naa; i++) { cerr << fitness[i] << '\t'; }
+        for (int i = 0; i < Naa; i++) {
+            cerr << fitness[i] << '\t';
+        }
         cerr << '\n';
         cerr << '\n';
         double total = 0;
@@ -465,7 +467,9 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
                                 log(GetCodonUsageSelection(j)) - log(GetCodonUsageSelection(i));
                         }
                         double fix = 1;
-                        if (deltaS != 0) { fix = deltaS / (1.0 - exp(-deltaS)); }
+                        if (deltaS != 0) {
+                            fix = deltaS / (1.0 - exp(-deltaS));
+                        }
                         cerr << i << '\t' << j << '\t' << mut << '\t' << deltaS << '\t' << fix
                              << '\t' << mut * fix << '\t' << Q[i][j] << '\n';
                     }

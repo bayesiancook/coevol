@@ -58,7 +58,9 @@ class _BranchValPtrTree : public virtual AbstractTree {
             delete this->GetBranchVal(link->GetBranch());
             this->SetBranchVal(link->GetBranch(), 0);
         }
-        if (WithRoot() && from->isRoot()) { delete this->GetBranchVal(0); }
+        if (WithRoot() && from->isRoot()) {
+            delete this->GetBranchVal(0);
+        }
     }
 
     friend ostream& operator<<(ostream& os, _BranchValPtrTree<V>& b) {
@@ -73,7 +75,9 @@ class _BranchValPtrTree : public virtual AbstractTree {
     }
 
     void ToStream(ostream& os, const Link* from) {
-        if (WithRoot() && from->isRoot()) { os << *(this->GetBranchVal(0)) << '\t'; }
+        if (WithRoot() && from->isRoot()) {
+            os << *(this->GetBranchVal(0)) << '\t';
+        }
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             os << *(this->GetBranchVal(link->GetBranch())) << '\t';
             ToStream(os, link->Out());
@@ -81,7 +85,9 @@ class _BranchValPtrTree : public virtual AbstractTree {
     }
 
     void FromStream(istream& is, Link* from) {
-        if (WithRoot() && from->isRoot()) { is >> *(this->GetBranchVal(0)); }
+        if (WithRoot() && from->isRoot()) {
+            is >> *(this->GetBranchVal(0));
+        }
         for (Link* link = from->Next(); link != from; link = link->Next()) {
             is >> *(this->GetBranchVal(link->GetBranch()));
             FromStream(is, link->Out());

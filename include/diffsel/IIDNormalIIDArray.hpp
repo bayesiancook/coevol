@@ -14,7 +14,9 @@ class IIDNormalIIDArray : public IIDArray<RealVector> {
     }
 
     void ClampAtZero() {
-        for (int i = 0; i < GetSize(); i++) { GetNormalVal(i)->ClampAtZero(); }
+        for (int i = 0; i < GetSize(); i++) {
+            GetNormalVal(i)->ClampAtZero();
+        }
     }
 
     // make a MoveN(double tuning, int m)  calls over all sites
@@ -49,7 +51,9 @@ class IIDNormalIIDArray : public IIDArray<RealVector> {
 
     double GetMeanVar() {
         double mean = 0;
-        for (int i = 0; i < GetSize(); i++) { mean += GetNormalVal(i)->GetVar(); }
+        for (int i = 0; i < GetSize(); i++) {
+            mean += GetNormalVal(i)->GetVar();
+        }
         mean /= GetSize();
         return mean;
     }

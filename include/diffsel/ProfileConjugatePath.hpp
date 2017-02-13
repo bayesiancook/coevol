@@ -118,7 +118,9 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
     }
 
     double logProb() {
-        if (isActive()) { return SuffStatLogProb(); }
+        if (isActive()) {
+            return SuffStatLogProb();
+        }
         return 0;
     }
 
@@ -210,7 +212,9 @@ class ProfilePathConjugateArray {
 
     void DeleteArray() {
         for (int k = 0; k < K; k++) {
-            for (int i = 0; i < Nsite; i++) { delete pathconjarray[k][i]; }
+            for (int i = 0; i < Nsite; i++) {
+                delete pathconjarray[k][i];
+            }
             delete[] pathconjarray[k];
         }
         delete[] pathconjarray;
@@ -222,7 +226,9 @@ class ProfilePathConjugateArray {
 #endif
 
         for (int i = 0; i < Nsite; i++) {
-            for (int k = 0; k < K; k++) { pathconjarray[k][i]->ActivateSufficientStatistic(); }
+            for (int k = 0; k < K; k++) {
+                pathconjarray[k][i]->ActivateSufficientStatistic();
+            }
         }
     }
 
@@ -232,7 +238,9 @@ class ProfilePathConjugateArray {
 #endif
 
         for (int i = 0; i < Nsite; i++) {
-            for (int k = 0; k < K; k++) { pathconjarray[k][i]->InactivateSufficientStatistic(); }
+            for (int k = 0; k < K; k++) {
+                pathconjarray[k][i]->InactivateSufficientStatistic();
+            }
         }
     }
 

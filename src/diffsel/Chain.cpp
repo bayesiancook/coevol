@@ -47,7 +47,9 @@ void Chain::Reset(int force) {
 }
 
 void Chain::Move() {
-    for (int i = 0; i < every; i++) { model->Move(); }
+    for (int i = 0; i < every; i++) {
+        model->Move();
+    }
     /*
     double delta = model->Update();
     if (fabs(delta) > 1e-4)	{

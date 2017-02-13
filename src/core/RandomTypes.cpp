@@ -28,7 +28,9 @@ Normal::Normal(Var<RealVector>* inmeanvec, Var<PosReal>* invariance, int inindex
 }
 
 double Normal::logProb() {
-    if ((!variance) || (!variance->val())) { return 0; }
+    if ((!variance) || (!variance->val())) {
+        return 0;
+    }
     if (meanvec) {
         return -0.5 * log(2 * M_PI * variance->val()) -
                0.5 * (this->val() - (*meanvec)[index]) * (this->val() - (*meanvec)[index]) /
@@ -95,7 +97,9 @@ inline void Gamma::drawSample() {
     } else {
         v = Random::Gamma(shape->val(), scale->val());
     }
-    if (v < GAMMAMIN) { v = GAMMAMIN; }
+    if (v < GAMMAMIN) {
+        v = GAMMAMIN;
+    }
     setval(v);
 }
 
@@ -186,7 +190,9 @@ void Exponential::drawSample() {
 }
 
 double Exponential::logProb() {
-    if (type == MEAN) { return -*this / scale->val() - log(scale->val()); }
+    if (type == MEAN) {
+        return -*this / scale->val() - log(scale->val());
+    }
     return -(scale->val()) * val() + log(scale->val());
 }
 
@@ -219,7 +225,9 @@ void PosUniform::drawSample() {
 }
 
 double PosUniform::logProb() {
-    if (val() > max) { return log(0); }
+    if (val() > max) {
+        return log(0);
+    }
     return 0;
 }
 
@@ -240,7 +248,9 @@ Binomial::Binomial(int inN, Var<UnitReal>* intheta) {
 void Binomial::drawSample() {
     int val = 0;
     for (int k = 0; k < N; k++) {
-        if (Random::Uniform() < theta->val()) { val++; }
+        if (Random::Uniform() < theta->val()) {
+            val++;
+        }
     }
     setval(val);
 }
@@ -288,9 +298,13 @@ void Poisson::drawSample() {
 }
 
 double Poisson::logProb() {
-    if (this->val() < 0) { return -200; }
+    if (this->val() < 0) {
+        return -200;
+    }
     double ret = -mu->val() + *this * log(mu->val());
-    for (int i = 2; i <= *this; i++) { ret -= log((double)i); }
+    for (int i = 2; i <= *this; i++) {
+        ret -= log((double)i);
+    }
     return ret;
 }
 /*double Poisson::ProposeMove(double tuning)	{
@@ -337,10 +351,14 @@ void Dirichlet::drawSample() {
         } else {
             profile[k] = Random::sGamma(1);
         }
-        if (profile[k] < Profile::MIN) { profile[k] = Profile::MIN; }
+        if (profile[k] < Profile::MIN) {
+            profile[k] = Profile::MIN;
+        }
         total += profile[k];
     }
-    for (int k = 0; k < GetDim(); k++) { profile[k] /= total; }
+    for (int k = 0; k < GetDim(); k++) {
+        profile[k] /= total;
+    }
 }
 
 double Dirichlet::Move(double tuning, int n) {
@@ -397,7 +415,9 @@ double Multinomial::logProb() {
 }
 
 void Multinomial::drawSample() {
-    for (int k = 0; k < GetDim(); k++) { (*this)[k] = 0; }
+    for (int k = 0; k < GetDim(); k++) {
+        (*this)[k] = 0;
+    }
     for (int i = 0; i < N; i++) {
         (*this)[Random::FiniteDiscrete(N, probarray->val().GetArray())]++;
     }
@@ -445,7 +465,9 @@ IIDExp::IIDExp(int dimension, Var<PosReal>* inmean) {
 }
 
 void IIDExp::setall(double in) {
-    for (int i = 0; i < GetDim(); i++) { (*this)[i] = in; }
+    for (int i = 0; i < GetDim(); i++) {
+        (*this)[i] = in;
+    }
 }
 
 void IIDExp::drawSample() {
@@ -462,7 +484,9 @@ void IIDExp::drawSample() {
 double IIDExp::logProb() {
     double total = 0;
     double m = mean ? (double)mean->val() : 1;
-    for (int i = 0; i < GetDim(); i++) { total += -(*this)[i] / m - log(m); }
+    for (int i = 0; i < GetDim(); i++) {
+        total += -(*this)[i] / m - log(m);
+    }
     return total;
 }
 
@@ -493,7 +517,9 @@ IIDGamma::IIDGamma(int dimension, Var<PosReal>* inalpha, Var<PosReal>* inbeta) {
 }
 
 void IIDGamma::setall(double in) {
-    for (int i = 0; i < GetDim(); i++) { (*this)[i] = in; }
+    for (int i = 0; i < GetDim(); i++) {
+        (*this)[i] = in;
+    }
 }
 
 void IIDGamma::drawSample() {
@@ -501,7 +527,9 @@ void IIDGamma::drawSample() {
     double b = beta ? (double)beta->val() : 1.0;
     for (int i = 0; i < GetDim(); i++) {
         (*this)[i] = Random::Gamma(a, b);
-        if ((*this)[i] < Gamma::GAMMAMIN) { (*this)[i] = Gamma::GAMMAMIN; }
+        if ((*this)[i] < Gamma::GAMMAMIN) {
+            (*this)[i] = Gamma::GAMMAMIN;
+        }
     }
 }
 

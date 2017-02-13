@@ -29,7 +29,9 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
 
     double GetVal(double abstime, int TimeLineIndex) {
         TimeLineIndex = TimeLineIndex - 1;
-        if (TimeLineIndex > NumberOfTimeLines) { return (0); }
+        if (TimeLineIndex > NumberOfTimeLines) {
+            return (0);
+        }
         map<double, double>::iterator Younger, Older;
         double ValueYounger, ValueOlder;
         Younger = TimesAndValues[TimeLineIndex].lower_bound(abstime);
