@@ -118,19 +118,23 @@ class BranchOmegaMultivariateSample : public Sample	{
 	void Read(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, string mulreg, bool tex, double xscale, double yscale, double nodescale, double nodepower, double barwidth, int fontsize, bool bubbletext, double meanreg, double stdevreg)	{
 
 		int Ncont = GetModel()->Ncont;
+		int dim = GetModel()->GetCovMatrix()->GetDim();
 
 		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
 		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
 		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+
+		// MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		// double alpha[dim];
+		// definir alpha
 
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
 			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		}
 
-		int dim = GetModel()->GetCovMatrix()->GetDim();
-
 		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
+		// MeanCovMatrix*  maty = new MeanCovMatrix(dim);
 
 		// cycle over the sample
 		for (int i=0; i<size; i++)	{
@@ -148,12 +152,21 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);
 			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 1);
 
+			// double t0 = GetModel()->GetRootAge();
+			// recalculer beta
+			// double beta = ...
+			// meanNe->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(),alpha,beta);
+
 			for (int k=0; k<Ncont; k++)	{
 				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), GetModel()->GetL()+k);
 			}
 
 			CovMatrix& m = *(GetModel()->GetCovMatrix());
 			mat->Add(&m);
+
+			// double my[dim][dim];
+			// for loop ... 
+			// maty->Add(my,dim);
 		}
 		cerr << '\n';
 		cerr << "normalise\n";
@@ -161,50 +174,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		mat->Normalize();
 		ofstream cout((GetName() + ".cov").c_str());
 
-		/*
-		if (mulreg != "")	{
-			if (mulreg.size() != ((unsigned int) mat->GetDim()))	{
-				cerr << "error when specifying multiple regression : " << mulreg << '\n';
-				exit(1);
-			}
-
-			int* indexarray = new int[mat->GetDim()];
-			int dim = 0;
-			for (int l=0; l<mat->GetDim(); l++)	{
-				if (mulreg[l] == '1')	{
-					indexarray[l] = 1;
-					dim++;
-				}
-				else if (mulreg[l] == '0')	{
-					indexarray[l] = 0;
-				}
-				else	{
-					cerr << "error when specifying multiple regression : " << mulreg << '\n';
-					exit(1);
-				}
-			}
-
-			cout << "entries are in the following order:\n";
-			GetModel()->PrintEntries(cout, indexarray);
-
-			cout << '\n';
-			cerr << dim << '\t' << mat->GetDim() << '\n';
-			PartialMeanCovMatrix* partmat = new PartialMeanCovMatrix(mat,indexarray,dim);
-			// ReducedMeanCovMatrix* redmat = new ReducedMeanCovMatrix(mat,indexarray,dim);
-			cout << '\n';
-			// cout << *redmat;
-			cout << *partmat;
-			delete partmat;
-			// delete redmat;
-		}
-		else	{
-			cout << "entries are in the following order:\n";
-			GetModel()->PrintEntries(cout);
-
-			cout << '\n';
-			cout << *mat;
-		}
-		*/
+		cout << *mat;
 
 		cerr << "covariance matrix in " << name << ".cov\n";
 		cerr << '\n';
@@ -222,18 +192,18 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meanomega->GetPPLeafRoot() << '\n';
 
+		/*
+		meanNe->Normalise();
+		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
+		meanNe->ToStream(Neos);
+		...
+		*/
+
 		meansynrate->Normalise();
 		ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
 		meansynrate->ToStream(sos);
 		cerr << "reconstructed variations of Ks in " << name << ".postmeansynrate.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meansynrate->GetPPLeafRoot() << '\n';
-
-		if (tex)	{
-			ostringstream s;
-			s << GetName() << ".postmeansynrate.tre";
-			MeanChronoBubbleTree* textree = new MeanChronoBubbleTree(meanchrono,meansynrate,xscale,yscale,nodescale,nodepower,barwidth,fontsize,bubbletext);
-			textree->Draw((s.str() + ".tex").c_str());
-		}
 
 		for (int k=0; k<Ncont; k++)	{
 			tree[k]->Normalise();
@@ -243,10 +213,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			tree[k]->ToStream(os);
 			cerr << "reconstructed variations of continuous character # " << k+1 << " in "  << name << ".postmean" << k+1 << ".tre\n";
 			cerr << "pp of mean leaf values > root value : " << tree[k]->GetPPLeafRoot() << '\n';
-			if (tex)	{
-				MeanChronoBubbleTree* textree = new MeanChronoBubbleTree(meanchrono,tree[k],xscale,yscale,nodescale,nodepower,barwidth,fontsize,bubbletext);
-				textree->Draw((s.str() + ".tex").c_str());
-			}
 		}
 
 		ofstream ssos((GetName() + ".postmeansynrate.tab").c_str());

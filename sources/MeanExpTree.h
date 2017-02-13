@@ -349,14 +349,11 @@ class MeanExpFromTwoMultiVariate: public MeanExpFromMultiVariate {
 
 	Var<Real>* alpha1;
 	Var<Real>* alpha2;
-	Var<PosReal>* beta1;
-	Var<PosReal>* beta2;
-	Var<PosReal>* beta3;
 	int index2;
 
 	public:
 
-	MeanExpFromTwoMultiVariate(Var<RealVector>* inup, Var<RealVector>* indown, Var<PosReal>* intime, Var<Real>* inalpha1, Var<Real>* inalpha2, Var<PosReal>* inbeta1, Var<PosReal>* inbeta2, Var<PosReal>* inbeta3, int inindex, int inindex2, BranchValType inbval, bool inmeanexp){
+	MeanExpFromTwoMultiVariate(Var<RealVector>* inup, Var<RealVector>* indown, Var<PosReal>* intime, Var<Real>* inalpha1, Var<Real>* inalpha2, int inindex, int inindex2, BranchValType inbval, bool inmeanexp){
 		up =inup;
 		down = indown;
 		time = intime;
@@ -364,18 +361,12 @@ class MeanExpFromTwoMultiVariate: public MeanExpFromMultiVariate {
 		index2 = inindex2;
 		alpha1 = inalpha1;
 		alpha2 = inalpha2;
-		beta1 = inbeta1;
-		beta2 = inbeta2;
-		beta3 = inbeta3;
 		bval = inbval;
 		meanexp = inmeanexp;
 		Register(up);
 		Register(down);
 		Register(alpha1);
 		Register(alpha2);
-		Register(beta1);
-		Register(beta2);
-		Register(beta3);
 		if (time)	{
 			Register(time);
 		}
@@ -395,34 +386,14 @@ class MeanExpFromTwoMultiVariate: public MeanExpFromMultiVariate {
 		double x2 = (*up)[index2];
 		double y2 = (*down)[index2];
 
-		if (beta3)	{
-			double ex1 = exp(x1);
-			double ex2 = exp(x2);
-			double ey1 = exp(y1);
-			double ey2 = exp(y2);
-			if (meanexp && (fabs(y2 - x2) > 1e-6))	{
-				double q1 = (ey1 - ex1)/(y1 - x1);
-				double q2 = (ey1*ey2 - ex1*ex2)/(y1+y2-x1-x2);
-				double q3 = (ey1/ey2 - ex1/ex2)/(y1-y2-x1+x2);
-				mean = beta1->val() * q1 + beta2->val() * q2 + beta3->val() * q3;
-			}
-			else	{
-				double zx = ex1 * (beta1->val() + beta2->val() * ex2 + beta3->val() / ex2);
-				double zy = ey1 * (beta1->val() + beta2->val() * ey2 + beta3->val() / ey2);
-				mean = 0.5 * (zx + zy);
-			}
+		double x = alpha1->val() * x1 + alpha2->val() * x2;
+		double y = alpha1->val() * y1 + alpha2->val() * y2;
+
+		if (meanexp && (fabs(y - x) > 1e-6))	{
+			mean = (exp(y) - exp(x)) / (y - x);
 		}
 		else	{
-			double x = alpha1->val() * x1 + alpha2->val() * x2;
-			double y = alpha1->val() * y1 + alpha2->val() * y2;
-
-			if (meanexp && (fabs(y - x) > 1e-6))	{
-				mean = (exp(y) - exp(x)) / (y - x);
-			}
-			else	{
-				mean = exp((y + x) / 2);
-			}
-
+			mean = exp((y + x) / 2);
 		}
 
 		if (bval == INTEGRAL)	{
@@ -439,16 +410,13 @@ class MeanExpTreeFromTwoMultiVariate : public MeanExpTreeFromMultiVariate	{
 
 	public:
 
-	MeanExpTreeFromTwoMultiVariate(LengthTree* inlengthtree, NodeVarTree<RealVector>* inprocess, int inindex, int inindex2, Var<Real>* inalpha1, Var<Real>* inalpha2, Var<PosReal>* inbeta1, Var<PosReal>* inbeta2, Var<PosReal>* inbeta3, BranchValType inbval, bool withroot, bool inmeanexp)	{
+	MeanExpTreeFromTwoMultiVariate(LengthTree* inlengthtree, NodeVarTree<RealVector>* inprocess, int inindex, int inindex2, Var<Real>* inalpha1, Var<Real>* inalpha2, BranchValType inbval, bool withroot, bool inmeanexp)	{
 		process = inprocess;
 		lengthtree = inlengthtree;
 		index = inindex;
 		index2 = inindex2;
 		alpha1 = inalpha1;
 		alpha2 = inalpha2;
-		beta1 = inbeta1;
-		beta2 = inbeta2;
-		beta3 = inbeta3;
 
 		bval = inbval;
 		meanexp = inmeanexp;
@@ -460,16 +428,13 @@ class MeanExpTreeFromTwoMultiVariate : public MeanExpTreeFromMultiVariate	{
 		RecursiveCreate(GetRoot());
 	}
 
-	MeanExpTreeFromTwoMultiVariate(MultiVariateTreeProcess* inprocess, int inindex, int inindex2, Var<Real>* inalpha1, Var<Real>* inalpha2, Var<PosReal>* inbeta1, Var<PosReal>* inbeta2, Var<PosReal>* inbeta3, BranchValType inbval, bool withroot, bool inmeanexp)	{
+	MeanExpTreeFromTwoMultiVariate(MultiVariateTreeProcess* inprocess, int inindex, int inindex2, Var<Real>* inalpha1, Var<Real>* inalpha2, BranchValType inbval, bool withroot, bool inmeanexp)	{
 		process = inprocess;
 		lengthtree = inprocess->GetLengthTree();
 		index = inindex;
 		index2 = inindex2;
 		alpha1 = inalpha1;
 		alpha2 = inalpha2;
-		beta1 = inbeta1;
-		beta2 = inbeta2;
-		beta3 = inbeta3;
 		bval = inbval;
 		meanexp = inmeanexp;
 		SetWithRoot(withroot);
@@ -492,17 +457,14 @@ class MeanExpTreeFromTwoMultiVariate : public MeanExpTreeFromMultiVariate	{
 				cerr << "error in MeanExpFromMult::CreateBranchVal\n";
 				exit(1);
 			}
-			return new MeanExpFromTwoMultiVariate(process->GetNodeVal(link->GetNode()), process->GetNodeVal(link->GetNode()), 0, alpha1, alpha2, beta1, beta2, beta3, index, index2, bval, meanexp);
+			return new MeanExpFromTwoMultiVariate(process->GetNodeVal(link->GetNode()), process->GetNodeVal(link->GetNode()), 0, alpha1, alpha2, index, index2, bval, meanexp);
 		}
-		return new MeanExpFromTwoMultiVariate(process->GetNodeVal(link->GetNode()), process->GetNodeVal(link->Out()->GetNode()), GetLengthTree()->GetBranchVal(link->GetBranch()), alpha1, alpha2, beta1, beta2, beta3, index, index2, bval, meanexp);
+		return new MeanExpFromTwoMultiVariate(process->GetNodeVal(link->GetNode()), process->GetNodeVal(link->Out()->GetNode()), GetLengthTree()->GetBranchVal(link->GetBranch()), alpha1, alpha2, index, index2, bval, meanexp);
 	}
 
 	int index2;
 	Var<Real>* alpha1;
 	Var<Real>* alpha2;
-	Var<PosReal>* beta1;
-	Var<PosReal>* beta2;
-	Var<PosReal>* beta3;
 };
 
 class MeanLogitFromMultiVariate: public Dvar<UnitReal>{
