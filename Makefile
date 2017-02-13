@@ -1,3 +1,5 @@
+SRC_FILES = $(shell ls include/**/*.hpp) $(shell ls src/**/*.cpp) $(shell ls src/*.cpp)
+
 all: cmake
 	@cd _build ; make --no-print-directory
 
@@ -24,4 +26,4 @@ dot: all
 	@evince tmp.ps &
 
 format:
-	@clang-format -i include/core/*.hpp src/core/*.cpp src/*.cpp src/diffsel/*.cpp include/diffsel/*.hpp
+	@clang-format -i $(SRC_FILES)
