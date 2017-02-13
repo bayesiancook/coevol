@@ -132,7 +132,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     // (all of which are already accounted for through the sufficient statistic)
     //
 
-    virtual void FullCorrupt(std::map<DAGnode*, int>& m) {
+    virtual void FullCorrupt(std::map<DAGnode*, int>&) {
         if (!isActive()) {
             Dvar<T>::Corrupt(true);
         } else {
@@ -166,7 +166,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual double FullUpdate(bool check) { return Update(); }
+    virtual double FullUpdate(bool) { return Update(); }
 
     virtual double Update() {
         double ret = 0;

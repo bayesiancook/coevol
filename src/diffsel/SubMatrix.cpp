@@ -493,7 +493,7 @@ void SubMatrix::ComputeExponential(double range, double** expo) {
     }
 }
 
-void SubMatrix::ApproachExponential(double range, double** expo, int prec) {
+void SubMatrix::ApproachExponential(double range, double** expo, int) {
     for (int i = 0; i < Nstate; i++) {
         if (!flagarray[i]) {
             UpdateRow(i);
