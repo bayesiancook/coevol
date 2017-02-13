@@ -5,8 +5,6 @@
 #include "core/DAGnode.hpp"
 #include "core/Var.hpp"
 
-typedef std::set<DAGnode*>::const_iterator clit;
-
 class SemiConjPrior {
   public:
     // to be implemented in non-abstract subclasses
@@ -47,8 +45,6 @@ class SemiConjPrior {
 
 class ConjSampling {
   public:
-    typedef std::set<SemiConjPrior*>::const_iterator cplit;
-
     virtual ~ConjSampling() {}
 
     // to be implemented in non-abstract subclasses
@@ -63,7 +59,7 @@ class ConjSampling {
     // backed-up/recomputed/restored.
     //
     virtual void ConjugateCorrupt(bool bk) {
-        for (cplit i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
+        for (auto i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
             if ((*i)->isActive()) {
                 (*i)->ConjugateNotifyCorrupt(bk);
             }
@@ -72,7 +68,7 @@ class ConjSampling {
 
     virtual double ConjugateUpdate(bool& active) {
         double ret = 0;
-        for (cplit i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
+        for (auto i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
             if ((*i)->isActive()) {
                 active = true;
                 ret += (*i)->ConjugateNotifyUpdate();
@@ -82,7 +78,7 @@ class ConjSampling {
     }
 
     virtual void ConjugateRestore(bool& active) {
-        for (cplit i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
+        for (auto i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
             if ((*i)->isActive()) {
                 active = true;
                 (*i)->ConjugateNotifyRestore();
@@ -91,7 +87,7 @@ class ConjSampling {
     }
 
     bool isUpActive() {
-        cplit i = conjugate_up.begin();
+        auto i = conjugate_up.begin();
         while ((i != conjugate_up.end()) && (!(*i)->isActive())) i++;
         return (i != conjugate_up.end());
     }
@@ -105,7 +101,7 @@ class ConjSampling {
     //
     void NotifyActivateSufficientStatistic(SemiConjPrior* from) {
         // should also check that the type matches
-        for (cplit i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
+        for (auto i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
             if (*(i) != from) {
                 (*i)->InactivateSufficientStatistic();
             }
@@ -175,7 +171,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         } else {
             if (!this->flag) {
                 bool up_ok = true;
-                for (clit i = this->up.begin(); i != this->up.end(); i++) {
+                for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
                 }
                 if (up_ok) {
@@ -195,14 +191,14 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
             // setval(this->bkvalue);
             if (!this->isUpdated()) {
                 bool up_ok = true;
-                for (clit i = this->up.begin(); i != this->up.end(); i++) {
+                for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
                 }
                 if (up_ok) {
                     this->localRestore();
                     logprob = bklogprob;
                     /*
-                      for (clit i=this->down.begin(); i!=this->down.end(); i++)	{
+                      for (auto i=this->down.begin(); i!=this->down.end(); i++)	{
                       (*i)->NotifyRestore();
                       }
                     */
@@ -236,7 +232,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         } else {
             if (!this->flag) {
                 bool up_ok = true;
-                for (clit i = this->up.begin(); i != this->up.end(); i++) {
+                for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
                 }
                 if (up_ok) {
@@ -256,14 +252,14 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
             // setval(this->bkvalue);
             if (!this->isUpdated()) {
                 bool up_ok = true;
-                for (clit i = this->up.begin(); i != this->up.end(); i++) {
+                for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
                 }
                 if (up_ok) {
                     this->localRestore();
                     logprob = bklogprob;
                     /*
-                      for (clit i=this->down.begin(); i!=this->down.end(); i++)	{
+                      for (auto i=this->down.begin(); i!=this->down.end(); i++)	{
                       (*i)->NotifyRestore();
                       }
                     */
@@ -345,7 +341,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     //
     virtual void ActivateSufficientStatistic() {
         if (!active_flag) {
-            for (clit i = this->down.begin(); i != this->down.end(); i++) {
+            for (auto i = this->down.begin(); i != this->down.end(); i++) {
                 ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
                 if (!p) {
                     Dnode* q = dynamic_cast<Dnode*>(*i);
@@ -382,7 +378,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         if (active_flag) {
             if (!suffstat_flag) {
                 ResetSufficientStatistic();
-                for (clit i = this->down.begin(); i != this->down.end(); i++) {
+                for (auto i = this->down.begin(); i != this->down.end(); i++) {
                     ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
                     if (p) {
                         p->AddSufficientStatistic(this);
@@ -433,7 +429,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         } else {
             if (!this->flag) {
                 bool up_ok = true;
-                for (clit i = this->up.begin(); i != this->up.end(); i++) {
+                for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
                 }
                 if (up_ok) {
@@ -451,12 +447,12 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
             this->setval(this->bkvalue);
             if (!this->isUpdated()) {
                 bool up_ok = true;
-                for (clit i = this->up.begin(); i != this->up.end(); i++) {
+                for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
                 }
                 if (up_ok) {
                     this->localRestore();
-                    for (clit i = this->down.begin(); i != this->down.end(); i++) {
+                    for (auto i = this->down.begin(); i != this->down.end(); i++) {
                         (*i)->NotifyRestore();
                     }
                 }
@@ -525,7 +521,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
     virtual void ActivateSufficientStatistic() {
         if (!this->isClamped()) {
             if (!active_flag) {
-                for (clit i = this->down.begin(); i != this->down.end(); i++) {
+                for (auto i = this->down.begin(); i != this->down.end(); i++) {
                     ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
                     /*if (!p)	{
                       Dnode* q = dynamic_cast<Dnode*> (*i);
@@ -562,7 +558,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         if (active_flag) {
             if (!suffstat_flag) {
                 ResetSufficientStatistic();
-                for (clit i = this->down.begin(); i != this->down.end(); i++) {
+                for (auto i = this->down.begin(); i != this->down.end(); i++) {
                     ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
                     if (p) {
                         p->AddSufficientStatistic(this);
@@ -636,7 +632,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
         double ret = 0;
         if (!this->isUpdated()) {
             bool up_ok = true;
-            for (clit i = this->up.begin(); i != this->up.end(); i++) {
+            for (auto i = this->up.begin(); i != this->up.end(); i++) {
                 up_ok &= (*i)->isValueUpdated();
                 // up_ok &= (*i)->isUpdated();
             }
@@ -649,7 +645,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                     this->flag = true;
                 }
                 this->value_updated = true;
-                for (clit i = this->down.begin(); i != this->down.end(); i++) {
+                for (auto i = this->down.begin(); i != this->down.end(); i++) {
                     ret += (*i)->NotifyUpdate();
                 }
             }
@@ -661,7 +657,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
         if (!this->isUpdated()) {
             Rvar<T>::RestoreBackup();
             bool up_ok = true;
-            for (clit i = this->up.begin(); i != this->up.end(); i++) {
+            for (auto i = this->up.begin(); i != this->up.end(); i++) {
                 up_ok &= (*i)->isValueUpdated();
                 // up_ok &= (*i)->isUpdated();
             }
@@ -675,7 +671,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                     this->flag = true;
                 }
                 this->value_updated = true;
-                for (clit i = this->down.begin(); i != this->down.end(); i++) {
+                for (auto i = this->down.begin(); i != this->down.end(); i++) {
                     (*i)->NotifyRestore();
                 }
             }
@@ -686,7 +682,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
         double ret = 0;
         if (!this->isUpdated()) {
             bool up_ok = true;
-            for (clit i = this->up.begin(); i != this->up.end(); i++) {
+            for (auto i = this->up.begin(); i != this->up.end(); i++) {
                 up_ok &= (*i)->isValueUpdated();
                 // up_ok &= (*i)->isUpdated();
             }
@@ -697,7 +693,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                     ret += this->localUpdate();
                     if (!this->value_updated) {
                         this->value_updated = true;
-                        for (clit i = this->down.begin(); i != this->down.end(); i++) {
+                        for (auto i = this->down.begin(); i != this->down.end(); i++) {
                             ret += (*i)->NotifyUpdate();
                         }
                     }
@@ -713,7 +709,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
     virtual void NotifyRestore() {
         if (!this->isUpdated()) {
             bool up_ok = true;
-            for (clit i = this->up.begin(); i != this->up.end(); i++) {
+            for (auto i = this->up.begin(); i != this->up.end(); i++) {
                 up_ok &= (*i)->isValueUpdated();
                 // up_ok &= (*i)->isUpdated();
             }
@@ -727,7 +723,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                     this->localRestore();
                     if (!this->value_updated) {
                         this->value_updated = true;
-                        for (clit i = this->down.begin(); i != this->down.end(); i++) {
+                        for (auto i = this->down.begin(); i != this->down.end(); i++) {
                             (*i)->NotifyRestore();
                         }
                     }

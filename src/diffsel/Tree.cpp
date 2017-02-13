@@ -249,8 +249,6 @@ bool Tree::RegisterWith(const TaxonSet* taxset, Link* from, int& tot) {
 }
 
 
-typedef list<string>::const_iterator csit;
-
 Tree::Tree(string filename) {
     ifstream is(filename.c_str());
     if (!is) {
@@ -312,7 +310,7 @@ Link* Tree::ParseList(string input, Node* node) {
         Link* firstlink = new Link;
         Link* prevlink = firstlink;
         firstlink->SetNode(node);
-        for (csit i = lst.begin(); i != lst.end(); i++) {
+        for (auto i = lst.begin(); i != lst.end(); i++) {
             Link* link = new Link;
             link->SetNode(node);
             link->AppendTo(prevlink);
