@@ -161,7 +161,6 @@ class Multinomial : public virtual Rvar<IntVector> {
     virtual ~Multinomial() {}
 
     void drawSample();
-    int GetDim() { return GetDim(); }
 
   private:
     Var<Profile>* probarray;

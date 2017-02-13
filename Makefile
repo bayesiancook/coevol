@@ -27,3 +27,6 @@ dot: all
 
 format:
 	@clang-format -i $(SRC_FILES)
+
+check:
+	@clang-check $(SRC_FILES) -- -I include/ -std=gnu++11

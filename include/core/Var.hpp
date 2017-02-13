@@ -46,15 +46,15 @@ class Rvar : public Var<T>, public Rnode {
         Clamp();
     }
 
-    inline virtual void Corrupt(bool bk) {
+    inline virtual void Corrupt(bool bk) override {
         Var<T>::localcorrupt(bk);
         Rnode::Corrupt(bk);
     }
-    inline virtual void Restore() {
+    inline virtual void Restore() override {
         Var<T>::localrestore();
         Rnode::Restore();
     }
-    inline void RestoreBackup() { Var<T>::localrestore(); /*value_updated = true;*/ }
+    inline void RestoreBackup() final { Var<T>::localrestore(); /*value_updated = true;*/ }
 };
 
 
