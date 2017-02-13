@@ -6,6 +6,7 @@
 using namespace std;
 
 #include "ValArray.hpp"
+#include "core/Move.hpp"
 #include "core/RandomTypes.hpp"
 
 template <class V>

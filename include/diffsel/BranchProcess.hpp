@@ -147,7 +147,7 @@ class GammaTree : public BranchProcess<PosReal> {
         return total;
     }
 
-    Rvar<PosReal>* CreateBranchVal(const Link* link) { return new Gamma(alpha, beta, meanvar); }
+    Rvar<PosReal>* CreateBranchVal(const Link*) { return new Gamma(alpha, beta, meanvar); }
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -206,7 +206,7 @@ class BetaTree : public BranchProcess<UnitReal> {
         return total;
     }
 
-    Rvar<UnitReal>* CreateBranchVal(const Link* link) { return new Beta(alpha, beta); }
+    Rvar<UnitReal>* CreateBranchVal(const Link*) { return new Beta(alpha, beta); }
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -222,7 +222,7 @@ class ExponentialTree : public BranchProcess<PosReal> {
     ~ExponentialTree() { RecursiveDelete(GetRoot()); }
 
   protected:
-    Rvar<PosReal>* CreateBranchVal(const Link* link) {
+    Rvar<PosReal>* CreateBranchVal(const Link*) {
         Exponential* expo = new Exponential(meanlength, Exponential::MEAN);
         return expo;
     }

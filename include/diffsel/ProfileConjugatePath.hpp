@@ -1,10 +1,12 @@
 #ifndef PROFILECONJUGATEPATH_H
 #define PROFILECONJUGATEPATH_H
 
+#include "AllocationTree.hpp"
 #include "Conjugate.hpp"
 #include "PhyloProcess.hpp"
 #include "RandomBranchSitePath.hpp"
 #include "RandomSubMatrix.hpp"
+#include "core/Move.hpp"
 
 #include <map>
 #include <utility>
@@ -287,7 +289,7 @@ class ProfileConjugateMappingMove : public MCUpdate {
     ProfileConjugateMappingMove(PhyloProcess* inprocess, ProfilePathConjugateArray* inpathconjarray)
         : process(inprocess), pathconjarray(inpathconjarray) {}
 
-    double Move(double tuning_modulator = 1) {
+    double Move(double) {
         pathconjarray->InactivateSufficientStatistic();
         process->Move(1);
         pathconjarray->ActivateSufficientStatistic();
@@ -304,7 +306,7 @@ class ProfileConjugateMove : public MCUpdate {
     ProfileConjugateMove(ProfilePathConjugateArray* inpathconjarray, bool intoggle)
         : pathconjarray(inpathconjarray), toggle(intoggle) {}
 
-    double Move(double tuning_modulator = 1) {
+    double Move(double) {
         if (toggle) {
             pathconjarray->ActivateSufficientStatistic();
         } else {

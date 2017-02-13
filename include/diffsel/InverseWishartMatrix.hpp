@@ -6,6 +6,7 @@
 #include "GlobalScalingFunction.hpp"
 #include "Tree.hpp"
 #include "ValArray.hpp"
+#include <fstream>
 
 class SigmaZero : public Dnode {
   public:
@@ -182,7 +183,7 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
         A->Diagonalise();
 
         double** p = A->GetEigenVect();
-        double** invp = A->GetInvEigenVect();
+        // double** invp = A->GetInvEigenVect();
         double* d = A->GetEigenVal();
 
 
@@ -598,7 +599,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         Sample();
     }
 
-    MultiNormal(int unused, Var<CovMatrix>* insigma, Var<RealVector>* inrootmean,
+    MultiNormal(int, Var<CovMatrix>* insigma, Var<RealVector>* inrootmean,
                 Var<PosRealVector>* inrootvar) {
         scalefunction = 0;
 

@@ -109,7 +109,7 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
         return R[i][j];
     }
 
-    virtual void BackwardPropagate(const double* down, double* up, double length) {
+    virtual void BackwardPropagate(const double* down, double* up, double) {
         if (!matflag) {
             ComputeArrayAndStat();
         }
@@ -123,7 +123,7 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
         up[Nstate] = down[Nstate];
     }
 
-    virtual void ForwardPropagate(const double* up, double* down, double length) {
+    virtual void ForwardPropagate(const double* up, double* down, double) {
         cerr << "in forward\n";
         exit(1);
         if (!matflag) {

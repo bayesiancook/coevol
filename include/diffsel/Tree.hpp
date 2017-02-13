@@ -62,7 +62,7 @@ class Link {
         node = 0;
     }
 
-    Link(const Link* from) {
+    Link(const Link*) {
         // tbl = 0;
         next = out = this;
         node = 0;

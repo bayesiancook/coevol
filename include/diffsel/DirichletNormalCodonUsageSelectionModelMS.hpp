@@ -4,7 +4,12 @@
 #include <stdio.h>
 
 #include "BranchProcess.hpp"
+#include "CodonSequenceAlignment.hpp"
 #include "GTRSubMatrix.hpp"
+#include "IIDNormalIIDArray.hpp"
+#include "MSCodonSubMatrix.hpp"
+#include "ProfileConjugatePath.hpp"
+#include "SelectionPhyloProcess.hpp"
 #include "core/ProbModel.hpp"
 
 
@@ -27,7 +32,7 @@ class DirichletNormalCompMove : public MCUpdate {
 
     int GetSize() { return global->GetSize(); }
 
-    double Move(double tuning_modulator) {
+    double Move(double) {
         int Naccepted = 0;
 
         for (int rep = 0; rep < nrep; rep++) {
@@ -119,7 +124,7 @@ class NormalNormalCompMove : public MCUpdate {
 
     int GetSize() { return diff1->GetSize(); }
 
-    double Move(double tuning_modulator) {
+    double Move(double) {
         int Naccepted = 0;
 
         for (int rep = 0; rep < nrep; rep++) {
@@ -174,7 +179,7 @@ class ComplexDirichletIIDArrayMove : public MCUpdate {
     ComplexDirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int innrep)
         : selectarray(inselectarray), tuning(intuning), nrep(innrep) {}
 
-    double Move(double tuning_modulator) {
+    double Move(double) {
         double* tot = new double[selectarray->GetSize()];
         for (int i = 0; i < selectarray->GetSize(); i++) {
             tot[i] = 0;
@@ -748,7 +753,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     }
 
 
-    double Move(double tuning) {
+    double Move(double) {
         scheduler.Cycle(1, 1, false, false);
         return 1;
     }

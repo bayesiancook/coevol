@@ -346,7 +346,7 @@ class RandomBranchSitePath : public virtual Rnode,
 
     void SetMatrix(RandomSubMatrix* inmatrix) { matrix = inmatrix; }
 
-    double ProposeMove(double tuning) {
+    double ProposeMove(double) {
         cerr << "error : in random branch site path propose move(tuning)\n";
         exit(1);
     }

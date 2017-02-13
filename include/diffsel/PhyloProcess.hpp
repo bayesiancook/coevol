@@ -242,7 +242,7 @@ class PhyloProcess : public MCMC {
 
     // to be overriden in Metropolis Hastings PhyloProcess classes
     // EmpiricalSubMatrix* GetProposalMatrix(const Branch* branch, int site)	{
-    virtual SubMatrix* GetProposalMatrix(const Branch* branch, int site) { return 0; }
+    virtual SubMatrix* GetProposalMatrix(const Branch*, int) { return 0; }
 
     void BackupNodeStates(const Link* from, int site);
     void RestoreNodeStates(const Link* from, int site);

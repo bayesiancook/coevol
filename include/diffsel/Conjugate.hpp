@@ -1,12 +1,11 @@
 #ifndef CONJUGATE_H
 #define CONJUGATE_H
 
-using namespace std;
-// #include "core/MCMC.hpp"
 #include <set>
 #include "core/DAGnode.hpp"
+#include "core/Var.hpp"
 
-typedef set<DAGnode*>::const_iterator clit;
+typedef std::set<DAGnode*>::const_iterator clit;
 
 class SemiConjPrior {
   public:
@@ -48,7 +47,7 @@ class SemiConjPrior {
 
 class ConjSampling {
   public:
-    typedef set<SemiConjPrior*>::const_iterator cplit;
+    typedef std::set<SemiConjPrior*>::const_iterator cplit;
 
     virtual ~ConjSampling() {}
 
@@ -114,7 +113,7 @@ class ConjSampling {
     }
 
   protected:
-    set<SemiConjPrior*> conjugate_up;
+    std::set<SemiConjPrior*> conjugate_up;
 };
 
 
@@ -133,7 +132,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     // (all of which are already accounted for through the sufficient statistic)
     //
 
-    virtual void FullCorrupt(map<DAGnode*, int>& m) {
+    virtual void FullCorrupt(std::map<DAGnode*, int>& m) {
         if (!isActive()) {
             Dvar<T>::Corrupt(true);
         } else {
@@ -282,7 +281,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     // and backups/updates/restores its own probability
     //
     virtual double ConjugateNotifyUpdate() {
-        cerr << "conjugate notify\n";
+        std::cerr << "conjugate notify\n";
         exit(1);
         corrupt_counter--;
         if (!corrupt_counter) {
@@ -297,10 +296,10 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     }
 
     virtual void ConjugateNotifyCorrupt(bool bk) {
-        cerr << "conjugate notify corrupt\n";
+        std::cerr << "conjugate notify corrupt\n";
         exit(1);
         if (!isActive()) {
-            cerr << "error in Conjugate corrupt\n";
+            std::cerr << "error in Conjugate corrupt\n";
             exit(1);
         }
         if (!corrupt_counter) {
@@ -318,7 +317,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     }
 
     virtual void ConjugateNotifyRestore() {
-        cerr << "conjugate notify\n";
+        std::cerr << "conjugate notify\n";
         exit(1);
         corrupt_counter--;
         if (!corrupt_counter) {
@@ -351,9 +350,10 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
                 if (!p) {
                     Dnode* q = dynamic_cast<Dnode*>(*i);
                     if (!q) {
-                        cerr << "error : non conjugate child nodes, cannot activate sufficient "
-                                "statistic\n";
-                        cerr << (*i) << '\n';
+                        std::cerr
+                            << "error : non conjugate child nodes, cannot activate sufficient "
+                               "statistic\n";
+                        std::cerr << (*i) << '\n';
                         exit(1);
                     }
                 }
@@ -484,7 +484,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
 
     virtual void ConjugateNotifyCorrupt(bool bk) {
         if (!isActive()) {
-            cerr << "error in Conjugate corrupt\n";
+            std::cerr << "error in Conjugate corrupt\n";
             exit(1);
         }
         if (!corrupt_counter) {
@@ -530,9 +530,10 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
                     /*if (!p)	{
                       Dnode* q = dynamic_cast<Dnode*> (*i);
                       if (! q)	{
-                      cerr << "error : non conjugate child nodes, cannot activate sufficient
+                            std::cerr << "error : non conjugate child nodes, cannot activate
+                      sufficient
                       statistic\n";
-                      cerr << (*i) << '\n';
+                            std::cerr << (*i) << '\n';
                       exit(1);
                       }
                       }*/

@@ -1,6 +1,11 @@
 #ifndef GLOBALSCALE_H
 #define GLOBALSCALE_H
 
+#include <cmath>
+#include <iostream>
+#include "core/BaseType.hpp"
+#include "core/Var.hpp"
+
 class GlobalScalingFunction : public Dvar<void> {
   public:
     GlobalScalingFunction() {}
@@ -23,7 +28,8 @@ class BurstScalingFunction : public GlobalScalingFunction {
 
     double GetScalingFactor(double time1, double time2) {
         if (time1 < time2) {
-            cerr << "error in getscalingfactor: time1 < time2 : " << time1 << '\t' << time2 << '\n';
+            std::cerr << "error in getscalingfactor: time1 < time2 : " << time1 << '\t' << time2
+                      << '\n';
             exit(1);
         }
 

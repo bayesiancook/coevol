@@ -1,7 +1,6 @@
 #ifndef CODONSEQUENCEALIGNMENT_H
 #define CODONSEQUENCEALIGNMENT_H
 
-
 #include <cmath>
 #include "CodonStateSpace.hpp"
 #include "ContinuousData.hpp"

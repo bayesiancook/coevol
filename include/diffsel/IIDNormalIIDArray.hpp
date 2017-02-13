@@ -60,7 +60,7 @@ class IIDNormalIIDArray : public IIDArray<RealVector> {
 
 
   protected:
-    Rvar<RealVector>* CreateVal(int site) { return new IIDNormal(dim, mean, variance); }
+    Rvar<RealVector>* CreateVal(int) { return new IIDNormal(dim, mean, variance); }
 
     Var<Real>* mean;
     Var<PosReal>* variance;

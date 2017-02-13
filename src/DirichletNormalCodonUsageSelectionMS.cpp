@@ -1,13 +1,6 @@
 #include <cmath>
 #include "diffsel/Chain.hpp"
-#include "diffsel/CodonSequenceAlignment.hpp"
 #include "diffsel/DirichletNormalCodonUsageSelectionModelMS.hpp"
-#include "diffsel/IIDNormalIIDArray.hpp"
-#include "diffsel/MSCodonSubMatrix.hpp"
-#include "diffsel/OneMatrixPhyloProcess.hpp"
-#include "diffsel/ProfileConjugatePath.hpp"
-#include "diffsel/SelectionPhyloProcess.hpp"
-
 
 class DirichletNormalCodonUsageSelectionChainMS : public Chain {
   private:

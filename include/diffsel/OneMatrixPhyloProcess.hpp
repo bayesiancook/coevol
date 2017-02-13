@@ -23,7 +23,7 @@ class OneMatrixPhyloProcess : public PhyloProcess {
     // how to create the substitution process (and the associated substitution path)
     // for a given branch (accessible through link), and a given site
     //
-    virtual RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) {
+    virtual RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int) {
         return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()), 0,
                                         GetMatrix(), 0);
     }
