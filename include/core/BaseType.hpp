@@ -224,7 +224,6 @@ public:
   double GetMean() const ;
   double GetVar() const ;
 
-
   /* (VL) Operations */
   int ScalarAddition(double d) final ;
   void ScalarMultiplication(double d) ;
@@ -253,8 +252,8 @@ public:
 
   PosRealVector& operator=(const PosRealVector& from) ;
 
+  /* (VL) Getters/Setters */
   inline void SetAtOne() { for (auto& i : vec) i = 1; }
-
   double GetMean() const ;
   double GetVar() const ;
   double GetEntropy() const ;
@@ -278,22 +277,24 @@ public:
   IntVector(const int* from, int indim) ;
   virtual ~IntVector() { delete[] vec; }
 
+  /* (VL) Operators */
   IntVector& operator=(const IntVector& from) ;
   IntVector& operator=(const int* from) ;
-
   int& operator[](int i) { return vec[i]; }
   int& operator[](int i) const { return vec[i]; }
 
+  /* (VL) Getters */
   inline const int* GetArray() const { return vec; }
   inline int GetDim() { return dim; }
   double GetMean() const ;
   double GetVar() const ;
 
+  /* (VL) Overrides + ProposeMove overload */
   inline int check() final { return 1; }
-
   int ProposeMove(double tuning, int n) ;
   inline double ProposeMove(double tuning) override { return ProposeMove(tuning,dim); }
 
+  /* (VL) Stream operators friend functions */
   friend std::ostream& operator<<(std::ostream& os, const IntVector& r) ;
   friend std::istream& operator>>(std::istream& is, IntVector& r) ;
 };
