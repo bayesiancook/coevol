@@ -71,29 +71,29 @@ void NewickTree::ToStream(ostream& os, const Link* from) const {
 }
 
 Tree::Tree() {
-    root = 0;
-    taxset = 0;
+    root = nullptr;
+    taxset = nullptr;
 }
 
 Tree::Tree(const Tree* from) {
-    taxset = 0;
+    taxset = nullptr;
     root = new Link(from->root);
     root->InsertOut(root);
     RecursiveClone(from->root, root);
 }
 
 void Tree::RecursiveClone(const Link* from, Link* to) {
-    Node* node = new Node(from->GetNode());
+    auto node = new Node(from->GetNode());
     to->SetNode(node);
     const Link* linkfrom = from->Next();
     Link* linkto = to;
     while (linkfrom != from) {
-        Link* newnext = new Link(linkfrom);  // newnext points to same node and branch as linkfrom
+        auto newnext = new Link(linkfrom);  // newnext points to same node and branch as linkfrom
         newnext->SetNode(node);
         linkto->Insert(newnext);
-        Link* newout = new Link(linkfrom->Out());  // idem, same node and branch as linkfrom->Out()
+        auto newout = new Link(linkfrom->Out());  // idem, same node and branch as linkfrom->Out()
         newout->InsertOut(newnext);
-        Branch* branch = new Branch(linkfrom->GetBranch());
+        auto branch = new Branch(linkfrom->GetBranch());
         newnext->SetBranch(branch);
         newout->SetBranch(branch);
         RecursiveClone(linkfrom->Out(), newout);
@@ -139,7 +139,7 @@ void Tree::RecursiveDelete(Link* from) {
 Tree::~Tree() {
     if (root) {
         RecursiveDelete(root);
-        root = 0;
+        root = nullptr;
     }
 }
 
@@ -269,7 +269,7 @@ void Tree::ReadFromStream(istream& is) {
         expr += s.substr(0, k);
         cont = (!is.eof()) && (k == s.length());
     }
-    SetRoot(ParseGroup(expr, 0));
+    SetRoot(ParseGroup(expr, nullptr));
 }
 
 Link* Tree::ParseList(string input, Node* node) {
@@ -307,14 +307,14 @@ Link* Tree::ParseList(string input, Node* node) {
         // make a circular single link chain around the node
         // with one link for each term of the list
         // and call parse group on each term
-        Link* firstlink = new Link;
+        auto firstlink = new Link;
         Link* prevlink = firstlink;
         firstlink->SetNode(node);
-        for (auto i = lst.begin(); i != lst.end(); i++) {
-            Link* link = new Link;
+        for (auto& i : lst) {
+            auto link = new Link;
             link->SetNode(node);
             link->AppendTo(prevlink);
-            ParseGroup(*i, link);
+            ParseGroup(i, link);
             prevlink = link;
         }
         firstlink->AppendTo(prevlink);
@@ -361,7 +361,7 @@ Link* Tree::ParseGroup(string input, Link* from) {
         Node* node = new Node(nodeval);
 
         // call parse body
-        Link* link = 0;
+        Link* link = nullptr;
         if (body != "") {
             link = ParseList(body, node);
         } else {
@@ -403,10 +403,10 @@ void Tree::Subdivide(Link* from, int Ninterpol) {
         Link* final = from->Out();
         int i = 0;
         while (i < Ninterpol - 1) {
-            Link* link1 = new Link;
-            Link* link2 = new Link;
+            auto link1 = new Link;
+            auto link2 = new Link;
             Branch* newbranch = new Branch(s.str());
-            Node* newnode = new Node();
+            auto newnode = new Node();
             current->SetBranch(newbranch);
             link1->SetNext(link2);
             link2->SetNext(link1);
@@ -441,9 +441,9 @@ int Tree::CountInternalNodes(const Link* from) {
 
 const Link* Tree::ChooseInternalNode(const Link* from, const Link*& fromup, int& n) {
     if (from->isLeaf()) {
-        return 0;
+        return nullptr;
     }
-    const Link* ret = 0;
+    const Link* ret = nullptr;
     if (!n) {
         ret = from;
     } else {
@@ -472,7 +472,7 @@ int Tree::CountNodes(const Link* from) {
 }
 
 const Link* Tree::ChooseNode(const Link* from, const Link*& fromup, int& n) {
-    const Link* ret = 0;
+    const Link* ret = nullptr;
     if (!n) {
         ret = from;
     } else {

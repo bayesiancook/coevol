@@ -89,7 +89,7 @@ class MGCodonSubMatrix : public NucCodonSubMatrix {
         nucflag = false;
     }
 
-    virtual ~MGCodonSubMatrix() {
+    ~MGCodonSubMatrix() override {
         for (int i = 0; i < Nnuc; i++) {
             delete[] synnucarray[i];
             delete[] nonsynnucarray[i];
@@ -122,12 +122,12 @@ class MGCodonSubMatrix : public NucCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state);
-    void ComputeStationary();
+    void ComputeArray(int state) override;
+    void ComputeStationary() override;
 
     virtual void ComputeNucArrays();
 
-    virtual void CorruptMatrix() {
+    void CorruptMatrix() override {
         nucflag = false;
         SubMatrix::CorruptMatrix();
     }
@@ -157,7 +157,7 @@ class RandomMGCodonSubMatrix : public MGCodonSubMatrix, public RandomCodonSubMat
 
     // before updating the matrix instant rates and stationary probabilities
     // we just need to check that we are pointing on the right nucleotide mutation process
-    void SetParameters() { SetNucMatrix(matrix); }
+    void SetParameters() override { SetNucMatrix(matrix); }
 
   protected:
     RandomSubMatrix* matrix;
@@ -180,12 +180,12 @@ class MGOmegaCodonSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state);
+    void ComputeArray(int state) override;
     void SetOmega(double inomega) { omega = inomega; }
 
-    virtual void ComputeNucArrays();
+    void ComputeNucArrays() override;
 
-    void ToStream(ostream& os) {
+    void ToStream(ostream& os) override {
         os << "Omega : " << omega << '\n';
         os << "nuc matrix\n";
         GetNucMatrix()->ToStream(os);
@@ -218,7 +218,7 @@ class RandomMGOmegaCodonSubMatrix : public MGOmegaCodonSubMatrix, public RandomC
     // we need to check that we are pointing on the right nucleotide mutation process
     // and we need to update the value of omega stored by the MGOmegaCodonSubMatrix object,
     // based on the value stored by the RandomOmega parent
-    void SetParameters() {
+    void SetParameters() override {
         SetNucMatrix(matrix);
         SetOmega(RandomOmega->val());
     }
@@ -253,8 +253,8 @@ class AminoAcidReducedCodonSubMatrix : public virtual SubMatrix {
   protected:
     void SetCodonMatrix(CodonSubMatrix* incodonmatrix) { codonmatrix = incodonmatrix; }
 
-    void ComputeArray(int state);
-    void ComputeStationary();
+    void ComputeArray(int state) override;
+    void ComputeStationary() override;
 
     CodonSubMatrix* codonmatrix;
     ProteinStateSpace* aastatespace;
@@ -280,7 +280,7 @@ class RandomAminoAcidReducedCodonSubMatrix : public AminoAcidReducedCodonSubMatr
         specialUpdate();
     }
 
-    void SetParameters() { SetCodonMatrix(randomcodonmatrix); }
+    void SetParameters() override { SetCodonMatrix(randomcodonmatrix); }
 
   protected:
     RandomCodonSubMatrix* randomcodonmatrix;

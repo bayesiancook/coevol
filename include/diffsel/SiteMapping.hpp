@@ -12,7 +12,7 @@ class Link;
 
 class SiteMapping {
   public:
-    virtual ~SiteMapping() {}
+    virtual ~SiteMapping() = default;
 
     virtual BranchSitePath* GetPath(const Branch* branch) = 0;
     virtual Tree* GetTree() = 0;

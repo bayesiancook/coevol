@@ -103,16 +103,16 @@ class BranchSitePath {
 //	* Plink
 //-------------------------------------------------------------------------
 
-inline Plink::Plink() : next(0), prev(0), state(0), rel_time(0) {}
+inline Plink::Plink() : next(nullptr), prev(nullptr), state(0), rel_time(0) {}
 inline Plink::Plink(int instate, double inrel_time)
-    : next(0), prev(0), state(instate), rel_time(inrel_time) {}
+    : next(nullptr), prev(nullptr), state(instate), rel_time(inrel_time) {}
 inline Plink::~Plink() { Splice(); }
 
 inline Plink* Plink::Prev() { return prev; }
 inline Plink* Plink::Next() { return next; }
 
-inline bool Plink::IsFirst() { return prev == 0; }
-inline bool Plink::IsLast() { return next == 0; }
+inline bool Plink::IsFirst() { return prev == nullptr; }
+inline bool Plink::IsLast() { return next == nullptr; }
 
 inline void Plink::Insert(Plink* link) {
     link->next = next;
@@ -130,7 +130,7 @@ inline void Plink::Splice() {
     if (next) {
         next->prev = prev;
     }
-    prev = next = 0;
+    prev = next = nullptr;
 }
 
 inline void Plink::SetState(int instate) { state = instate; }
@@ -155,7 +155,7 @@ inline StateSpace* BranchSitePath::GetStateSpace() {
 
 inline void BranchSitePath::Append(int instate, double reltimelength) {
     last->SetRelativeTime(reltimelength);
-    Plink* link = new Plink(instate, 0);
+    auto link = new Plink(instate, 0);
     last->Insert(link);
     last = link;
     nsub++;
@@ -163,7 +163,7 @@ inline void BranchSitePath::Append(int instate, double reltimelength) {
 
 inline void BranchSitePath::BKAppend(int instate, double reltimelength) {
     bklast->SetRelativeTime(reltimelength);
-    Plink* link = new Plink(instate, 0);
+    auto link = new Plink(instate, 0);
     bklast->Insert(link);
     bklast = link;
     bknsub++;

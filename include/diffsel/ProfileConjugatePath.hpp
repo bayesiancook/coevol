@@ -20,9 +20,9 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
         CreateSuffStat();
     }
 
-    ~ProfilePathConjugate() { DeleteSuffStat(); }
+    ~ProfilePathConjugate() override { DeleteSuffStat(); }
 
-    void specialUpdate() {}
+    void specialUpdate() override {}
 
     RandomSubMatrix* GetRandomSubMatrix() { return matrix; }
 
@@ -41,18 +41,18 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
 
     void DeleteSuffStat() {}
 
-    void ResetSufficientStatistic() {
+    void ResetSufficientStatistic() override {
         rootcount.clear();
         paircount.clear();
         waitingtime.clear();
     }
 
-    void SaveSufficientStatistic() {
+    void SaveSufficientStatistic() override {
         cerr << "save sufficient\n";
         exit(1);
     }
 
-    void RestoreSufficientStatistic() {
+    void RestoreSufficientStatistic() override {
         cerr << "restore sufficient\n";
         exit(1);
     }
@@ -96,30 +96,30 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
       }
     */
 
-    double SuffStatLogProb() {
+    double SuffStatLogProb() override {
         double total = 0;
         int totnsub = 0;
 
         const double* rootstat = GetStationary();
-        for (map<int, int>::iterator i = rootcount.begin(); i != rootcount.end(); i++) {
-            total += i->second * log(rootstat[i->first]);
+        for (auto& i : rootcount) {
+            total += i.second * log(rootstat[i.first]);
         }
 
         double totscalestat = 0;
         SubMatrix& mat = *GetMatrix();
-        for (map<int, double>::iterator i = waitingtime.begin(); i != waitingtime.end(); i++) {
-            totscalestat += i->second * mat(i->first, i->first);
+        for (auto& i : waitingtime) {
+            totscalestat += i.second * mat(i.first, i.first);
         }
-        for (map<pair<int, int>, int>::iterator i = paircount.begin(); i != paircount.end(); i++) {
-            total += i->second * log(mat(i->first.first, i->first.second));
-            totnsub += i->second;
+        for (auto& i : paircount) {
+            total += i.second * log(mat(i.first.first, i.first.second));
+            totnsub += i.second;
         }
         total += totscalestat;
 
         return total;
     }
 
-    double logProb() {
+    double logProb() override {
         if (isActive()) {
             return SuffStatLogProb();
         }
@@ -151,7 +151,7 @@ class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<vo
         length = inlength;
         rate = inrate;
         matrix = pathconj->GetRandomSubMatrix();
-        stationary = 0;
+        stationary = nullptr;
         active_flag = true;
 
         Register(length);
@@ -165,7 +165,7 @@ class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<vo
     }
 
   protected:
-    void AddSufficientStatistic(SemiConjPrior* parent) {
+    void AddSufficientStatistic(SemiConjPrior* parent) override {
         if (parent != pathconj) {
             cerr << "error in ProfileConjugateRandomBranchSitePath::AddSufficientStatistic\n";
             exit(1);
@@ -270,11 +270,11 @@ class ProfileConjugateSelectionPhyloProcess : public PhyloProcess {
         patharray = inpatharray;
     }
 
-    virtual RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) {
+    RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) override {
         return new ProfileConjugateRandomBranchSitePath(
             this, patharray->GetProfilePathConjugate(
                       alloctree->GetBranchAllocation(link->GetBranch()), site),
-            0, tree->GetBranchVal(link->GetBranch()));
+            nullptr, tree->GetBranchVal(link->GetBranch()));
     }
 
   protected:
@@ -289,7 +289,7 @@ class ProfileConjugateMappingMove : public MCUpdate {
     ProfileConjugateMappingMove(PhyloProcess* inprocess, ProfilePathConjugateArray* inpathconjarray)
         : process(inprocess), pathconjarray(inpathconjarray) {}
 
-    double Move(double) {
+    double Move(double) override {
         pathconjarray->InactivateSufficientStatistic();
         process->Move(1);
         pathconjarray->ActivateSufficientStatistic();
@@ -306,7 +306,7 @@ class ProfileConjugateMove : public MCUpdate {
     ProfileConjugateMove(ProfilePathConjugateArray* inpathconjarray, bool intoggle)
         : pathconjarray(inpathconjarray), toggle(intoggle) {}
 
-    double Move(double) {
+    double Move(double) override {
         if (toggle) {
             pathconjarray->ActivateSufficientStatistic();
         } else {

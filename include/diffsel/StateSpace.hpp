@@ -7,7 +7,7 @@
 //
 class StateSpace {
   public:
-    virtual ~StateSpace() {}
+    virtual ~StateSpace() = default;
 
     virtual std::string GetState(int state) = 0;
     virtual int GetNstate() = 0;
@@ -23,11 +23,11 @@ class StateSpace {
 //
 class SimpleStateSpace : public StateSpace {
   public:
-    int GetState(std::string from);
+    int GetState(std::string from) override;
 
-    int GetNstate() { return Nstate; }
+    int GetNstate() override { return Nstate; }
 
-    std::string GetState(int state);
+    std::string GetState(int state) override;
 
   protected:
     int Nstate;
@@ -39,25 +39,25 @@ class SimpleStateSpace : public StateSpace {
 class DNAStateSpace : public SimpleStateSpace {
   public:
     DNAStateSpace();
-    ~DNAStateSpace();
+    ~DNAStateSpace() override;
 };
 
 class RNAStateSpace : public SimpleStateSpace {
   public:
     RNAStateSpace();
-    ~RNAStateSpace();
+    ~RNAStateSpace() override;
 };
 
 class ProteinStateSpace : public SimpleStateSpace {
   public:
     ProteinStateSpace();
-    ~ProteinStateSpace();
+    ~ProteinStateSpace() override;
 };
 
 class RYStateSpace : public SimpleStateSpace {
   public:
     RYStateSpace();
-    ~RYStateSpace();
+    ~RYStateSpace() override;
 
     int GetRYCoding(int from);
 };
@@ -77,7 +77,7 @@ class GenericStateSpace : public SimpleStateSpace {
         }
     }
 
-    ~GenericStateSpace() {
+    ~GenericStateSpace() override {
         delete[] Alphabet;
         delete[] AlphabetSet;
     }

@@ -25,7 +25,7 @@ class IIDUniform : public virtual Rvar<RealVector> {
         Sample();
     }
 
-    ~IIDUniform() { delete[] ClampVector; }
+    ~IIDUniform() override { delete[] ClampVector; }
 
     void ClampAt(double inval, int index) {
         val()[index] = inval;
@@ -40,7 +40,7 @@ class IIDUniform : public virtual Rvar<RealVector> {
         Clamp();
     }
 
-    double logProb() { return 0; }
+    double logProb() override { return 0; }
 
     virtual double Move(double tuning, int n) {
         int dim = GetDim();
@@ -50,7 +50,7 @@ class IIDUniform : public virtual Rvar<RealVector> {
             if ((n <= 0) || (n > dim)) {
                 n = dim;
             }
-            int* indices = new int[n];
+            auto indices = new int[n];
             Random::DrawFromUrn(indices, n, dim);
             for (int i = 0; i < n; i++) {
                 if (!ClampVector[indices[i]]) {
@@ -134,7 +134,7 @@ class IIDUniform : public virtual Rvar<RealVector> {
     }
 
   protected:
-    void drawSample() {
+    void drawSample() override {
         for (int i = 0; i < GetDim(); i++) {
             if (!ClampVector[i]) {
                 (*this)[i] = Random::sNormal() * 2 * max - max;
@@ -163,7 +163,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
         setval(RealVector(dim));
         bkvalue = RealVector(dim);
         mean = inmean;
-        meanvector = 0;
+        meanvector = nullptr;
         variance = invariance;
         Register(mean);
         Register(variance);
@@ -178,7 +178,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
         setval(RealVector(inmeanvector->GetDim()));
         bkvalue = RealVector(inmeanvector->GetDim());
         meanvector = inmeanvector;
-        mean = 0;
+        mean = nullptr;
         variance = invariance;
         Register(meanvector);
         Register(variance);
@@ -189,7 +189,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
         Sample();
     }
 
-    ~IIDNormal() { delete[] ClampVector; }
+    ~IIDNormal() override { delete[] ClampVector; }
 
     void ClampAtZero() {
         for (int i = 0; i < GetDim(); i++) {
@@ -210,7 +210,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
       }
     */
 
-    double logProb() {
+    double logProb() override {
         double total = 0;
         if (mean) {
             for (int i = 0; i < GetDim(); i++) {
@@ -226,7 +226,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
         return -0.5 * GetDim() * log(2 * M_PI * variance->val()) - 0.5 * total / variance->val();
     }
 
-    double ProposeMove(double tuning) {
+    double ProposeMove(double tuning) override {
         int choose = (int)(3 * Random::Uniform());
         if (choose == 0) {
             for (int i = 0; i < GetDim(); i++) {
@@ -322,7 +322,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
     }
 
   protected:
-    void drawSample() {
+    void drawSample() override {
         if (mean) {
             for (int i = 0; i < GetDim(); i++) {
                 if (!ClampVector[i]) {
@@ -355,7 +355,7 @@ class IIDAddition : public Dvar<RealVector> {
         specialUpdate();
     }
 
-    void specialUpdate() {
+    void specialUpdate() override {
         for (int i = 0; i < GetDim(); i++) {
             (*this)[i] = (*a)[i] + (*b)[i];
         }
@@ -376,7 +376,7 @@ class Addition : public Dvar<Real> {
         specialUpdate();
     }
 
-    void specialUpdate() { setval(a->val() + b->val()); }
+    void specialUpdate() override { setval(a->val() + b->val()); }
 
   private:
     Var<Real>* a;

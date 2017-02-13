@@ -37,9 +37,9 @@
 
 class RandomTransitionMatrix : public virtual AbstractTransitionMatrix, public virtual Dnode {
   public:
-    virtual ~RandomTransitionMatrix() { SetName("transition matrix"); }
+    ~RandomTransitionMatrix() override { SetName("transition matrix"); }
 
-    void specialUpdate() { SetParameters(); }
+    void specialUpdate() override { SetParameters(); }
 
   protected:
     // needs to be implemented in all random sub matrices
@@ -48,12 +48,12 @@ class RandomTransitionMatrix : public virtual AbstractTransitionMatrix, public v
     // by which the matrix can access information from its parents
     virtual void SetParameters() = 0;
 
-    void localRestore() {
+    void localRestore() override {
         SetParameters();
         Dnode::localRestore();
     }
 
-    void localCorrupt(bool bk) {
+    void localCorrupt(bool bk) override {
         CorruptMatrix();
         Dnode::localCorrupt(bk);
     }
@@ -63,9 +63,9 @@ class RandomSubMatrix : public virtual RandomTransitionMatrix, public virtual Su
   public:
     RandomSubMatrix(int Nstate, bool innormalise = false) : SubMatrix(Nstate, innormalise) {}
 
-    virtual ~RandomSubMatrix() {}
+    ~RandomSubMatrix() override = default;
 
-    int GetNstate() { return SubMatrix::GetNstate(); }
+    int GetNstate() override { return SubMatrix::GetNstate(); }
 };
 
 // class RandomTransitionMatrix : public virtual RandomAbstractTransitionMatrix, public virtual

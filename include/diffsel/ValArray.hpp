@@ -7,7 +7,7 @@
 
 class AbstractArray {
   public:
-    virtual ~AbstractArray() {}
+    virtual ~AbstractArray() = default;
 
     virtual int GetSize() = 0;
 };
@@ -15,7 +15,7 @@ class AbstractArray {
 template <class V>
 class VarArray : public virtual AbstractArray {
   public:
-    virtual ~VarArray() {}
+    ~VarArray() override = default;
 
     virtual Var<V>* GetVal(int site) = 0;
 
@@ -69,9 +69,9 @@ class RandomVarArray : public VarArray<V>, public MCMC {
 template <>
 class RandomVarArray<PosReal> : public VarArray<PosReal>, public MCMC, public Multiplicative {
   public:
-    virtual void Register(DAGnode* in) { RegisterArray(in); }
+    void Register(DAGnode* in) override { RegisterArray(in); }
 
-    int ScalarMultiplication(double d) {
+    int ScalarMultiplication(double d) override {
         for (int i = 0; i < GetSize(); i++) {
             GetVal(i)->ScalarMultiplication(d);
         }
@@ -91,7 +91,7 @@ class _ValPtrArray : public virtual AbstractArray {
         }
     }
 
-    virtual ~_ValPtrArray() {
+    ~_ValPtrArray() override {
         for (int i = 0; i < GetSize(); i++) {
             delete array[i];
             array[i] = 0;
@@ -99,7 +99,7 @@ class _ValPtrArray : public virtual AbstractArray {
         delete[] array;
     }
 
-    int GetSize() { return size; }
+    int GetSize() override { return size; }
 
     T* GetVal(int site) { return array[site]; }
 

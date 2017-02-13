@@ -7,7 +7,7 @@
 
 class AbstractTree {
   public:
-    virtual ~AbstractTree() {}
+    virtual ~AbstractTree() = default;
 
     virtual Tree* GetTree() = 0;
     Link* GetRoot() { return GetTree()->GetRoot(); }
@@ -154,7 +154,7 @@ class NodeVarTree : public virtual AbstractTree {
 //
 class LengthTree : public virtual BranchVarTree<PosReal> {
   public:
-    ~LengthTree() {}
+    ~LengthTree() override = default;
 
     virtual Var<PosReal>* GetBranchLength(const Branch* branch) { return GetBranchVal(branch); };
 
@@ -278,9 +278,9 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
 
 class RandomLengthTree : public virtual LengthTree, public virtual Multiplicative {
   public:
-    virtual void Register(DAGnode* in) { RegisterBranchTree(GetRoot(), in); }
+    void Register(DAGnode* in) override { RegisterBranchTree(GetRoot(), in); }
 
-    int ScalarMultiplication(double d) { return ScalarMultiplication(GetRoot(), d); }
+    int ScalarMultiplication(double d) override { return ScalarMultiplication(GetRoot(), d); }
 
   protected:
     int ScalarMultiplication(const Link* from, double d) {

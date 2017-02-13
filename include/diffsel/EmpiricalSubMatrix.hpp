@@ -17,7 +17,7 @@ class EmpiricalSubMatrix : public virtual SubMatrix {
         statecounts = new int[GetNstate()];
     }
 
-    virtual ~EmpiricalSubMatrix() {
+    ~EmpiricalSubMatrix() override {
         delete[] statecounts;
         for (int i = 0; i < GetNstate(); i++) {
             delete[] paircounts[i];
@@ -34,8 +34,8 @@ class EmpiricalSubMatrix : public virtual SubMatrix {
                 paircounts[i][j] = 0;
             }
         }
-        for (unsigned int i = 0; i < pathlist.size(); i++) {
-            pathlist[i]->AddCounts(paircounts, statecounts);
+        for (auto& i : pathlist) {
+            i->AddCounts(paircounts, statecounts);
         }
         CorruptMatrix();
     }
@@ -56,12 +56,12 @@ class EmpiricalGTRSubMatrix : public EmpiricalSubMatrix {
         stat = new double[GetNstate()];
     }
 
-    ~EmpiricalGTRSubMatrix() {
+    ~EmpiricalGTRSubMatrix() override {
         delete[] rr;
         delete[] stat;
     }
 
-    void ComputeArray(int i) {
+    void ComputeArray(int i) override {
         if (!statflag) {
             UpdateStationary();
             UpdateRelRates();
@@ -79,7 +79,7 @@ class EmpiricalGTRSubMatrix : public EmpiricalSubMatrix {
         Q[i][i] = -total;
     }
 
-    void ComputeStationary() {
+    void ComputeStationary() override {
         double total = 0;
         for (int i = 0; i < GetNstate(); i++) {
             stat[i] = statecounts[i];

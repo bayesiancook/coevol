@@ -43,9 +43,9 @@ class SelectionPhyloProcess : public PhyloProcess {
         matrix = inmatrix;
     }
 
-    virtual RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) {
-        return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()), 0,
-                                        matrix->GetBranchSiteVal(link->GetBranch(), site), 0);
+    RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) override {
+        return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()), nullptr,
+                                        matrix->GetBranchSiteVal(link->GetBranch(), site), nullptr);
     }
 
   protected:
@@ -53,7 +53,7 @@ class SelectionPhyloProcess : public PhyloProcess {
         if (rate) {
             return rate->GetVal(site);
         }
-        return 0;
+        return nullptr;
     }
 
     VarArray<PosReal>* rate;

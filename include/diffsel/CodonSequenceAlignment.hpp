@@ -16,7 +16,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
     CodonSequenceAlignment(SequenceAlignment* from, bool force_stops = false,
                            GeneticCodeType type = Universal);
 
-    ~CodonSequenceAlignment() {}
+    ~CodonSequenceAlignment() override = default;
 
     void DeleteAAConstantSites() {
         int i = 0;
@@ -47,8 +47,8 @@ class CodonSequenceAlignment : public SequenceAlignment {
     }
 
     double Nucleotide123CompositionalHeterogeneity() {
-        double** taxfreq12 = new double*[Ntaxa];
-        double** taxfreq3 = new double*[Ntaxa];
+        auto taxfreq12 = new double*[Ntaxa];
+        auto taxfreq3 = new double*[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq12[j] = new double[Nnuc];
             taxfreq3[j] = new double[Nnuc];
@@ -112,9 +112,9 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    double NucleotideCompositionalHeterogeneity(ostream* os, int pos = -1, double** comp = 0,
-                                                ostream* os2 = 0) {
-        double** taxfreq = 0;
+    double NucleotideCompositionalHeterogeneity(ostream* os, int pos = -1, double** comp = nullptr,
+                                                ostream* os2 = nullptr) {
+        double** taxfreq = nullptr;
         if (comp) {
             taxfreq = comp;
         } else {
@@ -154,7 +154,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
         }
 
         // make global freqs out of tax-specific freqs
-        double* globalfreq = new double[Nnuc];
+        auto globalfreq = new double[Nnuc];
         for (int k = 0; k < Nnuc; k++) {
             globalfreq[k] = 0;
             for (int j = 0; j < Ntaxa; j++) {
@@ -229,8 +229,9 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    double NucleotideCompositionalHeterogeneityOld(ostream* os, int pos = -1, double** comp = 0) {
-        double** taxfreq = 0;
+    double NucleotideCompositionalHeterogeneityOld(ostream* os, int pos = -1,
+                                                   double** comp = nullptr) {
+        double** taxfreq = nullptr;
         if (comp) {
             taxfreq = comp;
         } else {
@@ -270,7 +271,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
         }
 
         // make global freqs out of tax-specific freqs
-        double* globalfreq = new double[Nnuc];
+        auto globalfreq = new double[Nnuc];
         for (int k = 0; k < Nnuc; k++) {
             globalfreq[k] = 0;
             for (int j = 0; j < Ntaxa; j++) {
@@ -330,7 +331,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
     }
 
     double AminoAcidCompositionalHeterogeneity(ostream* os) {
-        double** taxfreq = new double*[Ntaxa];
+        auto taxfreq = new double*[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq[j] = new double[Naa];
             for (int k = 0; k < Naa; k++) {
@@ -348,7 +349,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
         }
 
         // make global freqs out of tax-specific freqs
-        double* globalfreq = new double[Naa];
+        auto globalfreq = new double[Naa];
         for (int k = 0; k < Naa; k++) {
             globalfreq[k] = 0;
             for (int j = 0; j < Ntaxa; j++) {
@@ -427,11 +428,11 @@ class GCContinuousData : public ContinuousData {
   public:
     GCContinuousData(CodonSequenceAlignment* from, int pos) {
         taxset = from->GetTaxonSet();
-        double** freq = new double*[taxset->GetNtaxa()];
+        auto freq = new double*[taxset->GetNtaxa()];
         for (int i = 0; i < taxset->GetNtaxa(); i++) {
             freq[i] = new double[Nnuc];
         }
-        from->NucleotideCompositionalHeterogeneity(0, pos, freq);
+        from->NucleotideCompositionalHeterogeneity(nullptr, pos, freq);
         Data = new double*[taxset->GetNtaxa()];
         Nsite = 1;
         for (int i = 0; i < taxset->GetNtaxa(); i++) {

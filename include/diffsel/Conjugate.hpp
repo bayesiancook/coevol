@@ -24,7 +24,7 @@ class SemiConjPrior {
         corrupt_counter = 0;
     }
 
-    virtual ~SemiConjPrior() {}
+    virtual ~SemiConjPrior() = default;
 
     // are already implemented in SemiConjugatePrior template
     virtual void InactivateSufficientStatistic() = 0;
@@ -45,7 +45,7 @@ class SemiConjPrior {
 
 class ConjSampling {
   public:
-    virtual ~ConjSampling() {}
+    virtual ~ConjSampling() = default;
 
     // to be implemented in non-abstract subclasses
     virtual void AddSufficientStatistic(SemiConjPrior* parent) = 0;
@@ -59,29 +59,29 @@ class ConjSampling {
     // backed-up/recomputed/restored.
     //
     virtual void ConjugateCorrupt(bool bk) {
-        for (auto i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
-            if ((*i)->isActive()) {
-                (*i)->ConjugateNotifyCorrupt(bk);
+        for (auto i : conjugate_up) {
+            if (i->isActive()) {
+                i->ConjugateNotifyCorrupt(bk);
             }
         }
     }
 
     virtual double ConjugateUpdate(bool& active) {
         double ret = 0;
-        for (auto i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
-            if ((*i)->isActive()) {
+        for (auto i : conjugate_up) {
+            if (i->isActive()) {
                 active = true;
-                ret += (*i)->ConjugateNotifyUpdate();
+                ret += i->ConjugateNotifyUpdate();
             }
         }
         return ret;
     }
 
     virtual void ConjugateRestore(bool& active) {
-        for (auto i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
-            if ((*i)->isActive()) {
+        for (auto i : conjugate_up) {
+            if (i->isActive()) {
                 active = true;
-                (*i)->ConjugateNotifyRestore();
+                i->ConjugateNotifyRestore();
             }
         }
     }
@@ -101,9 +101,9 @@ class ConjSampling {
     //
     void NotifyActivateSufficientStatistic(SemiConjPrior* from) {
         // should also check that the type matches
-        for (auto i = conjugate_up.begin(); i != conjugate_up.end(); i++) {
-            if (*(i) != from) {
-                (*i)->InactivateSufficientStatistic();
+        for (auto i : conjugate_up) {
+            if (i != from) {
+                i->InactivateSufficientStatistic();
             }
         }
     }
@@ -276,7 +276,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     // it backups/recomputes/restores them accordingly
     // and backups/updates/restores its own probability
     //
-    virtual double ConjugateNotifyUpdate() {
+    double ConjugateNotifyUpdate() override {
         std::cerr << "conjugate notify\n";
         exit(1);
         corrupt_counter--;
@@ -291,7 +291,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         return 0;
     }
 
-    virtual void ConjugateNotifyCorrupt(bool bk) {
+    void ConjugateNotifyCorrupt(bool bk) override {
         std::cerr << "conjugate notify corrupt\n";
         exit(1);
         if (!isActive()) {
@@ -312,7 +312,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         corrupt_counter++;
     }
 
-    virtual void ConjugateNotifyRestore() {
+    void ConjugateNotifyRestore() override {
         std::cerr << "conjugate notify\n";
         exit(1);
         corrupt_counter--;
@@ -365,7 +365,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual void InactivateSufficientStatistic() {
+    void InactivateSufficientStatistic() override {
         if (active_flag) {
             active_flag = false;
             suffstat_flag = false;
@@ -468,7 +468,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
     // it backups/recomputes/restores them accordingly
     // and backups/updates/restores its own probability
     //
-    virtual double ConjugateNotifyUpdate() {
+    double ConjugateNotifyUpdate() override {
         corrupt_counter--;
         if (!corrupt_counter) {
             this->flag = false;
@@ -478,7 +478,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         return 0;
     }
 
-    virtual void ConjugateNotifyCorrupt(bool bk) {
+    void ConjugateNotifyCorrupt(bool bk) override {
         if (!isActive()) {
             std::cerr << "error in Conjugate corrupt\n";
             exit(1);
@@ -494,7 +494,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         corrupt_counter++;
     }
 
-    virtual void ConjugateNotifyRestore() {
+    void ConjugateNotifyRestore() override {
         corrupt_counter--;
         if (!corrupt_counter) {
             RestoreSufficientStatistic();
@@ -545,7 +545,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual void InactivateSufficientStatistic() {
+    void InactivateSufficientStatistic() override {
         if (active_flag) {
             active_flag = false;
             suffstat_flag = false;
@@ -575,7 +575,7 @@ class ConjugatePrior : public virtual SemiConjugatePrior<R> {
   public:
     ConjugatePrior() { integrated_flag = false; }
 
-    virtual ~ConjugatePrior() {}
+    virtual ~ConjugatePrior() = default;
 
     // to be implemented in non-abstract subclasses
     virtual void GibbsResample() = 0;

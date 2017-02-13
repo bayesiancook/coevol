@@ -17,7 +17,7 @@ CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool for
         }
         Nsite = from->Nsite / 3;
         Ntaxa = from->Ntaxa;
-        CodonStateSpace* tempstatespace = new CodonStateSpace(type);
+        auto tempstatespace = new CodonStateSpace(type);
         statespace = tempstatespace;
         // DNAStateSpace* nucspace = tempstatespace->GetDNAStateSpace();
 
@@ -67,7 +67,7 @@ CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool for
 
 
 void CodonSequenceAlignment::ToStreamRandomJackknife(ostream& os, double p) {
-    int* included = new int[Nsite];
+    auto included = new int[Nsite];
     int ninc = 0;
     for (int i = 0; i < Nsite; i++) {
         if (Random::Uniform() < p) {
@@ -158,7 +158,7 @@ void CodonSequenceAlignment::ToStream(ostream& os, int pos) {
 
 void CodonSequenceAlignment::ToStreamFourFoldThird(ostream& os) {
     int nsite = 0;
-    int* included = new int[Nsite];
+    auto included = new int[Nsite];
     for (int j = 0; j < Nsite; j++) {
         int i = 0;
         while ((i < Ntaxa) && (GetState(i, j) != -2) &&
@@ -201,7 +201,7 @@ void CodonSequenceAlignment::ToStreamFourFoldThird(ostream& os) {
 
 void CodonSequenceAlignment::ToStreamFourFoldTriplet(ostream& os) {
     int nsite = 0;
-    int* included = new int[Nsite];
+    auto included = new int[Nsite];
     for (int j = 0; j < Nsite; j++) {
         int i = 0;
         while ((i < Ntaxa) && (GetState(i, j) != -2) &&
@@ -243,7 +243,7 @@ void CodonSequenceAlignment::ToStreamFourFoldTriplet(ostream& os) {
 
 void CodonSequenceAlignment::ToStreamFourFoldThirdwoCpG(ostream& os) {
     int nsite = 0;
-    int* included = new int[Nsite];
+    auto included = new int[Nsite];
     for (int j = 0; j < Nsite - 1; j++) {
         bool keep = true;
         for (int i = 0; i < Ntaxa; i++) {

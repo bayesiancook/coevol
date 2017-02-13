@@ -49,7 +49,7 @@ class _BranchValPtrTree : public virtual AbstractTree {
         }
     }
 
-    virtual ~_BranchValPtrTree() {}
+    ~_BranchValPtrTree() override = default;
 
     virtual void RecursiveDelete(const Link* from) {
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
@@ -126,7 +126,7 @@ template <>
 class BranchValPtrTree<Rvar<PosReal> > : public virtual _BranchValPtrTree<Rvar<PosReal> >,
                                          public virtual RandomLengthTree {
   public:
-    virtual Rvar<PosReal>* GetBranchVal(const Branch* branch) {
+    Rvar<PosReal>* GetBranchVal(const Branch* branch) override {
         return _BranchValPtrTree<Rvar<PosReal> >::GetBranchVal(branch);
     }
 };
@@ -135,7 +135,7 @@ template <>
 class BranchValPtrTree<Dvar<PosReal> > : public virtual _BranchValPtrTree<Dvar<PosReal> >,
                                          public virtual LengthTree {
   public:
-    virtual Dvar<PosReal>* GetBranchVal(const Branch* branch) {
+    Dvar<PosReal>* GetBranchVal(const Branch* branch) override {
         return _BranchValPtrTree<Dvar<PosReal> >::GetBranchVal(branch);
     }
 };
@@ -147,7 +147,7 @@ class _NodeValPtrTree : public virtual AbstractTree {
 
     void SetNodeVal(const Node* node, U* in) { nodeval[node] = in; }
 
-    virtual ~_NodeValPtrTree() {}
+    ~_NodeValPtrTree() override = default;
 
     virtual void RecursiveCreate(const Link* from) {
         U* u = CreateNodeVal(from);
@@ -220,7 +220,7 @@ class NodeValPtrTree<Dvar<V> > : public virtual _NodeValPtrTree<Dvar<V> >,
 template <class U, class V>
 class NodeBranchValPtrTree : public virtual NodeValPtrTree<U>, public virtual BranchValPtrTree<V> {
   public:
-    virtual ~NodeBranchValPtrTree() {}
+    virtual ~NodeBranchValPtrTree() = default;
 
     // by default: makes 2 sweeps, for creating nodes, and then branches
     virtual void RecursiveCreate(Link* from) {
@@ -301,7 +301,7 @@ class NodeBranchValPtrTree<Rvar<U>, Dvar<V> > : public virtual NodeValPtrTree<Rv
                                                 public virtual BranchValPtrTree<Dvar<V> >,
                                                 public NodeBranchVarTree<U, V> {
   public:
-    virtual ~NodeBranchValPtrTree() {}
+    virtual ~NodeBranchValPtrTree() = default;
 
     // by default: makes 2 sweeps, for creating nodes, and then branches
     virtual void RecursiveCreate(Link* from) {
@@ -382,7 +382,7 @@ class NodeBranchValPtrTree<Dvar<U>, Dvar<V> > : public virtual NodeValPtrTree<Dv
                                                 public virtual BranchValPtrTree<Dvar<V> >,
                                                 public NodeBranchVarTree<U, V> {
   public:
-    virtual ~NodeBranchValPtrTree() {}
+    virtual ~NodeBranchValPtrTree() = default;
 
     // by default: makes 2 sweeps, for creating nodes, and then branches
     virtual void RecursiveCreate(Link* from) {

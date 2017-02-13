@@ -19,7 +19,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
         return (DirichletNormalCodonUsageSelectionModelMS*)model;
     }
 
-    string GetModelType() { return modeltype; }
+    string GetModelType() override { return modeltype; }
 
     DirichletNormalCodonUsageSelectionChainMS(string indata, string intree, int incategory,
                                               int inburnin, int inevery, string filename,
@@ -65,7 +65,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
         Save();
     }
 
-    void New(int force) {
+    void New(int force) override {
         if (modeltype == "SELECTIONGTR") {
             model = new DirichletNormalCodonUsageSelectionModelMS(datafile, treefile, category,
                                                                   type, conjugate, mechanism);
@@ -77,7 +77,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
         Reset(force);
     }
 
-    void Open() {
+    void Open() override {
         ifstream is((name + ".param").c_str());
         if (!is) {
             cerr << "error : cannot find file : " << name << ".param\n";
@@ -103,7 +103,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
         cerr << size << " points saved, current ln prob = " << GetModel()->GetLogProb() << "\n";
     }
 
-    void Save() {
+    void Save() override {
         ofstream param_os((name + ".param").c_str());
         param_os << GetModelType() << '\n';
         param_os << datafile << '\t' << treefile << '\t' << category << '\n';
@@ -115,7 +115,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
     }
 
 
-    void Move() {
+    void Move() override {
         for (int i = 0; i < every; i++) {
             model->Move(1);
         }

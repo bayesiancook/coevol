@@ -23,9 +23,9 @@ class OneMatrixPhyloProcess : public PhyloProcess {
     // how to create the substitution process (and the associated substitution path)
     // for a given branch (accessible through link), and a given site
     //
-    virtual RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int) {
-        return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()), 0,
-                                        GetMatrix(), 0);
+    RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int) override {
+        return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()), nullptr,
+                                        GetMatrix(), nullptr);
     }
 
     RandomSubMatrix* GetMatrix() { return matrix; }
@@ -47,9 +47,9 @@ class SiteMatrixPhyloProcess : public PhyloProcess {
     // how to create the substitution process (and the associated substitution path)
     // for a given branch (accessible through link), and a given site
     //
-    virtual RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) {
-        return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()), 0,
-                                        GetMatrix(site), 0);
+    RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) override {
+        return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()), nullptr,
+                                        GetMatrix(site), nullptr);
     }
 
     RandomSubMatrix* GetMatrix(int site) { return matrix[site]; }
@@ -67,14 +67,14 @@ class OneMatrixRASPhyloProcess : public OneMatrixPhyloProcess {
         rate = inrate;
     }
 
-    virtual RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) {
+    RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) override {
         return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()),
-                                        GetRate(site), matrix, 0);
+                                        GetRate(site), matrix, nullptr);
     }
 
     Var<PosReal>* GetRate(int site) {
         if (!rate) {
-            return 0;
+            return nullptr;
         }
         return rate->GetVal(site);
     }

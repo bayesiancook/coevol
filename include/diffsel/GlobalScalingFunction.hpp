@@ -9,7 +9,7 @@
 class GlobalScalingFunction : public Dvar<void> {
   public:
     GlobalScalingFunction() {}
-    virtual ~GlobalScalingFunction() {}
+    ~GlobalScalingFunction() override = default;
 
     virtual double GetScalingFactor(double time1, double time2) = 0;
 };
@@ -26,7 +26,7 @@ class BurstScalingFunction : public GlobalScalingFunction {
         Register(rate);
     }
 
-    double GetScalingFactor(double time1, double time2) {
+    double GetScalingFactor(double time1, double time2) override {
         if (time1 < time2) {
             std::cerr << "error in getscalingfactor: time1 < time2 : " << time1 << '\t' << time2
                       << '\n';
@@ -47,7 +47,7 @@ class BurstScalingFunction : public GlobalScalingFunction {
         return v / (time1 - time2);
     }
 
-    void specialUpdate() {
+    void specialUpdate() override {
         // nothing to do
     }
 

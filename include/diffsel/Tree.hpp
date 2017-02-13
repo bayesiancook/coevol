@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <utility>
 #include "diffsel/TaxonSet.hpp"  // FIXME should be able to remove but errors too horrible
 #include "utils/Random.hpp"
 
@@ -16,10 +17,10 @@ class Node {
 
   public:
     Node() : index(0), name("") {}
-    Node(string s) : index(0), name(s) {}
+    Node(string s) : index(0), name(std::move(s)) {}
     Node(const Node* from) : index(from->index), name(from->name) {}
 
-    virtual ~Node() {}
+    virtual ~Node() = default;
 
     virtual string GetName() const { return name; }
     virtual void SetName(string inname) { name = inname; }
@@ -34,10 +35,10 @@ class Branch {
 
   public:
     Branch() : index(0), name("") {}
-    Branch(string s) : index(0), name(s) {}
+    Branch(string s) : index(0), name(std::move(s)) {}
     Branch(const Branch* from) : index(from->index), name(from->name) {}
 
-    virtual ~Branch() {}
+    virtual ~Branch() = default;
 
     virtual string GetName() const { return name; }
     virtual void SetName(string inname) { name = inname; }
@@ -58,15 +59,15 @@ class Link {
     Link() {
         // tbl = 0;
         next = out = this;
-        branch = 0;
-        node = 0;
+        branch = nullptr;
+        node = nullptr;
     }
 
     Link(const Link*) {
         // tbl = 0;
         next = out = this;
-        node = 0;
-        branch = 0;
+        node = nullptr;
+        branch = nullptr;
     }
 
     Link* Next() const { return next; }
@@ -143,14 +144,14 @@ class Link {
             d++;
         }
         return link;
-        return 0;
+        return nullptr;
     }
 };
 
 
 class NewickTree {
   public:
-    virtual ~NewickTree() {}
+    virtual ~NewickTree() = default;
     virtual const Link* GetRoot() const = 0;
 
     void ToStream(ostream& os) const;
@@ -251,7 +252,7 @@ class Tree : public NewickTree {
     // create a tree by reading into a file (netwick format expected)
     // calls ReadFromStream
 
-    virtual ~Tree();
+    ~Tree() override;
     // calls RecursiveDelete
     // but does NOT delete the Nodes and Branches
 
@@ -261,7 +262,7 @@ class Tree : public NewickTree {
     // Delete the unary Node wich from is paart of and set everithing right.
     void DeleteUnaryNode(Link* from);
 
-    Link* GetRoot() const { return root; }
+    Link* GetRoot() const override { return root; }
     // const Link* GetRoot() const {return root;}
     const TaxonSet* GetTaxonSet() const { return taxset; }
 
@@ -330,9 +331,9 @@ class Tree : public NewickTree {
         }
     }
 
-    string GetBranchName(const Link* link) const { return link->GetBranch()->GetName(); }
+    string GetBranchName(const Link* link) const override { return link->GetBranch()->GetName(); }
 
-    string GetNodeName(const Link* link) const {
+    string GetNodeName(const Link* link) const override {
         return link->GetNode()->GetName();
         /*
           if (! link->isLeaf())	{
@@ -425,7 +426,7 @@ class Tree : public NewickTree {
 
     void Subdivide(Link* from, int Ninterpol);
 
-    string Reduce(Link* from = 0) {
+    string Reduce(Link* from = nullptr) {
         if (!from) {
             from = GetRoot();
         }
@@ -452,7 +453,7 @@ class Tree : public NewickTree {
         return "";
     }
 
-    void PrintReduced(ostream& os, const Link* from = 0) {
+    void PrintReduced(ostream& os, const Link* from = nullptr) {
         if (!from) {
             from = GetRoot();
         }
@@ -495,7 +496,7 @@ class Tree : public NewickTree {
     // returns link if found (then found1 and found2 must
     const Link* RecursiveGetLCA(const Link* from, string tax1, string tax2, bool& found1,
                                 bool& found2) {
-        const Link* ret = 0;
+        const Link* ret = nullptr;
         if (from->isLeaf()) {
             // found1 |= (from->GetNode()->GetName() == tax1);
             // found2 |= (from->GetNode()->GetName() == tax2);
@@ -543,7 +544,7 @@ class Tree : public NewickTree {
 
     const Link* RecursiveGetLCA(const Link* from, const Link* from1, const Link* from2,
                                 bool& found1, bool& found2) {
-        const Link* ret = 0;
+        const Link* ret = nullptr;
         found1 |= (from == from1);
         found2 |= (from == from2);
         if (!ret) {

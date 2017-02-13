@@ -151,7 +151,7 @@ void BranchSitePath::Prefix(BranchSitePath* p, BranchSitePath* root, double abst
                 cerr << "error : next is 0\n";
                 exit(1);
             }
-            tmp->prev = 0;
+            tmp->prev = nullptr;
 
             // put it at the base of this
             init->prev = p->init;

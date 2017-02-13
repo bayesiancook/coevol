@@ -10,7 +10,7 @@
 // it does not do any job
 class ContinuousData {
   public:
-    ContinuousData() {}
+    ContinuousData() = default;
 
     ContinuousData(const TaxonSet* intaxset, int inNsite) {
         taxset = intaxset;
@@ -44,7 +44,7 @@ class ContinuousData {
         }
     }
 
-    void ToStream(ostream& os, TaxonSet* taxset = 0) {
+    void ToStream(ostream& os, TaxonSet* taxset = nullptr) {
         if (!taxset) {
             // cerr << "??? in taxon set\n";
             os << GetNtaxa() << '\t' << GetNsite() << '\n';
@@ -219,7 +219,7 @@ class FileContinuousData : public ContinuousData {
         }
 
 
-        string* name = new string[Ntaxa];
+        auto name = new string[Ntaxa];
         Data = new double*[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             is >> name[i];

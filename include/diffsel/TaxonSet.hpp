@@ -14,7 +14,7 @@ class Link;
 class TaxonSet {
   public:
     TaxonSet(const string* names, int ntaxa);
-    TaxonSet(const Tree* tree, const Link* subgroup = 0);
+    TaxonSet(const Tree* tree, const Link* subgroup = nullptr);
     ~TaxonSet();
 
     int GetNtaxa() const;

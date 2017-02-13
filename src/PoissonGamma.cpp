@@ -43,9 +43,9 @@ class PoissonGammaModel : public ProbModel {
         getDot();
     }
 
-    ~PoissonGammaModel() {}
+    ~PoissonGammaModel() override = default;
 
-    virtual void MakeScheduler() {
+    void MakeScheduler() override {
         scheduler.Register(new SimpleMove(sigma, 0.1), 1, "sigma");
         scheduler.Register(new SimpleMove(sigma, 0.01), 1, "sigma");
 
@@ -68,21 +68,21 @@ class PoissonGammaModel : public ProbModel {
         return mean;
     }
 
-    void TraceHeader(ostream& os) { os << "logprob\ttheta\tsigma\tmeeanomega\n"; }
+    void TraceHeader(ostream& os) override { os << "logprob\ttheta\tsigma\tmeeanomega\n"; }
 
-    void Trace(ostream& os) {
+    void Trace(ostream& os) override {
         os << GetLogProb() << '\t' << theta->val() << '\t' << sigma->val() << '\t' << GetMeanOmega()
            << '\n';
     }
 
-    double GetLogProb() {
+    double GetLogProb() override {
         double tot = 0;
         tot += sigma->GetLogProb();
         tot += theta->GetLogProb();
         return tot;
     }
 
-    void drawSample() {
+    void drawSample() override {
         sigma->Sample();
         theta->Sample();
         for (int i = 0; i < N; i++) {
@@ -90,8 +90,8 @@ class PoissonGammaModel : public ProbModel {
         }
     }
 
-    void ToStream(ostream&) {}
-    void FromStream(istream&) {}
+    void ToStream(ostream&) override {}
+    void FromStream(istream&) override {}
 };
 
 int main(int, char* argv[]) {
@@ -100,12 +100,12 @@ int main(int, char* argv[]) {
 
     int N;
     is >> N;
-    int* data = new int[N];
+    auto data = new int[N];
     for (int i = 0; i < N; i++) {
         is >> data[i];
     }
 
-    PoissonGammaModel* model = new PoissonGammaModel(N, data);
+    auto model = new PoissonGammaModel(N, data);
     ofstream os((name + ".trace").c_str());
     model->TraceHeader(os);
 

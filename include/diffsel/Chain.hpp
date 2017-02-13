@@ -24,7 +24,7 @@ class Chain {
   public:
     Chain();
 
-    virtual ~Chain(){};
+    virtual ~Chain() = default;
 
     virtual void MakeFiles(int force = 0);
     // overwrites files if force == 1

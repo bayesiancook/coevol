@@ -32,7 +32,7 @@ class DirichletNormalCompMove : public MCUpdate {
 
     int GetSize() { return global->GetSize(); }
 
-    double Move(double) {
+    double Move(double) override {
         int Naccepted = 0;
 
         for (int rep = 0; rep < nrep; rep++) {
@@ -50,11 +50,11 @@ class DirichletNormalCompMove : public MCUpdate {
                     n = dim / 2;
                 }
 
-                double* bkprofile = new double[dim];
+                auto bkprofile = new double[dim];
                 for (int k = 0; k < dim; k++) {
                     bkprofile[k] = (*profile)[k];
                 }
-                int* indices = new int[2 * n];
+                auto indices = new int[2 * n];
                 Random::DrawFromUrn(indices, 2 * n, dim);
                 for (int i = 0; i < n; i++) {
                     int i1 = indices[2 * i];
@@ -124,7 +124,7 @@ class NormalNormalCompMove : public MCUpdate {
 
     int GetSize() { return diff1->GetSize(); }
 
-    double Move(double) {
+    double Move(double) override {
         int Naccepted = 0;
 
         for (int rep = 0; rep < nrep; rep++) {
@@ -142,7 +142,7 @@ class NormalNormalCompMove : public MCUpdate {
                     n = dim;
                 }
 
-                int* indices = new int[n];
+                auto indices = new int[n];
                 Random::DrawFromUrn(indices, n, dim);
                 for (int i = 0; i < n; i++) {
                     int j = indices[i];
@@ -179,8 +179,8 @@ class ComplexDirichletIIDArrayMove : public MCUpdate {
     ComplexDirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int innrep)
         : selectarray(inselectarray), tuning(intuning), nrep(innrep) {}
 
-    double Move(double) {
-        double* tot = new double[selectarray->GetSize()];
+    double Move(double) override {
+        auto tot = new double[selectarray->GetSize()];
         for (int i = 0; i < selectarray->GetSize(); i++) {
             tot[i] = 0;
         }
@@ -244,7 +244,7 @@ class RenormalizedIIDStat : public Dvar<Profile> {
 
     // the only function that we need to define is the one that makes multiplication and
     // renormalization
-    void specialUpdate() {
+    void specialUpdate() override {
         // divide
         double total = 0;
 
@@ -559,7 +559,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
         if (conjugate) {
             cerr << "conjugate\n";
-            matrixtree = 0;
+            matrixtree = nullptr;
             patharray = new ProfilePathConjugateArray(Nsite, K, submatrix);
             patharray->InactivateSufficientStatistic();
             phyloprocess = new ProfileConjugateSelectionPhyloProcess(allocatetree, gamtree,
@@ -567,7 +567,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         } else {
             matrixtree = new SelectionMatrixTree(allocatetree, submatrix);
             cerr << "create phylo process\n";
-            phyloprocess = new SelectionPhyloProcess(gamtree, 0, matrixtree, codondata);
+            phyloprocess = new SelectionPhyloProcess(gamtree, nullptr, matrixtree, codondata);
         }
 
         cerr << "unfold\n";
@@ -612,7 +612,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     // but in general, the model is deleted just before the program exits, so we can dispense with
     // it for the moment
 
-    ~DirichletNormalCodonUsageSelectionModelMS() {}
+    ~DirichletNormalCodonUsageSelectionModelMS() override = default;
 
     Tree* GetTree() { return tree; }
 
@@ -627,7 +627,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
     // log probability of the model is the sum of the log prior and the log likelihood
 
-    double GetLogProb() { return GetLogPrior() + GetLogLikelihood(); }
+    double GetLogProb() override { return GetLogPrior() + GetLogLikelihood(); }
 
     double GetLogPrior() {
         double total = 0;
@@ -659,7 +659,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     }
 
 
-    void MakeScheduler() {
+    void MakeScheduler() override {
         scheduler.Register(new SimpleMove(phyloprocess, 1), 1, "mapping");
 
         for (int n = 0; n < 3; n++) {
@@ -753,13 +753,13 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     }
 
 
-    double Move(double) {
+    double Move(double) override {
         scheduler.Cycle(1, 1, false, false);
         return 1;
     }
 
 
-    void drawSample() {
+    void drawSample() override {
         cerr << "in sample\n";
         exit(1);
     }
@@ -881,7 +881,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     CodonStateSpace* GetCodonStateSpace() { return codondata->GetCodonStateSpace(); }
 
     // creates the header of the <model_name>.trace file
-    void TraceHeader(ostream& os) {
+    void TraceHeader(ostream& os) override {
         os << "#logprior\tlnL\tlength\t";
         os << "globent\tcenter\tconc\t";
         for (int i = 1; i < K; i++) {
@@ -894,7 +894,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
     // writes all summary statistics on one single line
     // in the same order as that provided by the header
-    void Trace(ostream& os) {
+    void Trace(ostream& os) override {
         os << GetLogPrior();
         os << '\t' << GetLogLikelihood();
         os << '\t' << GetLength();
@@ -910,7 +910,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         os.flush();
     }
 
-    void ToStream(ostream& os) {
+    void ToStream(ostream& os) override {
         os.precision(7);
         os << *lambda << '\n';
         os << *gamtree << '\n';
@@ -926,7 +926,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         }
     }
 
-    void FromStream(istream& is) {
+    void FromStream(istream& is) override {
         is >> *lambda;
         is >> *gamtree;
         is >> *relrate;
@@ -944,14 +944,13 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     }
 
     void PostPredAli(string name, int sitemin, int sitemax) {
-        CodonSequenceAlignment* datacopy = new CodonSequenceAlignment(codondata);
+        auto datacopy = new CodonSequenceAlignment(codondata);
         phyloprocess->PostPredSample(false);
         phyloprocess->GetLeafData(datacopy);
         ostringstream s;
         ofstream os((name + ".ali").c_str());
         if (sitemax != -1) {
-            CodonSequenceAlignment* datacopy2 =
-                new CodonSequenceAlignment(datacopy, sitemin, sitemax);
+            auto datacopy2 = new CodonSequenceAlignment(datacopy, sitemin, sitemax);
             datacopy2->ToStream(os);
         } else {
             datacopy->ToStream(os);

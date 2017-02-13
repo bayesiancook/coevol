@@ -11,7 +11,7 @@ class BranchSiteSubstitutionProcess {
     // a state space?
 
   public:
-    virtual ~BranchSiteSubstitutionProcess() {}
+    virtual ~BranchSiteSubstitutionProcess() = default;
 
     virtual double GetTime() = 0;
     virtual double GetRate() = 0;
@@ -109,7 +109,7 @@ inline int BranchSiteSubstitutionProcess::DrawOneStep(int state) {
 }
 
 inline void BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int state, double* p) {
-    double* p1 = new double[GetNstate()];
+    auto p1 = new double[GetNstate()];
     for (int k = 0; k < GetNstate(); k++) {
         p1[k] = 0;
     }
@@ -132,8 +132,8 @@ inline void BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int state
 
 inline double BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int stateup,
                                                                          int statedown) {
-    double* p = new double[GetNstate()];
-    double* p1 = new double[GetNstate()];
+    auto p = new double[GetNstate()];
+    auto p1 = new double[GetNstate()];
     for (int k = 0; k < GetNstate(); k++) {
         p1[k] = 0;
     }
@@ -179,7 +179,7 @@ inline int BranchSiteSubstitutionProcess::DrawStationary() {
 
 
 inline int BranchSiteSubstitutionProcess::DrawFiniteTime(int state) {
-    double* p = new double[GetNstate()];
+    auto p = new double[GetNstate()];
     GetFiniteTimeTransitionProb(state, p);
     int newstate = Random::DrawFromDiscreteDistribution(p, GetNstate());
     delete[] p;
@@ -258,7 +258,7 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber(int 
 
 inline int BranchSiteSubstitutionProcess::DrawUniformizedTransition(int state, int statedown,
                                                                     int n) {
-    double* p = new double[GetNstate()];
+    auto p = new double[GetNstate()];
     double tot = 0;
     for (int l = 0; l < GetNstate(); l++) {
         tot += GetSubMatrix()->Power(1, state, l) * GetSubMatrix()->Power(n, l, statedown);

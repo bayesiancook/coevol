@@ -63,7 +63,7 @@ class IIDNormalIIDArray : public IIDArray<RealVector> {
 
 
   protected:
-    Rvar<RealVector>* CreateVal(int) { return new IIDNormal(dim, mean, variance); }
+    Rvar<RealVector>* CreateVal(int) override { return new IIDNormal(dim, mean, variance); }
 
     Var<Real>* mean;
     Var<PosReal>* variance;
@@ -79,7 +79,7 @@ class IIDNormalIIDArrayMove : public MCUpdate {
         m = inm;
     }
 
-    double Move(double tuning_modulator = 1) {
+    double Move(double tuning_modulator = 1) override {
         return selectarray->MoveN(tuning_modulator * tuning, m);
     }
 

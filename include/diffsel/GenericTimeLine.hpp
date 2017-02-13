@@ -9,8 +9,8 @@ using namespace std;
 
 class GenericTimeLine {
   public:
-    GenericTimeLine() {}
-    virtual ~GenericTimeLine() {}
+    GenericTimeLine() = default;
+    virtual ~GenericTimeLine() = default;
 
     virtual double GetVal(double abstime, int TimeLineIndex) = 0;
     virtual int GetNumberOfTimeLines() = 0;
@@ -25,9 +25,9 @@ class GenericTimeLine {
 class LinearlyInterpolatedTimeLine : public GenericTimeLine {
   public:
     LinearlyInterpolatedTimeLine() {}
-    virtual ~LinearlyInterpolatedTimeLine() {}
+    ~LinearlyInterpolatedTimeLine() override = default;
 
-    double GetVal(double abstime, int TimeLineIndex) {
+    double GetVal(double abstime, int TimeLineIndex) override {
         TimeLineIndex = TimeLineIndex - 1;
         if (TimeLineIndex > NumberOfTimeLines) {
             return (0);
@@ -58,7 +58,7 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
                    ((*Older).first - (*Younger).first);  // Linear interpolation
     }
 
-    int GetNumberOfTimeLines() { return NumberOfTimeLines; }
+    int GetNumberOfTimeLines() override { return NumberOfTimeLines; }
 
 
     // The format is going to be:
@@ -76,8 +76,8 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
         map<double, double>::iterator it;
         map<double, double> temp;
         os << NumberOfTimeLines << endl;
-        for (unsigned int i = 0; i < TimesAndValues.size(); i++) {
-            temp = TimesAndValues[i];
+        for (const auto& TimesAndValue : TimesAndValues) {
+            temp = TimesAndValue;
             os << temp.size() << endl;
             for (it = temp.begin(); it != temp.end(); it++) {
                 os << (*it).first << "\t" << (*it).second << endl;

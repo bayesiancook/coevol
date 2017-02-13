@@ -16,21 +16,21 @@ class BranchProcess : public MCMC, public virtual BranchValPtrTree<Rvar<V> > {
         this->SetWithRoot(inwithroot);
     }
 
-    Tree* GetTree() { return tree; }
+    Tree* GetTree() override { return tree; }
 
     V val(const Branch* branch) { return this->GetBranchVal(branch)->val(); }
 
     void setval(const Branch* branch, V inval) { this->GetBranchVal(branch)->setval(inval); }
 
-    virtual void drawSample() { drawSample(this->GetRoot()); }
+    void drawSample() override { drawSample(this->GetRoot()); }
 
-    virtual double Move(double tuning) {
+    double Move(double tuning) override {
         int n = 0;
         double tot = Move(this->GetRoot(), tuning, n);
         return tot / n;
     }
 
-    virtual double GetLogProb() { return GetLogProb(this->GetRoot()); }
+    double GetLogProb() override { return GetLogProb(this->GetRoot()); }
 
     void RecursiveRegister(DAGnode* node, const Link* from) {
         if (this->WithRoot() || (!from->isRoot())) {
@@ -44,7 +44,7 @@ class BranchProcess : public MCMC, public virtual BranchValPtrTree<Rvar<V> > {
   protected:
     virtual void drawSample(const Link* from) {
         if (this->WithRoot() && (from->isRoot())) {
-            this->GetBranchVal(0)->Sample();
+            this->GetBranchVal(nullptr)->Sample();
         }
         for (Link* link = from->Next(); link != from; link = link->Next()) {
             this->GetBranchVal(link->GetBranch())->Sample();
@@ -56,7 +56,7 @@ class BranchProcess : public MCMC, public virtual BranchValPtrTree<Rvar<V> > {
     virtual double Move(const Link* from, double tuning, int& count) {
         double total = 0;
         if (this->WithRoot() && (from->isRoot())) {
-            total += this->GetBranchVal(0)->Move(tuning);
+            total += this->GetBranchVal(nullptr)->Move(tuning);
             count++;
         }
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
@@ -70,7 +70,7 @@ class BranchProcess : public MCMC, public virtual BranchValPtrTree<Rvar<V> > {
     virtual double GetLogProb(const Link* from) {
         double total = 0;
         if (this->WithRoot() && (from->isRoot())) {
-            total += this->GetBranchVal(0)->GetLogProb();
+            total += this->GetBranchVal(nullptr)->GetLogProb();
         }
         for (Link* link = from->Next(); link != from; link = link->Next()) {
             total += this->GetBranchVal(link->GetBranch())->GetLogProb();
@@ -97,7 +97,7 @@ class GammaTree : public BranchProcess<PosReal> {
         RecursiveCreate(GetRoot());
     }
 
-    ~GammaTree() { RecursiveDelete(GetRoot()); }
+    ~GammaTree() override { RecursiveDelete(GetRoot()); }
 
     Var<PosReal>* GetAlpha() { return alpha; }
 
@@ -147,7 +147,7 @@ class GammaTree : public BranchProcess<PosReal> {
         return total;
     }
 
-    Rvar<PosReal>* CreateBranchVal(const Link*) { return new Gamma(alpha, beta, meanvar); }
+    Rvar<PosReal>* CreateBranchVal(const Link*) override { return new Gamma(alpha, beta, meanvar); }
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -166,7 +166,7 @@ class BetaTree : public BranchProcess<UnitReal> {
         RecursiveCreate(GetRoot());
     }
 
-    ~BetaTree() { RecursiveDelete(GetRoot()); }
+    ~BetaTree() override { RecursiveDelete(GetRoot()); }
 
     double GetMean() {
         int n = 0;
@@ -206,7 +206,7 @@ class BetaTree : public BranchProcess<UnitReal> {
         return total;
     }
 
-    Rvar<UnitReal>* CreateBranchVal(const Link*) { return new Beta(alpha, beta); }
+    Rvar<UnitReal>* CreateBranchVal(const Link*) override { return new Beta(alpha, beta); }
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -219,11 +219,11 @@ class ExponentialTree : public BranchProcess<PosReal> {
         RecursiveCreate(GetRoot());
     }
 
-    ~ExponentialTree() { RecursiveDelete(GetRoot()); }
+    ~ExponentialTree() override { RecursiveDelete(GetRoot()); }
 
   protected:
-    Rvar<PosReal>* CreateBranchVal(const Link*) {
-        Exponential* expo = new Exponential(meanlength, Exponential::MEAN);
+    Rvar<PosReal>* CreateBranchVal(const Link*) override {
+        auto expo = new Exponential(meanlength, Exponential::MEAN);
         return expo;
     }
 

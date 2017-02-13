@@ -20,8 +20,8 @@ class MGFitnessCodonSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state);
-    void ComputeStationary();
+    void ComputeArray(int state) override;
+    void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
 
     // data members
@@ -51,7 +51,7 @@ class RandomMGFitnessCodonSubMatrix : public MGFitnessCodonSubMatrix, public Ran
     // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
-    void SetParameters() {
+    void SetParameters() override {
         SetNucMatrix(matrix);
         SetFitnessProfile(randomFitnessProfile->GetArray());
     }
@@ -82,8 +82,8 @@ class MGFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state);
-    void ComputeStationary();
+    void ComputeArray(int state) override;
+    void ComputeStationary() override;
 
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
@@ -126,7 +126,7 @@ class RandomMGFitnessCodonUsageSubMatrix : public MGFitnessCodonUsageSubMatrix,
     // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
-    void SetParameters() {
+    void SetParameters() override {
         SetNucMatrix(matrix);
         SetFitnessProfile(RandomFitnessProfile->GetArray());
         SetCodonUsageSelection(RandomCodonUsageSelection->GetArray());
@@ -159,8 +159,8 @@ class MGSRFitnessNormalCodonUsageSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state);
-    void ComputeStationary();
+    void ComputeArray(int state) override;
+    void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
         codonusageselection = incodonusageselection;
@@ -208,7 +208,7 @@ class RandomMGSRFitnessNormalCodonUsageSubMatrix : public MGSRFitnessNormalCodon
     // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
-    void SetParameters() {
+    void SetParameters() override {
         SetNucMatrix(matrix);
         SetFitnessProfile(RandomFitnessProfile->GetArray());
         SetCodonUsageSelection(RandomCodonUsageSelection->GetArray());
@@ -240,8 +240,8 @@ class MGMSFitnessNormalCodonUsageSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state);
-    void ComputeStationary();
+    void ComputeArray(int state) override;
+    void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
         codonusageselection = incodonusageselection;
@@ -289,7 +289,7 @@ class RandomMGMSFitnessNormalCodonUsageSubMatrix : public MGMSFitnessNormalCodon
     // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
-    void SetParameters() {
+    void SetParameters() override {
         SetNucMatrix(matrix);
         SetFitnessProfile(RandomFitnessProfile->GetArray());
         SetCodonUsageSelection(RandomCodonUsageSelection->GetArray());
@@ -323,8 +323,8 @@ class MGSRFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
 
-    void ComputeArray(int state);
-    void ComputeStationary();
+    void ComputeArray(int state) override;
+    void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
         codonusageselection = incodonusageselection;
@@ -367,7 +367,7 @@ class RandomMGSRFitnessCodonUsageSubMatrix : public MGSRFitnessCodonUsageSubMatr
     // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
-    void SetParameters() {
+    void SetParameters() override {
         SetNucMatrix(matrix);
         SetFitnessProfile(RandomFitnessProfile->GetArray());
         SetCodonUsageSelection(RandomCodonUsageSelection->GetArray());
@@ -401,14 +401,14 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
 
-    void ComputeArray(int state);
-    void ComputeStationary();
+    void ComputeArray(int state) override;
+    void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
         codonusageselection = incodonusageselection;
     }
 
-    void ToStream(ostream&) {  // FIXME unused parameter
+    void ToStream(ostream&) override {  // FIXME unused parameter
         cerr << "nucmatrix : \n";
         NucMatrix->CheckReversibility();
         cerr << '\n';
@@ -515,7 +515,7 @@ class RandomMGMSFitnessCodonUsageSubMatrix : public MGMSFitnessCodonUsageSubMatr
     // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
-    void SetParameters() {
+    void SetParameters() override {
         SetNucMatrix(matrix);
         SetFitnessProfile(RandomFitnessProfile->GetArray());
         SetCodonUsageSelection(RandomCodonUsageSelection->GetArray());

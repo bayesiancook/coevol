@@ -11,10 +11,10 @@ class MultiNormalSemiConjugate : virtual public SemiConjugatePrior<CovMatrix> {
     MultiNormalSemiConjugate(int indim)
         : Rvar<CovMatrix>(CovMatrix(indim)), scalestat(indim), bkscalestat(indim) {}
 
-    ~MultiNormalSemiConjugate() {}
+    ~MultiNormalSemiConjugate() override = default;
 
     // Must be initialize with
-    void ResetSufficientStatistic() {
+    void ResetSufficientStatistic() override {
         shapestat = 0;
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
@@ -24,7 +24,7 @@ class MultiNormalSemiConjugate : virtual public SemiConjugatePrior<CovMatrix> {
     }
 
 
-    void SaveSufficientStatistic() {
+    void SaveSufficientStatistic() override {
         bkshapestat = shapestat;
         for (int i = 0; i < dim; i++) {
             bkscalestat[i][i] = scalestat[i][i];
@@ -34,7 +34,7 @@ class MultiNormalSemiConjugate : virtual public SemiConjugatePrior<CovMatrix> {
         }
     }
 
-    void RestoreSufficientStatistic() {
+    void RestoreSufficientStatistic() override {
         bkshapestat = shapestat;
         for (int i = 0; i < dim; i++) {
             scalestat[i][i] = bkscalestat[i][i];
@@ -67,7 +67,7 @@ class MultiNormalSemiConjugate : virtual public SemiConjugatePrior<CovMatrix> {
         }
     }
 
-    double SuffStatLogProb() {
+    double SuffStatLogProb() override {
         double t, trace = 0;
         for (int i = 0; i < dim; i++) {
             t = 0;
@@ -96,7 +96,7 @@ class SemiConjugateInverseWishart : virtual public InverseWishartMatrix,
           InverseWishartMatrix(inDiagonalMatrix, inP),
           MultiNormalSemiConjugate(inDiagonalMatrix->GetDim()) {}
 
-    double logProb() {
+    double logProb() override {
         if (isActive()) {
             return InverseWishartMatrix::logProb() + SuffStatLogProb();
         } else {
@@ -104,12 +104,12 @@ class SemiConjugateInverseWishart : virtual public InverseWishartMatrix,
         }
     }
 
-    void localRestore() {
+    void localRestore() override {
         RestoreSufficientStatistic();
         InverseWishartMatrix::localRestore();
     }
 
-    void localCorrupt(bool bk) {
+    void localCorrupt(bool bk) override {
         if (bk) {
             SaveSufficientStatistic();
         }
@@ -130,7 +130,7 @@ class ConjugateInverseWishart : public ConjugatePrior<CovMatrix>,
           ConjugatePrior<CovMatrix>(),
           SemiConjugateInverseWishart(inDiagonalMatrix, inP) {}
 
-    void GibbsResample() {
+    void GibbsResample() override {
         for (int i = 0; i < GetDim(); i++) {
             scalestat[i][i] += diagonalMatrix->val(i);
         }
@@ -148,14 +148,14 @@ class ConjugateInverseWishart : public ConjugatePrior<CovMatrix>,
         }
     }
 
-    double logProb() {
+    double logProb() override {
         if (isActive()) {
             // if in integrated (conjugate) mode, return the integrated log probability
             if (isIntegrated()) {
                 for (int i = 0; i < GetDim(); i++) {
                     scalestat[i][i] += diagonalMatrix->val(i);
                 }
-                CovMatrix* postscale = new CovMatrix(scalestat);
+                auto postscale = new CovMatrix(scalestat);
                 int postshape = P + shapestat;
                 double l = diagonalMatrix->GetLogDeterminant() * P * 0.5 -
                            postscale->GetLogDeterminant() * postshape * 0.5;
@@ -224,12 +224,13 @@ class ConjugateInverseWishart : public ConjugatePrior<CovMatrix>,
 // this mean parameter is (semi-)conjugate to a Wishart sampling distribution
 class ConjugateMultiNormal : public ConjugateSampling<RealVector>, public MultiNormal {
   public:
-    ConjugateMultiNormal(MultiNormalSemiConjugate* insigma, Var<RealVector>* inup = 0,
-                         Var<PosReal>* intime = 0, Var<PosReal>* inscale = 0,
-                         Var<RealVector>* indrift = 0, Var<PosReal>* indriftphi = 0,
-                         Var<PosReal>* indate = 0, Var<RealVector>* indrift2 = 0,
-                         Var<PosReal>* indriftphi2 = 0, Var<PosReal>* inagescale = 0,
-                         double inkt = 0, GenericTimeLine* timeline = 0, Var<Real>* alpha = 0)
+    ConjugateMultiNormal(MultiNormalSemiConjugate* insigma, Var<RealVector>* inup = nullptr,
+                         Var<PosReal>* intime = nullptr, Var<PosReal>* inscale = nullptr,
+                         Var<RealVector>* indrift = nullptr, Var<PosReal>* indriftphi = nullptr,
+                         Var<PosReal>* indate = nullptr, Var<RealVector>* indrift2 = nullptr,
+                         Var<PosReal>* indriftphi2 = nullptr, Var<PosReal>* inagescale = nullptr,
+                         double inkt = 0, GenericTimeLine* timeline = nullptr,
+                         Var<Real>* alpha = nullptr)
         :
 
           Rvar<RealVector>(),
@@ -237,14 +238,14 @@ class ConjugateMultiNormal : public ConjugateSampling<RealVector>, public MultiN
           MultiNormal(insigma, inup, intime, inscale, indrift, indriftphi, indate, indrift2,
                       indriftphi2, inagescale, inkt, timeline, alpha) {
         conjugate_up.insert(insigma);
-        contrast = 0;
+        contrast = nullptr;
     }
 
     ConjugateMultiNormal(int unused, MultiNormalSemiConjugate* insigma, Var<RealVector>* inrootmean,
                          Var<PosRealVector>* inrootvar)
         : MultiNormal(unused, insigma, inrootmean, inrootvar) {
         conjugate_up.insert(insigma);
-        contrast = 0;
+        contrast = nullptr;
     }
 
     ConjugateMultiNormal(MultiNormalSemiConjugate* insigma, Var<RealVector>* inup,
@@ -252,12 +253,12 @@ class ConjugateMultiNormal : public ConjugateSampling<RealVector>, public MultiN
                          GlobalScalingFunction* inscalefunction)
         : MultiNormal(insigma, inup, intime, indate, inagescale, inscalefunction) {
         conjugate_up.insert(insigma);
-        contrast = 0;
+        contrast = nullptr;
     }
 
-    ~ConjugateMultiNormal() {}
+    ~ConjugateMultiNormal() override = default;
 
-    void AddSufficientStatistic(SemiConjPrior* parent) {
+    void AddSufficientStatistic(SemiConjPrior* parent) override {
         if (up) {
             MultiNormalSemiConjugate* prior = dynamic_cast<MultiNormalSemiConjugate*>(parent);
             if (!prior) {
@@ -271,7 +272,7 @@ class ConjugateMultiNormal : public ConjugateSampling<RealVector>, public MultiN
     }
 
     // overriding simple behavior, because this simple behavior assumes a specified covmatrix
-    double ProposeMove(double tuning) {
+    double ProposeMove(double tuning) override {
         // return SimpleProposeMove(tuning);
         if (isUpActive()) {
             return SimpleProposeMove(tuning);
@@ -331,9 +332,9 @@ class ConjugateMultivariateNormal : public ConjugateSampling<RealVector>,
         conjugate_up.insert(insigma);
     }
 
-    ~ConjugateMultivariateNormal() {}
+    ~ConjugateMultivariateNormal() override = default;
 
-    void AddSufficientStatistic(SemiConjPrior* parent) {
+    void AddSufficientStatistic(SemiConjPrior* parent) override {
         MultiNormalSemiConjugate* prior = dynamic_cast<MultiNormalSemiConjugate*>(parent);
         if (!prior) {
             cout << "cast error in ConjugateMultiNormal::AddSuffStat\n";

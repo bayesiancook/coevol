@@ -8,7 +8,7 @@ Chain::Chain() {
     every = 1;
     until = -1;
     size = 0;
-    model = 0;
+    model = nullptr;
     name = "";
 }
 

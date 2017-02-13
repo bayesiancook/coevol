@@ -29,19 +29,19 @@ class RandomBranchSitePath : public virtual Rnode,
                              public BranchSiteSubstitutionProcess {
   public:
     RandomBranchSitePath(PhyloProcess* inprocess)
-        : rate(0),
-          length(0),
-          matrix(0),
-          stationary(0),
+        : rate(nullptr),
+          length(nullptr),
+          matrix(nullptr),
+          stationary(nullptr),
           myprocess(inprocess),
-          propmatrix(0),
+          propmatrix(nullptr),
           matswap(false) {
         SetName("path");
     }
 
     RandomBranchSitePath(PhyloProcess* inprocess, Var<PosReal>* inlength, Var<PosReal>* inrate,
                          RandomSubMatrix* inmatrix, Var<Profile>* instationary)
-        : myprocess(inprocess), propmatrix(0), matswap(false) {
+        : myprocess(inprocess), propmatrix(nullptr), matswap(false) {
         SetName("path");
         length = inlength;
         rate = inrate;
@@ -69,10 +69,10 @@ class RandomBranchSitePath : public virtual Rnode,
                          Var<Profile>* instationary, Var<PosReal>* inlength)
         : myprocess(inprocess) {
         SetName("path");
-        propmatrix = 0;
-        matrix = 0;
+        propmatrix = nullptr;
+        matrix = nullptr;
         length = inlength;
-        rate = 0;
+        rate = nullptr;
         matswap = false;
         transitionmatrix = inmatrix;
         stationary = instationary;
@@ -91,7 +91,7 @@ class RandomBranchSitePath : public virtual Rnode,
 
     virtual AbstractTransitionMatrix* GetTransitionMatrix() { return transitionmatrix; }
 
-    virtual SubMatrix* GetSubMatrix() {
+    SubMatrix* GetSubMatrix() override {
         if (matswap) {
             if (!propmatrix) {
                 cerr << "error in random branch site path: null prop matrix\n";
@@ -179,7 +179,7 @@ class RandomBranchSitePath : public virtual Rnode,
         return newstate;
     }
 
-    virtual int GetNstate() {
+    int GetNstate() override {
         if (matrix) {
             return GetSubMatrix()->GetNstate();
         } else if (transitionmatrix) {
@@ -190,9 +190,9 @@ class RandomBranchSitePath : public virtual Rnode,
         }
     }
 
-    virtual double GetRate() { return rate ? ((double)rate->val()) : 1; }
+    double GetRate() override { return rate ? ((double)rate->val()) : 1; }
 
-    virtual const double* GetStationary() {
+    const double* GetStationary() override {
         if (stationary) {
             cerr << "error : non null stationary in log prob path\n";
             exit(1);
@@ -205,7 +205,7 @@ class RandomBranchSitePath : public virtual Rnode,
     }
     // return stationary ? stationary->GetArray() : matrix->GetStationary();}
 
-    virtual double GetTime() {
+    double GetTime() override {
         //    return return length ? ((double) length->val()) : 0;}
         if (length) {
             if (isnan(((double)(length->val())))) {
@@ -217,7 +217,7 @@ class RandomBranchSitePath : public virtual Rnode,
     }
 
 
-    bool isRoot() { return (length == 0); }
+    bool isRoot() { return (length == nullptr); }
 
     bool isActivated() { return active_flag; }
 
@@ -227,8 +227,8 @@ class RandomBranchSitePath : public virtual Rnode,
 
     void SetUp(RandomBranchSitePath* inup);
 
-    double GetTotalTime() { return GetTime(); }
-    void SetTotalTime(double intime) {
+    double GetTotalTime() override { return GetTime(); }
+    void SetTotalTime(double intime) override {
         // what about corruption ?
         if (!length) {
             cerr << "error in RandomBranchSitePath::SetTotalTime\n";
@@ -270,7 +270,7 @@ class RandomBranchSitePath : public virtual Rnode,
         }
     }
 
-    double Move(double tuning) {
+    double Move(double tuning) override {
         if (!propmatrix) {
             Resample();
             return 1;
@@ -278,7 +278,7 @@ class RandomBranchSitePath : public virtual Rnode,
         return Rnode::Move(tuning);
     }
 
-    virtual void localRestore() {
+    void localRestore() override {
         if (propmatrix) {
             stateup = bkstateup;
             statedown = bkstatedown;
@@ -297,7 +297,7 @@ class RandomBranchSitePath : public virtual Rnode,
         }
     }
 
-    virtual void localCorrupt(bool bk) {
+    void localCorrupt(bool bk) override {
         if (propmatrix) {
             if (bk) {
                 bkstateup = stateup;
@@ -311,13 +311,13 @@ class RandomBranchSitePath : public virtual Rnode,
         }
     }
 
-    void drawSample() {
+    void drawSample() override {
         cerr << "in random branch site path drawsample\n";
         exit(1);
         Resample();
     }
 
-    double logProb();
+    double logProb() override;
     double PathLogProb();
     double NoPathLogProb();
 
@@ -346,7 +346,7 @@ class RandomBranchSitePath : public virtual Rnode,
 
     void SetMatrix(RandomSubMatrix* inmatrix) { matrix = inmatrix; }
 
-    double ProposeMove(double) {
+    double ProposeMove(double) override {
         cerr << "error : in random branch site path propose move(tuning)\n";
         exit(1);
     }

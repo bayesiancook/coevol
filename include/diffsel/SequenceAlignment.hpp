@@ -10,7 +10,7 @@
 // it does not do any job
 class SequenceAlignment {
   public:
-    SequenceAlignment() : Data(0) {}
+    SequenceAlignment() : Data(nullptr) {}
 
     SequenceAlignment(SequenceAlignment* from) {
         Ntaxa = from->Ntaxa;
@@ -47,7 +47,7 @@ class SequenceAlignment {
     }
 
     void SubSelect(int sitemin, int sitemax) {
-        int** Data2 = new int*[Ntaxa];
+        auto Data2 = new int*[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data2[i] = new int[sitemax - sitemin];
             for (int j = sitemin; j < sitemax; j++) {
@@ -260,7 +260,7 @@ class SequenceAlignment {
         }
     }
 
-    virtual ~SequenceAlignment() {}
+    virtual ~SequenceAlignment() = default;
 
     // the set of characters (A,C,G,T for nucleotides, etc..)
     StateSpace* GetStateSpace() { return statespace; }
@@ -271,7 +271,7 @@ class SequenceAlignment {
             cerr << "error in register seq\n";
             exit(1);
         }
-        int** tmp = new int*[GetNtaxa()];
+        auto tmp = new int*[GetNtaxa()];
         for (int i = 0; i < GetNtaxa(); i++) {
             int k = 0;
             while ((k < GetNtaxa()) && (taxset->GetTaxon(k) != intaxset->GetTaxon(i))) {
@@ -478,7 +478,7 @@ class SequenceAlignment {
 
     double CompositionalHeterogeneity(ostream* os) {
         int Nstate = GetNstate();
-        double** taxfreq = new double*[Ntaxa];
+        auto taxfreq = new double*[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq[j] = new double[Nstate];
             for (int k = 0; k < Nstate; k++) {
@@ -496,7 +496,7 @@ class SequenceAlignment {
         }
 
         // make global freqs out of tax-specific freqs
-        double* globalfreq = new double[Nstate];
+        auto globalfreq = new double[Nstate];
         for (int k = 0; k < Nstate; k++) {
             globalfreq[k] = 0;
             for (int j = 0; j < Ntaxa; j++) {

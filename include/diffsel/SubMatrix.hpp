@@ -33,7 +33,7 @@ using namespace std;
 
 class AbstractTransitionMatrix {
   public:
-    virtual ~AbstractTransitionMatrix() {}
+    virtual ~AbstractTransitionMatrix() = default;
 
     virtual void BackwardPropagate(const double* down, double* up, double length) = 0;
     virtual void ForwardPropagate(const double* up, double* down, double length) = 0;
@@ -70,9 +70,9 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
         stationary = instationary;
     }
 
-    virtual ~TransitionMatrix() { Delete(); }
+    ~TransitionMatrix() override { Delete(); }
 
-    int GetNstate() { return Nstate; }
+    int GetNstate() override { return Nstate; }
 
     double** GetR() {
         if (!matflag) {
@@ -81,35 +81,35 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
         return R;
     }
 
-    const double* GetStationary() {
+    const double* GetStationary() override {
         if (!matflag) {
             ComputeArrayAndStat();
         }
         return stationary;
     }
 
-    const double* GetRow(int i) {
+    const double* GetRow(int i) override {
         if (!matflag) {
             ComputeArrayAndStat();
         }
         return R[i];
     }
 
-    double Stationary(int i) {
+    double Stationary(int i) override {
         if (!matflag) {
             ComputeArrayAndStat();
         }
         return stationary[i];
     }
 
-    double operator()(int i, int j) {
+    double operator()(int i, int j) override {
         if (!matflag) {
             ComputeArrayAndStat();
         }
         return R[i][j];
     }
 
-    virtual void BackwardPropagate(const double* down, double* up, double) {
+    void BackwardPropagate(const double* down, double* up, double) override {
         if (!matflag) {
             ComputeArrayAndStat();
         }
@@ -123,7 +123,7 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
         up[Nstate] = down[Nstate];
     }
 
-    virtual void ForwardPropagate(const double* up, double* down, double) {
+    void ForwardPropagate(const double* up, double* down, double) override {
         cerr << "in forward\n";
         exit(1);
         if (!matflag) {
@@ -138,7 +138,7 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
         }
     }
 
-    void CorruptMatrix() { matflag = false; }
+    void CorruptMatrix() override { matflag = false; }
 
   protected:
     void ComputeArrayAndStat() {
@@ -150,7 +150,7 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
     virtual void ComputeArray() = 0;
     virtual void ComputeStationary() = 0;
 
-    virtual bool check() {
+    bool check() override {
         bool ok = true;
         for (int i = 0; i < Nstate; i++) {
             double total = 0;
@@ -223,17 +223,17 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
     static double GetMeanUni() { return ((double)nunimax) / nuni; }
 
     SubMatrix(int Nstate, bool innormalise = false);
-    virtual ~SubMatrix();
+    ~SubMatrix() override;
 
     void Create();
 
-    double operator()(int, int);
-    const double* GetRow(int i);
+    double operator()(int, int) override;
+    const double* GetRow(int i) override;
 
-    virtual const double* GetStationary();
-    double Stationary(int i);
+    const double* GetStationary() override;
+    double Stationary(int i) override;
 
-    int GetNstate() { return Nstate; }
+    int GetNstate() override { return Nstate; }
 
     double GetRate();
     void ScalarMul(double e);
@@ -241,7 +241,7 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
     bool isNormalised() { return normalise; }
     void Normalise();
 
-    virtual void CorruptMatrix();
+    void CorruptMatrix() override;
     void UpdateMatrix();
 
     void ActivatePowers();
@@ -259,8 +259,8 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
 
     int GetDiagStat() { return ndiagfailed; }
 
-    virtual void BackwardPropagate(const double* down, double* up, double length);
-    virtual void ForwardPropagate(const double* up, double* down, double length);
+    void BackwardPropagate(const double* down, double* up, double length) override;
+    void ForwardPropagate(const double* up, double* down, double length) override;
     // virtual void     FiniteTime(int i0, double* down, double length);
 
     double** GetQ() { return Q; }
@@ -404,7 +404,7 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
     double** inveigenvect = GetInvEigenVect();
     double* eigenval = GetEigenVal();
 
-    double* aux = new double[GetNstate()];
+    auto aux = new double[GetNstate()];
 
     for (int i = 0; i < GetNstate(); i++) {
         aux[i] = 0;
@@ -480,7 +480,7 @@ inline void SubMatrix::ForwardPropagate(const double* down, double* up, double l
     double** inveigenvect = GetInvEigenVect();
     double* eigenval = GetEigenVal();
 
-    double* aux = new double[GetNstate()];
+    auto aux = new double[GetNstate()];
 
     for (int i = 0; i < GetNstate(); i++) {
         aux[i] = 0;

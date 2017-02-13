@@ -38,7 +38,7 @@ class CovMatrix : public BaseType, public Multiplicative {
 
     static double GetMaxDiagN() { return maxn; }
 
-    CovMatrix() : dim(0), value(0), orthonormal(false) {}
+    CovMatrix() : dim(0), value(nullptr), orthonormal(false) {}
 
     CovMatrix(int indim) : orthonormal(false) {
         dim = indim;
@@ -97,7 +97,7 @@ class CovMatrix : public BaseType, public Multiplicative {
     }
 
 
-    ~CovMatrix() {
+    ~CovMatrix() override {
         for (int i = 0; i < GetDim(); i++) {
             delete[] value[i];
             delete[] invvalue[i];
@@ -217,7 +217,7 @@ class CovMatrix : public BaseType, public Multiplicative {
     }
 
 
-    virtual double ProposeMove(double tuning) {
+    double ProposeMove(double tuning) override {
         int j = (int)(GetDim() * (GetDim() + 1) * 0.5 * Random::Uniform());
         int i = 0;
         while (i + 1 <= j) {
@@ -311,7 +311,7 @@ class CovMatrix : public BaseType, public Multiplicative {
     */
 
     virtual void drawVal(double* vec) {
-        double* randomvalues = new double[GetDim()];
+        auto randomvalues = new double[GetDim()];
         for (int i = 0; i < GetDim(); i++) {
             randomvalues[i] = Random::sNormal() * sqrt(GetEigenVal()[i]);
             vec[i] = 0;
@@ -325,7 +325,7 @@ class CovMatrix : public BaseType, public Multiplicative {
     }
 
     void drawValInv(double* vec) {
-        double* randomvalues = new double[GetDim()];
+        auto randomvalues = new double[GetDim()];
         for (int i = 0; i < GetDim(); i++) {
             randomvalues[i] = Random::sNormal() / sqrt(GetEigenVal()[i]);
             vec[i] = 0;
@@ -510,7 +510,7 @@ class CovMatrix : public BaseType, public Multiplicative {
       }
     */
 
-    int ScalarMultiplication(double scal) {
+    int ScalarMultiplication(double scal) override {
         for (int i = 0; i < GetDim(); i++) {
             for (int j = 0; j < GetDim(); j++) {
                 value[i][j] *= scal;
@@ -558,7 +558,7 @@ class CovMatrix : public BaseType, public Multiplicative {
 
     // Set the matrix to it s inverse //loook si diagflag
     int Invert() {
-        double** a = new double*[GetDim()];
+        auto a = new double*[GetDim()];
         for (int i = 0; i < GetDim(); i++) {
             a[i] = new double[GetDim()];
         }
@@ -821,8 +821,8 @@ class CovMatrix : public BaseType, public Multiplicative {
     */
 
     double CheckDiag() {
-        double** a = new double*[GetDim()];
-        double** b = new double*[GetDim()];
+        auto a = new double*[GetDim()];
+        auto b = new double*[GetDim()];
         for (int i = 0; i < GetDim(); i++) {
             a[i] = new double[GetDim()];
             b[i] = new double[GetDim()];
@@ -998,7 +998,7 @@ class CovMatrix : public BaseType, public Multiplicative {
         os << '\n';
 
         // proportion of variance explained
-        double** prop = new double*[GetDim()];
+        auto prop = new double*[GetDim()];
         for (int i = 0; i < GetDim(); i++) {
             prop[i] = new double[GetDim()];
         }

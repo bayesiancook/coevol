@@ -14,7 +14,7 @@ class IIDArray : public ValPtrArray<Rvar<V> > {
   public:
     IIDArray(int insize) : ValPtrArray<Rvar<V> >(insize) {}
 
-    double Move(double tuning) {
+    double Move(double tuning) override {
         double total = 0;
         int n = 0;
         for (int i = 0; i < this->GetSize(); i++) {
@@ -28,13 +28,13 @@ class IIDArray : public ValPtrArray<Rvar<V> > {
         return acc;
     }
 
-    void drawSample() {
+    void drawSample() override {
         for (int i = 0; i < this->GetSize(); i++) {
             this->GetVal(i)->Sample();
         }
     }
 
-    double GetLogProb() {
+    double GetLogProb() override {
         double total = 0;
         for (int i = 0; i < this->GetSize(); i++) {
             total += this->GetVal(i)->GetLogProb();
@@ -82,7 +82,7 @@ class BetaIIDArray : public IIDArray<UnitReal> {
     }
 
   protected:
-    Rvar<UnitReal>* CreateVal(int) { return new Beta(alpha, beta); }
+    Rvar<UnitReal>* CreateVal(int) override { return new Beta(alpha, beta); }
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -97,7 +97,7 @@ class PosUniIIDArray : public IIDArray<PosReal> {
     }
 
   protected:
-    Rvar<PosReal>* CreateVal(int) { return new PosUniform(root, max); }
+    Rvar<PosReal>* CreateVal(int) override { return new PosUniform(root, max); }
 
     Var<PosReal>* root;
     double max;
@@ -154,7 +154,7 @@ class GammaIIDArray : public IIDArray<PosReal> {
     }
 
   protected:
-    Rvar<PosReal>* CreateVal(int) { return new Gamma(alpha, beta); }
+    Rvar<PosReal>* CreateVal(int) override { return new Gamma(alpha, beta); }
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -216,7 +216,7 @@ class DirichletIIDArray : public IIDArray<Profile> {
     int GetDim() { return GetVal(0)->GetDim(); }
 
   protected:
-    Rvar<Profile>* CreateVal(int) { return new Dirichlet(center, concentration); }
+    Rvar<Profile>* CreateVal(int) override { return new Dirichlet(center, concentration); }
 
     Var<Profile>* center;
     Var<PosReal>* concentration;
@@ -227,7 +227,7 @@ class DirichletIIDArrayMove : public MCUpdate {
     DirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int inm)
         : selectarray(inselectarray), tuning(intuning), m(inm) {}
 
-    double Move(double tuning_modulator) {
+    double Move(double tuning_modulator) override {
         double total = 0;
 
 #ifdef _OPENMP
@@ -286,7 +286,7 @@ class NormalIIDArray : public IIDArray<Real> {
     }
 
   protected:
-    Rvar<Real>* CreateVal(int) { return new Normal(mean, var); }
+    Rvar<Real>* CreateVal(int) override { return new Normal(mean, var); }
 
     Var<Real>* mean;
     Var<PosReal>* var;

@@ -77,7 +77,7 @@ void SubMatrix::Create() {
     UniMu = 1;
     mPow = new double**[UniSubNmax];
     for (int n = 0; n < UniSubNmax; n++) {
-        mPow[n] = 0;
+        mPow[n] = nullptr;
         /*
           mPow[n] = new double*[Nstate];
           for (int i=0; i<Nstate; i++)	{
@@ -349,7 +349,7 @@ void SubMatrix::InactivatePowers() {
                     delete[] mPow[n][i];
                 }
                 delete[] mPow[n];
-                mPow[n] = 0;
+                mPow[n] = nullptr;
             }
         }
         nunimax += npow;

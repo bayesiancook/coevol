@@ -9,7 +9,7 @@
 class GTRSubMatrix : public virtual SubMatrix {
   public:
     GTRSubMatrix(int nstate, const double* rr, const double* stat, bool innormalise = false);
-    ~GTRSubMatrix(){};
+    ~GTRSubMatrix() override = default;
 
     int GetNRelativeRate() { return Nrr; }
     double RelativeRate(int i, int j) { return mRelativeRate[rrindex(i, j, GetNstate())]; }
@@ -27,8 +27,8 @@ class GTRSubMatrix : public virtual SubMatrix {
     void SetRelativeRate(const double* inrelrate) { mRelativeRate = inrelrate; }
 
   protected:
-    void ComputeArray(int state);
-    void ComputeStationary() {}
+    void ComputeArray(int state) override;
+    void ComputeStationary() override {}
 
     // data members
     const double* mRelativeRate;
@@ -54,7 +54,7 @@ class GTRRandomSubMatrix : public RandomSubMatrix, public GTRSubMatrix {
     Var<PosRealVector>* GetRandomRelativeRates() { return relrate; }
 
   protected:
-    void SetParameters() {
+    void SetParameters() override {
         SetRelativeRate(relrate->val().GetArray());
         CopyStationary(stat->val().GetArray());
     }
@@ -80,7 +80,7 @@ class GTRRandomSubMatrixWithNormRates : public RandomSubMatrix, public GTRSubMat
         specialUpdate();
     }
 
-    ~GTRRandomSubMatrixWithNormRates() { delete[] rescaledrelrate; }
+    ~GTRRandomSubMatrixWithNormRates() override { delete[] rescaledrelrate; }
 
     /*
       Var<Profile>* GetRandomStationaries() {return stat;}
@@ -88,7 +88,7 @@ class GTRRandomSubMatrixWithNormRates : public RandomSubMatrix, public GTRSubMat
     */
 
   protected:
-    void SetParameters() {
+    void SetParameters() override {
         for (int i = 0; i < relrate->GetDim(); i++) {
             //	rescaledrelrate[i] = (*relrate)[i] * relrate->GetDim();
             rescaledrelrate[i] = (*relrate)[i];
@@ -133,7 +133,7 @@ const double LG_RR[] = {
 class LGSubMatrix : public GTRSubMatrix {
   public:
     LGSubMatrix(const double* stat, bool innormalise = false)
-        : SubMatrix(Naa, innormalise), GTRSubMatrix(Naa, 0, stat, innormalise) {
+        : SubMatrix(Naa, innormalise), GTRSubMatrix(Naa, nullptr, stat, innormalise) {
         mRelativeRate = LG_RR;
     }
 };
@@ -150,7 +150,7 @@ class LGRandomSubMatrix : public RandomSubMatrix, public LGSubMatrix {
     }
 
   protected:
-    void SetParameters() { CopyStationary(stat->val().GetArray()); }
+    void SetParameters() override { CopyStationary(stat->val().GetArray()); }
 
   private:
     Var<Profile>* stat;

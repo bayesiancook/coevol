@@ -54,18 +54,18 @@ class PhyloProcess : public MCMC {
 
 
     PhyloProcess(LengthTree* intree, SequenceAlignment* indata, bool inbranchmap = true);
-    virtual ~PhyloProcess();
+    ~PhyloProcess() override;
 
-    double GetLogProb();                                // likelihood Felsenstein 1981
+    double GetLogProb() override;                       // likelihood Felsenstein 1981
     double GetFastLogProb();                            // likelihood Felsenstein 1981
     double GetPathLogProb();                            // probability of the entire mapping
     double GetPathLogProb(const Link* from, int site);  // probability of the entire mapping
     double SiteLogLikelihood(int site);
     double FastSiteLogLikelihood(int site);
 
-    void
-    drawSample();  // ResampleSub Nielsen: accept reject algorithm for stochastic mappings (clamped)
-    double Move(double tuning);  // ResampleSub (clamped)
+    void drawSample()
+        override;  // ResampleSub Nielsen: accept reject algorithm for stochastic mappings (clamped)
+    double Move(double tuning) override;  // ResampleSub (clamped)
 
     StateSpace* GetStateSpace() { return data->GetStateSpace(); }
     void SetStateSpace();
@@ -197,8 +197,8 @@ class PhyloProcess : public MCMC {
     class PhyloProcessSiteMapping : public SiteMapping {
       public:
         PhyloProcessSiteMapping(PhyloProcess* inprocess, int i);
-        Tree* GetTree();
-        BranchSitePath* GetPath(const Branch* branch);
+        Tree* GetTree() override;
+        BranchSitePath* GetPath(const Branch* branch) override;
 
       private:
         PhyloProcess* myprocess;
@@ -240,7 +240,7 @@ class PhyloProcess : public MCMC {
 
     // to be overriden in Metropolis Hastings PhyloProcess classes
     // EmpiricalSubMatrix* GetProposalMatrix(const Branch* branch, int site)	{
-    virtual SubMatrix* GetProposalMatrix(const Branch*, int) { return 0; }
+    virtual SubMatrix* GetProposalMatrix(const Branch*, int) { return nullptr; }
 
     void BackupNodeStates(const Link* from, int site);
     void RestoreNodeStates(const Link* from, int site);
@@ -299,7 +299,7 @@ inline int PhyloProcess::GetNstate(int site) {
     if (isMissing(GetRoot(), site)) {
         return 0;
     }
-    return GetBranchSiteSubstitutionProcess(0, site)->GetNstate();
+    return GetBranchSiteSubstitutionProcess(nullptr, site)->GetNstate();
 }
 
 inline RandomBranchSitePath* PhyloProcess::GetPath(const Branch* branch, int site) {

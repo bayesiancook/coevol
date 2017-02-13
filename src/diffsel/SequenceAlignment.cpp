@@ -171,7 +171,7 @@ void SequenceAlignment::ToStreamTriplet(ostream& os) {
 
 FileSequenceAlignment::FileSequenceAlignment(string filename, int) {  // FIXME unused parameter
 
-    SpeciesNames = 0;
+    SpeciesNames = nullptr;
     // cerr << "read data from file : " << filename << "\n";
     ReadDataFromFile(filename, 0);
     taxset = new TaxonSet(SpeciesNames, Ntaxa);
@@ -369,9 +369,9 @@ int FileSequenceAlignment::ReadSpecial(string filename) {
         theStream >> tmp;
         cerr << tmp << '\n';
         int Nstate = tmp.length();
-        char* Alphabet = new char[Nstate];
+        auto Alphabet = new char[Nstate];
         int NAlphabetSet = Nstate + 5;
-        char* AlphabetSet = new char[NAlphabetSet];
+        auto AlphabetSet = new char[NAlphabetSet];
         cerr << "alphabet size : " << Nstate << '\n';
         cerr << "alphabet : ";
         for (int i = 0; i < Nstate; i++) {
