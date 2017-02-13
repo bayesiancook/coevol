@@ -1,4 +1,3 @@
-
 #ifndef VALTREE_H
 #define VALTREE_H
 

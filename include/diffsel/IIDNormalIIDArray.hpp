@@ -1,7 +1,10 @@
-// #include "core/RandomTypes.hpp"
+#ifndef IIDNORMALIIDARRAY_H
+#define IIDNORMALIIDARRAY_H
+
 #include "IID.hpp"
 #include "Normal.hpp"
 #include "core/Move.hpp"
+
 
 class IIDNormalIIDArray : public IIDArray<RealVector> {
   public:
@@ -85,3 +88,5 @@ class IIDNormalIIDArrayMove : public MCUpdate {
     double tuning;
     int m;
 };
+
+#endif  // IIDNORMALIIDARRAY_H
