@@ -10,21 +10,18 @@ class Branch;
 class Tree;
 class Link;
 
-class SiteMapping	{
+class SiteMapping {
+  public:
+    virtual ~SiteMapping() {}
 
-public:
+    virtual BranchSitePath* GetPath(const Branch* branch) = 0;
+    virtual Tree* GetTree() = 0;
+    Link* GetRoot();
 
-  virtual			~SiteMapping() {}
-
-  virtual BranchSitePath*	GetPath(const Branch* branch) = 0;
-  virtual Tree*		GetTree() = 0;
-  Link*			GetRoot();
-
-  virtual void		Print(ostream& os, bool redundant);
-  void			Print(ostream& os, Link* from, bool redundant);
-
+    virtual void Print(ostream& os, bool redundant);
+    void Print(ostream& os, Link* from, bool redundant);
 };
 
-inline Link* SiteMapping::GetRoot() {return GetTree()->GetRoot();}
+inline Link* SiteMapping::GetRoot() { return GetTree()->GetRoot(); }
 
-#endif // SITEMAPPING_H
+#endif  // SITEMAPPING_H

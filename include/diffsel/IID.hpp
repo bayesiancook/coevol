@@ -1,322 +1,267 @@
 #ifndef IID_H
 #define IID_H
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 using namespace std;
 
-#include "core/RandomTypes.hpp"
 #include "ValArray.hpp"
+#include "core/RandomTypes.hpp"
 
-template <class V> class IIDArray : public ValPtrArray< Rvar<V> >	{
+template <class V>
+class IIDArray : public ValPtrArray<Rvar<V> > {
+  public:
+    IIDArray(int insize) : ValPtrArray<Rvar<V> >(insize) {}
 
-public:
+    double Move(double tuning) {
+        double total = 0;
+        int n = 0;
+        for (int i = 0; i < this->GetSize(); i++) {
+            if (!this->GetVal(i)->isClamped()) {
+                double tmp = this->GetVal(i)->Move(tuning);
+                total += tmp;
+                n++;
+            }
+        }
+        double acc = n ? total / n : 0;
+        return acc;
+    }
 
-  IIDArray(int insize) : ValPtrArray<Rvar<V> >(insize) {}
+    void drawSample() {
+        for (int i = 0; i < this->GetSize(); i++) { this->GetVal(i)->Sample(); }
+    }
 
-  double Move(double tuning)	{
-    double total = 0;
-    int n = 0;
-    for (int i=0; i<this->GetSize(); i++)	{
-      if (! this->GetVal(i)->isClamped())	{
-        double tmp = this->GetVal(i)->Move(tuning);
-        total += tmp;
-        n++;
+    double GetLogProb() {
+        double total = 0;
+        for (int i = 0; i < this->GetSize(); i++) { total += this->GetVal(i)->GetLogProb(); }
+        return total;
+    }
+
+    void Register(DAGnode* in) {
+        for (int i = 0; i < this->GetSize(); i++) { this->GetVal(i)->Register(in); }
+    }
+};
+
+class BetaIIDArray : public IIDArray<UnitReal> {
+  public:
+    BetaIIDArray(int insize, Var<PosReal>* inalpha, Var<PosReal>* inbeta)
+        : IIDArray<UnitReal>(insize) {
+        alpha = inalpha;
+        beta = inbeta;
+        Create();
+    }
+
+    double GetMean() {
+        double mean = 0;
+        for (int i = 0; i < GetSize(); i++) { mean += GetVal(i)->val(); }
+        mean /= GetSize();
+        return mean;
+    }
+
+    double GetVar() {
+        double mean = 0;
+        double var = 0;
+        for (int i = 0; i < GetSize(); i++) {
+            double tmp = GetVal(i)->val();
+            mean += tmp;
+            var += tmp * tmp;
+        }
+        mean /= GetSize();
+        var /= GetSize();
+        var -= mean * mean;
+        return var;
+    }
+
+  protected:
+    Rvar<UnitReal>* CreateVal(int) { return new Beta(alpha, beta); }
+
+    Var<PosReal>* alpha;
+    Var<PosReal>* beta;
+};
+
+class PosUniIIDArray : public IIDArray<PosReal> {
+  public:
+    PosUniIIDArray(int insize, Var<PosReal>* inroot, double inmax) : IIDArray<PosReal>(insize) {
+        root = inroot;
+        max = inmax;
+        Create();
+    }
+
+  protected:
+    Rvar<PosReal>* CreateVal(int) { return new PosUniform(root, max); }
+
+    Var<PosReal>* root;
+    double max;
+};
+
+class GammaIIDArray : public IIDArray<PosReal> {
+  public:
+    GammaIIDArray(int insize, Var<PosReal>* inalpha, Var<PosReal>* inbeta)
+        : IIDArray<PosReal>(insize) {
+        alpha = inalpha;
+        beta = inbeta;
+        Create();
+    }
+
+    double* SetVals(double* ptr) {
+        for (int i = 0; i < GetSize(); i++) { GetVal(i)->setval(*ptr++); }
+        return ptr;
+    }
+
+    double* GetVals(double* ptr) {
+        for (int i = 0; i < GetSize(); i++) { (*ptr++) = GetVal(i)->val(); }
+        return ptr;
+    }
+
+    Var<PosReal>* GetAlpha() { return alpha; }
+
+    Var<PosReal>* GetBeta() { return beta; }
+
+    double GetMean() {
+        double mean = 0;
+        for (int i = 0; i < GetSize(); i++) { mean += GetVal(i)->val(); }
+        mean /= GetSize();
+        return mean;
+    }
+
+    double GetVar() {
+        double mean = 0;
+        double var = 0;
+        for (int i = 0; i < GetSize(); i++) {
+            double tmp = GetVal(i)->val();
+            mean += tmp;
+            var += tmp * tmp;
+        }
+        mean /= GetSize();
+        var /= GetSize();
+        var -= mean * mean;
+        return var;
+    }
+
+  protected:
+    Rvar<PosReal>* CreateVal(int) { return new Gamma(alpha, beta); }
+
+    Var<PosReal>* alpha;
+    Var<PosReal>* beta;
+};
+
+class DirichletIIDArray : public IIDArray<Profile> {
+  public:
+    DirichletIIDArray(int insize, Var<Profile>* incenter, Var<PosReal>* inconcentration)
+        : IIDArray<Profile>(insize) {
+        center = incenter;
+        concentration = inconcentration;
+        Create();
+    }
+
+    double* SetVals(double* ptr) {
+        for (int i = 0; i < GetSize(); i++) {
+            for (int k = 0; k < GetDim(); k++) { (*GetVal(i))[k] = (*ptr++); }
+        }
+        return ptr;
+    }
+
+    double* GetVals(double* ptr) {
+        for (int i = 0; i < GetSize(); i++) {
+            for (int k = 0; k < GetDim(); k++) { (*ptr++) = (*GetVal(i))[k]; }
+        }
+        return ptr;
+    }
+
+    Dirichlet* GetDirichletVal(int site) { return dynamic_cast<Dirichlet*>(GetVal(site)); }
+
+    double GetMeanEntropy() {
+        double mean = 0;
+        for (int i = 0; i < GetSize(); i++) { mean += GetDirichletVal(i)->GetEntropy(); }
+        mean /= GetSize();
+        return mean;
+    }
+
+    void SetUniform() {
+        for (int i = 0; i < GetSize(); i++) { GetDirichletVal(i)->setuniform(); }
+    }
+
+    /*
+      void SetSemiUniform()	{
+      for (int i=0; i<GetSize(); i++)	{
+      GetDirichletVal(i)->setsemiuniform();
       }
-    }
-    double acc = n ? total / n : 0;
-    return acc;
-  }
-
-  void drawSample()	{
-    for (int i=0; i<this->GetSize(); i++)	{
-      this->GetVal(i)->Sample();
-    }
-  }
-
-  double GetLogProb()	{
-    double total = 0;
-    for (int i=0; i<this->GetSize(); i++)	{
-      total += this->GetVal(i)->GetLogProb();
-    }
-    return total ;
-  }
-
-  void Register(DAGnode* in)	{
-    for (int i=0; i<this->GetSize(); i++)	{
-      this->GetVal(i)->Register(in);
-    }
-  }
-};
-
-class BetaIIDArray : public IIDArray<UnitReal>	{
-
-public:
-  BetaIIDArray(int insize, Var<PosReal>* inalpha, Var<PosReal>* inbeta) : IIDArray<UnitReal>(insize)	{
-    alpha = inalpha;
-    beta = inbeta;
-    Create();
-  }
-
-  double GetMean()	{
-    double mean = 0;
-    for (int i=0; i<GetSize(); i++)	{
-      mean += GetVal(i)->val();
-    }
-    mean /= GetSize();
-    return mean;
-  }
-
-  double GetVar()	{
-    double mean = 0;
-    double var = 0;
-    for (int i=0; i<GetSize(); i++)	{
-      double tmp = GetVal(i)->val();
-      mean += tmp;
-      var += tmp * tmp;
-    }
-    mean /= GetSize();
-    var /= GetSize();
-    var -= mean * mean;
-    return var;
-  }
-
-protected:
-
-  Rvar<UnitReal>* CreateVal(int)	{
-    return new Beta(alpha, beta);
-  }
-
-  Var<PosReal>* alpha;
-  Var<PosReal>* beta;
-};
-
-class PosUniIIDArray : public IIDArray<PosReal>	{
-
-public:
-  PosUniIIDArray(int insize, Var<PosReal>* inroot, double inmax) : IIDArray<PosReal>(insize)	{
-    root = inroot;
-    max = inmax;
-    Create();
-  }
-
-protected:
-
-  Rvar<PosReal>* CreateVal(int)	{
-    return new PosUniform(root, max);
-  }
-
-  Var<PosReal>* root;
-  double max;
-};
-
-class GammaIIDArray : public IIDArray<PosReal>	{
-
-public:
-  GammaIIDArray(int insize, Var<PosReal>* inalpha, Var<PosReal>* inbeta) : IIDArray<PosReal>(insize)	{
-    alpha = inalpha;
-    beta = inbeta;
-    Create();
-  }
-
-  double* SetVals(double* ptr)	{
-    for (int i=0; i<GetSize(); i++)	{
-      GetVal(i)->setval(*ptr++);
-    }
-    return ptr;
-  }
-
-  double* GetVals(double* ptr)	{
-    for (int i=0; i<GetSize(); i++)	{
-      (*ptr++) = GetVal(i)->val();
-    }
-    return ptr;
-  }
-
-  Var<PosReal>* GetAlpha()	{
-    return alpha;
-  }
-
-  Var<PosReal>* GetBeta()	{
-    return beta;
-  }
-
-  double GetMean()	{
-    double mean = 0;
-    for (int i=0; i<GetSize(); i++)	{
-      mean += GetVal(i)->val();
-    }
-    mean /= GetSize();
-    return mean;
-  }
-
-  double GetVar()	{
-    double mean = 0;
-    double var = 0;
-    for (int i=0; i<GetSize(); i++)	{
-      double tmp = GetVal(i)->val();
-      mean += tmp;
-      var += tmp * tmp;
-    }
-    mean /= GetSize();
-    var /= GetSize();
-    var -= mean * mean;
-    return var;
-  }
-
-protected:
-
-  Rvar<PosReal>* CreateVal(int)	{
-    return new Gamma(alpha, beta);
-  }
-
-  Var<PosReal>* alpha;
-  Var<PosReal>* beta;
-};
-
-class DirichletIIDArray : public IIDArray<Profile>	{
-
-public:
-  DirichletIIDArray(int insize, Var<Profile>* incenter, Var<PosReal>* inconcentration) : IIDArray<Profile>(insize)	{
-    center = incenter;
-    concentration = inconcentration;
-    Create();
-  }
-
-  double* SetVals(double* ptr)	{
-    for (int i=0; i<GetSize(); i++)	{
-      for (int k=0; k<GetDim(); k++)	{
-        (*GetVal(i))[k] = (*ptr++);
       }
-    }
-    return ptr;
-  }
-
-  double* GetVals(double* ptr)	{
-    for (int i=0; i<GetSize(); i++)	{
-      for (int k=0; k<GetDim(); k++)	{
-        (*ptr++) = (*GetVal(i))[k];
-      }
-    }
-    return ptr;
-  }
-
-  Dirichlet* GetDirichletVal(int site)	{
-    return dynamic_cast<Dirichlet*>(GetVal(site));
-  }
-
-  double GetMeanEntropy()	{
-    double mean = 0;
-    for (int i=0; i<GetSize(); i++)	{
-      mean += GetDirichletVal(i)->GetEntropy();
-    }
-    mean /= GetSize();
-    return mean;
-  }
-
-  void SetUniform()	{
-    for (int i=0; i<GetSize(); i++)	{
-      GetDirichletVal(i)->setuniform();
-    }
-  }
-
-  /*
-    void SetSemiUniform()	{
-    for (int i=0; i<GetSize(); i++)	{
-    GetDirichletVal(i)->setsemiuniform();
-    }
-    }
-  */
+    */
 
 
-  int GetDim()	{
-    return GetVal(0)->GetDim();
-  }
+    int GetDim() { return GetVal(0)->GetDim(); }
 
-protected:
+  protected:
+    Rvar<Profile>* CreateVal(int) { return new Dirichlet(center, concentration); }
 
-  Rvar<Profile>* CreateVal(int)	{
-    return new Dirichlet(center,concentration);
-  }
-
-  Var<Profile>* center;
-  Var<PosReal>* concentration;
+    Var<Profile>* center;
+    Var<PosReal>* concentration;
 };
 
-class DirichletIIDArrayMove : public MCUpdate	{
-public:
+class DirichletIIDArrayMove : public MCUpdate {
+  public:
+    DirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int inm)
+        : selectarray(inselectarray), tuning(intuning), m(inm) {}
 
-  DirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int inm) : selectarray(inselectarray), tuning(intuning), m(inm)	{}
-
-  double Move(double tuning_modulator)	{
-    double total = 0;
+    double Move(double tuning_modulator) {
+        double total = 0;
 
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
 
-    for (int i=0; i<selectarray->GetSize(); i++)	{
-      total += selectarray->GetDirichletVal(i)->Move(tuning_modulator * tuning,m);
+        for (int i = 0; i < selectarray->GetSize(); i++) {
+            total += selectarray->GetDirichletVal(i)->Move(tuning_modulator * tuning, m);
+        }
+
+
+        return total / selectarray->GetSize();
     }
 
-
-    return total / selectarray->GetSize();
-  }
-
-private:
-
-  DirichletIIDArray* selectarray;
-  double tuning;
-  int m;
+  private:
+    DirichletIIDArray* selectarray;
+    double tuning;
+    int m;
 };
 
-class NormalIIDArray : public IIDArray<Real>	{
-
-public:
-  NormalIIDArray(int insize, Var<Real>* inmean, Var<PosReal>* invar) : IIDArray<Real>(insize)	{
-    mean = inmean;
-    var = invar;
-    Create();
-  }
-
-  double* SetVals(double* ptr)	{
-    for (int i=0; i<GetSize(); i++)	{
-      GetVal(i)->setval(*ptr++);
+class NormalIIDArray : public IIDArray<Real> {
+  public:
+    NormalIIDArray(int insize, Var<Real>* inmean, Var<PosReal>* invar) : IIDArray<Real>(insize) {
+        mean = inmean;
+        var = invar;
+        Create();
     }
-    return ptr;
-  }
 
-  double* GetVals(double* ptr)	{
-    for (int i=0; i<GetSize(); i++)	{
-      (*ptr++) = GetVal(i)->val();
+    double* SetVals(double* ptr) {
+        for (int i = 0; i < GetSize(); i++) { GetVal(i)->setval(*ptr++); }
+        return ptr;
     }
-    return ptr;
-  }
 
-  void Reset()	{
-    for (int i=0; i<GetSize(); i++)	{
-      GetVal(i)->setval(0);
+    double* GetVals(double* ptr) {
+        for (int i = 0; i < GetSize(); i++) { (*ptr++) = GetVal(i)->val(); }
+        return ptr;
     }
-  }
 
-  Normal* GetNormal(int site)	{
-    Normal* n = dynamic_cast<Normal*>(GetVal(site));
-    if (! n)	{
-      cerr << "error in NormalIIDArray::GetNormal\n";
-      exit(1);
+    void Reset() {
+        for (int i = 0; i < GetSize(); i++) { GetVal(i)->setval(0); }
     }
-    return n;
-  }
 
-protected:
+    Normal* GetNormal(int site) {
+        Normal* n = dynamic_cast<Normal*>(GetVal(site));
+        if (!n) {
+            cerr << "error in NormalIIDArray::GetNormal\n";
+            exit(1);
+        }
+        return n;
+    }
 
-  Rvar<Real>* CreateVal(int)	{
-    return new Normal(mean,var);
-  }
+  protected:
+    Rvar<Real>* CreateVal(int) { return new Normal(mean, var); }
 
-  Var<Real>* mean;
-  Var<PosReal>* var;
+    Var<Real>* mean;
+    Var<PosReal>* var;
 };
 
 
-#endif // IID_H
+#endif  // IID_H

@@ -1,105 +1,82 @@
 #ifndef STATESPACE_H
 #define STATESPACE_H
 
-#include "diffsel/BiologicalSequences.hpp" //FIXME only here because constant unknown
+#include "diffsel/BiologicalSequences.hpp"  //FIXME only here because constant unknown
 
 // pure interface
 //
-class StateSpace	{
+class StateSpace {
+  public:
+    virtual ~StateSpace() {}
 
-public:
+    virtual std::string GetState(int state) = 0;
+    virtual int GetNstate() = 0;
 
-  virtual ~StateSpace() {}
+    virtual int GetState(std::string from) = 0;
 
-  virtual std::string GetState(int state) = 0;
-  virtual int GetNstate() = 0;
-
-  virtual int GetState(std::string from) = 0;
-
-  virtual bool isCompatible(int state1, int state2)	{
-    return ((state1 == unknown) || (state2 == unknown) || (state1 == state2));
-  }
-
+    virtual bool isCompatible(int state1, int state2) {
+        return ((state1 == unknown) || (state2 == unknown) || (state1 == state2));
+    }
 };
 
 // simple state space: assumes that states are referred to using a one-letter code
 //
-class SimpleStateSpace : public StateSpace	{
+class SimpleStateSpace : public StateSpace {
+  public:
+    int GetState(std::string from);
 
-public:
+    int GetNstate() { return Nstate; }
 
+    std::string GetState(int state);
 
-  int GetState(std::string from);
-
-  int GetNstate() {
-    return Nstate;
-  }
-
-  std::string GetState(int state);
-
-protected:
-  int Nstate;
-  char* Alphabet;
-  int NAlphabetSet;
-  char* AlphabetSet;
+  protected:
+    int Nstate;
+    char* Alphabet;
+    int NAlphabetSet;
+    char* AlphabetSet;
 };
 
-class DNAStateSpace : public SimpleStateSpace	{
-
-public:
-
-  DNAStateSpace();
-  ~DNAStateSpace();
+class DNAStateSpace : public SimpleStateSpace {
+  public:
+    DNAStateSpace();
+    ~DNAStateSpace();
 };
 
-class RNAStateSpace : public SimpleStateSpace	{
-
-public:
-
-  RNAStateSpace();
-  ~RNAStateSpace();
+class RNAStateSpace : public SimpleStateSpace {
+  public:
+    RNAStateSpace();
+    ~RNAStateSpace();
 };
 
-class ProteinStateSpace : public SimpleStateSpace	{
-
-public:
-
-  ProteinStateSpace();
-  ~ProteinStateSpace();
+class ProteinStateSpace : public SimpleStateSpace {
+  public:
+    ProteinStateSpace();
+    ~ProteinStateSpace();
 };
 
-class RYStateSpace : public SimpleStateSpace	{
+class RYStateSpace : public SimpleStateSpace {
+  public:
+    RYStateSpace();
+    ~RYStateSpace();
 
-public:
-
-  RYStateSpace();
-  ~RYStateSpace();
-
-  int GetRYCoding(int from);
+    int GetRYCoding(int from);
 };
 
-class GenericStateSpace : public SimpleStateSpace	{
-
-public:
-
-  GenericStateSpace(int inNstate, char* inAlphabet, int inNAlphabetSet, char* inAlphabetSet)	{
-    Nstate = inNstate;
-    Alphabet = new char[Nstate];
-    for (int i=0; i<Nstate; i++)	{
-      Alphabet[i] = inAlphabet[i];
+class GenericStateSpace : public SimpleStateSpace {
+  public:
+    GenericStateSpace(int inNstate, char* inAlphabet, int inNAlphabetSet, char* inAlphabetSet) {
+        Nstate = inNstate;
+        Alphabet = new char[Nstate];
+        for (int i = 0; i < Nstate; i++) { Alphabet[i] = inAlphabet[i]; }
+        NAlphabetSet = inNAlphabetSet;
+        AlphabetSet = new char[NAlphabetSet];
+        for (int i = 0; i < NAlphabetSet; i++) { AlphabetSet[i] = inAlphabetSet[i]; }
     }
-    NAlphabetSet = inNAlphabetSet;
-    AlphabetSet = new char[NAlphabetSet];
-    for (int i=0; i<NAlphabetSet; i++)	{
-      AlphabetSet[i] = inAlphabetSet[i];
+
+    ~GenericStateSpace() {
+        delete[] Alphabet;
+        delete[] AlphabetSet;
     }
-  }
-
-  ~GenericStateSpace()	{
-    delete[] Alphabet;
-    delete[] AlphabetSet;
-  }
-
 };
 
-#endif // STATESPACE_H
+#endif  // STATESPACE_H

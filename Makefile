@@ -22,3 +22,6 @@ dot: all
 	@_build/poisson_gamma data/test.data _build/test.out
 	@dot -Tps tmp.dot -o tmp.ps
 	@evince tmp.ps &
+
+format:
+	@clang-format -i include/core/*.hpp src/core/*.cpp src/*.cpp src/diffsel/*.cpp include/diffsel/*.hpp
