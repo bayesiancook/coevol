@@ -2,7 +2,7 @@
 #define SUBPROCESS_H
 
 #include "SubMatrix.hpp"
-#include "core/Random.hpp"
+#include "utils/Random.hpp"
 
 class BranchSiteSubstitutionProcess {
     // a matrix

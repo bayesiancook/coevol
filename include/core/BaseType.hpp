@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include "Random.hpp"
+#include "utils/Random.hpp"
 
 class DAGnode;  // forward declaration
 

@@ -5,7 +5,7 @@
 #include <set>
 
 #include "MCMC.hpp"
-#include "Random.hpp"
+#include "utils/Random.hpp"
 
 class ProbModel;
 

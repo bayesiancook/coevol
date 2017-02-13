@@ -1,7 +1,7 @@
 #include "diffsel/SequenceAlignment.hpp"
 #include <fstream>
-#include "core/Random.hpp"
 #include "diffsel/BiologicalSequences.hpp"
+#include "utils/Random.hpp"
 #include "utils/StringStreamUtils.hpp"
 
 

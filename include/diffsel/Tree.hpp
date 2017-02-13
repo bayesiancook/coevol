@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include "core/Random.hpp"
 #include "diffsel/TaxonSet.hpp"  // FIXME should be able to remove but errors too horrible
+#include "utils/Random.hpp"
 
 // class TaxonSet;
 

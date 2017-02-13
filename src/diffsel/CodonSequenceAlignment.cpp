@@ -1,8 +1,8 @@
 #include "diffsel/CodonSequenceAlignment.hpp"
 #include <cstdlib>
 #include <iostream>
-#include "core/Random.hpp"
 #include "utils/Exception.hpp"
+#include "utils/Random.hpp"
 using namespace std;
 
 
