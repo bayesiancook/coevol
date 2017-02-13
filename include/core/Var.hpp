@@ -35,7 +35,7 @@ public:
   Rvar() {}
   Rvar(const T& from) : Var<T>(from) {}
 
-  inline virtual double ProposeMove(double tuning) { return T::ProposeMove(tuning); }
+  inline virtual double ProposeMove(double tuning) override { return T::ProposeMove(tuning); }
 
   inline void ClampAt(const T& inval) { T::operator=(inval); Clamp(); }
 

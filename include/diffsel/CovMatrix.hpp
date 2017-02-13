@@ -13,8 +13,6 @@
 class CovMatrix : public BaseType, public Multiplicative {
 
 protected:
-
-
   // data members
 
   int dim;
@@ -276,6 +274,8 @@ public:
     }
     return 0;
   }
+
+  int check () final { return 1; } // (VL) placeholder implementation
 
   /*
     virtual double	ProposeMove(double tuning)	{

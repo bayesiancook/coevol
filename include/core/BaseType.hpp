@@ -20,6 +20,8 @@ public:
   // smaller tuning: smaller moves
   // returns the log of the Hastings ratio
   virtual double ProposeMove(double tuning) = 0;
+
+  virtual int check() = 0;
 };
 
 
@@ -51,7 +53,7 @@ class Real : public BaseType , public Additive {
 public:
   Real(double d=0) : value(d) {}
   Real(const Real& from) : value(from.value) {}
-  ~Real() {}
+  virtual ~Real() {}
 
   /* (VL) Operators */
   inline Real& operator=(const Real& from) { value = from.value; return *this; }
@@ -65,11 +67,9 @@ public:
   friend std::istream& operator>>(std::istream& is, Real& r) ;
 
   /* (VL) Overriding virtual methods from parents */
-  int ScalarAddition(double d) override;
+  int ScalarAddition(double d) final ;
   double ProposeMove(double tuning) override ;
-
-  /* (VL) what exactly are check functions? */
-  int check() ;
+  int check() final ;
 
 protected:
   double value;
@@ -80,7 +80,7 @@ class UnitReal : public BaseType {
 public:
   UnitReal(double d=0) : value(d) {}
   UnitReal(const UnitReal& from) : value(from.value) {}
-  ~UnitReal() {}
+  virtual ~UnitReal() {}
 
   /* (VL) Operators */
   inline UnitReal& operator=(const UnitReal& from) { value = from.value; return *this; }
@@ -92,11 +92,9 @@ public:
   /* (VL) Stream operator friend function */
   friend std::istream& operator>>(std::istream& is, UnitReal& r) ;
 
-  /* (VL) Overriding ProposeMove from BaseType class */
+  /* (VL) Overriding virtual methods from BaseType class */
   double ProposeMove(double tuning) override ;
-
-  int check() ;
-
+  int check() final ;
 
 protected:
   double value;
@@ -108,7 +106,8 @@ protected:
 class PosReal : public BaseType , public Multiplicative {
 public:
   PosReal(double d=0) : value(d) {}
-  PosReal(const PosReal& from) : value(from.value) {}  virtual ~PosReal() {}
+  PosReal(const PosReal& from) : value(from.value) {}
+  virtual ~PosReal() {}
 
   /* (VL) Operators */
   inline PosReal& operator=(const PosReal& from) { value = from.value; return *this; }
@@ -124,11 +123,9 @@ public:
   friend std::istream& operator>>(std::istream& is, PosReal& r) ;
 
   /* (VL) Overriding virtual methods from base classes */
-  int ScalarMultiplication(double d) override ;
+  int ScalarMultiplication(double d) final ;
   double ProposeMove(double tuning) override ;
-
-  int check() ;
-
+  int check() final ;
 
 protected:
   double value;
@@ -141,7 +138,7 @@ class Int : public BaseType {
 public:
   Int(int d=0) : value(d) {}
   Int(const Int& from) : value(from.value) {}
-  ~Int() {}
+  virtual ~Int() {}
 
   /* (VL) Operators */
   inline Int& operator=(const Int& from) { value = from.value; return *this; }
@@ -155,9 +152,8 @@ public:
   friend std::istream& operator>>(std::istream& is, Int& r) ;
 
   /* (VL) Overriding virtual methods from base classes */
-  virtual double ProposeMove(double) override ;
-
-  inline int check() { return 1; }
+  double ProposeMove(double) override ;
+  inline int check() final { return 1; }
 
 protected:
   int value;
@@ -176,29 +172,32 @@ public:
   Profile(const Profile& from) : profile(from.profile) {}
   virtual ~Profile() {}
 
+  /* (VL) Operators */
   Profile& operator=(const Profile& from) ;
   inline double& operator[](int i) { return profile[i]; }
   inline const double& operator[](int i) const { return profile[i]; }
 
-  // Getters FIXME (these and the setters below should probably be inlined)
+  // (VL) Getters FIXME (these and the setters below should probably be inlined)
   inline const double* GetArray() const { return &profile[0]; }
   inline double* GetArray() { return &profile[0]; }
   inline int GetDim() const { return profile.size(); }
   double GetEntropy() const ;
 
-  // Setters
+  // (VL) Setters
   inline void setAtZero() { for (auto& i : profile) i = 0; }
   void setuniform() ;
   void setarray(double* in) ;
 
+  /* (VL) Operations */
   inline void scalarMultiplication(double d) { for (auto& i : profile) i *= d; }
   inline void add(const Profile& in) { for (unsigned int i=0; i<profile.size(); i++) profile[i] += in[i]; }
 
-  inline int check() { return 1; }
-
+  /* (VL) Overriding virtual functions from parents + ProposeMove overload */
+  inline int check() final { return 1; }
   double ProposeMove(double tuning, int dim);
   double ProposeMove(double tuning) override { return ProposeMove(tuning, profile.size()); }
 
+  /* (VL) Stream operator friend functions */
   friend std::ostream& operator<<(std::ostream& os, const Profile& r) ;
   friend std::istream& operator>>(std::istream& is, Profile& r) ;
 };
@@ -212,31 +211,33 @@ public:
   RealVector(int indim = 0) : vec(indim) {}
   RealVector(const RealVector& from) : vec(from.vec) {}
   RealVector(const double* from, int indim) ;
-  virtual ~RealVector() {}
+  virtual ~RealVector() {} // (VL) this class is not final
 
+  /* (VL) Operators */
   RealVector& operator=(const RealVector& from) ;
-
   inline double& operator[](int i) { return vec[i]; }
   inline const double& operator[](int i) const { return vec[i]; }
 
+  /* (VL) Getters */
   inline double* GetArray() { return &vec[0]; }
   inline int GetDim() const { return vec.size(); }
   double GetMean() const ;
   double GetVar() const ;
 
-  inline int check() { return 1; }
 
-  int ScalarAddition(double d) ;
+  /* (VL) Operations */
+  int ScalarAddition(double d) final ;
   void ScalarMultiplication(double d) ;
-
   void add(const RealVector& in) ;
   void add(const double* in, double f = 1) ;
-
-  double ProposeMove(double tuning, int n) ;
-  inline double ProposeMove(double tuning) { return ProposeMove(tuning, GetDim()); }
-
   inline void setAtZero() { for (auto& i : vec) i = 0; }
 
+  /* (VL) Base classes overrides + random overload */
+  inline int check() final { return 1; }
+  double ProposeMove(double tuning, int n) ;
+  virtual inline double ProposeMove(double tuning) override { return ProposeMove(tuning, GetDim()); }
+
+  /* (VL) Stream operator friend functions */
   friend std::ostream& operator<<(std::ostream& os, const RealVector& r) ;
   friend std::istream& operator>>(std::istream& is, RealVector& r) ;
 };
@@ -248,7 +249,7 @@ public:
   PosRealVector(int indim) : RealVector(indim) {}
   PosRealVector(const PosRealVector& from) : RealVector(from) {};
   PosRealVector(const double* from, int indim) ;
-  virtual ~PosRealVector() {}
+  ~PosRealVector() {}
 
   PosRealVector& operator=(const PosRealVector& from) ;
 
@@ -258,10 +259,10 @@ public:
   double GetVar() const ;
   double GetEntropy() const ;
 
+  /* (VL) Overriding of base class methods + ProposeMove overload */
   double ProposeMove(double tuning, int n) ;
-  inline double ProposeMove(double tuning) { return ProposeMove(tuning, GetDim()); }
-
-  inline int ScalarMultiplication(double d) { for (auto& i : vec) i *= d; return GetDim(); }
+  inline double ProposeMove(double tuning) override { return ProposeMove(tuning, GetDim()); }
+  inline int ScalarMultiplication(double d) final { for (auto& i : vec) i *= d; return GetDim(); }
 };
 
 
@@ -275,7 +276,7 @@ public:
   IntVector(int indim) { dim = indim; vec = new int[dim]; }
   IntVector(const IntVector& from) ;
   IntVector(const int* from, int indim) ;
-  virtual   ~IntVector() { delete[] vec; }
+  virtual ~IntVector() { delete[] vec; }
 
   IntVector& operator=(const IntVector& from) ;
   IntVector& operator=(const int* from) ;
@@ -288,10 +289,10 @@ public:
   double GetMean() const ;
   double GetVar() const ;
 
-  inline int check() { return 1; }
+  inline int check() final { return 1; }
 
   int ProposeMove(double tuning, int n) ;
-  inline double ProposeMove(double tuning) { return ProposeMove(tuning,dim); }
+  inline double ProposeMove(double tuning) override { return ProposeMove(tuning,dim); }
 
   friend std::ostream& operator<<(std::ostream& os, const IntVector& r) ;
   friend std::istream& operator>>(std::istream& is, IntVector& r) ;
