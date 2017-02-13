@@ -2,8 +2,8 @@
 #define SELPHYLO_H
 
 #include "AllocationTree.hpp"
-#include "RandomSubMatrix.hpp"
 #include "PhyloProcess.hpp"
+#include "RandomSubMatrix.hpp"
 #include "ValArray.hpp"
 
 class SelectionMatrixTree {

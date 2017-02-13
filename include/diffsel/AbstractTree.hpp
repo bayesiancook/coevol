@@ -2,8 +2,8 @@
 #define ABSTRACTTREE_H
 
 #include "Tree.hpp"
-#include "core/Var.hpp"
 #include "core/BaseType.hpp"
+#include "core/Var.hpp"
 
 class AbstractTree {
   public:
