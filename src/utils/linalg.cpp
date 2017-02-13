@@ -8,8 +8,8 @@
 using namespace std;
 
 void LinAlg::QR(double** u, int dim, double** ql, double** r) {
-    double* v = new double[dim];
-    double* c = new double[dim];
+    auto v = new double[dim];
+    auto c = new double[dim];
 
     double** a = r;
     for (int i = 0; i < dim; i++) {
@@ -90,8 +90,8 @@ void LinAlg::QR(double** u, int dim, double** ql, double** r) {
 
 
 void LinAlg::HouseHolder(double** u, int dim, double** a, double** ql) {
-    double* v = new double[dim];
-    double* c = new double[dim];
+    auto v = new double[dim];
+    auto c = new double[dim];
 
     for (int i = 0; i < dim; i++) {
         for (int j = 0; j < dim; j++) {
@@ -197,9 +197,9 @@ int LinAlg::DiagonalizeSymmetricMatrix(double** u, int dim, int nmax, double eps
         return 0;
     }
 
-    double** a = new double*[dim];
-    double** q = new double*[dim];
-    double** r = new double*[dim];
+    auto a = new double*[dim];
+    auto q = new double*[dim];
+    auto r = new double*[dim];
     for (int i = 0; i < dim; i++) {
         a[i] = new double[dim];
         q[i] = new double[dim];
@@ -305,7 +305,7 @@ int LinAlg::DiagonalizeSymmetricMatrix(double** u, int dim, int nmax, double eps
 int LinAlg::DiagonalizeRateMatrix(double** u, double* pi, int dim, double* eigenval,
                                   double** eigenvect, double** inveigenvect, int nmax,
                                   double epsilon) {
-    double** a = new double*[dim];
+    auto a = new double*[dim];
     for (int i = 0; i < dim; i++) {
         a[i] = new double[dim];
         for (int j = 0; j < dim; j++) {
@@ -356,7 +356,7 @@ double LinAlg::Gauss(double** a, int dim, double** invu) {
             invu[i] = new double[dim];
         }
     }
-    double** u = new double*[dim];
+    auto u = new double*[dim];
     for (int i = 0; i < dim; i++) {
         u[i] = new double[dim];
         for (int j = 0; j < dim; j++) {

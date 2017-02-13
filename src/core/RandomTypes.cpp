@@ -9,7 +9,7 @@ using namespace std;
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 Normal::Normal(Var<Real>* inmean, Var<PosReal>* invariance) {
-    meanvec = 0;
+    meanvec = nullptr;
     mean = inmean;
     variance = invariance;
     Register(mean);
@@ -18,7 +18,7 @@ Normal::Normal(Var<Real>* inmean, Var<PosReal>* invariance) {
 }
 
 Normal::Normal(Var<RealVector>* inmeanvec, Var<PosReal>* invariance, int inindex) {
-    mean = 0;
+    mean = nullptr;
     meanvec = inmeanvec;
     variance = invariance;
     index = inindex;
@@ -323,8 +323,8 @@ double Poisson::logProb() {
 Dirichlet::Dirichlet(int dimension) {
     setval(Profile(dimension));
     bkvalue = Profile(dimension);
-    center = 0;
-    concentration = 0;
+    center = nullptr;
+    concentration = nullptr;
     if (dimension == 1) {
         (*this)[0] = 1;
         Clamp();
@@ -451,7 +451,7 @@ IIDExp::IIDExp(int dimension) {
     dim = dimension;
     setval(PosRealVector(dimension));
     bkvalue = PosRealVector(dimension);
-    mean = 0;
+    mean = nullptr;
     Sample();
 }
 
@@ -500,8 +500,8 @@ IIDGamma::IIDGamma(int dimension) {
     dim = dimension;
     setval(PosRealVector(dimension));
     bkvalue = PosRealVector(dimension);
-    alpha = 0;
-    beta = 0;
+    alpha = nullptr;
+    beta = nullptr;
     Sample();
 }
 

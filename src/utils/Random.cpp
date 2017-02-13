@@ -57,7 +57,7 @@ const double Random::INFPROB = 250;
 void Random::InitRandom(int seed) {
     if (seed == -1) {
         struct timeval tod;
-        gettimeofday(&tod, NULL);
+        gettimeofday(&tod, nullptr);
         seed = tod.tv_usec;
     }
     Seed = seed;
@@ -209,7 +209,7 @@ void Random::DrawFromUrn(int* tab, int n, int N) {  // draw n out of N
     for (int i = 0; i < n; i++) {
         tab[i] = 0;
     }
-    int* index = new int[N];
+    auto index = new int[N];
     for (int i = 0; i < N; i++) {
         index[i] = 0;
     }
@@ -243,7 +243,7 @@ int Random::Choose(int scale) { return (int)(Random::Uniform() * scale); }
 
 int Random::FiniteDiscrete(int n, const double* probarray) {
     double total = 0;
-    double* cumul = new double[n];
+    auto cumul = new double[n];
     for (int k = 0; k < n; k++) {
         total += probarray[k];
         cumul[k] = total;
@@ -263,7 +263,7 @@ int Random::FiniteDiscrete(int n, const double* probarray) {
 // ---------------------------------------------------------------------------------
 //		¥ sNormal()
 // ---------------------------------------------------------------------------------
-double Random::sNormal(void) {
+double Random::sNormal() {
     double u = Random::Uniform();
     if (u <= 0.8638) {
         double v = 2 * Random::Uniform() - 1;

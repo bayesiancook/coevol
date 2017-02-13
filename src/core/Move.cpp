@@ -59,8 +59,8 @@ void MCScheduler::Cycle(double tuning_modulator, int nrep, bool verbose, bool ch
             exit(1);
         }
 
-        for (unsigned int i = 0; i < moves.size(); i++) {
-            Move(tuning_modulator, moves[i], verbose, check, weight[moves[i]]);
+        for (int move : moves) {
+            Move(tuning_modulator, move, verbose, check, weight[move]);
         }
         /*for (int i=0; i<size; i++)	{
           Move(tuning_modulator,i,verbose,check,weight[i]);
@@ -89,7 +89,7 @@ vector<int> MCScheduler::ReadCommand(unsigned int& n) {
             }
 
             for (int i = 0; i < x; i++)
-                for (unsigned int j = 0; j < vv.size(); j++) v.push_back(vv[j]);
+                for (int& j : vv) v.push_back(j);
             n++;
         } else {
             unsigned int n2 = command.find(",", n + 1);

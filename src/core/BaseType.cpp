@@ -181,7 +181,7 @@ double Profile::ProposeMove(double tuning,
         if (2 * n > dim) {
             n = dim / 2;
         }
-        int* indices = new int[2 * n];
+        auto indices = new int[2 * n];
         Random::DrawFromUrn(indices, 2 * n, dim);
         for (int i = 0; i < n; i++) {
             int i1 = indices[2 * i];
@@ -309,7 +309,7 @@ double RealVector::ProposeMove(double tuning, int n) {
     if ((n <= 0) || (n > dim)) {
         n = dim;
     }
-    int* indices = new int[n];
+    auto indices = new int[n];
     Random::DrawFromUrn(indices, n, dim);
     for (int i = 0; i < n; i++) {
         vec[indices[i]] += tuning * (Random::Uniform() - 0.5);
@@ -375,7 +375,7 @@ double PosRealVector::ProposeMove(double tuning, int n) {
     if ((n <= 0) || (n > dim)) {
         n = dim;
     }
-    int* indices = new int[n];
+    auto indices = new int[n];
     Random::DrawFromUrn(indices, n, dim);
     double ret = 0;
     for (int i = 0; i < n; i++) {
@@ -477,7 +477,7 @@ int IntVector::ProposeMove(double tuning, int n) {
     if ((n <= 0) || (n > dim)) {
         n = dim;
     }
-    int* indices = new int[n];
+    auto indices = new int[n];
     Random::DrawFromUrn(indices, n, dim);
     for (int i = 0; i < n; i++) {
         vec[indices[i]] += (int)(tuning * (Random::Uniform() - 0.5));

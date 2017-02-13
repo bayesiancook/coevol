@@ -8,7 +8,7 @@ void Chrono::Reset() {
 void Chrono::Start() {
     // clock_gettime(CLOCK_REALTIME, &nano1);
     struct timeval tod;
-    gettimeofday(&tod, NULL);
+    gettimeofday(&tod, nullptr);
     sec1 = ((double)tod.tv_sec);
     milli1 = ((double)tod.tv_usec) / 1000;
 }
@@ -21,7 +21,7 @@ void Chrono::Stop() {
       double duration = t1 + t2;
     */
     struct timeval tod;
-    gettimeofday(&tod, NULL);
+    gettimeofday(&tod, nullptr);
     sec2 = ((double)tod.tv_sec);
     milli2 = ((double)tod.tv_usec) / 1000;
     double duration = 1000 * (sec2 - sec1) + milli2 - milli1;

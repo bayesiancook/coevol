@@ -26,7 +26,7 @@ class LinAlg {
     // store inverse in invu
     // does not corrupt matrix a
     // if invu not specified, just returns the logdet
-    static double Gauss(double** a, int dim, double** invu = 0);
+    static double Gauss(double** a, int dim, double** invu = nullptr);
 
   private:
     static void QR(double** u, int dim, double** ql, double** r);
