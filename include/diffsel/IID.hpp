@@ -49,6 +49,13 @@ class IIDArray : public ValPtrArray<Rvar<V> > {
     }
 };
 
+template <>
+class IIDArray<PosReal> : public ValPtrArray<Rvar<PosReal> > {
+  public:
+    IIDArray(int intsize);
+    void Register(DAGnode* in) override;
+};
+
 class BetaIIDArray : public IIDArray<UnitReal> {
   public:
     BetaIIDArray(int insize, Var<PosReal>* inalpha, Var<PosReal>* inbeta)
