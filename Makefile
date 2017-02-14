@@ -1,9 +1,19 @@
+# ====================================
+#              VARIABLES
+# ====================================
+
 SRC_FILES = $(shell ls include/**/*.hpp) $(shell ls src/**/*.cpp) $(shell ls src/*.cpp)
+
+
+# ====================================
+#             COMPILATION
+# ====================================
+# Requires: cmake
 
 all: cmake
 	@cd _build ; make --no-print-directory
 
-cmake : _build/Makefile
+cmake: _build/Makefile
 
 _build/Makefile: CMakeLists.txt
 	@rm -rf _build
@@ -15,6 +25,12 @@ clean:
 	@rm -f *.dot tmp*
 	@rm -rf data/tmp*
 
+
+# ====================================
+#               TESTING
+# ====================================
+# Requires: graphviz (for dot)
+
 test: all
 	@_build/poisson_gamma data/test.data _build/test.out
 	@less _build/test.out.trace
@@ -25,11 +41,18 @@ dot: all
 	@dot -Tps tmp.dot -o tmp.ps
 	@evince tmp.ps &
 
+
+# ====================================
+#             CODE QUALITY
+# ====================================
+# Requires: clang-format, clang-check, clang-tidy
+
 format:
 	@clang-format -i $(SRC_FILES)
 
 check:
 	@clang-check $(SRC_FILES) -- -I include/ -std=gnu++11
 
+# WARNING: clang-tidy is not 100% reliable; use with caution!
 fix:
-	clang-tidy $(SRC_FILES) -checks=performance-* -fix -- -I include/ -std=gnu++11
+	@clang-tidy $(SRC_FILES) -checks=performance-* -fix -- -I include/ -std=gnu++11
