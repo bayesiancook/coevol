@@ -1,14 +1,8 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <utility>
 #include "diffsel/TaxonSet.hpp"  // FIXME should be able to remove but errors too horrible
 #include "utils/Random.hpp"
-
-// class TaxonSet;
 
 class Node {
   private:
@@ -144,7 +138,6 @@ class Link {
             d++;
         }
         return link;
-        return nullptr;
     }
 };
 
