@@ -1,8 +1,10 @@
 # ====================================
-#              VARIABLES
+#                LISTS
 # ====================================
 
-SRC_FILES = $(shell ls include/**/*.hpp) $(shell ls src/**/*.cpp) $(shell ls src/*.cpp)
+SRC_FILES = $(shell find include -name "*.hpp") $(shell find src -name "*.cpp")
+TMP_FILES = $(shell find . -name "tmp*")
+.PHONY: cmake clean doc fix check format dot test
 
 
 # ====================================
@@ -21,9 +23,8 @@ _build/Makefile: CMakeLists.txt
 	@cd _build ; cmake ..
 
 clean:
-	@rm -rf _build
-	@rm -f *.dot tmp*
-	@rm -rf data/tmp*
+	@rm -rf _build doc/html
+	@rm -f *.dot $(TMP_FILES)
 
 
 # ====================================
@@ -56,3 +57,12 @@ check:
 # WARNING: clang-tidy is not 100% reliable; use with caution!
 fix:
 	@clang-tidy $(SRC_FILES) -checks=performance-* -fix -- -I include/ -std=gnu++11
+
+
+# ====================================
+#             DOCUMENTATION
+# ====================================
+# Requires: doxygen
+
+doc:
+	@doxygen Doxyfile
