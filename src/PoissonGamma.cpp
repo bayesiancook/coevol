@@ -90,11 +90,11 @@ class PoissonGammaModel : public ProbModel {
         }
     }
 
-    void ToStream(ostream&) override {}
-    void FromStream(istream&) override {}
+    void ToStream(ostream& /*os*/) override {}
+    void FromStream(istream& /*is*/) override {}
 };
 
-int main(int, char* argv[]) {
+int main(int /*unused*/, char* argv[]) {
     ifstream is(argv[1]);
     string name = argv[2];
 
