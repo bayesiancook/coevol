@@ -130,7 +130,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     // (all of which are already accounted for through the sufficient statistic)
     //
 
-    virtual void FullCorrupt(std::map<DAGnode*, int>& /*unused*/) {
+    void FullCorrupt(std::map<DAGnode*, int>& /*unused*/) override {
         if (!isActive()) {
             Dvar<T>::Corrupt(true);
         } else {
@@ -146,7 +146,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual void Corrupt(bool bk) {
+    void Corrupt(bool bk) override {
         if (!isActive()) {
             Dvar<T>::Corrupt(bk);
         } else {
@@ -164,9 +164,9 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual double FullUpdate(bool /*unused*/) { return Update(); }
+    double FullUpdate(bool /*unused*/) override { return Update(); }
 
-    virtual double Update() {
+    double Update() override {
         double ret = 0;
         if (!isActive()) {
             ret = Dvar<T>::Update();
@@ -186,7 +186,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         return ret;
     }
 
-    virtual void Restore() {
+    void Restore() override {
         if (!isActive()) {
             Dvar<T>::Restore();
         } else {
@@ -209,7 +209,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual void NotifyCorrupt(bool bk) {
+    void NotifyCorrupt(bool bk) override {
         if (!isActive()) {
             Dvar<T>::NotifyCorrupt(bk);
         } else {
@@ -227,7 +227,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual double NotifyUpdate() {
+    double NotifyUpdate() override {
         double ret = 0;
         if (!isActive()) {
             ret = Dvar<T>::NotifyUpdate();
@@ -247,7 +247,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         return ret;
     }
 
-    virtual void NotifyRestore() {
+    void NotifyRestore() override {
         if (!isActive()) {
             Dvar<T>::NotifyRestore();
         } else {

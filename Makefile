@@ -30,3 +30,6 @@ format:
 
 check:
 	@clang-check $(SRC_FILES) -- -I include/ -std=gnu++11
+
+fix:
+	clang-tidy $(SRC_FILES) -checks=performance-* -fix -- -I include/ -std=gnu++11

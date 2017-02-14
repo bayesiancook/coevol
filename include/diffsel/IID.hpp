@@ -3,11 +3,11 @@
 
 #include <cstdlib>
 #include <iostream>
-using namespace std;
-
 #include "ValArray.hpp"
 #include "core/Move.hpp"
 #include "core/RandomTypes.hpp"
+using namespace std;
+
 
 template <class V>
 class IIDArray : public ValPtrArray<Rvar<V> > {
