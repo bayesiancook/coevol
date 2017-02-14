@@ -3,7 +3,7 @@
 ## Compilation ##
 
 `make`
-: Builds mini-coevol (requires cmake); builds in the `_build` folder.
+: Builds _`mini-coevol`_ (requires `cmake`); builds in the `_build` folder.
 
 `make clean`
 : Cleans the coevol directory; removes the `_build` folder among other things.
@@ -30,3 +30,11 @@ This code is formatted according to a specific style described in the `.clang-fo
 
 `make check`
 : Runs clang-check on all the code (this requires `clang-check`). This can give non-trivial warnings that `gcc` usually doesn't catch.
+
+
+## Documentation ##
+
+_`mini-coevol`_ provides a basic Doxygen documentation.
+
+`make doc`
+: Generates the Doxygen documentation (requires `doxygen`) in `doc/html`.
