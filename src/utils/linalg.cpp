@@ -349,7 +349,7 @@ int LinAlg::DiagonalizeRateMatrix(double** u, double* pi, int dim, double* eigen
 double LinAlg::Gauss(double** a, int dim, double** invu) {
     // returns log |determinant|
     bool deleteinvu = false;
-    if (!invu) {
+    if (invu == nullptr) {
         deleteinvu = true;
         invu = new double*[dim];
         for (int i = 0; i < dim; i++) {

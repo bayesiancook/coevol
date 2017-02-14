@@ -8,7 +8,7 @@ using namespace std;
 //	* Additive
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-void Additive::Register(DAGnode*) {
+void Additive::Register(DAGnode* /*unused*/) {
     cerr << "error in Additive::Register\n";
     throw;
 }
@@ -19,7 +19,7 @@ void Additive::Register(DAGnode*) {
 //	* Multiplicative
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-void Multiplicative::Register(DAGnode*) {
+void Multiplicative::Register(DAGnode* /*unused*/) {
     cerr << "error in Multiplicative::Register\n";
     throw;
 }
@@ -114,7 +114,7 @@ istream& operator>>(istream& is, PosReal& r) {
 //	* Int
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-double Int::ProposeMove(double) {
+double Int::ProposeMove(double /*tuning*/) {
     if (Random::Uniform() < 0.5) {
         value++;
     } else {
@@ -138,7 +138,7 @@ const double Profile::MIN = 1e-20;
 
 Profile::Profile(int indim, double* v) {
     profile.assign(indim, 0);
-    if (v) {
+    if (v != nullptr) {
         double total = 0;
         for (int k = 0; k < indim;
              k++) {             // (VL) copy v into profile + checking everything is positive
@@ -149,7 +149,9 @@ Profile::Profile(int indim, double* v) {
             profile[k] = v[k];
             total += profile[k];
         }
-        for (auto k : profile) profile[k] /= total;  // (VL) Normalizing happens here
+        for (auto k : profile) {
+            profile[k] /= total;  // (VL) Normalizing happens here
+        }
     }
 }
 
@@ -157,7 +159,7 @@ double Profile::ProposeMove(double tuning,
                             int n) {  // n==0dirichlet resampling, otherwise, vase communiquants
     double ret = 0;
     int dim = profile.size();
-    if (!n) {  // dirichlet
+    if (n == 0) {  // dirichlet
         vector<double> oldprofile = profile;
         double total = 0;
         for (int i = 0; i < dim; i++) {
@@ -177,38 +179,38 @@ double Profile::ProposeMove(double tuning,
                            (tuning * oldprofile[i] - 1.0) * log(profile[i]);
         }
         return logHastings;
-    } else {
-        if (2 * n > dim) {
-            n = dim / 2;
-        }
-        auto indices = new int[2 * n];
-        Random::DrawFromUrn(indices, 2 * n, dim);
-        for (int i = 0; i < n; i++) {
-            int i1 = indices[2 * i];
-            int i2 = indices[2 * i + 1];
-            double tot = profile[i1] + profile[i2];
-            double x = profile[i1];
-
-            // double h = tuning * (Random::Uniform() - 0.5);
-            double h = tot * tuning * (Random::Uniform() - 0.5);
-            /*
-              int c = (int) (h / (2 * tot));
-              h -= c*2*tot;
-            */
-            x += h;
-            while ((x < 0) || (x > tot)) {
-                if (x < 0) {
-                    x = -x;
-                }
-                if (x > tot) {
-                    x = 2 * tot - x;
-                }
-            }
-            profile[i1] = x;
-            profile[i2] = tot - x;
-        }
-        delete[] indices;
     }
+    if (2 * n > dim) {
+        n = dim / 2;
+    }
+    auto indices = new int[2 * n];
+    Random::DrawFromUrn(indices, 2 * n, dim);
+    for (int i = 0; i < n; i++) {
+        int i1 = indices[2 * i];
+        int i2 = indices[2 * i + 1];
+        double tot = profile[i1] + profile[i2];
+        double x = profile[i1];
+
+        // double h = tuning * (Random::Uniform() - 0.5);
+        double h = tot * tuning * (Random::Uniform() - 0.5);
+        /*
+          int c = (int) (h / (2 * tot));
+          h -= c*2*tot;
+        */
+        x += h;
+        while ((x < 0) || (x > tot)) {
+            if (x < 0) {
+                x = -x;
+            }
+            if (x > tot) {
+                x = 2 * tot - x;
+            }
+        }
+        profile[i1] = x;
+        profile[i2] = tot - x;
+    }
+    delete[] indices;
+
     return ret;
 }
 
@@ -219,7 +221,9 @@ Profile& Profile::operator=(const Profile& from) {
 
 void Profile::setuniform() {
     double value = 1.0 / profile.size();
-    for (auto& i : profile) i = value;
+    for (auto& i : profile) {
+        i = value;
+    }
 }
 
 void Profile::setarray(double* in) {
@@ -230,7 +234,9 @@ void Profile::setarray(double* in) {
 
 double Profile::GetEntropy() const {
     double total = 0;
-    for (auto i : profile) total += (i > 1e-8) ? -i * log(i) : 0;
+    for (auto i : profile) {
+        total += (i > 1e-8) ? -i * log(i) : 0;
+    }
     return total;
 }
 
@@ -246,7 +252,9 @@ istream& operator>>(istream& is, Profile& r) {
     int indim;
     is >> indim;
     r.profile.assign(indim, 0);
-    for (auto& i : r.profile) is >> i;
+    for (auto& i : r.profile) {
+        is >> i;
+    }
     return is;
 }
 
@@ -258,7 +266,9 @@ istream& operator>>(istream& is, Profile& r) {
 //-------------------------------------------------------------------------
 RealVector::RealVector(const double* from, int indim) {
     vec.assign(indim, 0);
-    for (int i = 0; i < indim; i++) vec[i] = from[i];
+    for (int i = 0; i < indim; i++) {
+        vec[i] = from[i];
+    }
 }
 
 RealVector& RealVector::operator=(const RealVector& from) {
@@ -288,20 +298,28 @@ double RealVector::GetVar() const {
 }
 
 int RealVector::ScalarAddition(double d) {
-    for (auto& i : vec) i += d;
+    for (auto& i : vec) {
+        i += d;
+    }
     return GetDim();
 }
 
 void RealVector::ScalarMultiplication(double d) {
-    for (auto& i : vec) i *= d;
+    for (auto& i : vec) {
+        i *= d;
+    }
 }
 
 void RealVector::add(const RealVector& in) {
-    for (int i = 0; i < GetDim(); i++) vec[i] += in[i];
+    for (int i = 0; i < GetDim(); i++) {
+        vec[i] += in[i];
+    }
 }
 
 void RealVector::add(const double* in, double f) {
-    for (int i = 0; i < GetDim(); i++) vec[i] += f * in[i];
+    for (int i = 0; i < GetDim(); i++) {
+        vec[i] += f * in[i];
+    }
 }
 
 double RealVector::ProposeMove(double tuning, int n) {
@@ -331,7 +349,9 @@ istream& operator>>(istream& is, RealVector& r) {
     int indim;
     is >> indim;
     r.vec.assign(indim, 0);
-    for (auto& i : r.vec) is >> i;
+    for (auto& i : r.vec) {
+        is >> i;
+    }
     return is;
 }
 
@@ -343,7 +363,9 @@ istream& operator>>(istream& is, RealVector& r) {
 //-------------------------------------------------------------------------
 PosRealVector::PosRealVector(const double* from, int indim) {
     vec.assign(indim, 0);
-    for (int i = 0; i < indim; i++) vec[i] = from[i];
+    for (int i = 0; i < indim; i++) {
+        vec[i] = from[i];
+    }
 }
 
 PosRealVector& PosRealVector::operator=(const PosRealVector& from) {
@@ -353,7 +375,9 @@ PosRealVector& PosRealVector::operator=(const PosRealVector& from) {
 
 double PosRealVector::GetMean() const {
     double total = 0;
-    for (auto i : vec) total += i;
+    for (auto i : vec) {
+        total += i;
+    }
     return total / GetDim();
 }
 
@@ -423,7 +447,7 @@ IntVector::IntVector(const int* from, int indim) {
 }
 
 IntVector& IntVector::operator=(const IntVector& from) {
-    if (!dim) {
+    if (dim == 0) {
         dim = from.dim;
         vec = new int[dim];
     }
@@ -442,7 +466,7 @@ IntVector& IntVector::operator=(const IntVector& from) {
 }
 
 IntVector& IntVector::operator=(const int* from) {
-    if (!dim) {
+    if (dim == 0) {
         cerr << "error in IntVector::operator=(const int*)\n";
         exit(1);
     }

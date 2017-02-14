@@ -26,9 +26,9 @@ class Random {
     static int Choose(int);
     static int FiniteDiscrete(int n, const double* probarray);
     static void DrawFromUrn(int*, int n, int N);
-    static int DrawFromDiscreteDistribution(const double* p, int n);
+    static int DrawFromDiscreteDistribution(const double* prob, int nstate);
 
-    static double logGamma(double a);
+    static double logGamma(double alpha);
 
     static double logMultivariateGamma(double a, int p);
 

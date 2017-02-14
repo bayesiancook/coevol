@@ -39,7 +39,7 @@ class MCUpdate {
 
     virtual double Move(double tuning_modulator = 1) = 0;
 
-    virtual void ToStream(std::ostream&) {}
+    virtual void ToStream(std::ostream& /*unused*/) {}
 };
 
 
@@ -61,7 +61,7 @@ class MCScheduler : public MCUpdate {
     void Reset();
 
     inline double GetTotalTime() { return totaltime; }
-    inline double GetMeanTimePerCycle() { return ncycle ? totaltime / ncycle : 0; }
+    inline double GetMeanTimePerCycle() { return ncycle != 0 ? totaltime / ncycle : 0; }
     inline double GetTotalCycleNumber() { return ncycle; }
 
     void ToStream(std::ostream& os, std::ostream& osdetail);

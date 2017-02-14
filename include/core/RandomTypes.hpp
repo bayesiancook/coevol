@@ -186,8 +186,8 @@ class FiniteDiscrete : public virtual Rvar<Int> {
 
 class IIDExp : public Rvar<PosRealVector> {
   public:
-    IIDExp(int indim, Var<PosReal>* inmean);
-    IIDExp(int indim);
+    IIDExp(int dimension, Var<PosReal>* inmean);
+    IIDExp(int dimension);
 
     ~IIDExp() override = default;
 
@@ -205,8 +205,8 @@ class IIDExp : public Rvar<PosRealVector> {
 
 class IIDGamma : public virtual Rvar<PosRealVector> {
   public:
-    IIDGamma(int indim, Var<PosReal>* inalpha, Var<PosReal>* inbeta);
-    IIDGamma(int indim);
+    IIDGamma(int dimension, Var<PosReal>* inalpha, Var<PosReal>* inbeta);
+    IIDGamma(int dimension);
 
     ~IIDGamma() override = default;
 

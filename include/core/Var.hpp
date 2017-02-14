@@ -16,7 +16,9 @@ class Var : public virtual DAGnode, public T {
     inline Var& operator=(const T& from) { return T::operator=(from); }
 
     inline void localcorrupt(bool bk) {
-        if (bk) this->bkvalue = *this;
+        if (bk) {
+            this->bkvalue = *this;
+        }
     }
     inline void localrestore() { T::operator=(bkvalue); }
 

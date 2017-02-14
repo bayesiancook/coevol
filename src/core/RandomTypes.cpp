@@ -28,10 +28,10 @@ Normal::Normal(Var<RealVector>* inmeanvec, Var<PosReal>* invariance, int inindex
 }
 
 double Normal::logProb() {
-    if ((!variance) || (!variance->val())) {
+    if ((variance == nullptr) || (variance->val() == 0.0)) {
         return 0;
     }
-    if (meanvec) {
+    if (meanvec != nullptr) {
         return -0.5 * log(2 * M_PI * variance->val()) -
                0.5 * (this->val() - (*meanvec)[index]) * (this->val() - (*meanvec)[index]) /
                    variance->val();
@@ -41,15 +41,15 @@ double Normal::logProb() {
 }
 
 void Normal::drawSample() {
-    if (meanvec) {
-        if ((!variance) || (!variance->val())) {
+    if (meanvec != nullptr) {
+        if ((variance == nullptr) || (variance->val() == 0.0)) {
             // this is just for starting the model
             setval((*meanvec)[index] + Random::sNormal() * sqrt(10));
         } else {
             setval((*meanvec)[index] + Random::sNormal() * sqrt(variance->val()));
         }
     } else {
-        if ((!variance) || (!variance->val())) {
+        if ((variance == nullptr) || (variance->val() == 0.0)) {
             // this is just for starting the model
             setval(mean->val() + Random::sNormal() * sqrt(10));
         } else {
@@ -141,13 +141,13 @@ Beta::Beta(const Beta& from) : Rvar<UnitReal>() {
 inline void Beta::drawSample() {
     double value = 0;
     int count = 0;
-    while ((!value) && (count < 10000)) {
+    while ((value == 0.0) && (count < 10000)) {
         double x = Random::sGamma(alpha->val());
         double y = Random::sGamma(beta->val());
         value = x / (x + y);
         count++;
     }
-    if (!value) {
+    if (value == 0.0) {
         cerr << "error : zero beta random variable\n";
         exit(1);
     }
@@ -264,7 +264,7 @@ double Binomial::logProb() {
     return ret;
 }
 
-double Binomial::ProposeMove(double) {  // FIXME unused parameter!
+double Binomial::ProposeMove(double /*tuning*/) {  // FIXME unused parameter!
     bkvalue = *this;
     flag = false;
     drawSample();
@@ -346,7 +346,7 @@ void Dirichlet::drawSample() {
     Profile& profile = *this;
     double total = 0;
     for (int k = 0; k < GetDim(); k++) {
-        if (concentration) {
+        if (concentration != nullptr) {
             profile[k] = Random::sGamma(concentration->val() * center->val()[k]);
         } else {
             profile[k] = Random::sGamma(1);
@@ -384,7 +384,7 @@ double Dirichlet::ProposeMove(double tuning) { return Profile::ProposeMove(tunin
 
 double Dirichlet::logProb() {
     double total = 0;
-    if (concentration) {
+    if (concentration != nullptr) {
         total = Random::logGamma(concentration->val());
         for (int i = 0; i < GetDim(); i++) {
             total += -Random::logGamma(concentration->val() * center->val()[i]) +
@@ -471,10 +471,10 @@ void IIDExp::setall(double in) {
 }
 
 void IIDExp::drawSample() {
-    double m = mean ? (double)mean->val() : 1.0;
+    double m = mean != nullptr ? (double)mean->val() : 1.0;
     for (int i = 0; i < GetDim(); i++) {
         (*this)[i] = Random::sExpo() * m;
-        if (!(*this)[i]) {
+        if ((*this)[i] == 0.0) {
             cerr << "error in IIDexp: 0 exp random variable\n";
             exit(1);
         }
@@ -483,7 +483,7 @@ void IIDExp::drawSample() {
 
 double IIDExp::logProb() {
     double total = 0;
-    double m = mean ? (double)mean->val() : 1;
+    double m = mean != nullptr ? (double)mean->val() : 1;
     for (int i = 0; i < GetDim(); i++) {
         total += -(*this)[i] / m - log(m);
     }
@@ -523,8 +523,8 @@ void IIDGamma::setall(double in) {
 }
 
 void IIDGamma::drawSample() {
-    double a = alpha ? (double)alpha->val() : 1.0;
-    double b = beta ? (double)beta->val() : 1.0;
+    double a = alpha != nullptr ? (double)alpha->val() : 1.0;
+    double b = beta != nullptr ? (double)beta->val() : 1.0;
     for (int i = 0; i < GetDim(); i++) {
         (*this)[i] = Random::Gamma(a, b);
         if ((*this)[i] < Gamma::GAMMAMIN) {
@@ -534,8 +534,8 @@ void IIDGamma::drawSample() {
 }
 
 double IIDGamma::logProb() {
-    double a = alpha ? (double)alpha->val() : 1.0;
-    double b = beta ? (double)beta->val() : 1.0;
+    double a = alpha != nullptr ? (double)alpha->val() : 1.0;
+    double b = beta != nullptr ? (double)beta->val() : 1.0;
     double loggammaa = Random::logGamma(a);
     double logb = log(b);
     double total = 0;

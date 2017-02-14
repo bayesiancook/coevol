@@ -22,7 +22,7 @@ inline int GoPastNext(std::istream& is, const char inChar) {
             is >> c;
         } while (c != inChar && !is.eof());
     }
-    return !is.eof();
+    return static_cast<int>(!is.eof());
 }
 
 inline std::string ReadLine(std::istream& is) {
@@ -63,7 +63,7 @@ inline int EquivalentStrings(std::string a, std::string b) {
     }
     unsigned int k = 0;
     int cont = 1;
-    while ((k < a.length()) && (cont)) {
+    while ((k < a.length()) && ((cont) != 0)) {
         char ca = a[k];
         char cb = b[k];
         if ((ca >= 65) && (ca <= 90)) {
@@ -85,7 +85,7 @@ inline void GoPastNextLine(std::istream& is, const std::string inLine) {
     do {
         theLine = ReadLine(is);
         std::cerr << theLine << "\n";
-    } while (!EquivalentStrings(theLine, inLine));
+    } while (EquivalentStrings(theLine, inLine) == 0);
 }
 
 
@@ -106,7 +106,7 @@ inline int EmptyLine(std::string s) {
     while ((n < s.length()) && ((s[n] == ' ') || (s[n] == '\t') || (s[n] == '\n'))) {
         n++;
     }
-    return (n == s.length());
+    return static_cast<int>(n == s.length());
 }
 
 inline std::string Filter(std::string input, char c) {
@@ -122,10 +122,12 @@ inline std::string Filter(std::string input, char c) {
 inline int IsInt(std::string s) {
     int returnValue = 1;
     unsigned int i = 0;
-    if ((s[0] == '+') || (s[0] == '-')) i++;
-    if (i == s.length()) returnValue = 0;
+    if ((s[0] == '+') || (s[0] == '-')) { i++;
+}
+    if (i == s.length()) { returnValue = 0;
+}
 
-    while (returnValue && (i < s.length())) {
+    while ((returnValue != 0) && (i < s.length())) {
         int j = 0;
         while ((j < 10) && (digit[j] != s[i])) {
             j++;
@@ -142,7 +144,7 @@ inline int IsFloat(std::string s) {
     int returnValue = 1;
     unsigned int i = 0;
 
-    while (returnValue && (i < s.length())) {
+    while ((returnValue != 0) && (i < s.length())) {
         int j = 0;
         while ((j < 10) && (digit[j] != s[i])) {
             j++;
@@ -160,8 +162,8 @@ inline int IsFloat(std::string s) {
 inline int IsDigit(char c) {
     int returnValue = 0;
     int i = 0;
-    while (!returnValue && i < 10) {
-        returnValue = (c == digit[i]);
+    while ((returnValue == 0) && i < 10) {
+        returnValue = static_cast<int>(c == digit[i]);
         i++;
     }
     return returnValue;

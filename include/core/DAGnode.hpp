@@ -24,7 +24,7 @@ class DAGnode {
     inline bool isUpdated() { return flag; }
     inline virtual bool isValueUpdated() { return flag; }
 
-    virtual void Register(DAGnode* in);
+    virtual void Register(DAGnode* parent);
     void RecursiveRegister(ProbModel* model);
     virtual std::set<std::string> getDotNodes();
     std::set<std::string> getDotVertices();
@@ -127,12 +127,12 @@ class Mnode : public virtual DAGnode {
     void Restore() override;
 
   protected:
-    inline void NotifyCorrupt(bool) override {}
+    inline void NotifyCorrupt(bool /*bk*/) override {}
     inline double NotifyUpdate() override { return 0; }
     inline void NotifyRestore() override {}
 
-    inline double FullUpdate(bool) override { return 0; }
-    inline void FullCorrupt(std::map<DAGnode*, int>&) override {}
+    inline double FullUpdate(bool /*check*/) override { return 0; }
+    inline void FullCorrupt(std::map<DAGnode*, int>& /*m*/) override {}
 };
 
 

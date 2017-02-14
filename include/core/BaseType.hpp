@@ -191,7 +191,7 @@ class Int : public BaseType {
     friend std::istream& operator>>(std::istream& is, Int& r);
 
     /* (VL) Overriding virtual methods from base classes */
-    double ProposeMove(double) override;
+    double ProposeMove(double /*tuning*/) override;
     inline int check() final { return 1; }
 
   protected:
@@ -224,22 +224,28 @@ class Profile : public BaseType {
 
     // (VL) Setters
     inline void setAtZero() {
-        for (auto& i : profile) i = 0;
+        for (auto& i : profile) {
+            i = 0;
+        }
     }
     void setuniform();
     void setarray(double* in);
 
     /* (VL) Operations */
     inline void scalarMultiplication(double d) {
-        for (auto& i : profile) i *= d;
+        for (auto& i : profile) {
+            i *= d;
+        }
     }
     inline void add(const Profile& in) {
-        for (unsigned int i = 0; i < profile.size(); i++) profile[i] += in[i];
+        for (unsigned int i = 0; i < profile.size(); i++) {
+            profile[i] += in[i];
+        }
     }
 
     /* (VL) Overriding virtual functions from parents + ProposeMove overload */
     inline int check() final { return 1; }
-    double ProposeMove(double tuning, int dim);
+    double ProposeMove(double tuning, int n);
     double ProposeMove(double tuning) override { return ProposeMove(tuning, profile.size()); }
 
     /* (VL) Stream operator friend functions */
@@ -275,7 +281,9 @@ class RealVector : public BaseType, public Additive {
     void add(const RealVector& in);
     void add(const double* in, double f = 1);
     inline void setAtZero() {
-        for (auto& i : vec) i = 0;
+        for (auto& i : vec) {
+            i = 0;
+        }
     }
 
     /* (VL) Base classes overrides + random overload */
@@ -301,7 +309,9 @@ class PosRealVector : public RealVector, public Multiplicative {
 
     /* (VL) Getters/Setters */
     inline void SetAtOne() {
-        for (auto& i : vec) i = 1;
+        for (auto& i : vec) {
+            i = 1;
+        }
     }
     double GetMean() const;
     double GetVar() const;
@@ -311,7 +321,9 @@ class PosRealVector : public RealVector, public Multiplicative {
     double ProposeMove(double tuning, int n);
     inline double ProposeMove(double tuning) override { return ProposeMove(tuning, GetDim()); }
     inline int ScalarMultiplication(double d) final {
-        for (auto& i : vec) i *= d;
+        for (auto& i : vec) {
+            i *= d;
+        }
         return GetDim();
     }
 };

@@ -25,7 +25,9 @@ class MCMC {
     // random draws from the prior (i.e. simulations under the model)
     // proceed by recursively calling Sample, from the roots to the tips of the model
     inline virtual void Sample() {
-        if (!isClamped()) drawSample();
+        if (!isClamped()) {
+            drawSample();
+        }
     }
 
     virtual void drawSample() = 0;

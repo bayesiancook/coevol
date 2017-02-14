@@ -14,7 +14,7 @@ ProbModel::~ProbModel() = default;
 bool ProbModel::CheckUpdateFlags() {
     bool ret = true;
     for (auto i : root) {
-        ret &= i->CheckUpdateFlags();
+        ret &= static_cast<int>(i->CheckUpdateFlags());
     }
     return ret;
 }
@@ -55,10 +55,16 @@ void ProbModel::Register() {
 void ProbModel::getDot() {
     ofstream myfile("tmp.dot");
     myfile << "digraph {" << endl;
-    for (auto i : root)
-        for (auto j : i->getDotNodes()) myfile << j;
-    for (auto i : root)
-        for (auto j : i->getDotVertices()) myfile << j;
+    for (auto i : root) {
+        for (auto j : i->getDotNodes()) {
+            myfile << j;
+        }
+    }
+    for (auto i : root) {
+        for (auto j : i->getDotVertices()) {
+            myfile << j;
+        }
+    }
     myfile << "}" << endl;
     myfile.close();
 }

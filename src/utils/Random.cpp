@@ -22,7 +22,7 @@ const double gammacoefs[] = {0.9999999999995183,  676.5203681218835,      -1259.
                              771.3234287757674,   -176.6150291498386,     12.50734324009056,
                              -0.1385710331296526, 0.9934937113930748e-05, 0.1659470187408462e-06};
 const double Pi = 3.1415926535897932384626;
-const double Logroot2pi = 0.918938533204673;
+// const double Logroot2pi = 0.918938533204673;
 
 
 // -------------------------------------------------
@@ -216,8 +216,10 @@ void Random::DrawFromUrn(int* tab, int n, int N) {  // draw n out of N
     for (int i = 0; i < n; i++) {
         int trial = (int)(Random::Uniform() * (N - i));
         for (int k = 0; k < N; k++) {
-            if (index[k]) {
-                if (trial >= k) trial++;
+            if (index[k] != 0) {
+                if (trial >= k) {
+                    trial++;
+                }
             }
         }
         if (trial == N) {
@@ -225,7 +227,7 @@ void Random::DrawFromUrn(int* tab, int n, int N) {  // draw n out of N
             exit(1);
         }
         tab[i] = trial;
-        if (index[trial]) {
+        if (index[trial] != 0) {
             std::cerr << "error in draw from urn: chose twice the same\n";
             exit(1);
         }
@@ -250,7 +252,9 @@ int Random::FiniteDiscrete(int n, const double* probarray) {
     }
     double u = total * Random::Uniform();
     int k = 0;
-    while ((k < n) && (u > cumul[k])) k++;
+    while ((k < n) && (u > cumul[k])) {
+        k++;
+    }
     if (k == n) {
         std::cerr << "error in Random::FiniteDiscrete\n";
         exit(1);
@@ -269,7 +273,8 @@ double Random::sNormal() {
         double v = 2 * Random::Uniform() - 1;
         double w = 2 * Random::Uniform() - 1;
         return 2.3153508 * u - 1 + v + w;
-    } else if ((0.8638 < u) && (u <= 0.9745)) {
+    }
+    if ((0.8638 < u) && (u <= 0.9745)) {
         double v = Random::Uniform();
         return 1.5 * (v - 1 + 9.0334237 * (u - 0.8638));
     } else if ((0.9973002 < u) && (u <= 1)) {
@@ -313,10 +318,11 @@ double Random::sExpo() { return -log(Random::Uniform()); }
 double fsign(double num, double sign)
 /* Transfers sign of argument sign to argument num */
 {
-    if ((sign > 0.0f && num < 0.0f) || (sign < 0.0f && num > 0.0f))
+    if ((sign > 0.0f && num < 0.0f) || (sign < 0.0f && num > 0.0f)) {
         return -num;
-    else
+    } else {
         return num;
+    }
 }
 
 
@@ -342,7 +348,7 @@ double Random::sGamma(double a) {
         t = sNormal();
         x = s + 0.5 * t;
         if (t > 0) {
-            if (!x) {
+            if (x == 0.0) {
                 std::cerr << "1\n";
             }
             return x * x;
@@ -351,7 +357,7 @@ double Random::sGamma(double a) {
         // step 3
         u = Uniform();
         if (d * u < t * t * t) {
-            if (!x) {
+            if (x == 0.0) {
                 std::cerr << "2\n";
             }
             return x * x;
@@ -381,7 +387,7 @@ double Random::sGamma(double a) {
             v = 0.5 * t / s;
             q = q0 - s * t + 0.25 * t * t + 2 * s2 * log(1.0 + v);
             if (log(1 - u) < q) {
-                if (!x) {
+                if (x == 0.0) {
                     std::cerr << "3\n";
                 }
                 return x * x;
@@ -418,19 +424,18 @@ double Random::sGamma(double a) {
         return x * x;
     }
 
-    else {
-        double x, y;
-        do {
-            double u = Random::Uniform();
-            double v = Random::Uniform();
-            x = SAFE_EXP(log(u) / a);
-            y = SAFE_EXP(log(v) / (1 - a));
-        } while (x + y > 1);
 
-        double e = -log(Random::Uniform());
+    double x, y;
+    do {
+        double u = Random::Uniform();
+        double v = Random::Uniform();
+        x = SAFE_EXP(log(u) / a);
+        y = SAFE_EXP(log(v) / (1 - a));
+    } while (x + y > 1);
 
-        return e * x / (x + y);
-    }
+    double e = -log(Random::Uniform());
+
+    return e * x / (x + y);
 }
 
 

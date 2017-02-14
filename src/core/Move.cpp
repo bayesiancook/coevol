@@ -48,7 +48,9 @@ void MCScheduler::Register(MCUpdate* inupdate, int inweight, string inname) {
 }
 
 void MCScheduler::Cycle(double tuning_modulator, int nrep, bool verbose, bool check) {
-    if (!closed) Reset();
+    if (!closed) {
+        Reset();
+    }
 
     for (int rep = 0; rep < nrep; rep++) {
         unsigned int n = 0;
@@ -88,8 +90,11 @@ vector<int> MCScheduler::ReadCommand(unsigned int& n) {
                 exit(1);
             }
 
-            for (int i = 0; i < x; i++)
-                for (int& j : vv) v.push_back(j);
+            for (int i = 0; i < x; i++) {
+                for (int& j : vv) {
+                    v.push_back(j);
+                }
+            }
             n++;
         } else {
             unsigned int n2 = command.find(",", n + 1);
@@ -159,7 +164,9 @@ void MCScheduler::Move(double tuning_modulator, int i, bool verbose, bool check,
 }
 
 void MCScheduler::RandomCycle(double tuning_modulator, int nrep, bool verbose, bool check) {
-    if (!closed) Reset();
+    if (!closed) {
+        Reset();
+    }
 
     int N = (int)(nrep * totalweight);
     for (int rep = 0; rep < N; rep++) {
@@ -195,7 +202,9 @@ void MCScheduler::ToStream(ostream& os, ostream& osdetail) {
     }
     os << '\n';
 
-    for (int i = 0; i < size; i++) update[i]->ToStream(osdetail);
+    for (int i = 0; i < size; i++) {
+        update[i]->ToStream(osdetail);
+    }
 }
 
 RealVectorComponentwiseCompensatoryMove::RealVectorComponentwiseCompensatoryMove(
@@ -292,10 +301,10 @@ MultiplicativeCompensatoryMove::MultiplicativeCompensatoryMove(Multiplicative* i
                                                                Multiplicative* inm2,
                                                                double intuning)
     : m1(inm1), m2(inm2), tuning(intuning) {
-    if (m1) {
+    if (m1 != nullptr) {
         m1->Register(this);
     }
-    if (m2) {
+    if (m2 != nullptr) {
         m2->Register(this);
     }
 }
@@ -306,10 +315,10 @@ double MultiplicativeCompensatoryMove::Move(double tuning_modulator) {
     double h = tuning_modulator * tuning * (Random::Uniform() - 0.5);
     double e = exp(h);
     double loghastings = 0;
-    if (m1) {
+    if (m1 != nullptr) {
         loghastings += h * m1->ScalarMultiplication(e);
     }
-    if (m2) {
+    if (m2 != nullptr) {
         loghastings -= h * m2->ScalarMultiplication(1.0 / e);
     }
 
