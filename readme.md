@@ -3,7 +3,7 @@
 ## Compilation ##
 
 `make`
-: Builds _`mini-coevol`_ (requires `cmake`); builds in the `_build` folder.
+: Builds __`mini-coevol`__ (requires `cmake`); builds in the `_build` folder.
 
 `make clean`
 : Cleans the coevol directory; removes the `_build` folder among other things.
@@ -34,7 +34,7 @@ This code is formatted according to a specific style described in the `.clang-fo
 
 ## Documentation ##
 
-_`mini-coevol`_ provides a basic Doxygen documentation.
+__`mini-coevol`__ provides a basic Doxygen documentation.
 
 `make doc`
 : Generates the Doxygen documentation (requires `doxygen`) in `doc/html`.
