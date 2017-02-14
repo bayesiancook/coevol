@@ -20,7 +20,7 @@ class MGFitnessCodonSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
 
@@ -82,7 +82,7 @@ class MGFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void ComputeStationary() override;
 
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
@@ -159,7 +159,7 @@ class MGSRFitnessNormalCodonUsageSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
@@ -240,7 +240,7 @@ class MGMSFitnessNormalCodonUsageSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
@@ -323,7 +323,7 @@ class MGSRFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
 
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
@@ -401,14 +401,14 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
 
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void ComputeStationary() override;
     void SetFitnessProfile(double* infitness) { fitness = infitness; }
     void SetCodonUsageSelection(double* incodonusageselection) {
         codonusageselection = incodonusageselection;
     }
 
-    void ToStream(ostream&) override {  // FIXME unused parameter
+    void ToStream(ostream& /*os*/) override {  // FIXME unused parameter
         cerr << "nucmatrix : \n";
         NucMatrix->CheckReversibility();
         cerr << '\n';

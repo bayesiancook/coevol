@@ -19,7 +19,7 @@ static inline int EquivalentStrings(string a, string b) {
     }
     unsigned int k = 0;
     int cont = 1;
-    while ((k < a.length()) && (cont)) {
+    while ((k < a.length()) && ((cont) != 0)) {
         char ca = a[k];
         char cb = b[k];
         if ((ca >= 65) && (ca <= 90)) {
@@ -53,22 +53,24 @@ int SimpleStateSpace::GetState(string from) {
     }
     char c = from[0];
     int p = 0;
-    while ((p < NAlphabetSet) && (c != AlphabetSet[p])) p++;
+    while ((p < NAlphabetSet) && (c != AlphabetSet[p])) {
+        p++;
+    }
     if (p == NAlphabetSet) {
         cout << "error: does not recognise character " << c << '\n';
         exit(1);
     }
     if (p >= 2 * Nstate) {
         return unknown;
-    } else {
-        int k = 0;
-        for (int l = 0; l < Nstate; l++) {
-            if ((c == Alphabet[l]) || (c == Alphabet[l] + 32)) {
-                k = l;
-            }
-        }
-        return k;
     }
+    int k = 0;
+    for (int l = 0; l < Nstate; l++) {
+        if ((c == Alphabet[l]) || (c == Alphabet[l] + 32)) {
+            k = l;
+        }
+    }
+    return k;
+
     return 0;
 }
 

@@ -8,7 +8,7 @@
 
 class GTRSubMatrix : public virtual SubMatrix {
   public:
-    GTRSubMatrix(int nstate, const double* rr, const double* stat, bool innormalise = false);
+    GTRSubMatrix(int inNstate, const double* rr, const double* stat, bool innormalise = false);
     ~GTRSubMatrix() override = default;
 
     int GetNRelativeRate() { return Nrr; }
@@ -27,7 +27,7 @@ class GTRSubMatrix : public virtual SubMatrix {
     void SetRelativeRate(const double* inrelrate) { mRelativeRate = inrelrate; }
 
   protected:
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void ComputeStationary() override {}
 
     // data members

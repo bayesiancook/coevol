@@ -122,10 +122,12 @@ inline std::string Filter(std::string input, char c) {
 inline int IsInt(std::string s) {
     int returnValue = 1;
     unsigned int i = 0;
-    if ((s[0] == '+') || (s[0] == '-')) { i++;
-}
-    if (i == s.length()) { returnValue = 0;
-}
+    if ((s[0] == '+') || (s[0] == '-')) {
+        i++;
+    }
+    if (i == s.length()) {
+        returnValue = 0;
+    }
 
     while ((returnValue != 0) && (i < s.length())) {
         int j = 0;

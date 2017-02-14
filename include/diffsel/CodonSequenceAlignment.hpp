@@ -24,13 +24,16 @@ class CodonSequenceAlignment : public SequenceAlignment {
         int Eliminated = 0;
         while (i < Nsite) {
             int k = 0;
-            while ((k < Ntaxa) && (Data[k][i] == unknown)) k++;
+            while ((k < Ntaxa) && (Data[k][i] == unknown)) {
+                k++;
+            }
             if (k < Ntaxa) {
                 int a = GetCodonStateSpace()->Translation(Data[k][i]);
                 k++;
                 while ((k < Ntaxa) && ((Data[k][i] == unknown) ||
-                                       (GetCodonStateSpace()->Translation(Data[k][i]) == a)))
+                                       (GetCodonStateSpace()->Translation(Data[k][i]) == a))) {
                     k++;
+                }
                 if (k == Ntaxa) {
                     Eliminated++;
                 } else {
@@ -115,7 +118,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
     double NucleotideCompositionalHeterogeneity(ostream* os, int pos = -1, double** comp = nullptr,
                                                 ostream* os2 = nullptr) {
         double** taxfreq = nullptr;
-        if (comp) {
+        if (comp != nullptr) {
             taxfreq = comp;
         } else {
             taxfreq = new double*[Ntaxa];
@@ -170,17 +173,17 @@ class CodonSequenceAlignment : public SequenceAlignment {
         for (int k = 0; k < Nnuc; k++) {
             globalfreq[k] /= total;
         }
-        if (os) {
+        if (os != nullptr) {
             (*os) << Ntaxa << '\t' << 4 << '\n';
         }
-        if (os2) {
+        if (os2 != nullptr) {
             (*os2) << Ntaxa << '\t' << 3 << '\n';
         }
         for (int j = 0; j < Ntaxa; j++) {
-            if (os) {
+            if (os != nullptr) {
                 (*os) << GetTaxonSet()->GetTaxon(j);
             }
-            if (os2) {
+            if (os2 != nullptr) {
                 (*os2) << GetTaxonSet()->GetTaxon(j);
             }
             double total = 0;
@@ -190,13 +193,13 @@ class CodonSequenceAlignment : public SequenceAlignment {
             for (int k = 0; k < Nnuc; k++) {
                 taxfreq[j][k] /= total;
             }
-            if (os) {
+            if (os != nullptr) {
                 for (int k = 0; k < Nnuc; k++) {
                     (*os) << '\t' << taxfreq[j][k];
                 }
                 (*os) << '\n';
             }
-            if (os2) {
+            if (os2 != nullptr) {
                 double gc = taxfreq[j][1] + taxfreq[j][2];
                 double gcs = (taxfreq[j][2] - taxfreq[j][1]) / gc;
                 double ats = (taxfreq[j][0] - taxfreq[j][3]) / (1 - gc);
@@ -219,7 +222,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
         }
 
         delete[] globalfreq;
-        if (!comp) {
+        if (comp == nullptr) {
             for (int j = 0; j < Ntaxa; j++) {
                 delete[] taxfreq[j];
             }
@@ -232,7 +235,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
     double NucleotideCompositionalHeterogeneityOld(ostream* os, int pos = -1,
                                                    double** comp = nullptr) {
         double** taxfreq = nullptr;
-        if (comp) {
+        if (comp != nullptr) {
             taxfreq = comp;
         } else {
             taxfreq = new double*[Ntaxa];
@@ -294,15 +297,15 @@ class CodonSequenceAlignment : public SequenceAlignment {
             }
             for (int k = 0; k < Nnuc; k++) {
                 taxfreq[j][k] /= total;
-                if (os) {
+                if (os != nullptr) {
                     (*os) << taxfreq[j][k] << '\t';
                 }
             }
-            if (os) {
+            if (os != nullptr) {
                 (*os) << '\n';
             }
         }
-        if (os) {
+        if (os != nullptr) {
             (*os) << '\n';
         }
 
@@ -320,7 +323,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
         }
 
         delete[] globalfreq;
-        if (!comp) {
+        if (comp == nullptr) {
             for (int j = 0; j < Ntaxa; j++) {
                 delete[] taxfreq[j];
             }
@@ -372,15 +375,15 @@ class CodonSequenceAlignment : public SequenceAlignment {
             }
             for (int k = 0; k < Naa; k++) {
                 taxfreq[j][k] /= total;
-                if (os) {
+                if (os != nullptr) {
                     (*os) << taxfreq[j][k] << '\t';
                 }
             }
-            if (os) {
+            if (os != nullptr) {
                 (*os) << '\n';
             }
         }
-        if (os) {
+        if (os != nullptr) {
             (*os) << '\n';
         }
 

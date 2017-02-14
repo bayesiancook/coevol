@@ -212,7 +212,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
 
     double logProb() override {
         double total = 0;
-        if (mean) {
+        if (mean != nullptr) {
             for (int i = 0; i < GetDim(); i++) {
                 double tmp = (*this)[i] - mean->val();
                 total += tmp * tmp;
@@ -323,7 +323,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
 
   protected:
     void drawSample() override {
-        if (mean) {
+        if (mean != nullptr) {
             for (int i = 0; i < GetDim(); i++) {
                 if (!ClampVector[i]) {
                     (*this)[i] = Random::sNormal() * sqrt(variance->val()) + mean->val();

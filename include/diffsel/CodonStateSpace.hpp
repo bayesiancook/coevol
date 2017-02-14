@@ -12,7 +12,7 @@ class CodonStateSpace : public StateSpace {
     // if a method takes or returns a codon stops INCLUDED, then this is made explicit in the
     // method's name
 
-    CodonStateSpace(GeneticCodeType incode);
+    CodonStateSpace(GeneticCodeType type);
     ~CodonStateSpace() override;
 
     // -----
@@ -22,10 +22,10 @@ class CodonStateSpace : public StateSpace {
     int GetNstate() override { return Nstate; }
 
     // give a three letter code, returns codon (if stop exits with error message)
-    int GetState(std::string state) override;
+    int GetState(std::string word) override;
 
     // give a codon (stops excluded), returns a three letter code
-    std::string GetState(int state) override;
+    std::string GetState(int codon) override;
 
 
     // -----
@@ -51,7 +51,7 @@ class CodonStateSpace : public StateSpace {
     // returns 3 is codons differ at more than one position
     // otherwise, returns the position at which codons differ (i.e. returns 0,1 or 2 if the codons
     // differ at position 1,2 or 3)
-    int GetDifferingPosition(int codon1, int codon2);
+    int GetDifferingPosition(int i, int j);
 
     // return the integer encoding for the base at requested position
     // stops excluded
@@ -72,7 +72,7 @@ class CodonStateSpace : public StateSpace {
         return CodonPos[pos][codon];
     }
 
-    int IsNonCTNearest(int aminoacid1, int aminoacid2);
+    int IsNonCTNearest(int a, int b);
 
     // translation stops excluded
     int Translation(int codon) { return CodonCode[codon]; }

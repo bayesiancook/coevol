@@ -12,7 +12,7 @@ class AllocationTree {
 
     int GetBranchAllocation(const Branch* branch) {
         // if root : return 0
-        if (!branch) {
+        if (branch == nullptr) {
             return 0;
         }
 

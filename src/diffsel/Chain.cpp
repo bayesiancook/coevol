@@ -13,7 +13,7 @@ Chain::Chain() {
 }
 
 void Chain::MakeFiles(int force) {
-    if (ifstream((name + ".param").c_str()) && (!force)) {
+    if (ifstream((name + ".param").c_str()) && (force == 0)) {
         cerr << "already existing chain, cannot override (unless in forcing mode)\n";
         exit(1);
     }
@@ -77,7 +77,7 @@ int Chain::GetRunningStatus() {
 }
 
 void Chain::Run() {
-    while (GetRunningStatus() && ((until == -1) || (size <= until))) {
+    while ((GetRunningStatus() != 0) && ((until == -1) || (size <= until))) {
         Chrono chrono;
         chrono.Reset();
         chrono.Start();

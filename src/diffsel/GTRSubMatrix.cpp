@@ -11,7 +11,7 @@ GTRSubMatrix::GTRSubMatrix(int inNstate, const double* rr, const double* stat, b
     : SubMatrix(inNstate, innormalise) {
     Nrr = Nstate * (Nstate - 1) / 2;
     mRelativeRate = rr;
-    if (stat) {
+    if (stat != nullptr) {
         CopyStationary(stat);
     }
 }
@@ -27,7 +27,7 @@ void GTRSubMatrix::CopyStationary(const double* instat) {
 // ---------------------------------------------------------------------------
 
 void GTRSubMatrix::ComputeArray(int i) {
-    if (mRelativeRate) {
+    if (mRelativeRate != nullptr) {
         double total = 0;
         for (int j = 0; j < Nstate; j++) {
             if (i != j) {

@@ -143,7 +143,7 @@ class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<vo
         : RandomBranchSitePath(inprocess) {
         pathconj = inpathconj;
 
-        if (!pathconj) {
+        if (pathconj == nullptr) {
             cerr << "error in ProfileConjugateRandomBranchSitePath\n";
             exit(1);
         }
@@ -175,7 +175,7 @@ class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<vo
             pathconj->IncrementRootCount(Init()->GetState());
         } else {
             Plink* link = Init();
-            while (link) {
+            while (link != nullptr) {
                 int state = link->GetState();
                 pathconj->AddWaitingTime(state, GetAbsoluteTime(link));
                 if (link != last) {
@@ -289,7 +289,7 @@ class ProfileConjugateMappingMove : public MCUpdate {
     ProfileConjugateMappingMove(PhyloProcess* inprocess, ProfilePathConjugateArray* inpathconjarray)
         : process(inprocess), pathconjarray(inpathconjarray) {}
 
-    double Move(double) override {
+    double Move(double /*tuning_modulator*/) override {
         pathconjarray->InactivateSufficientStatistic();
         process->Move(1);
         pathconjarray->ActivateSufficientStatistic();
@@ -306,7 +306,7 @@ class ProfileConjugateMove : public MCUpdate {
     ProfileConjugateMove(ProfilePathConjugateArray* inpathconjarray, bool intoggle)
         : pathconjarray(inpathconjarray), toggle(intoggle) {}
 
-    double Move(double) override {
+    double Move(double /*tuning_modulator*/) override {
         if (toggle) {
             pathconjarray->ActivateSufficientStatistic();
         } else {

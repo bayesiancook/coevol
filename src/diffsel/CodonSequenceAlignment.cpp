@@ -90,7 +90,7 @@ void CodonSequenceAlignment::ToStreamRandomJackknife(ostream& os, double p) {
             os << ' ';
         }
         for (int j = 0; j < Nsite; j++) {
-            if (included[j]) {
+            if (included[j] != 0) {
                 os << statespace->GetState(GetState(i, j));
             }
         }
@@ -189,7 +189,7 @@ void CodonSequenceAlignment::ToStreamFourFoldThird(ostream& os) {
             os << ' ';
         }
         for (int j = 0; j < Nsite; j++) {
-            if (included[j]) {
+            if (included[j] != 0) {
                 os << GetCodonStateSpace()->GetDNAStateSpace()->GetState(
                     GetCodonStateSpace()->GetCodonPosition(2, GetState(i, j)));
             }
@@ -232,7 +232,7 @@ void CodonSequenceAlignment::ToStreamFourFoldTriplet(ostream& os) {
             os << ' ';
         }
         for (int j = 0; j < Nsite; j++) {
-            if (included[j]) {
+            if (included[j] != 0) {
                 os << GetCodonStateSpace()->GetState(GetState(i, j));
             }
         }
@@ -311,7 +311,7 @@ void CodonSequenceAlignment::ToStreamFourFoldThirdwoCpG(ostream& os) {
             os << ' ';
         }
         for (int j = 0; j < Nsite - 1; j++) {
-            if (included[j]) {
+            if (included[j] != 0) {
                 os << GetCodonStateSpace()->GetDNAStateSpace()->GetState(
                     GetCodonStateSpace()->GetCodonPosition(2, GetState(i, j)));
             }

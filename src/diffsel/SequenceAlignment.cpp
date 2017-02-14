@@ -169,7 +169,8 @@ void SequenceAlignment::ToStreamTriplet(ostream& os) {
     os << '\n';
 }
 
-FileSequenceAlignment::FileSequenceAlignment(string filename, int) {  // FIXME unused parameter
+FileSequenceAlignment::FileSequenceAlignment(string filename,
+                                             int /*unused*/) {  // FIXME unused parameter
 
     SpeciesNames = nullptr;
     // cerr << "read data from file : " << filename << "\n";
@@ -197,14 +198,15 @@ int FileSequenceAlignment::ReadDataFromFile(string filespec, int forceinterleave
         if (tmp == "#NEXUS") {
             ReadNexus(filespec);
             return 1;
-        } else if (tmp == "#SPECIALALPHABET") {
+        }
+        if (tmp == "#SPECIALALPHABET") {
             ReadSpecial(filespec);
             return 1;
         } else {
             cerr << "phylip\n";
-            if (!forceinterleaved) {
+            if (forceinterleaved == 0) {
                 int returnvalue = TestPhylipSequential(filespec);
-                if (returnvalue) {
+                if (returnvalue != 0) {
                     cerr << "sequential\n";
                     ReadPhylipSequential(filespec);
                     return 1;
@@ -212,7 +214,7 @@ int FileSequenceAlignment::ReadDataFromFile(string filespec, int forceinterleave
             }
             cerr << "interleaved\n";
             int returnvalue = TestPhylip(filespec, 1);
-            if (returnvalue) {
+            if (returnvalue != 0) {
                 cerr << "interleaved, taxon names repeated\n";
                 ReadPhylip(filespec, 1);
                 return 1;
@@ -244,11 +246,11 @@ int FileSequenceAlignment::ReadNexus(string filespec) {
         theStream >> type;
 
 
-        if (EquivalentStrings(type, "protein")) {
+        if (EquivalentStrings(type, "protein") != 0) {
             statespace = new ProteinStateSpace();
-        } else if (EquivalentStrings(type, "dna")) {
+        } else if (EquivalentStrings(type, "dna") != 0) {
             statespace = new DNAStateSpace();
-        } else if (EquivalentStrings(type, "rna")) {
+        } else if (EquivalentStrings(type, "rna") != 0) {
             statespace = new RNAStateSpace();
         } else {
             cerr << "error cannot recognise data type\n";
@@ -256,7 +258,7 @@ int FileSequenceAlignment::ReadNexus(string filespec) {
             exit(1);
         }
 
-        if (Data) {
+        if (Data != nullptr) {
             for (int i = 0; i < Ntaxa; i++) {
                 delete Data[i];
             }
@@ -280,11 +282,13 @@ int FileSequenceAlignment::ReadNexus(string filespec) {
                 while (temp == "[") {
                     unsigned char c;
                     c = 'i';
-                    while (c != ']') c = theStream.get();
+                    while (c != ']') {
+                        c = theStream.get();
+                    }
                     theStream >> temp;
                 }
 
-                if (!l) {
+                if (l == 0) {
                     SpeciesNames[i] = temp;
                 } else {
                     if (temp != SpeciesNames[i]) {
@@ -299,7 +303,9 @@ int FileSequenceAlignment::ReadNexus(string filespec) {
                 do {
                     c = theStream.get();
                     if (c == '[') {
-                        while (c != ']') c = theStream.get();
+                        while (c != ']') {
+                            c = theStream.get();
+                        }
                         c = theStream.get();
                     }
                     if ((c != ' ') && (c != '\t') && (c != '\n') && (c != 13)) {
@@ -328,7 +334,7 @@ int FileSequenceAlignment::ReadNexus(string filespec) {
                         exit(1);
                     }
                 }
-                if (!m) {
+                if (m == 0) {
                     m = k;
                 } else {
                     if (m != k) {
@@ -389,7 +395,7 @@ int FileSequenceAlignment::ReadSpecial(string filename) {
 
         statespace = new GenericStateSpace(Nstate, Alphabet, NAlphabetSet, AlphabetSet);
 
-        if (Data) {
+        if (Data != nullptr) {
             for (int i = 0; i < Ntaxa; i++) {
                 delete Data[i];
             }
@@ -426,7 +432,9 @@ int FileSequenceAlignment::ReadSpecial(string filename) {
                         }
                     } else {
                         int p = 0;
-                        while ((p < NAlphabetSet) && (c != AlphabetSet[p])) p++;
+                        while ((p < NAlphabetSet) && (c != AlphabetSet[p])) {
+                            p++;
+                        }
                         if (p == NAlphabetSet) {
                             cout << "error: does not recognise character. taxon " << ntaxa << '\t'
                                  << SpeciesNames[ntaxa] << "  site  " << nsite << '\t' << c << '\n';
@@ -463,7 +471,7 @@ int FileSequenceAlignment::TestPhylipSequential(string filespec) {
     try {
         string temp;
         theStream >> temp;
-        if (!IsInt(temp)) {
+        if (IsInt(temp) == 0) {
             cerr << "error when reading data\n";
             cerr << "data should be formatted as follows:\n";
             cerr << "#taxa #sites\n";
@@ -475,7 +483,7 @@ int FileSequenceAlignment::TestPhylipSequential(string filespec) {
         }
         Ntaxa = atoi(temp.c_str());
         theStream >> temp;
-        if (!IsInt(temp)) {
+        if (IsInt(temp) == 0) {
             cerr << "error when reading data\n";
             cerr << "data should be formatted as follows:\n";
             cerr << "#taxa #sites\n";
@@ -514,20 +522,28 @@ int FileSequenceAlignment::TestPhylipSequential(string filespec) {
                         }
                     } else {
                         int p = 0;
-                        if (DNAcomp) {
-                            while ((p < DNAN) && (c != DNAset[p])) p++;
+                        if (DNAcomp != 0) {
+                            while ((p < DNAN) && (c != DNAset[p])) {
+                                p++;
+                            }
                             if (p == DNAN) {
                                 DNAcomp = 0;
                             }
                         }
                         p = 0;
-                        if (RNAcomp) {
-                            while ((p < RNAN) && (c != RNAset[p])) p++;
-                            if (p == RNAN) RNAcomp = 0;
+                        if (RNAcomp != 0) {
+                            while ((p < RNAN) && (c != RNAset[p])) {
+                                p++;
+                            }
+                            if (p == RNAN) {
+                                RNAcomp = 0;
+                            }
                         }
                         p = 0;
-                        if (AAcomp) {
-                            while ((p < AAN) && (c != AAset[p])) p++;
+                        if (AAcomp != 0) {
+                            while ((p < AAN) && (c != AAset[p])) {
+                                p++;
+                            }
                             if (p == AAN) {
                                 AAcomp = 0;
                             }
@@ -548,11 +564,11 @@ int FileSequenceAlignment::TestPhylipSequential(string filespec) {
                 return 0;
             }
         }
-        if (DNAcomp) {
+        if (DNAcomp != 0) {
             statespace = new DNAStateSpace;
-        } else if (RNAcomp) {
+        } else if (RNAcomp != 0) {
             statespace = new RNAStateSpace;
-        } else if (AAcomp) {
+        } else if (AAcomp != 0) {
             statespace = new ProteinStateSpace;
         } else {
             return 0;
@@ -569,7 +585,7 @@ void FileSequenceAlignment::ReadPhylipSequential(string filespec) {
     try {
         string temp;
         theStream >> temp;
-        if (!IsInt(temp)) {
+        if (IsInt(temp) == 0) {
             cerr << "error when reading data\n";
             cerr << "data should be formatted as follows:\n";
             cerr << "#taxa #sites\n";
@@ -581,7 +597,7 @@ void FileSequenceAlignment::ReadPhylipSequential(string filespec) {
         }
         Ntaxa = Int(temp);
         theStream >> temp;
-        if (!IsInt(temp)) {
+        if (IsInt(temp) == 0) {
             cerr << "error when reading data\n";
             cerr << "data should be formatted as follows:\n";
             cerr << "#taxa #sites\n";
@@ -640,7 +656,7 @@ int FileSequenceAlignment::TestPhylip(string filespec, int repeattaxa) {
     try {
         string temp;
         theStream >> temp;
-        if (!IsInt(temp)) {
+        if (IsInt(temp) == 0) {
             cerr << "error when reading data\n";
             cerr << "data should be formatted as follows:\n";
             cerr << "#taxa #sites\n";
@@ -652,7 +668,7 @@ int FileSequenceAlignment::TestPhylip(string filespec, int repeattaxa) {
         }
         Ntaxa = Int(temp);
         theStream >> temp;
-        if (!IsInt(temp)) {
+        if (IsInt(temp) == 0) {
             cerr << "error when reading data\n";
             cerr << "data should be formatted as follows:\n";
             cerr << "#taxa #sites\n";
@@ -677,10 +693,10 @@ int FileSequenceAlignment::TestPhylip(string filespec, int repeattaxa) {
             block++;
             int m = 0;
             for (int i = 0; i < Ntaxa; i++) {
-                if ((!l) || repeattaxa) {
+                if ((l == 0) || (repeattaxa != 0)) {
                     string temp;
                     theStream >> temp;
-                    if (!l) {
+                    if (l == 0) {
                         SpeciesNames[i] = temp;
                     } else {
                         if (temp != SpeciesNames[i]) {
@@ -705,18 +721,28 @@ int FileSequenceAlignment::TestPhylip(string filespec, int repeattaxa) {
                             }
                         } else {
                             int p = 0;
-                            if (DNAcomp) {
-                                while ((p < DNAN) && (c != DNAset[p])) p++;
-                                if (p == DNAN) DNAcomp = 0;
+                            if (DNAcomp != 0) {
+                                while ((p < DNAN) && (c != DNAset[p])) {
+                                    p++;
+                                }
+                                if (p == DNAN) {
+                                    DNAcomp = 0;
+                                }
                             }
                             p = 0;
-                            if (RNAcomp) {
-                                while ((p < RNAN) && (c != RNAset[p])) p++;
-                                if (p == RNAN) RNAcomp = 0;
+                            if (RNAcomp != 0) {
+                                while ((p < RNAN) && (c != RNAset[p])) {
+                                    p++;
+                                }
+                                if (p == RNAN) {
+                                    RNAcomp = 0;
+                                }
                             }
                             p = 0;
-                            if (AAcomp) {
-                                while ((p < AAN) && (c != AAset[p])) p++;
+                            if (AAcomp != 0) {
+                                while ((p < AAN) && (c != AAset[p])) {
+                                    p++;
+                                }
                                 if (p == AAN) {
                                     AAcomp = 0;
                                 }
@@ -737,7 +763,7 @@ int FileSequenceAlignment::TestPhylip(string filespec, int repeattaxa) {
                     c = theStream.get();
                     c = theStream.peek();
                 }
-                if (!m) {
+                if (m == 0) {
                     m = k;
                 } else {
                     if (m != k) {
@@ -763,13 +789,13 @@ int FileSequenceAlignment::TestPhylip(string filespec, int repeattaxa) {
             cerr << '\n';
             exit(1);
         }
-        if (DNAcomp) {
+        if (DNAcomp != 0) {
             statespace = new DNAStateSpace;
             // cerr << "dna sequences\n";
-        } else if (RNAcomp) {
+        } else if (RNAcomp != 0) {
             statespace = new DNAStateSpace;
             // cerr << "rna sequences\n";
-        } else if (AAcomp) {
+        } else if (AAcomp != 0) {
             statespace = new ProteinStateSpace;
             // cerr << "protein sequences\n";
         } else {
@@ -788,7 +814,7 @@ void FileSequenceAlignment::ReadPhylip(string filespec, int repeattaxa) {
     try {
         string temp;
         theStream >> temp;
-        if (!IsInt(temp)) {
+        if (IsInt(temp) == 0) {
             cerr << "error when reading data\n";
             cerr << "data should be formatted as follows:\n";
             cerr << "#taxa #sites\n";
@@ -800,7 +826,7 @@ void FileSequenceAlignment::ReadPhylip(string filespec, int repeattaxa) {
         }
         Ntaxa = Int(temp);
         theStream >> temp;
-        if (!IsInt(temp)) {
+        if (IsInt(temp) == 0) {
             cerr << "error when reading data\n";
             cerr << "data should be formatted as follows:\n";
             cerr << "#taxa #sites\n";
@@ -825,10 +851,10 @@ void FileSequenceAlignment::ReadPhylip(string filespec, int repeattaxa) {
             block++;
             int m = 0;
             for (int i = 0; i < Ntaxa; i++) {
-                if ((!l) || repeattaxa) {
+                if ((l == 0) || (repeattaxa != 0)) {
                     string temp;
                     theStream >> temp;
-                    if (!l) {
+                    if (l == 0) {
                         SpeciesNames[i] = temp;
                     } else {
                         if (temp != SpeciesNames[i]) {
@@ -876,7 +902,7 @@ void FileSequenceAlignment::ReadPhylip(string filespec, int repeattaxa) {
                     c = theStream.peek();
                 }
 
-                if (!m) {
+                if (m == 0) {
                     m = k;
                 } else {
                     if (m != k) {

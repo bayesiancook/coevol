@@ -24,7 +24,7 @@ class IIDArray : public ValPtrArray<Rvar<V> > {
                 n++;
             }
         }
-        double acc = n ? total / n : 0;
+        double acc = n != 0 ? total / n : 0;
         return acc;
     }
 
@@ -82,7 +82,7 @@ class BetaIIDArray : public IIDArray<UnitReal> {
     }
 
   protected:
-    Rvar<UnitReal>* CreateVal(int) override { return new Beta(alpha, beta); }
+    Rvar<UnitReal>* CreateVal(int /*site*/) override { return new Beta(alpha, beta); }
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -97,7 +97,7 @@ class PosUniIIDArray : public IIDArray<PosReal> {
     }
 
   protected:
-    Rvar<PosReal>* CreateVal(int) override { return new PosUniform(root, max); }
+    Rvar<PosReal>* CreateVal(int /*site*/) override { return new PosUniform(root, max); }
 
     Var<PosReal>* root;
     double max;
@@ -154,7 +154,7 @@ class GammaIIDArray : public IIDArray<PosReal> {
     }
 
   protected:
-    Rvar<PosReal>* CreateVal(int) override { return new Gamma(alpha, beta); }
+    Rvar<PosReal>* CreateVal(int /*site*/) override { return new Gamma(alpha, beta); }
 
     Var<PosReal>* alpha;
     Var<PosReal>* beta;
@@ -216,7 +216,7 @@ class DirichletIIDArray : public IIDArray<Profile> {
     int GetDim() { return GetVal(0)->GetDim(); }
 
   protected:
-    Rvar<Profile>* CreateVal(int) override { return new Dirichlet(center, concentration); }
+    Rvar<Profile>* CreateVal(int /*site*/) override { return new Dirichlet(center, concentration); }
 
     Var<Profile>* center;
     Var<PosReal>* concentration;
@@ -278,7 +278,7 @@ class NormalIIDArray : public IIDArray<Real> {
 
     Normal* GetNormal(int site) {
         Normal* n = dynamic_cast<Normal*>(GetVal(site));
-        if (!n) {
+        if (n == nullptr) {
             cerr << "error in NormalIIDArray::GetNormal\n";
             exit(1);
         }
@@ -286,7 +286,7 @@ class NormalIIDArray : public IIDArray<Real> {
     }
 
   protected:
-    Rvar<Real>* CreateVal(int) override { return new Normal(mean, var); }
+    Rvar<Real>* CreateVal(int /*site*/) override { return new Normal(mean, var); }
 
     Var<Real>* mean;
     Var<PosReal>* var;

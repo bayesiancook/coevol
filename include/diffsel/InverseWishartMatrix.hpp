@@ -33,7 +33,7 @@ class SigmaZero : public Dnode {
     ~SigmaZero() override = default;
 
     double val(int index) {
-        if (diag) {
+        if (diag != nullptr) {
             return diag->GetVal(index)->val();
         }
         return array[index]->val();
@@ -99,7 +99,7 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
             echantillon[i] = new double[GetDim()];
         }
 
-        while (cont) {
+        while (cont != 0) {
             // draws a sample of P vectors from a normal distribution of variance covariance equal
             // to the inverse of SigmaZero
             for (int i = 0; i < P; i++) {
@@ -238,7 +238,7 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
             delete[] echantillon[i];
         }
         delete[] echantillon;
-        if (Invert()) {
+        if (Invert() != 0) {
             cerr << "in draw sample cov matrix A\n";
             cerr << '\n' << *A << '\n';
             cerr << "DF : " << P << '\n';
@@ -290,10 +290,9 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
             double d = -((GetLogDeterminant() * (GetDim() + P + 1)) + sum) * 0.5;
             d += diagonalMatrix->GetLogDeterminant() * P * 0.5;
             return d;
-        } else {
-            // cerr << "singular cov matrix\n";
-            return -1000;
         }
+        // cerr << "singular cov matrix\n";
+        return -1000;
     }
 
     double MarginalLogProb(CovMatrix& scalestat, int shapestat) {
@@ -524,7 +523,7 @@ class BoundSet {
             BoundForMultiNormal bound;
             is >> bound;
             const Link* link = tree->GetLCA(bound.GetTaxon1(), bound.GetTaxon2());
-            if (!link) {
+            if (link == nullptr) {
                 cerr << "error in calibration set: did not find common ancestor of " << bound
                      << '\n';
                 exit(1);
@@ -597,7 +596,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         Sample();
     }
 
-    MultiNormal(int, Var<CovMatrix>* insigma, Var<RealVector>* inrootmean,
+    MultiNormal(int /*unused*/, Var<CovMatrix>* insigma, Var<RealVector>* inrootmean,
                 Var<PosRealVector>* inrootvar) {
         scalefunction = nullptr;
 
@@ -616,10 +615,10 @@ class MultiNormal : public virtual Rvar<RealVector> {
         rootmean = inrootmean;
         rootvar = inrootvar;
         Register(sigma);
-        if (rootmean) {
+        if (rootmean != nullptr) {
             Register(rootmean);
         }
-        if (rootvar) {
+        if (rootvar != nullptr) {
             Register(rootvar);
         }
 
@@ -685,30 +684,30 @@ class MultiNormal : public virtual Rvar<RealVector> {
             Register(time);
         }
         Register(sigma);
-        if (alpha) {
+        if (alpha != nullptr) {
             Register(alpha);
         }
-        if (scale) {
+        if (scale != nullptr) {
             Register(scale);
         }
-        if (drift) {
+        if (drift != nullptr) {
             Register(drift);
         }
-        if (driftphi) {
+        if (driftphi != nullptr) {
             Register(driftphi);
-            if (!date) {
+            if (date == nullptr) {
                 cerr << "error in MultiNormal::MultiNormal: null date\n";
                 exit(1);
             }
             Register(date);
         }
-        if (drift2) {
+        if (drift2 != nullptr) {
             Register(drift2);
         }
-        if (driftphi2) {
+        if (driftphi2 != nullptr) {
             Register(driftphi2);
         }
-        if (agescale) {
+        if (agescale != nullptr) {
             Register(agescale);
         }
         for (int i = 0; i < GetDim(); i++) {
@@ -762,7 +761,8 @@ class MultiNormal : public virtual Rvar<RealVector> {
     void CheckBounds() {
         for (int i = 0; i < GetDim(); i++) {
             if (haslowerbound[i] && hasupperbound[i]) {
-                while ((val()[i] > hasupperbound[i]) && (val()[i] < haslowerbound[i])) {
+                while ((val()[i] > static_cast<double>(hasupperbound[i])) &&
+                       (val()[i] < static_cast<double>(haslowerbound[i]))) {
                     if (val()[i] > upperbound[i]) {
                         val()[i] = 2 * upperbound[i] - val()[i];
                     }
@@ -792,9 +792,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
             exit(1);
         }
         if (isRoot()) {
-            if (rootmean) {
+            if (rootmean != nullptr) {
                 for (int i = 0; i < GetDim(); i++) {
-                    if ((*rootvar)[i]) {
+                    if ((*rootvar)[i] != 0.0) {
                         val()[i] = Random::sNormal() * sqrt((*rootvar)[i]) + (*rootmean)[i];
                     }
                 }
@@ -810,19 +810,19 @@ class MultiNormal : public virtual Rvar<RealVector> {
 
             for (int i = 0; i < GetDim(); i++) {
                 double tt = time->val();
-                if (scalefunction) {
+                if (scalefunction != nullptr) {
                     double t2 = date->val() * agescale->val();
                     double t1 = (date->val() + time->val()) * agescale->val();
                     double scalefactor = scalefunction->GetScalingFactor(t1, t2);
                     tt *= scalefactor;
-                } else if (scale) {
+                } else if (scale != nullptr) {
                     tt *= scale->val();
                 }
-                if (drift) {
-                    if (driftphi && driftphi2) {
+                if (drift != nullptr) {
+                    if ((driftphi != nullptr) && (driftphi2 != nullptr)) {
                         //  not yet done
                         val()[i] = t[i] * sqrt(tt) + up->val()[i];
-                    } else if (driftphi) {
+                    } else if (driftphi != nullptr) {
                         double u = time->val();
                         if (driftphi->val() > 1e-10) {
                             u = exp(-driftphi->val() * date->val()) *
@@ -846,10 +846,10 @@ class MultiNormal : public virtual Rvar<RealVector> {
             exit(1);
         }
         if (isRoot()) {
-            if (rootmean) {
+            if (rootmean != nullptr) {
                 for (int i = 0; i < GetDim(); i++) {
                     if (!ClampVector[i]) {
-                        if ((*rootvar)[i]) {
+                        if ((*rootvar)[i] != 0.0) {
                             val()[i] = Random::sNormal() * sqrt((*rootvar)[i]) + (*rootmean)[i];
                         }
                     }
@@ -868,19 +868,19 @@ class MultiNormal : public virtual Rvar<RealVector> {
             for (int i = 0; i < GetDim(); i++) {
                 if (!ClampVector[i]) {
                     double tt = time->val();
-                    if (scalefunction) {
+                    if (scalefunction != nullptr) {
                         double t2 = date->val() * agescale->val();
                         double t1 = (date->val() + time->val()) * agescale->val();
                         double scalefactor = scalefunction->GetScalingFactor(t1, t2);
                         tt *= scalefactor;
-                    } else if (scale) {
+                    } else if (scale != nullptr) {
                         tt *= scale->val();
                     }
-                    if (drift) {
-                        if (driftphi && driftphi2) {
+                    if (drift != nullptr) {
+                        if ((driftphi != nullptr) && (driftphi2 != nullptr)) {
                             //  not yet done
                             val()[i] = t[i] * sqrt(tt) + up->val()[i];
-                        } else if (driftphi) {
+                        } else if (driftphi != nullptr) {
                             double u = time->val();
                             if (driftphi->val() > 1e-10) {
                                 u = exp(-driftphi->val() * date->val()) *
@@ -1030,7 +1030,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         }
         bool ok = true;
         for (int i = 0; i < GetDim(); i++) {
-            ok &= (fabs((*this)[i] - (bkvalue)[i]) < 1e-8);
+            ok &= static_cast<int>(fabs((*this)[i] - (bkvalue)[i]) < 1e-8);
         }
         if (!ok) {
             for (int i = 0; i < GetDim(); i++) {
@@ -1123,9 +1123,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
 
         if ((!isRoot()) && Random::Uniform() < 0.5) {
             return MatrixBasedProposeMove(tuning);
-        } else {
-            return SimpleProposeMove(tuning);
         }
+        return SimpleProposeMove(tuning);
+
         return 0;
     }
 
@@ -1135,7 +1135,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         for (int i = 0; i < GetDim(); i++) {
             if (!ClampVector[i]) {
                 double tt = time->val();
-                if (scale) {
+                if (scale != nullptr) {
                     tt *= scale->val();
                 }
                 val()[i] += tuning * t[i] * sqrt(tt);
@@ -1227,7 +1227,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
     void UnClamp(int index) { ClampVector[index] = false; }
 
     double GetTrend(double t, int index) {
-        if (drift2) {
+        if (drift2 != nullptr) {
             if (t > kt) {
                 return 0;
             }
@@ -1240,9 +1240,9 @@ class MultiNormal : public virtual Rvar<RealVector> {
     double logProb() override {
         if (isRoot()) {
             double total = 0;
-            if (rootmean) {
+            if (rootmean != nullptr) {
                 for (int i = 0; i < GetDim(); i++) {
-                    if ((*rootvar)[i]) {
+                    if ((*rootvar)[i] != 0.0) {
                         double tmp = val()[i] - (*rootmean)[i];
                         total += -0.5 * (log((*rootvar)[i]) + tmp * tmp / (*rootvar)[i]);
                     } else {
@@ -1263,70 +1263,69 @@ class MultiNormal : public virtual Rvar<RealVector> {
                 }
             }
             return total;
-        } else {
-            // calcul de transposé de X * sigma * X
-            double tXSX = 0;
-            auto dval = new double[GetDim()];
-            double tt = time->val();
-            if (scalefunction) {
+        }
+        // calcul de transposé de X * sigma * X
+        double tXSX = 0;
+        auto dval = new double[GetDim()];
+        double tt = time->val();
+        if (scalefunction != nullptr) {
+            double t2 = date->val() * agescale->val();
+            double t1 = (date->val() + time->val()) * agescale->val();
+            double scalefactor = scalefunction->GetScalingFactor(t1, t2);
+            tt *= scalefactor;
+        } else if (scale != nullptr) {
+            tt *= scale->val();
+        }
+        double roott = sqrt(tt);
+        if (drift != nullptr) {
+            if (timeline != nullptr) {
                 double t2 = date->val() * agescale->val();
                 double t1 = (date->val() + time->val()) * agescale->val();
-                double scalefactor = scalefunction->GetScalingFactor(t1, t2);
-                tt *= scalefactor;
-            } else if (scale) {
-                tt *= scale->val();
-            }
-            double roott = sqrt(tt);
-            if (drift) {
-                if (timeline) {
-                    double t2 = date->val() * agescale->val();
-                    double t1 = (date->val() + time->val()) * agescale->val();
-                    for (int i = 0; i < GetDim(); i++) {
-                        double f1 = timeline->GetVal(t1, i);
-                        double f2 = timeline->GetVal(t2, i);
-                        dval[i] = ((val()[i] - up->val()[i]) - alpha->val() * (f2 - f1)) / roott;
-                    }
-                } else if (driftphi2) {
-                    double t2 = date->val() * agescale->val();
-                    double t1 = (date->val() + time->val()) * agescale->val();
-                    if ((t1 < 0) || (t1 > 2000) || (t2 < 0) || (t2 > 2000)) {
-                        cerr << "error in timeline2\n";
-                        cerr << t1 << '\t' << t2 << '\n';
-                        exit(1);
-                    }
-                    for (int i = 0; i < GetDim(); i++) {
-                        double f1 = GetTrend(t1, i);
-                        double f2 = GetTrend(t2, i);
-                        dval[i] = ((val()[i] - up->val()[i]) - (f2 - f1)) / roott;
-                    }
-                } else if (driftphi) {
-                    double t2 = date->val();
-                    double t1 = (date->val() + time->val());
-                    for (int i = 0; i < GetDim(); i++) {
-                        double f1 = GetTrend(t1, i);
-                        double f2 = GetTrend(t2, i);
-                        dval[i] = ((val()[i] - up->val()[i]) - (f2 - f1)) / roott;
-                    }
-                } else {
-                    for (int i = 0; i < GetDim(); i++) {
-                        dval[i] = (val()[i] - up->val()[i] - tt * (*drift)[i]) / roott;
-                    }
+                for (int i = 0; i < GetDim(); i++) {
+                    double f1 = timeline->GetVal(t1, i);
+                    double f2 = timeline->GetVal(t2, i);
+                    dval[i] = ((val()[i] - up->val()[i]) - alpha->val() * (f2 - f1)) / roott;
+                }
+            } else if (driftphi2 != nullptr) {
+                double t2 = date->val() * agescale->val();
+                double t1 = (date->val() + time->val()) * agescale->val();
+                if ((t1 < 0) || (t1 > 2000) || (t2 < 0) || (t2 > 2000)) {
+                    cerr << "error in timeline2\n";
+                    cerr << t1 << '\t' << t2 << '\n';
+                    exit(1);
+                }
+                for (int i = 0; i < GetDim(); i++) {
+                    double f1 = GetTrend(t1, i);
+                    double f2 = GetTrend(t2, i);
+                    dval[i] = ((val()[i] - up->val()[i]) - (f2 - f1)) / roott;
+                }
+            } else if (driftphi != nullptr) {
+                double t2 = date->val();
+                double t1 = (date->val() + time->val());
+                for (int i = 0; i < GetDim(); i++) {
+                    double f1 = GetTrend(t1, i);
+                    double f2 = GetTrend(t2, i);
+                    dval[i] = ((val()[i] - up->val()[i]) - (f2 - f1)) / roott;
                 }
             } else {
                 for (int i = 0; i < GetDim(); i++) {
-                    dval[i] = (val()[i] - up->val()[i]) / roott;
+                    dval[i] = (val()[i] - up->val()[i] - tt * (*drift)[i]) / roott;
                 }
             }
+        } else {
             for (int i = 0; i < GetDim(); i++) {
-                tXSX += sigma->GetInvMatrix()[i][i] * dval[i] * dval[i];
-                for (int j = 0; j < i; j++) {
-                    tXSX += 2 * sigma->GetInvMatrix()[i][j] * dval[j] * dval[i];
-                }
+                dval[i] = (val()[i] - up->val()[i]) / roott;
             }
-            double d = -0.5 * (sigma->GetLogDeterminant() + tXSX + GetDim() * 2 * log(roott));
-            delete[] dval;
-            return d;
         }
+        for (int i = 0; i < GetDim(); i++) {
+            tXSX += sigma->GetInvMatrix()[i][i] * dval[i] * dval[i];
+            for (int j = 0; j < i; j++) {
+                tXSX += 2 * sigma->GetInvMatrix()[i][j] * dval[j] * dval[i];
+            }
+        }
+        double d = -0.5 * (sigma->GetLogDeterminant() + tXSX + GetDim() * 2 * log(roott));
+        delete[] dval;
+        return d;
     }
 
 

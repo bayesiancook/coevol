@@ -122,7 +122,7 @@ class MGCodonSubMatrix : public NucCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void ComputeStationary() override;
 
     virtual void ComputeNucArrays();
@@ -180,7 +180,7 @@ class MGOmegaCodonSubMatrix : public MGCodonSubMatrix {
 
   protected:
     // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
-    void ComputeArray(int state) override;
+    void ComputeArray(int i) override;
     void SetOmega(double inomega) { omega = inomega; }
 
     void ComputeNucArrays() override;
@@ -253,7 +253,7 @@ class AminoAcidReducedCodonSubMatrix : public virtual SubMatrix {
   protected:
     void SetCodonMatrix(CodonSubMatrix* incodonmatrix) { codonmatrix = incodonmatrix; }
 
-    void ComputeArray(int state) override;
+    void ComputeArray(int a) override;
     void ComputeStationary() override;
 
     CodonSubMatrix* codonmatrix;

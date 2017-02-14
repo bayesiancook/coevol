@@ -20,12 +20,12 @@ class TaxonSet {
     int GetNtaxa() const;
     string GetTaxon(int index) const;
     int GetTaxonIndex(string intaxon) const;
-    int GetTaxonIndexWithIncompleteName(string intaxon) const;
+    int GetTaxonIndexWithIncompleteName(string taxname) const;
 
     void ToStream(ostream& os) const;
 
   private:
-    void RecursiveGetSubSet(const Link* from, int& index);
+    void RecursiveGetSubSet(const Link* from, int& i);
 
     int Ntaxa;
     mutable map<string, int> taxmap;

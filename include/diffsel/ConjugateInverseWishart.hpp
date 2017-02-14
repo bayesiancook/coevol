@@ -99,9 +99,8 @@ class SemiConjugateInverseWishart : virtual public InverseWishartMatrix,
     double logProb() override {
         if (isActive()) {
             return InverseWishartMatrix::logProb() + SuffStatLogProb();
-        } else {
-            return InverseWishartMatrix::logProb();
         }
+        return InverseWishartMatrix::logProb();
     }
 
     void localRestore() override {
@@ -259,9 +258,9 @@ class ConjugateMultiNormal : public ConjugateSampling<RealVector>, public MultiN
     ~ConjugateMultiNormal() override = default;
 
     void AddSufficientStatistic(SemiConjPrior* parent) override {
-        if (up) {
+        if (up != nullptr) {
             MultiNormalSemiConjugate* prior = dynamic_cast<MultiNormalSemiConjugate*>(parent);
-            if (!prior) {
+            if (prior == nullptr) {
                 cout << "cast error in ConjugateMultiNormal::AddSuffStat\n";
                 exit(1);
             }
@@ -281,21 +280,21 @@ class ConjugateMultiNormal : public ConjugateSampling<RealVector>, public MultiN
     }
 
     void ComputeContrast() {
-        if (!contrast) {
+        if (contrast == nullptr) {
             contrast = new double[GetDim()];
         }
         double tt = time->val();
-        if (scalefunction) {
+        if (scalefunction != nullptr) {
             double t2 = date->val() * agescale->val();
             double t1 = (date->val() + time->val()) * agescale->val();
             double scalefactor = scalefunction->GetScalingFactor(t1, t2);
             tt *= scalefactor;
-        } else if (scale) {
+        } else if (scale != nullptr) {
             tt *= scale->val();
         }
         double roott = sqrt(tt);
-        if (drift) {
-            if (driftphi) {
+        if (drift != nullptr) {
+            if (driftphi != nullptr) {
                 double u = time->val();
                 if (driftphi->val() > 1e-10) {
                     u = exp(-driftphi->val() * date->val()) *
@@ -336,7 +335,7 @@ class ConjugateMultivariateNormal : public ConjugateSampling<RealVector>,
 
     void AddSufficientStatistic(SemiConjPrior* parent) override {
         MultiNormalSemiConjugate* prior = dynamic_cast<MultiNormalSemiConjugate*>(parent);
-        if (!prior) {
+        if (prior == nullptr) {
             cout << "cast error in ConjugateMultiNormal::AddSuffStat\n";
             exit(1);
         }

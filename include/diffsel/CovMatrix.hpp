@@ -28,7 +28,7 @@ class CovMatrix : public BaseType, public Multiplicative {
 
   public:
     static double GetMeanDiagError() {
-        if (ndiag) {
+        if (ndiag != 0) {
             return toterror / ndiag;
         }
         return 0;
@@ -115,7 +115,7 @@ class CovMatrix : public BaseType, public Multiplicative {
 
 
     CovMatrix& operator=(const CovMatrix& from) {
-        if (!dim) {
+        if (dim == 0) {
             dim = from.GetDim();
             CreateAllMatrix();
             diagflag = false;
@@ -137,7 +137,7 @@ class CovMatrix : public BaseType, public Multiplicative {
     }
 
     void setVal(double** val, int inDim) {
-        if (!dim) {
+        if (dim == 0) {
             dim = inDim;
             CreateAllMatrix();
             diagflag = false;
@@ -363,12 +363,16 @@ class CovMatrix : public BaseType, public Multiplicative {
 
   public:
     double* GetEigenVal() {
-        if (!diagflag) Diagonalise();
+        if (!diagflag) {
+            Diagonalise();
+        }
         return v;
     }
 
     double* GetLogEigenVal() {
-        if (!diagflag) Diagonalise();
+        if (!diagflag) {
+            Diagonalise();
+        }
         return logv;
     }
 
@@ -403,7 +407,9 @@ class CovMatrix : public BaseType, public Multiplicative {
     }
 
     double** GetInvEigenVect() {
-        if (!diagflag) Diagonalise();
+        if (!diagflag) {
+            Diagonalise();
+        }
         return invu;
     }
 
@@ -525,13 +531,17 @@ class CovMatrix : public BaseType, public Multiplicative {
     double** GetMatrix() const { return value; }
 
     double** GetInvMatrix() {
-        if (!diagflag) Diagonalise();
+        if (!diagflag) {
+            Diagonalise();
+        }
         return invvalue;
     }
 
 
     bool isPositiveDefine() {
-        if (!diagflag) Diagonalise();
+        if (!diagflag) {
+            Diagonalise();
+        }
         bool r = true;
         for (int i = 0; i < GetDim(); i++) {
             if (GetEigenVal()[i] <= 1e-6) {
@@ -656,7 +666,7 @@ class CovMatrix : public BaseType, public Multiplicative {
         }
         toterror += tmp;
         ndiag++;
-        return failed;
+        return static_cast<int>(failed);
     }
 
     /*

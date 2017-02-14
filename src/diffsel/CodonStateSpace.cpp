@@ -207,31 +207,28 @@ int CodonStateSpace::GetDifferingPosition(int i, int j) {
         if ((GetCodonPosition(1, i) == GetCodonPosition(1, j)) &&
             (GetCodonPosition(2, i) == GetCodonPosition(2, j))) {
             return 0;
-        } else {
-            return 3;
         }
+        return 3;
     }
     if (GetCodonPosition(1, i) != GetCodonPosition(1, j)) {
         if ((GetCodonPosition(0, i) == GetCodonPosition(0, j)) &&
             (GetCodonPosition(2, i) == GetCodonPosition(2, j))) {
             return 1;
-        } else {
-            return 3;
         }
+        return 3;
     }
     if (GetCodonPosition(2, i) != GetCodonPosition(2, j)) {
         if ((GetCodonPosition(1, i) == GetCodonPosition(1, j)) &&
             (GetCodonPosition(0, i) == GetCodonPosition(0, j))) {
             return 2;
-        } else {
-            return 3;
         }
+        return 3;
     }
     return 3;
 }
 
 int CodonStateSpace::GetDegeneracy(int codon) {
-    if (!degeneracy.size()) {
+    if (degeneracy.empty()) {
         MakeDegeneracyMap();
     }
     if (codon == -1) {
@@ -275,18 +272,18 @@ int CodonStateSpace::IsNonCTNearest(int a, int b) {
                 if (Translation(c2) == b) {
                     int pos = GetDifferingPosition(c1, c2);
                     if (pos < 3) {
-                        nn = true;
+                        nn = 1;
                         int n1 = GetCodonPosition(pos, c1);
                         int n2 = GetCodonPosition(pos, c2);
                         if (((n1 == 1) && (n2 == 3)) || ((n1 == 3) && (n2 == 1))) {
-                            noct = false;
+                            noct = 0;
                         }
                     }
                 }
             }
         }
     }
-    if (!nn) {
+    if (nn == 0) {
         return -1;
     }
     return noct;

@@ -63,7 +63,7 @@ class Link {
         node = nullptr;
     }
 
-    Link(const Link*) {
+    Link(const Link* /*unused*/) {
         // tbl = 0;
         next = out = this;
         node = nullptr;
@@ -101,7 +101,7 @@ class Link {
     void SetNext(Link* innext) { next = innext; }
 
     void AppendTo(Link* link) {
-        if (link) {
+        if (link != nullptr) {
             link->next = this;
         }
     }
@@ -266,7 +266,7 @@ class Tree : public NewickTree {
     // const Link* GetRoot() const {return root;}
     const TaxonSet* GetTaxonSet() const { return taxset; }
 
-    void RootAt(Link* newroot);
+    void RootAt(Link* from);
 
     void RegisterWith(const TaxonSet* taxset);
     // Registers all leaves of the tree with an external TaxonSet
@@ -374,26 +374,26 @@ class Tree : public NewickTree {
     int GetSize(const Link* from) const {
         if (from->isLeaf()) {
             return 1;
-        } else {
-            int total = 0;
-            for (const Link* link = from->Next(); link != from; link = link->Next()) {
-                total += GetSize(link->Out());
-            }
-            return total;
         }
+        int total = 0;
+        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+            total += GetSize(link->Out());
+        }
+        return total;
+
         return 0;
     }
 
     int GetFullSize(const Link* from) const {
         if (from->isLeaf()) {
             return 1;
-        } else {
-            int total = 1;
-            for (const Link* link = from->Next(); link != from; link = link->Next()) {
-                total += GetFullSize(link->Out());
-            }
-            return total;
         }
+        int total = 1;
+        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+            total += GetFullSize(link->Out());
+        }
+        return total;
+
         return 0;
     }
 
@@ -427,34 +427,34 @@ class Tree : public NewickTree {
     void Subdivide(Link* from, int Ninterpol);
 
     string Reduce(Link* from = nullptr) {
-        if (!from) {
+        if (from == nullptr) {
             from = GetRoot();
         }
         if (from->isLeaf()) {
             cerr << from->GetNode()->GetName() << '\n';
             ;
             return from->GetNode()->GetName();
-        } else {
-            string name = "None";
-            for (Link* link = from->Next(); link != from; link = link->Next()) {
-                string tmp = Reduce(link->Out());
-                if (tmp == "diff") {
-                    name = "diff";
-                } else if (name == "None") {
-                    name = tmp;
-                } else if (name != tmp) {
-                    name = "diff";
-                }
-            }
-            cerr << '\t' << name << '\n';
-            from->GetNode()->SetName(name);
-            return name;
         }
+        string name = "None";
+        for (Link* link = from->Next(); link != from; link = link->Next()) {
+            string tmp = Reduce(link->Out());
+            if (tmp == "diff") {
+                name = "diff";
+            } else if (name == "None") {
+                name = tmp;
+            } else if (name != tmp) {
+                name = "diff";
+            }
+        }
+        cerr << '\t' << name << '\n';
+        from->GetNode()->SetName(name);
+        return name;
+
         return "";
     }
 
     void PrintReduced(ostream& os, const Link* from = nullptr) {
-        if (!from) {
+        if (from == nullptr) {
             from = GetRoot();
         }
         if (from->GetNode()->GetName() != "diff") {
@@ -479,7 +479,7 @@ class Tree : public NewickTree {
         int m = (int)(n * Random::Uniform());
         const Link* tmp;
         const Link* chosen = ChooseInternalNode(GetRoot(), tmp, m);
-        if (!chosen) {
+        if (chosen == nullptr) {
             cerr << "error in choose internal node: null pointer\n";
             exit(1);
         }
@@ -487,9 +487,9 @@ class Tree : public NewickTree {
     }
 
     int CountInternalNodes(const Link* from);
-    const Link* ChooseInternalNode(const Link* from, const Link*& chosenup, int& n);
+    const Link* ChooseInternalNode(const Link* from, const Link*& fromup, int& n);
     int CountNodes(const Link* from);
-    const Link* ChooseNode(const Link* from, const Link*& chosenup, int& n);
+    const Link* ChooseNode(const Link* from, const Link*& fromup, int& n);
 
   protected:
     // returns 0 if not found
@@ -502,13 +502,13 @@ class Tree : public NewickTree {
             // found2 |= (from->GetNode()->GetName() == tax2);
             string name1 = GetLeafNodeName(from).substr(0, tax1.size());
             string name2 = GetLeafNodeName(from).substr(0, tax2.size());
-            found1 |= (name1 == tax1);
-            found2 |= (name2 == tax2);
+            found1 |= static_cast<int>(name1 == tax1);
+            found2 |= static_cast<int>(name2 == tax2);
             /*
               found1 |= (GetLeafNodeName(from) == tax1);
               found2 |= (GetLeafNodeName(from) == tax2);
             */
-            if (!ret) {
+            if (ret == nullptr) {
                 if (found1 && found2) {
                     ret = from;
                 }
@@ -518,10 +518,10 @@ class Tree : public NewickTree {
                 bool tmp1 = false;
                 bool tmp2 = false;
                 const Link* ret2 = RecursiveGetLCA(link->Out(), tax1, tax2, tmp1, tmp2);
-                found1 |= tmp1;
-                found2 |= tmp2;
-                if (ret2) {
-                    if (ret) {
+                found1 |= static_cast<int>(tmp1);
+                found2 |= static_cast<int>(tmp2);
+                if (ret2 != nullptr) {
+                    if (ret != nullptr) {
                         cerr << "error : found node twice\n";
                         cerr << tax1 << '\t' << tax2 << '\n';
                         ToStream(cerr, ret2->Out());
@@ -533,7 +533,7 @@ class Tree : public NewickTree {
                     ret = ret2;
                 }
             }
-            if (!ret) {
+            if (ret == nullptr) {
                 if (found1 && found2) {
                     ret = from;
                 }
@@ -545,9 +545,9 @@ class Tree : public NewickTree {
     const Link* RecursiveGetLCA(const Link* from, const Link* from1, const Link* from2,
                                 bool& found1, bool& found2) {
         const Link* ret = nullptr;
-        found1 |= (from == from1);
-        found2 |= (from == from2);
-        if (!ret) {
+        found1 |= static_cast<int>(from == from1);
+        found2 |= static_cast<int>(from == from2);
+        if (ret == nullptr) {
             if (found1 && found2) {
                 ret = from;
             }
@@ -556,10 +556,10 @@ class Tree : public NewickTree {
             bool tmp1 = false;
             bool tmp2 = false;
             const Link* ret2 = RecursiveGetLCA(link->Out(), from1, from2, tmp1, tmp2);
-            found1 |= tmp1;
-            found2 |= tmp2;
-            if (ret2) {
-                if (ret) {
+            found1 |= static_cast<int>(tmp1);
+            found2 |= static_cast<int>(tmp2);
+            if (ret2 != nullptr) {
+                if (ret != nullptr) {
                     cerr << "error : found node twice\n";
                     cerr << from1 << '\t' << from2 << '\n';
                     ToStream(cerr, ret2->Out());
@@ -571,7 +571,7 @@ class Tree : public NewickTree {
                 ret = ret2;
             }
         }
-        if (!ret) {
+        if (ret == nullptr) {
             if (found1 && found2) {
                 ret = from;
             }

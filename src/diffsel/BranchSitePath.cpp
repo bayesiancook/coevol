@@ -80,7 +80,7 @@ string BranchSitePath::ToString(bool redundant) {
         s << GetCharFinalState() << ':';
     }
     Plink* link = last;
-    while (link) {
+    while (link != nullptr) {
         if (link != last) {
             s << ':' << GetState(link->Next()) << ':' << GetAbsoluteTime(link);
         } else {
@@ -101,7 +101,7 @@ string BranchSitePath::ToString(bool redundant) {
 }
 
 void BranchSitePath::AddCounts(int** paircounts, int* statecounts) {
-    if (last->GetRelativeTime()) {
+    if (last->GetRelativeTime() != 0.0) {
         Plink* link = init;
         while (link != last) {
             paircounts[link->GetState(), link->Next()->GetState()]++;
@@ -147,7 +147,7 @@ void BranchSitePath::Prefix(BranchSitePath* p, BranchSitePath* root, double abst
 
             // splice first link of p
             Plink* tmp = p->init->next;
-            if (!tmp) {
+            if (tmp == nullptr) {
                 cerr << "error : next is 0\n";
                 exit(1);
             }
@@ -213,14 +213,14 @@ double BranchSitePath::CheckTotalTime() {
     double tot = 0;
     Plink* link = init;
     while (link != last) {
-        if (!link) {
+        if (link == nullptr) {
             cerr << "error : null link\n";
             exit(1);
         }
         tot += link->GetRelativeTime();
         link = link->next;
     }
-    if (!link) {
+    if (link == nullptr) {
         cerr << "error : null link\n";
         exit(1);
     }

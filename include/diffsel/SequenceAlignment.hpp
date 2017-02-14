@@ -122,7 +122,7 @@ class SequenceAlignment {
                     ok = 1;
                 }
             }
-            if (!ok) {
+            if (ok == 0) {
                 npos++;
                 for (int j = 0; j < n2; j++) {
                     if (Data[GetTaxonSet()->GetTaxonIndex(group2[j])][i] != unknown) {
@@ -151,7 +151,7 @@ class SequenceAlignment {
                         fromgroup = 1;
                     }
                 }
-                if (!fromgroup) {
+                if (fromgroup == 0) {
                     if (Data[j][i] != unknown) {
                         present[Data[j][i]] = 1;
                     }
@@ -161,14 +161,14 @@ class SequenceAlignment {
             int pos = 0;
             for (int j = 0; j < n; j++) {
                 if (Data[GetTaxonSet()->GetTaxonIndex(group[j])][i] != unknown) {
-                    if (!present[Data[GetTaxonSet()->GetTaxonIndex(group[j])][i]]) {
+                    if (present[Data[GetTaxonSet()->GetTaxonIndex(group[j])][i]] == 0) {
                         Data[GetTaxonSet()->GetTaxonIndex(group[j])][i] = unknown;
                         nrem++;
                         pos = 1;
                     }
                 }
             }
-            if (pos) {
+            if (pos != 0) {
                 npos++;
             }
         }
@@ -228,7 +228,7 @@ class SequenceAlignment {
         for (int n = 1; n < ngroup; n++) {
             ok *= presence[n];
         }
-        return ok;
+        return ok != 0;
     }
 
     double MissingFrac(int i) {
@@ -315,7 +315,7 @@ class SequenceAlignment {
         bool ret = true;
         int site = 0;
         while ((site < GetNsite()) && ret) {
-            ret &= (Data[tax][site] == unknown);
+            ret &= static_cast<int>(Data[tax][site] == unknown);
             site++;
         }
         return ret;
@@ -334,7 +334,7 @@ class SequenceAlignment {
         bool ret = true;
         int tax = 0;
         while ((tax < GetNtaxa()) && ret) {
-            ret &= (Data[tax][site] == unknown);
+            ret &= static_cast<int>(Data[tax][site] == unknown);
             tax++;
         }
         return ret;
@@ -344,7 +344,7 @@ class SequenceAlignment {
         bool ret = true;
         int tax = 0;
         while ((tax < GetNtaxa()) && ret) {
-            ret &= (Data[tax][site] != unknown);
+            ret &= static_cast<int>(Data[tax][site] != unknown);
             tax++;
         }
         return ret;
@@ -362,7 +362,7 @@ class SequenceAlignment {
 
             while ((tax < GetNtaxa()) && ret) {
                 if (Data[tax][site] != -1) {
-                    ret &= (Data[tax][site] == refstate);
+                    ret &= static_cast<int>(Data[tax][site] == refstate);
                 }
                 tax++;
             }
@@ -389,11 +389,15 @@ class SequenceAlignment {
         int Eliminated = 0;
         while (i < Nsite) {
             int k = 0;
-            while ((k < Ntaxa) && (Data[k][i] == unknown)) k++;
+            while ((k < Ntaxa) && (Data[k][i] == unknown)) {
+                k++;
+            }
             if (k < Ntaxa) {
                 int a = Data[k][i];
                 k++;
-                while ((k < Ntaxa) && ((Data[k][i] == unknown) || (Data[k][i] == a))) k++;
+                while ((k < Ntaxa) && ((Data[k][i] == unknown) || (Data[k][i] == a))) {
+                    k++;
+                }
                 if (k == Ntaxa) {
                     Eliminated++;
                 } else {
@@ -519,15 +523,15 @@ class SequenceAlignment {
             }
             for (int k = 0; k < Nstate; k++) {
                 taxfreq[j][k] /= total;
-                if (os) {
+                if (os != nullptr) {
                     (*os) << taxfreq[j][k] << '\t';
                 }
             }
-            if (os) {
+            if (os != nullptr) {
                 (*os) << '\n';
             }
         }
-        if (os) {
+        if (os != nullptr) {
             (*os) << '\n';
         }
 
@@ -568,13 +572,13 @@ class FileSequenceAlignment : public SequenceAlignment {
     FileSequenceAlignment(string filename, int fullline = 0);
 
   private:
-    int ReadDataFromFile(string filename, int forceinterleaved = 0);
-    int ReadNexus(string filename);
+    int ReadDataFromFile(string filespec, int forceinterleaved = 0);
+    int ReadNexus(string filespec);
     int ReadSpecial(string filename);
-    int TestPhylipSequential(string filename);
-    void ReadPhylipSequential(string filename);
-    int TestPhylip(string filename, int repeattaxa);
-    void ReadPhylip(string filename, int repeattaxa);
+    int TestPhylipSequential(string filespec);
+    void ReadPhylipSequential(string filespec);
+    int TestPhylip(string filespec, int repeattaxa);
+    void ReadPhylip(string filespec, int repeattaxa);
 
     string* SpeciesNames;
 };

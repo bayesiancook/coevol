@@ -45,7 +45,7 @@ class ContinuousData {
     }
 
     void ToStream(ostream& os, TaxonSet* taxset = nullptr) {
-        if (!taxset) {
+        if (taxset == nullptr) {
             // cerr << "??? in taxon set\n";
             os << GetNtaxa() << '\t' << GetNsite() << '\n';
             for (int i = 0; i < GetNtaxa(); i++) {
@@ -137,7 +137,7 @@ class ContinuousData {
     bool isMissing(int taxon) {
         bool mis = true;
         for (int i = 0; i < Nsite; i++) {
-            mis &= (Data[taxon][i] == -1);
+            mis &= static_cast<int>(Data[taxon][i] == -1);
         }
         return mis;
     }

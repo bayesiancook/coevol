@@ -32,7 +32,7 @@ class DirichletNormalCompMove : public MCUpdate {
 
     int GetSize() { return global->GetSize(); }
 
-    double Move(double) override {
+    double Move(double /*tuning_modulator*/) override {
         int Naccepted = 0;
 
         for (int rep = 0; rep < nrep; rep++) {
@@ -124,7 +124,7 @@ class NormalNormalCompMove : public MCUpdate {
 
     int GetSize() { return diff1->GetSize(); }
 
-    double Move(double) override {
+    double Move(double /*tuning_modulator*/) override {
         int Naccepted = 0;
 
         for (int rep = 0; rep < nrep; rep++) {
@@ -179,7 +179,7 @@ class ComplexDirichletIIDArrayMove : public MCUpdate {
     ComplexDirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int innrep)
         : selectarray(inselectarray), tuning(intuning), nrep(innrep) {}
 
-    double Move(double) override {
+    double Move(double /*tuning_modulator*/) override {
         auto tot = new double[selectarray->GetSize()];
         for (int i = 0; i < selectarray->GetSize(); i++) {
             tot[i] = 0;
@@ -557,7 +557,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         }
 
 
-        if (conjugate) {
+        if (conjugate != 0) {
             cerr << "conjugate\n";
             matrixtree = nullptr;
             patharray = new ProfilePathConjugateArray(Nsite, K, submatrix);
@@ -670,8 +670,9 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             scheduler.Register(new SimpleMove(gamtree, 3), 4, "branch lengths");
             scheduler.Register(new SimpleMove(gamtree, 2.3), 4, "branch lengths");
 
-            if (conjugate) {
-                scheduler.Register(new ProfileConjugateMove(patharray, 1), 1, "activate suff stat");
+            if (conjugate != 0) {
+                scheduler.Register(new ProfileConjugateMove(patharray, true), 1,
+                                   "activate suff stat");
             }
 
             for (int m = 0; m < 20; m++) {
@@ -745,15 +746,15 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
                 */
             }
 
-            if (conjugate) {
-                scheduler.Register(new ProfileConjugateMove(patharray, 0), 1,
+            if (conjugate != 0) {
+                scheduler.Register(new ProfileConjugateMove(patharray, false), 1,
                                    "inactivate suff stat");
             }
         }
     }
 
 
-    double Move(double) override {
+    double Move(double /*tuning_modulator*/) override {
         scheduler.Cycle(1, 1, false, false);
         return 1;
     }
@@ -824,7 +825,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         int k = cat;
         int i = site;
         int j = state;
-        if (cat) {
+        if (cat != 0) {
             return exp((*selectionnormal[k]->GetVal(i))[j]);
         }
         return (*globalselectionprofile->GetVal(i))[j];

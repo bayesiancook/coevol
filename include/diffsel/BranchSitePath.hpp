@@ -59,7 +59,7 @@ class BranchSitePath {
     double GetAbsoluteTime(Plink* link);
     double GetRelativeTime(Plink* link) { return link->GetRelativeTime(); }
 
-    void AddCounts(int** paircount, int* statecount);
+    void AddCounts(int** paircounts, int* statecounts);
 
     void SetTimesRelativeToAbsolute();
     void SetTimesAbsoluteToRelative();
@@ -116,7 +116,7 @@ inline bool Plink::IsLast() { return next == nullptr; }
 
 inline void Plink::Insert(Plink* link) {
     link->next = next;
-    if (next) {
+    if (next != nullptr) {
         next->prev = link;
     }
     link->prev = this;
@@ -124,10 +124,10 @@ inline void Plink::Insert(Plink* link) {
 }
 
 inline void Plink::Splice() {
-    if (prev) {
+    if (prev != nullptr) {
         prev->next = next;
     }
-    if (next) {
+    if (next != nullptr) {
         next->prev = prev;
     }
     prev = next = nullptr;
@@ -146,7 +146,7 @@ inline Plink* BranchSitePath::Last() { return last; }
 //-------------------------------------------------------------------------
 
 inline StateSpace* BranchSitePath::GetStateSpace() {
-    if (!statespace) {
+    if (statespace == nullptr) {
         std::cerr << "null pointer : BranchSitePath::statespace\n";
         throw(0);
     }

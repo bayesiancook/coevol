@@ -23,7 +23,7 @@ class OneMatrixPhyloProcess : public PhyloProcess {
     // how to create the substitution process (and the associated substitution path)
     // for a given branch (accessible through link), and a given site
     //
-    RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int) override {
+    RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int /*site*/) override {
         return new RandomBranchSitePath(this, tree->GetBranchLength(link->GetBranch()), nullptr,
                                         GetMatrix(), nullptr);
     }
@@ -73,7 +73,7 @@ class OneMatrixRASPhyloProcess : public OneMatrixPhyloProcess {
     }
 
     Var<PosReal>* GetRate(int site) {
-        if (!rate) {
+        if (rate == nullptr) {
             return nullptr;
         }
         return rate->GetVal(site);

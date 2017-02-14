@@ -125,9 +125,9 @@ SubMatrix::~SubMatrix() {
     delete[] u;
     delete[] invu;
 
-    if (mPow) {
+    if (mPow != nullptr) {
         for (int n = 0; n < UniSubNmax; n++) {
-            if (mPow[n]) {
+            if (mPow[n] != nullptr) {
                 for (int i = 0; i < Nstate; i++) {
                     delete[] mPow[n][i];
                 }
@@ -218,7 +218,7 @@ int SubMatrix::Diagonalise() {
 
     diagflag = true;
 
-    return failed;
+    return static_cast<int>(failed);
 }
 
 
@@ -261,7 +261,9 @@ double** SubMatrix::GetEigenVect() {
 }
 
 double** SubMatrix::GetInvEigenVect() {
-    if (!diagflag) Diagonalise();
+    if (!diagflag) {
+        Diagonalise();
+    }
     return invu;
 }
 
@@ -344,7 +346,7 @@ void SubMatrix::ActivatePowers() {
 void SubMatrix::InactivatePowers() {
     if (powflag) {
         for (int n = 0; n < UniSubNmax; n++) {
-            if (mPow[n]) {
+            if (mPow[n] != nullptr) {
                 for (int i = 0; i < Nstate; i++) {
                     delete[] mPow[n][i];
                 }
@@ -361,7 +363,7 @@ void SubMatrix::InactivatePowers() {
 }
 
 void SubMatrix::CreatePowers(int n) {
-    if (!mPow[n]) {
+    if (mPow[n] == nullptr) {
         mPow[n] = new double*[Nstate];
         for (int i = 0; i < Nstate; i++) {
             mPow[n][i] = new double[Nstate];
@@ -381,8 +383,8 @@ double SubMatrix::Power(int n, int i, int j) {
     if (!powflag) {
         ActivatePowers();
     }
-    if (!n) {
-        return (i == j);
+    if (n == 0) {
+        return static_cast<double>(i == j);
     }
     if (n > UniSubNmax) {
         return Stationary(j);
@@ -493,7 +495,7 @@ void SubMatrix::ComputeExponential(double range, double** expo) {
     }
 }
 
-void SubMatrix::ApproachExponential(double range, double** expo, int) {
+void SubMatrix::ApproachExponential(double range, double** expo, int /*unused*/) {
     for (int i = 0; i < Nstate; i++) {
         if (!flagarray[i]) {
             UpdateRow(i);
@@ -502,7 +504,9 @@ void SubMatrix::ApproachExponential(double range, double** expo, int) {
 
     for (int i = 0; i < GetNstate(); i++) {
         double tot = 0;
-        for (int j = 0; j < GetNstate(); j++) tot += Q[i][j];
+        for (int j = 0; j < GetNstate(); j++) {
+            tot += Q[i][j];
+        }
         if (fabs(tot) > 10e-6) {
             cerr << "Error in approachExp : row does not sum to 0 " << endl;
             cerr << "Sum : " << tot;
@@ -516,8 +520,11 @@ void SubMatrix::ApproachExponential(double range, double** expo, int) {
 
 
     double maxdiag = 0;  // Max of diagonal coefficients
-    for (int i = 0; i < GetNstate(); i++)
-        if (maxdiag < fabs(Q[i][i]) * range) maxdiag = fabs(Q[i][i]) * range;
+    for (int i = 0; i < GetNstate(); i++) {
+        if (maxdiag < fabs(Q[i][i]) * range) {
+            maxdiag = fabs(Q[i][i]) * range;
+        }
+    }
 
     if (maxdiag > 300) {
         const double* stat = GetStationary();
@@ -532,7 +539,9 @@ void SubMatrix::ApproachExponential(double range, double** expo, int) {
     else {
         double precision = 0.01;
 
-        while (z < 1024 && maxdiag > z * precision) z *= 2;
+        while (z < 1024 && maxdiag > z * precision) {
+            z *= 2;
+        }
 
         nz++;
         meanz += z;
@@ -540,9 +549,11 @@ void SubMatrix::ApproachExponential(double range, double** expo, int) {
             maxz = z;
         }
 
-        for (int i = 0; i < GetNstate(); i++)
-            for (int j = 0; j < GetNstate(); j++)
+        for (int i = 0; i < GetNstate(); i++) {
+            for (int j = 0; j < GetNstate(); j++) {
                 expo[i][j] = range * Q[i][j] / z + (i == j ? 1 : 0);
+            }
+        }
         // y is now an approximation of exp(Q/z)
 
         this->PowerOf2(expo, z);
@@ -550,7 +561,9 @@ void SubMatrix::ApproachExponential(double range, double** expo, int) {
 
     for (int i = 0; i < GetNstate(); i++) {
         double tot = 0;
-        for (int j = 0; j < GetNstate(); j++) tot += expo[i][j];
+        for (int j = 0; j < GetNstate(); j++) {
+            tot += expo[i][j];
+        }
         if (fabs(tot - 1) > 10e-6) {
             cerr << "Error in approachExp : row does not sum to 1 " << endl;
             cerr << "Sum : " << tot << endl;
@@ -578,7 +591,9 @@ void SubMatrix::ApproachExponential(double range, double** expo, int) {
 
 
 void SubMatrix::PowerOf2(double** y, int z) {
-    if (z == 1) return;
+    if (z == 1) {
+        return;
+    }
     for (int i = 0; i < GetNstate(); i++) {
         for (int j = 0; j < GetNstate(); j++) {
             aux[i][j] = 0;
@@ -588,7 +603,9 @@ void SubMatrix::PowerOf2(double** y, int z) {
         }
     }
     for (int i = 0; i < GetNstate(); i++) {
-        for (int j = 0; j < GetNstate(); j++) y[i][j] = aux[i][j];
+        for (int j = 0; j < GetNstate(); j++) {
+            y[i][j] = aux[i][j];
+        }
     }
     PowerOf2(y, z / 2);
 }

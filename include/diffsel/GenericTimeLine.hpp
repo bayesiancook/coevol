@@ -39,7 +39,8 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
         ValueYounger = (*Younger).second;
         if ((*Younger).first == abstime) {
             return ValueYounger;
-        } else if (Younger == TimesAndValues[TimeLineIndex].begin()) {
+        }
+        if (Younger == TimesAndValues[TimeLineIndex].begin()) {
             return ValueYounger;
         } else if (Older == TimesAndValues[TimeLineIndex].end()) {
             Older--;

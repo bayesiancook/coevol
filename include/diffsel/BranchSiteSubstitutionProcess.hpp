@@ -30,12 +30,12 @@ class BranchSiteSubstitutionProcess {
     int DrawFiniteTime(int state);
     int DrawStationary();
 
-    void GetFiniteTimeTransitionProb(int state, double* down);
+    void GetFiniteTimeTransitionProb(int state, double* p);
 
     double GetFiniteTimeTransitionProb(int stateup, int statedown);
 
     double DrawWaitingTime(int state);
-    double DrawWaitingTimeGivenAtLeastOne(int state, double time);
+    double DrawWaitingTimeGivenAtLeastOne(int state, double totaltime);
     int DrawOneStep(int state);
 
     double WaitingTimeLogProb(int state, double time);
@@ -45,8 +45,8 @@ class BranchSiteSubstitutionProcess {
     double ReducedOneStepLogProb(int stateup, int statedown);
 
     int DrawUniformizedTransition(int state, int statedown, int n);
-    int DrawUniformizedSubstitutionNumber(int state, int statedown);
-    bool CheckUniformizedSubstitutionNumber(int state, int statedown);
+    int DrawUniformizedSubstitutionNumber(int stateup, int statedown);
+    bool CheckUniformizedSubstitutionNumber(int stateup, int statedown);
 };
 
 
@@ -194,7 +194,7 @@ inline bool BranchSiteSubstitutionProcess::CheckUniformizedSubstitutionNumber(in
     double mu = GetSubMatrix()->GetUniformizationMu();
     double fact = exp(-efflength * mu);
     int m = 0;
-    double total = (stateup == statedown) * fact;
+    double total = static_cast<double>(stateup == statedown) * fact;
     while ((m < SubMatrix::UniSubNmax)) {
         m++;
         fact *= mu * efflength / m;
@@ -219,7 +219,7 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber(int 
     double mu = GetSubMatrix()->GetUniformizationMu();
     double fact = exp(-efflength * mu);
     int m = 0;
-    double total = (stateup == statedown) * fact;
+    double total = static_cast<double>(stateup == statedown) * fact;
     double q = Random::Uniform() * Z;
 
     while ((m < SubMatrix::UniSubNmax) && (total < q)) {

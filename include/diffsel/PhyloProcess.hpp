@@ -125,7 +125,7 @@ class PhyloProcess : public MCMC {
     Link* GetRoot();
     TaxonSet* GetTaxonSet();
 
-    void SetData(SequenceAlignment* data);
+    void SetData(SequenceAlignment* indata);
     virtual void Unfold();
 
     void SetName(string inname);
@@ -137,18 +137,19 @@ class PhyloProcess : public MCMC {
 
     bool isMissing(const Link* link, int site) {
         if ((!missingmap[link->GetNode()][site]) && (!missingmap[link->Out()->GetNode()][site]) &&
-            (pathmap[link->GetBranch()]) && (!pathmap[link->GetBranch()][site])) {
+            ((pathmap[link->GetBranch()]) != nullptr) &&
+            (pathmap[link->GetBranch()][site] == nullptr)) {
             cerr << "error in is missing\n";
             exit(1);
         }
         return (missingmap[link->GetNode()][site] || missingmap[link->Out()->GetNode()][site]);
     }
 
-    bool isMissing(const Branch* branch, int site) { return (!pathmap[branch][site]); }
+    bool isMissing(const Branch* branch, int site) { return (pathmap[branch][site] == nullptr); }
 
     void CreateMissingMap();
     void RecursiveCreateMissingMap(const Link* from);
-    bool FillMissingMap(const Link* from, int site);
+    bool FillMissingMap(const Link* from, int i);
     void ComputeTotalMissingPerSite(const Link* from);
 
     double* GetCondLikelihood(const Link* from) { return condlmap[from]; }
@@ -176,19 +177,19 @@ class PhyloProcess : public MCMC {
 
     void Cleanup();
 
-    void RecursiveCreate(const Link* link);
-    void RecursiveDelete(const Link* link);
+    void RecursiveCreate(const Link* from);
+    void RecursiveDelete(const Link* from);
 
-    void RecursiveCreateTBL(const Link* link, int innstate);
-    void RecursiveDeleteTBL(const Link* link);
+    void RecursiveCreateTBL(const Link* from, int innstate);
+    void RecursiveDeleteTBL(const Link* from);
 
-    void Pruning(const Link* link, int site);
-    void ResampleSub(const Link* link, int site);
+    void Pruning(const Link* from, int site);
+    void ResampleSub(const Link* from, int site);
     void ResampleState();
     void ResampleState(int site);
-    void PruningAncestral(const Link* link, int site);
-    double RecordPruningAncestralLogProb(const Link* link, int site);
-    void PriorSample(const Link* link, int site, bool rootprior);
+    void PruningAncestral(const Link* from, int site);
+    double RecordPruningAncestralLogProb(const Link* from, int site);
+    void PriorSample(const Link* from, int site, bool rootprior);
     void PriorSample();
     void RootPosteriorDraw(int site);
 
@@ -240,7 +241,9 @@ class PhyloProcess : public MCMC {
 
     // to be overriden in Metropolis Hastings PhyloProcess classes
     // EmpiricalSubMatrix* GetProposalMatrix(const Branch* branch, int site)	{
-    virtual SubMatrix* GetProposalMatrix(const Branch*, int) { return nullptr; }
+    virtual SubMatrix* GetProposalMatrix(const Branch* /*unused*/, int /*unused*/) {
+        return nullptr;
+    }
 
     void BackupNodeStates(const Link* from, int site);
     void RestoreNodeStates(const Link* from, int site);
@@ -303,7 +306,7 @@ inline int PhyloProcess::GetNstate(int site) {
 }
 
 inline RandomBranchSitePath* PhyloProcess::GetPath(const Branch* branch, int site) {
-    if (!pathmap[branch][site]) {
+    if (pathmap[branch][site] == nullptr) {
         cerr << "error in phyloprocess::getpath: null path\n";
         exit(1);
     }

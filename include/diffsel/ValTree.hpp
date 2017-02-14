@@ -30,7 +30,7 @@ class _BranchValPtrTree : public virtual AbstractTree {
     V* GetBranchVal(const Branch* branch) { return branchval[branch]; }
 
     void SetBranchVal(const Branch* branch, V* in) {
-        if ((!WithRoot()) && (!branch)) {
+        if ((!WithRoot()) && (branch == nullptr)) {
             cerr << "error in _BranchValPtrTree: null branch pointer\n";
             throw;
         }

@@ -20,17 +20,17 @@ double NewickTree::ToStreamSimplified(ostream& os, const Link* from) const {
             double tot = ToStreamSimplified(os, from->Next()->Out());
             tot += atof(GetBranchName(from).c_str());
             return tot;
-        } else {
-            os << '(';
-            for (const Link* link = from->Next(); link != from; link = link->Next()) {
-                double tmp = ToStreamSimplified(os, link->Out());
-                os << ':' << tmp;
-                if (link->Next() != from) {
-                    os << ',';
-                }
-            }
-            os << ')';
         }
+        os << '(';
+        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+            double tmp = ToStreamSimplified(os, link->Out());
+            os << ':' << tmp;
+            if (link->Next() != from) {
+                os << ',';
+            }
+        }
+        os << ')';
+
     } else {
     }
     os << GetNodeName(from);
@@ -137,7 +137,7 @@ void Tree::RecursiveDelete(Link* from) {
 */
 
 Tree::~Tree() {
-    if (root) {
+    if (root != nullptr) {
         RecursiveDelete(root);
         root = nullptr;
     }
@@ -226,26 +226,25 @@ bool Tree::RegisterWith(const TaxonSet* taxset, Link* from, int& tot) {
             tot++;
         }
         return (i != -1);
-    } else {
-        Link* previous = from;
-        while (previous->Next() != from) {
-            if (RegisterWith(taxset, previous->Next()->Out(), tot)) {
-                previous = previous->Next();
-            } else {
-                // cout << "delete !!\n";
-                DeleteNextLeaf(previous);
-            }
-        }
-        if (!from) {
-            cerr << "from is null\n";
-            exit(1);
-        }
-        if (from->isUnary()) {
-            // cerr << "DELETE UNARY NODE\n";
-            DeleteUnaryNode(from);
-        }
-        return (!from->isLeaf());
     }
+    Link* previous = from;
+    while (previous->Next() != from) {
+        if (RegisterWith(taxset, previous->Next()->Out(), tot)) {
+            previous = previous->Next();
+        } else {
+            // cout << "delete !!\n";
+            DeleteNextLeaf(previous);
+        }
+    }
+    if (from == nullptr) {
+        cerr << "from is null\n";
+        exit(1);
+    }
+    if (from->isUnary()) {
+        // cerr << "DELETE UNARY NODE\n";
+        DeleteUnaryNode(from);
+    }
+    return (!from->isLeaf());
 }
 
 
@@ -261,13 +260,15 @@ Tree::Tree(string filename) {
 void Tree::ReadFromStream(istream& is) {
     string expr = "";
     int cont = 1;
-    while (cont) {
+    while (cont != 0) {
         string s;
         is >> s;
         unsigned int k = 0;
-        while ((k < s.length()) && (s[k] != ';')) k++;
+        while ((k < s.length()) && (s[k] != ';')) {
+            k++;
+        }
         expr += s.substr(0, k);
-        cont = (!is.eof()) && (k == s.length());
+        cont = static_cast<int>((!is.eof()) && (k == s.length()));
     }
     SetRoot(ParseGroup(expr, nullptr));
 }
@@ -282,9 +283,13 @@ Link* Tree::ParseList(string input, Node* node) {
         int b = 0;
         while (k < n) {
             char c = input[k];
-            if (c == '(') brack++;
-            if (c == ')') brack--;
-            if ((!brack) && (c == ',')) {
+            if (c == '(') {
+                brack++;
+            }
+            if (c == ')') {
+                brack--;
+            }
+            if ((brack == 0) && (c == ',')) {
                 lst.push_back((string)(input.substr(b, k - b)));
                 b = k + 1;
             }
@@ -297,7 +302,7 @@ Link* Tree::ParseList(string input, Node* node) {
             }
             k++;
         }
-        if (brack) {
+        if (brack != 0) {
             cout << "in parse list : too many (\n";
             cout << input << '\n';
             throw;
@@ -334,13 +339,17 @@ Link* Tree::ParseGroup(string input, Link* from) {
         if (input[0] == '(') {
             int brack = 1;
             k = 1;
-            while ((k < input.length()) && brack) {
+            while ((k < input.length()) && (brack != 0)) {
                 char c = input[k];
-                if (c == '(') brack++;
-                if (c == ')') brack--;
+                if (c == '(') {
+                    brack++;
+                }
+                if (c == ')') {
+                    brack--;
+                }
                 k++;
             }
-            if (brack) {
+            if (brack != 0) {
                 cout << "in parse group: too many (\n";
                 cout << input << '\n';
                 throw;
@@ -349,7 +358,9 @@ Link* Tree::ParseGroup(string input, Link* from) {
         }
 
         int b = k;
-        while ((k < input.length()) && (input[k] != ':')) k++;
+        while ((k < input.length()) && (input[k] != ':')) {
+            k++;
+        }
         string nodeval = input.substr(b, k - b);
 
         string branchval = "";
@@ -368,7 +379,7 @@ Link* Tree::ParseGroup(string input, Link* from) {
             link = new Link;
             link->SetNode(node);
         }
-        if (from) {
+        if (from != nullptr) {
             Branch* branch = new Branch(branchval);
             link->SetBranch(branch);
             from->SetBranch(branch);
@@ -444,19 +455,19 @@ const Link* Tree::ChooseInternalNode(const Link* from, const Link*& fromup, int&
         return nullptr;
     }
     const Link* ret = nullptr;
-    if (!n) {
+    if (n == 0) {
         ret = from;
     } else {
         n--;
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
-            if (!ret) {
+            if (ret == nullptr) {
                 const Link* tmp = ChooseInternalNode(link->Out(), fromup, n);
-                if (tmp) {
+                if (tmp != nullptr) {
                     ret = tmp;
                 }
             }
         }
-        if (ret && (!fromup)) {
+        if ((ret != nullptr) && (fromup == nullptr)) {
             fromup = from;
         }
     }
@@ -473,17 +484,18 @@ int Tree::CountNodes(const Link* from) {
 
 const Link* Tree::ChooseNode(const Link* from, const Link*& fromup, int& n) {
     const Link* ret = nullptr;
-    if (!n) {
+    if (n == 0) {
         ret = from;
     } else {
         n--;
-        for (const Link* link = from->Next(); (!ret && (link != from)); link = link->Next()) {
+        for (const Link* link = from->Next(); ((ret == nullptr) && (link != from));
+             link = link->Next()) {
             const Link* tmp = ChooseNode(link->Out(), fromup, n);
-            if (tmp) {
+            if (tmp != nullptr) {
                 ret = tmp;
             }
         }
-        if (ret && (!fromup)) {
+        if ((ret != nullptr) && (fromup == nullptr)) {
             fromup = from;
         }
     }

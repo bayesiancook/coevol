@@ -1,7 +1,7 @@
 #include "diffsel/PhyloProcess.hpp"
 
 int PhyloProcess::GetMaxNstate() {
-    if (!MaxNstate) {
+    if (MaxNstate == 0) {
         MaxNstate = 0;
         for (int i = 0; i < GetNsite(); i++) {
             if (MaxNstate < GetNstate(i)) {
@@ -62,7 +62,7 @@ bool PhyloProcess::FillMissingMap(const Link* from, int i) {
     }
     bool allmiss = true;
     for (const Link* link = from->Next(); link != from; link = link->Next()) {
-        allmiss &= FillMissingMap(link->Out(), i);
+        allmiss &= static_cast<int>(FillMissingMap(link->Out(), i));
     }
     missingmap[from->GetNode()][i] = allmiss;
     return allmiss;
@@ -295,7 +295,7 @@ void PhyloProcess::Pruning(const Link* from, int site) {
                     t[k] = 0;
                 }
             }
-            if (!totcomp) {
+            if (totcomp == 0) {
                 cerr << "error : no compatibility\n";
                 cerr << GetData(from->GetNode()->GetIndex(), site) << '\n';
                 exit(1);
@@ -628,7 +628,7 @@ void PhyloProcess::ResampleState(int site) {
 void PhyloProcess::ResampleSub() {
     pruningchrono.Start();
     for (int i = 0; i < GetNsite(); i++) {
-        if (sitearray[i]) {
+        if (sitearray[i] != 0) {
             if (!isMissing(GetRoot()->GetNode(), i)) {
                 ResampleState(i);
             }
@@ -638,7 +638,7 @@ void PhyloProcess::ResampleSub() {
 
     resamplechrono.Start();
     for (int i = 0; i < GetNsite(); i++) {
-        if (sitearray[i]) {
+        if (sitearray[i] != 0) {
             if (!isMissing(GetRoot()->GetNode(), i)) {
                 ResampleSub(GetRoot(), i);
             }
@@ -818,7 +818,7 @@ const Link* PhyloProcess::ChooseNodeSet(const Link* from, double s01, double s10
     if (sw < 2) {
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             const Link* tmp = ChooseNodeSet(link->Out(), s01, s10, sw);
-            if (!ret && tmp) {
+            if ((ret == nullptr) && (tmp != nullptr)) {
                 ret = tmp;
             }
         }
@@ -851,7 +851,7 @@ void PhyloProcess::PostPredSample(int site, bool rootprior) {
 
 double PhyloProcess::Move(double tuning) {
     for (int i = 0; i < GetNsite(); i++) {
-        sitearray[i] = (Random::Uniform() < tuning);
+        sitearray[i] = static_cast<int>(Random::Uniform() < tuning);
     }
     ResampleSub();
     return 1;

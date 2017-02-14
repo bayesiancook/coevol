@@ -13,7 +13,7 @@ StateSpace* RandomBranchSitePath::GetStateSpace() { return GetPhyloProcess()->Ge
 
 bool RandomBranchSitePath::SampleBranchMapping() { return myprocess->SampleBranchMapping(); }
 
-void RandomBranchSitePath::SetUp(RandomBranchSitePath*) {
+void RandomBranchSitePath::SetUp(RandomBranchSitePath* /*unused*/) {
     // pathup = inup;
     // Register(up);
 }
@@ -152,7 +152,7 @@ double RandomBranchSitePath::PathLogProb() {
     }
     double total = 0;
     Plink* link = init;
-    while (link) {
+    while (link != nullptr) {
         if (link != last) {
             total += ReducedWaitingTimeLogProb(link->GetState(), GetAbsoluteTime(link));
             total += ReducedOneStepLogProb(link->GetState(), link->next->GetState());

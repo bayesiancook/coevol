@@ -109,7 +109,7 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
         return R[i][j];
     }
 
-    void BackwardPropagate(const double* down, double* up, double) override {
+    void BackwardPropagate(const double* down, double* up, double /*length*/) override {
         if (!matflag) {
             ComputeArrayAndStat();
         }
@@ -123,7 +123,7 @@ class TransitionMatrix : public virtual AbstractTransitionMatrix {
         up[Nstate] = down[Nstate];
     }
 
-    void ForwardPropagate(const double* up, double* down, double) override {
+    void ForwardPropagate(const double* up, double* down, double /*length*/) override {
         cerr << "in forward\n";
         exit(1);
         if (!matflag) {
@@ -222,12 +222,12 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
 
     static double GetMeanUni() { return ((double)nunimax) / nuni; }
 
-    SubMatrix(int Nstate, bool innormalise = false);
+    SubMatrix(int inNstate, bool innormalise = false);
     ~SubMatrix() override;
 
     void Create();
 
-    double operator()(int, int) override;
+    double operator()(int /*i*/, int /*j*/) override;
     const double* GetRow(int i) override;
 
     const double* GetStationary() override;
@@ -259,8 +259,8 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
 
     int GetDiagStat() { return ndiagfailed; }
 
-    void BackwardPropagate(const double* down, double* up, double length) override;
-    void ForwardPropagate(const double* up, double* down, double length) override;
+    void BackwardPropagate(const double* up, double* down, double length) override;
+    void ForwardPropagate(const double* down, double* up, double length) override;
     // virtual void     FiniteTime(int i0, double* down, double length);
 
     double** GetQ() { return Q; }
@@ -278,7 +278,7 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
     void UpdateStationary();
 
 
-    void ComputePowers(int n);
+    void ComputePowers(int N);
     void CreatePowers(int n);
 
     bool ArrayUpdated();
@@ -377,7 +377,7 @@ inline void SubMatrix::CorruptMatrix() {
 inline bool SubMatrix::ArrayUpdated() {
     bool qflag = true;
     for (int k = 0; k < Nstate; k++) {
-        qflag &= flagarray[k];
+        qflag &= static_cast<int>(flagarray[k]);
     }
     return qflag;
 }

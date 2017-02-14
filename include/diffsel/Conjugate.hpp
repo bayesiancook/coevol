@@ -88,7 +88,9 @@ class ConjSampling {
 
     bool isUpActive() {
         auto i = conjugate_up.begin();
-        while ((i != conjugate_up.end()) && (!(*i)->isActive())) i++;
+        while ((i != conjugate_up.end()) && (!(*i)->isActive())) {
+            i++;
+        }
         return (i != conjugate_up.end());
     }
 
@@ -128,7 +130,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     // (all of which are already accounted for through the sufficient statistic)
     //
 
-    virtual void FullCorrupt(std::map<DAGnode*, int>&) {
+    virtual void FullCorrupt(std::map<DAGnode*, int>& /*unused*/) {
         if (!isActive()) {
             Dvar<T>::Corrupt(true);
         } else {
@@ -162,7 +164,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual double FullUpdate(bool) { return Update(); }
+    virtual double FullUpdate(bool /*unused*/) { return Update(); }
 
     virtual double Update() {
         double ret = 0;
@@ -280,7 +282,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         std::cerr << "conjugate notify\n";
         exit(1);
         corrupt_counter--;
-        if (!corrupt_counter) {
+        if (corrupt_counter == 0) {
             this->flag = false;
             ComputeSufficientStatistic();
             // return  this->localUpdate();
@@ -298,7 +300,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
             std::cerr << "error in Conjugate corrupt\n";
             exit(1);
         }
-        if (!corrupt_counter) {
+        if (corrupt_counter == 0) {
             if (bk) {
                 SaveSufficientStatistic();
             }
@@ -316,7 +318,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         std::cerr << "conjugate notify\n";
         exit(1);
         corrupt_counter--;
-        if (!corrupt_counter) {
+        if (corrupt_counter == 0) {
             RestoreSufficientStatistic();
             this->localRestore();
             logprob = bklogprob;
@@ -343,9 +345,9 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         if (!active_flag) {
             for (auto i = this->down.begin(); i != this->down.end(); i++) {
                 ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
-                if (!p) {
+                if (p == nullptr) {
                     Dnode* q = dynamic_cast<Dnode*>(*i);
-                    if (!q) {
+                    if (q == nullptr) {
                         std::cerr
                             << "error : non conjugate child nodes, cannot activate sufficient "
                                "statistic\n";
@@ -353,7 +355,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
                         exit(1);
                     }
                 }
-                if (p) {
+                if (p != nullptr) {
                     p->NotifyActivateSufficientStatistic(this);
                 }
             }
@@ -380,7 +382,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
                 ResetSufficientStatistic();
                 for (auto i = this->down.begin(); i != this->down.end(); i++) {
                     ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
-                    if (p) {
+                    if (p != nullptr) {
                         p->AddSufficientStatistic(this);
                     }
                 }
@@ -470,7 +472,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
     //
     double ConjugateNotifyUpdate() override {
         corrupt_counter--;
-        if (!corrupt_counter) {
+        if (corrupt_counter == 0) {
             this->flag = false;
             ComputeSufficientStatistic();
             return this->localUpdate();
@@ -483,7 +485,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
             std::cerr << "error in Conjugate corrupt\n";
             exit(1);
         }
-        if (!corrupt_counter) {
+        if (corrupt_counter == 0) {
             if (bk) {
                 SaveSufficientStatistic();
             }
@@ -496,7 +498,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
 
     void ConjugateNotifyRestore() override {
         corrupt_counter--;
-        if (!corrupt_counter) {
+        if (corrupt_counter == 0) {
             RestoreSufficientStatistic();
             this->localRestore();
         }
@@ -533,7 +535,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
                       exit(1);
                       }
                       }*/
-                    if (p) {
+                    if (p != nullptr) {
                         p->NotifyActivateSufficientStatistic(this);
                     }
                 }
@@ -560,7 +562,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
                 ResetSufficientStatistic();
                 for (auto i = this->down.begin(); i != this->down.end(); i++) {
                     ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
-                    if (p) {
+                    if (p != nullptr) {
                         p->AddSufficientStatistic(this);
                     }
                 }
