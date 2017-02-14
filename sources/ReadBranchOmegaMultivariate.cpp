@@ -1571,6 +1571,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		delete[] tab;
 		delete[] trueval;
 	}
+	
+	void ReadNe() {
+	}	 
 
 };
 
@@ -1636,7 +1639,8 @@ int main(int argc, char* argv[])	{
 	string taxpairfile = "";
 
 	bool postdist = false;
-
+	bool Ne = false;
+	
 	try	{
 
 		if (argc == 1)	{
@@ -1672,6 +1676,9 @@ int main(int argc, char* argv[])	{
 			else if (s == "-postdist")	{
 				postdist = true;
 			}
+			else if (s == "-Ne") {
+				Ne = true;
+			}	
 			else if (s == "-kappa")	{
 				kappa = true;
 			}
@@ -1889,7 +1896,11 @@ int main(int argc, char* argv[])	{
 		sample.ReadIC();
 		exit(1);
 	}
-
+	
+	if (Ne) {
+		sample.ReadNe();
+		exit(1);
+	}	
 	sample.Read(printlog,printmean,printci,printstdev,withleaf,withinternal,mulreg,tex,x,y,nodescale,nodepower,barwidth,fontsize,bubbletext,withheader,leafnameshift,meanreg,stdevreg,postdist);
 
 }
