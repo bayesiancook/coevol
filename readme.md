@@ -2,23 +2,23 @@
 
 ## Compilation ##
 
-make
+`make`
 : Builds mini-coevol (requires cmake); builds in the `./_build` folder.
 
-make clean
+`make clean`
 : Cleans the coevol directory; removes the `./_build` folder among other things.
 
-make cmake
+`make cmake`
 : Runs cmake to build the makefile and `./_build` folder but does not actually compile.
 
 
 ## Testing ##
 
-make test
+`make test`
 : Runs a two-step test. First, `poisson_gamma` is run and its output is displayed using less. Then `diffsel` is run; as it is very long, it should be interrupted after checking that it seems to run fine.
 
-make dot
-: Runs `poisson_gamma` in order to get a graph representation of the graphical model (requires `graphviz̀` and `evince`).
+`make dot`
+: Runs `poisson_gamma` in order to get a graph representation of the graphical model (requires `graphviz` and `evince`).
 
 
 ## Formatting ##
