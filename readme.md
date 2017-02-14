@@ -21,7 +21,7 @@
 : Runs `poisson_gamma` in order to display a graph representation of the graphical model (requires `graphviz` and `evince`).
 
 
-## Formatting ##
+## Code quality ##
 
 This code is formatted according to a specific style described in the `.clang-format` file (mostly Google-style with bigger indentation).
 
