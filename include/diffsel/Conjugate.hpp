@@ -401,7 +401,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
   public:
     // subclasses will diamond-inherit from Rvar<T>
     // they will HAVE to reprogram logProb()
-    virtual double logProb() = 0;
+    virtual double logProb() override = 0;
 
     // Corrupt/Update/Restore methods
 
@@ -411,7 +411,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
     // (all of which are already accounted for through the sufficient statistic)
     //
 
-    virtual void Corrupt(bool bk) {
+    void Corrupt(bool bk) override {
         if (!isActive()) {
             Rvar<T>::Corrupt(bk);
         } else {
@@ -424,7 +424,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         }
     }
 
-    virtual double Update() {
+    double Update() override {
         double ret = 0;
         if (!isActive()) {
             ret = Rvar<T>::Update();
@@ -442,7 +442,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         return ret;
     }
 
-    virtual void Restore() {
+    void Restore() override {
         if (!isActive()) {
             Rvar<T>::Restore();
         } else {
