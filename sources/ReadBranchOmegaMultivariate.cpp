@@ -1572,7 +1572,122 @@ class BranchOmegaMultivariateSample : public Sample	{
 		delete[] trueval;
 	}
 	
-	void ReadNe() {
+	void ReadNe(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, double meanreg, double stdevreg)	{
+
+		int Ncont = GetModel()->Ncont;
+		int dim = GetModel()->GetCovMatrix()->GetDim();
+
+		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
+		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+
+		// MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		// double alpha[dim];
+		// definir alpha
+
+		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
+		for (int k=0; k<Ncont; k++)	{
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		}
+
+		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
+		// MeanCovMatrix*  maty = new MeanCovMatrix(dim);
+
+		// cycle over the sample
+		for (int i=0; i<size; i++)	{
+			cerr << '.';
+
+			// get next point -> will be stored into "model", and thus, will be accessible through GetModel()
+
+			GetNextPoint();
+
+			GetModel()->GetSynRateTree()->specialUpdate();
+			GetModel()->GetChronogram()->specialUpdate();
+
+			meanchrono->Add(GetModel()->GetChronogram());
+
+			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);
+			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 1);
+
+			// double t0 = GetModel()->GetRootAge();
+			// recalculer beta
+			// double beta = ...
+			// meanNe->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(),alpha,beta);
+
+			for (int k=0; k<Ncont; k++)	{
+				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), GetModel()->GetL()+k);
+			}
+
+			CovMatrix& m = *(GetModel()->GetCovMatrix());
+			mat->Add(&m);
+
+			// double my[dim][dim];
+			// for loop ... 
+			// maty->Add(my,dim);
+		}
+		cerr << '\n';
+		cerr << "normalise\n";
+
+		mat->Normalize();
+		ofstream cout((GetName() + ".cov").c_str());
+
+		cout << *mat;
+
+		cerr << "covariance matrix in " << name << ".cov\n";
+		cerr << '\n';
+
+		meanchrono->Normalise();
+		ofstream chos((GetName() + ".postmeandates.tre").c_str());
+		meanchrono->ToStream(chos);
+
+		ofstream cchos((GetName() + ".postmeandates.tab").c_str());
+		meanchrono->Tabulate(cchos);
+
+		meanomega->Normalise();
+		ofstream oos((GetName() + ".postmeanomega.tre").c_str());
+		meanomega->ToStream(oos);
+		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
+		cerr << "pp of mean leaf values > root value : " << meanomega->GetPPLeafRoot() << '\n';
+
+		/*
+		meanNe->Normalise();
+		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
+		meanNe->ToStream(Neos);
+		...
+		*/
+
+		meansynrate->Normalise();
+		ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
+		meansynrate->ToStream(sos);
+		cerr << "reconstructed variations of Ks in " << name << ".postmeansynrate.tre\n";
+		cerr << "pp of mean leaf values > root value : " << meansynrate->GetPPLeafRoot() << '\n';
+
+		for (int k=0; k<Ncont; k++)	{
+			tree[k]->Normalise();
+			ostringstream s;
+			s << GetName() << ".postmean" << k+1 << ".tre";
+			ofstream os(s.str().c_str());
+			tree[k]->ToStream(os);
+			cerr << "reconstructed variations of continuous character # " << k+1 << " in "  << name << ".postmean" << k+1 << ".tre\n";
+			cerr << "pp of mean leaf values > root value : " << tree[k]->GetPPLeafRoot() << '\n';
+		}
+
+		ofstream ssos((GetName() + ".postmeansynrate.tab").c_str());
+		meansynrate->Tabulate(ssos);
+		ssos.close();
+
+		ofstream ooos((GetName() + ".postmeanomega.tab").c_str());
+		meanomega->Tabulate(ooos);
+		ooos.close();
+
+		for (int k=0; k<Ncont; k++)	{
+			ostringstream s;
+			s << GetName() << ".postmean" << k+1 << ".tab";
+			ofstream os(s.str().c_str());
+			tree[k]->Tabulate(os);
+		}
+
+		cerr << '\n';
 	}	 
 
 };
@@ -1898,7 +2013,7 @@ int main(int argc, char* argv[])	{
 	}
 	
 	if (Ne) {
-		sample.ReadNe();
+		sample.ReadNe(printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
 		exit(1);
 	}	
 	sample.Read(printlog,printmean,printci,printstdev,withleaf,withinternal,mulreg,tex,x,y,nodescale,nodepower,barwidth,fontsize,bubbletext,withheader,leafnameshift,meanreg,stdevreg,postdist);
