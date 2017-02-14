@@ -18,7 +18,7 @@
 : Runs a two-step test. First, `poisson_gamma` is run and its output is displayed using `less`. Then `diffsel` is run; as it is very long, it should be interrupted after checking that it seems to run fine.
 
 `make dot`
-: Runs `poisson_gamma` in order to get a graph representation of the graphical model (requires `graphviz` and `evince`).
+: Runs `poisson_gamma` in order to display a graph representation of the graphical model (requires `graphviz` and `evince`).
 
 
 ## Formatting ##
@@ -26,7 +26,7 @@
 This code is formatted according to a specific style described in the `.clang-format` file (mostly Google-style with bigger indentation).
 
 `make format`
-: Automatically formats all the code according to the style file (this requires clang-format).
+: Automatically formats all the code according to the style file (this requires `clang-format`).
 
 `make check`
-: Runs clang-check on all the code (this requires clang-check). This can give non-trivial warnings that `gcc` usually doesn't catch.
+: Runs clang-check on all the code (this requires `clang-check`). This can give non-trivial warnings that `gcc` usually doesn't catch.
