@@ -1656,16 +1656,25 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == 0) {
-						mas1[i][j] = m[i][0]+m[i][indice1]-m[i][indice2];
+						mas1[i][j] = m[i][indice2]-m[i][0]-m[i][indice1];
 					}	
-					else if (i != 0 && i == j) {
-						mas1[i][j] = 1;
-					}
 					else {	
-					mas1[i][j] = 0;
+					mas1[i][j] = m[i][j];
 					}
 				}
 			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == 0) {
+						my1[i][j] = mas1[i][indice2]-mas1[i][j]-mas1[i][indice1];
+					}	
+					else {	
+					my1[i][j] = mas1[i][j];
+					}
+				}
+			}
+			
 			
 			double mas2[dim][dim];
 			double my2[dim][dim];
@@ -1673,17 +1682,25 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == indice2) {
-						mas2[i][j] = m[i][0]+m[i][indice1]-m[i][indice2];
+						mas2[i][j] = m[i][indice2]-m[i][0]-m[i][indice1];
 					}	
-					else if (i != indice2 && i == j) {
-						mas2[i][j] = 1;
-					}
 					else {	
-					mas2[i][j] = 0;
+					mas2[i][j] = m[i][j];
 					}
 				}
 			}
 			
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == indice2) {
+						my2[i][j] = mas2[i][indice2]-mas2[i][j]-mas2[i][indice1];
+					}	
+					else {	
+					my2[i][j] = mas2[i][j];
+					}
+				}
+			}
 			// for loop ... 
 			// maty->Add(my,dim);
 		}
