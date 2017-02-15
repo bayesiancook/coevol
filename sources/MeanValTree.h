@@ -400,6 +400,23 @@ class MeanExpNormTree : public NewickTree {
 	double GetPPLeafRoot()	{
 		return ppleafroot;
 	}
+	
+	
+	void AddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, double alpha[], double beta, int dim, Var<Real>* Offset = 0)	{
+		meanleaf = 0;
+		meanroot = 0;
+		leafsize = 0;
+		double offset = 0;
+		if (Offset)	{
+			offset = Offset->val();
+		}
+		RecursiveAddNe(sample, chronogram, GetTree()->GetRoot(), alpha, beta, dim, offset);
+		meanleaf /= leafsize;
+		if (meanleaf > meanroot)	{
+			ppleafroot++;
+		}
+		size++;
+	}
 
 	void Add(NodeVarTree<RealVector>* sample, LengthTree* chronogram, int index, Var<Real>* Offset = 0)	{
 		meanleaf = 0;
@@ -652,6 +669,39 @@ class MeanExpNormTree : public NewickTree {
 			vartime[link->GetBranch()] += time * time;
 		}
 	}
+	
+	
+	void RecursiveAddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, double alpha[], double beta, int dim, double offset)	{
+		double tmp(0);
+		for (int i; i<dim; i++) {
+			if (alpha[i] != 0) {
+				tmp += alpha[i] * (* sample->GetNodeVal(from->GetNode()))[i];
+			}
+		}
+		tmp += beta;		
+		tmp += offset;
+		if (from->isRoot())	{
+			meanroot = tmp;
+		}
+		else if (from->isLeaf())	{
+			meanleaf += tmp;
+			leafsize++;
+		}
+		double temp = logit ? exp(tmp) / (1 + exp(tmp)) : exp(tmp);
+		meanlog[from->GetNode()] += tmp;
+		varlog[from->GetNode()] += tmp * tmp;
+		mean[from->GetNode()] += temp;
+		var[from->GetNode()] += temp * temp;
+		dist[from->GetNode()].push_front(tmp);
+
+		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
+			RecursiveAddNe(sample, chronogram, link->Out(), alpha, beta, dim, offset);
+			double time = chronogram->GetBranchVal(link->GetBranch())->val();
+			meantime[link->GetBranch()] += time;
+			vartime[link->GetBranch()] += time * time;
+		}
+	}
+	
 
 	void RecursiveAdd(NodeVarTree<RealVector>* sample, LengthTree* chronogram, int index, double offset, Link* from)	{
 		double tmp = (* sample->GetNodeVal(from->GetNode()))[index];
