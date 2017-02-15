@@ -10,7 +10,7 @@
 
 #include "TexTab.h"
 #include "MeanTimeLine.h"
-
+#include <cmath>
 
 class BranchOmegaMultivariateSample : public Sample	{
 
@@ -1635,10 +1635,11 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);
 			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 1);
 
-			// double t0 = GetModel()->GetRootAge();
-			// recalculer beta
-			// double beta = ...
-			// meanNe->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(),alpha,beta);
+			double t0 = GetModel()->GetRootAge();
+			
+			double beta = log(t0)+log(365)-log(4);
+			
+			meanNe->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(),alpha,beta);
 
 			for (int k=0; k<Ncont; k++)	{
 				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), GetModel()->GetL()+k);
