@@ -15,7 +15,7 @@
 // <chainname>.monitor : monitoring the success rate, time spent in each move, numerical errors, etc
 // <chainname>.run     : put 0 in this file to stop the chain
 
-class ProbModel; // forward declaration
+class ProbModel;  // forward declaration
 
 class Chain {
   public:
