@@ -6,8 +6,6 @@
 #include "ValArray.hpp"
 #include "core/Move.hpp"
 #include "core/RandomTypes.hpp"
-using namespace std;
-
 
 template <class V>
 class IIDArray : public ValPtrArray<Rvar<V> > {
@@ -49,12 +47,15 @@ class IIDArray : public ValPtrArray<Rvar<V> > {
     }
 };
 
+
 template <>
 class IIDArray<PosReal> : public ValPtrArray<Rvar<PosReal> > {
   public:
     IIDArray(int intsize);
-    void Register(DAGnode* in) override;
+    void Register(DAGnode* in) override;  // (VL) in the specific case of PosReal,
+                                          // this overrides a virtual member
 };
+
 
 class BetaIIDArray : public IIDArray<UnitReal> {
   public:
@@ -286,7 +287,7 @@ class NormalIIDArray : public IIDArray<Real> {
     Normal* GetNormal(int site) {
         Normal* n = dynamic_cast<Normal*>(GetVal(site));
         if (n == nullptr) {
-            cerr << "error in NormalIIDArray::GetNormal\n";
+            std::cerr << "error in NormalIIDArray::GetNormal\n";
             exit(1);
         }
         return n;
