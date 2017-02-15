@@ -1617,7 +1617,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		}
 
 		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
-		// MeanCovMatrix*  maty = new MeanCovMatrix(dim);
+		MeanCovMatrix*  maty1 = new MeanCovMatrix(dim);
+		MeanCovMatrix*  maty2 = new MeanCovMatrix(dim);
+
 
 		// cycle over the sample
 		for (int i=0; i<size; i++)	{
