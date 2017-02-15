@@ -1676,12 +1676,13 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meanomega->GetPPLeafRoot() << '\n';
 
-		/*
+		
 		meanNe->Normalise();
 		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
-		meanNe->ToStream(Neos);
-		...
-		*/
+		meanomega->ToStream(Neos);
+		cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
+		cerr << "pp of mean leaf values > root value : " << meanNe->GetPPLeafRoot() << '\n';
+
 
 		meansynrate->Normalise();
 		ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
@@ -1706,6 +1707,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 		ofstream ooos((GetName() + ".postmeanomega.tab").c_str());
 		meanomega->Tabulate(ooos);
 		ooos.close();
+
+		ofstream NeNeos((GetName() + ".postmeanNe.tab").c_str());
+		meanNe->Tabulate(NeNeos);
+		NeNeos.close();
 
 		for (int k=0; k<Ncont; k++)	{
 			ostringstream s;
