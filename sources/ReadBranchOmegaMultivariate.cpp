@@ -1649,8 +1649,41 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			CovMatrix& m = *(GetModel()->GetCovMatrix());
 			mat->Add(&m);
-
-			// double my[dim][dim];
+			
+			double mas1[dim][dim];
+			double my1[dim][dim];
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == 0) {
+						mas1[i][j] = m[i][0]+m[i][indice1]-m[i][indice2];
+					}	
+					else if (i != 0 && i == j) {
+						mas1[i][j] = 1;
+					}
+					else {	
+					mas1[i][j] = 0;
+					}
+				}
+			}
+			
+			double mas2[dim][dim];
+			double my2[dim][dim];
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == indice2) {
+						mas2[i][j] = m[i][0]+m[i][indice1]-m[i][indice2];
+					}	
+					else if (i != indice2 && i == j) {
+						mas2[i][j] = 1;
+					}
+					else {	
+					mas2[i][j] = 0;
+					}
+				}
+			}
+			
 			// for loop ... 
 			// maty->Add(my,dim);
 		}
