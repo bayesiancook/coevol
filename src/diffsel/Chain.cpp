@@ -1,5 +1,6 @@
 #include "diffsel/Chain.hpp"
 #include <iostream>
+#include <fstream>
 #include "core/ProbModel.hpp"
 #include "utils/Chrono.hpp"
 using namespace std;

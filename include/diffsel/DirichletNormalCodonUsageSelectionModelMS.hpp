@@ -616,8 +616,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
     Tree* GetTree() { return tree; }
 
-
-    double Update() {
+    double Update(bool /*check*/ = false) override {
         cerr << "update with phyloprocess\n";
         double ret = ProbModel::Update();
         phyloprocess->Move(1);

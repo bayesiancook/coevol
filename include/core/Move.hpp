@@ -64,6 +64,7 @@ class MCScheduler : public MCUpdate {
     inline double GetMeanTimePerCycle() { return ncycle != 0 ? totaltime / ncycle : 0; }
     inline double GetTotalCycleNumber() { return ncycle; }
 
+    using MCUpdate::ToStream; // (VL) overload is intended
     void ToStream(std::ostream& os, std::ostream& osdetail);
 
     inline void OpenLoop(int n) {
