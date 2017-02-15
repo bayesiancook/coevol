@@ -1,10 +1,7 @@
 #ifndef CHAIN_H
 #define CHAIN_H
 
-#include <cstdlib>
-#include <fstream>
-
-// #include "core/ProbModel.hpp"
+#include <string>
 
 /// Chain is a Monte Carlo Markov Chain
 //  it is responsible for creating a model, applying it to data
@@ -18,7 +15,7 @@
 // <chainname>.monitor : monitoring the success rate, time spent in each move, numerical errors, etc
 // <chainname>.run     : put 0 in this file to stop the chain
 
-class ProbModel;
+class ProbModel; // forward declaration
 
 class Chain {
   public:

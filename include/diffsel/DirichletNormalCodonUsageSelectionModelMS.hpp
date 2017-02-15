@@ -358,8 +358,8 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     SelectionMatrixTree* matrixtree;
     PhyloProcess* phyloprocess;
 
-    double** selectionmean;
-    double accrate;
+    // double** selectionmean;
+    // double accrate;
 
     Dirichlet* codonusageselection;
 

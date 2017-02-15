@@ -1,4 +1,6 @@
-Trees :
+## Phylogeny ##
+
+### Trees ###
 * AbstractTree.hpp
 * AllocationTree.hpp
 * BranchProcess.hpp
@@ -8,7 +10,7 @@ Trees :
 * Tree.hpp
 * ValTree.hpp
 
-Alignments :
+### Alignments ###
 * BiologicalSequences.hpp
 * CodonSequenceAlignment.hpp
 * CodonStateSpace.hpp
@@ -16,28 +18,33 @@ Alignments :
 * SequenceAlignment.hpp
 * SiteMapping.hpp
 
+### Substitution matrices ###
+* EmpiricalSubMatrix.hpp
+* GTRSubMatrix.hpp
+* MSCodonSubMatrix.hpp
+* RandomSubMatrix.hpp
+* SubMatrix.hpp
+
+
+## Proba / stat ##
+* InverseWishartMatrix.hpp
+* ValArray.hpp
+* ProfileConjugatePath.hpp
+* Normal.hpp
+* CovMatrix.hpp
+* ConjugateInverseWishart.hpp
+* Conjugate.hpp
+* IIDNormalIIDArray.hpp
+* IID.hpp
+
 
 Chain.hpp
-Conjugate.hpp
-ConjugateInverseWishart.hpp
 ContinuousData.hpp
-CovMatrix.hpp
 DirichletNormalCodonUsageSelectionModelMS.hpp
-EmpiricalSubMatrix.hpp
-GTRSubMatrix.hpp
 GenericTimeLine.hpp
 GlobalScalingFunction.hpp
-IID.hpp
-IIDNormalIIDArray.hpp
-InverseWishartMatrix.hpp
-MSCodonSubMatrix.hpp
-Normal.hpp
 OneMatrixPhyloProcess.hpp
 PhyloProcess.hpp
-ProfileConjugatePath.hpp
-RandomSubMatrix.hpp
 SelectionPhyloProcess.hpp
 StateSpace.hpp
-SubMatrix.hpp
 TaxonSet.hpp
-ValArray.hpp

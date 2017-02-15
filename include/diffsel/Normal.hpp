@@ -42,7 +42,9 @@ class IIDUniform : public virtual Rvar<RealVector> {
 
     double logProb() override { return 0; }
 
-    virtual double Move(double tuning, int n) {
+    using Rvar<RealVector>::Move; // (VL) overload (method below) is intended
+
+    double Move(double tuning, int n) {
         int dim = GetDim();
         if (!isClamped()) {
             // Metropolis Hastings here
@@ -279,6 +281,8 @@ class IIDNormal : public virtual Rvar<RealVector> {
         }
         return 0;
     }
+
+    using Rvar<RealVector>::Move; // (VL) overload (method below) is intended
 
     virtual double Move(double tuning, int m) {
         if (!isClamped()) {
