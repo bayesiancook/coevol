@@ -10,7 +10,12 @@ set(UTILS src/utils/Chrono.cpp src/utils/linalg.cpp src/utils/Random.cpp)
 add_library (coevol_utils STATIC ${UTILS})
 
 # Core static library
-file(GLOB CORE "src/core/*.cpp")
+set(CORE
+  src/core/BaseType.cpp
+  src/core/DAGnode.cpp
+  src/core/Move.cpp
+  src/core/ProbModel.cpp
+  src/core/RandomTypes.cpp)
 add_library (coevol_core STATIC ${CORE})
 target_compile_features(coevol_core INTERFACE cxx_auto_type)
 target_link_libraries(coevol_core coevol_utils)
