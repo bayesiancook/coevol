@@ -74,7 +74,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 	string GetModelType() {return modeltype;}
 
 	BranchOmegaMultivariateModel* GetModel() {return (BranchOmegaMultivariateModel*) model;}
-
+	
+	
 	ConjugateBranchOmegaMultivariateModel* GetConjugateModel() {
 		ConjugateBranchOmegaMultivariateModel* tmp = dynamic_cast<ConjugateBranchOmegaMultivariateModel*>(model);
 		if (! tmp)	{
@@ -1581,10 +1582,35 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
 		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 
-		// MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-		// double alpha[dim];
-		// definir alpha
-
+		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		
+		double alpha[dim];
+		
+		for (int i=0; i<dim; i++) {
+			alpha[i]=0;
+		}	
+		
+		int indice1(0);
+		int indice2(0);
+		
+		for (int k=0; k<Ncont; k++)	{
+			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity")	{
+				int indice1(k+2);
+			}
+			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
+				int indice2(k+2);
+			}	
+		}
+		
+		if (indice1 == 0 || indice2 == 0) {
+				exit(1);
+			}
+		
+		alpha[0] = 1;
+		alpha[indice1] = -1;
+		alpha[indice2] = 1;
+		
+		
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
 			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
