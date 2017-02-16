@@ -1656,7 +1656,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == 0) {
-						mas1[i][j] = m[i][indice2]-m[i][0]-m[i][indice1];
+						mas1[i][j] = alpha[indice2] * m[i][indice2] + alpha[0] * m[i][0] + alpha[indice1] * m[i][indice1];
 					}	
 					else {	
 					mas1[i][j] = m[i][j];
@@ -1667,7 +1667,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (j == 0) {
-						my1[i][j] = mas1[i][indice2]-mas1[i][j]-mas1[i][indice1];
+						my1[i][j] = alpha[indice2] * mas1[i][indice2] + alpha[0] * mas1[i][j] + alpha[indice1] * mas1[i][indice1];
 					}	
 					else {	
 					my1[i][j] = mas1[i][j];
@@ -1682,7 +1682,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == indice2) {
-						mas2[i][j] = m[i][indice2]-m[i][0]-m[i][indice1];
+						mas2[i][j] = alpha[indice2] * m[i][indice2] + alpha[0] * m[i][0] + alpha[indice1] * m[i][indice1];
 					}	
 					else {	
 					mas2[i][j] = m[i][j];
@@ -1694,7 +1694,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (j == indice2) {
-						my2[i][j] = mas2[i][indice2]-mas2[i][j]-mas2[i][indice1];
+						my2[i][j] = alpha[indice2] * mas2[i][indice2] + alpha[0] * mas2[i][j] + alpha[indice1] * mas2[i][indice1];
 					}	
 					else {	
 					my2[i][j] = mas2[i][j];
