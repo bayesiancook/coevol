@@ -55,149 +55,152 @@ class AbstractTransitionMatrix {
 };
 
 
-class TransitionMatrix : public virtual AbstractTransitionMatrix {
-  public:
-    TransitionMatrix(int inNstate) {
-        Nstate = inNstate;
-        matflag = false;
-        Create();
-    }
+// class TransitionMatrix : public virtual AbstractTransitionMatrix {
+//   public:
+//     TransitionMatrix(int inNstate) {
+//         Nstate = inNstate;
+//         matflag = false;
+//         Create();
+//     }
 
-    TransitionMatrix(int inNstate, double** inR, double* instationary) {
-        Nstate = inNstate;
-        matflag = false;
-        R = inR;
-        stationary = instationary;
-    }
+//     TransitionMatrix(int inNstate, double** inR, double* instationary) {
+//         Nstate = inNstate;
+//         matflag = false;
+//         R = inR;
+//         stationary = instationary;
+//     }
 
-    ~TransitionMatrix() override { Delete(); }
+//     ~TransitionMatrix() override { Delete(); }
 
-    int GetNstate() override { return Nstate; }
+//     int GetNstate() override { return Nstate; }
 
-    double** GetR() {
-        if (!matflag) {
-            ComputeArrayAndStat();
-        }
-        return R;
-    }
+//     double** GetR() {
+//         if (!matflag) {
+//             ComputeArrayAndStat();
+//         }
+//         return R;
+//     }
 
-    const double* GetStationary() override {
-        if (!matflag) {
-            ComputeArrayAndStat();
-        }
-        return stationary;
-    }
+//     const double* GetStationary() override {
+//         if (!matflag) {
+//             ComputeArrayAndStat();
+//         }
+//         return stationary;
+//     }
 
-    const double* GetRow(int i) override {
-        if (!matflag) {
-            ComputeArrayAndStat();
-        }
-        return R[i];
-    }
+//     const double* GetRow(int i) override {
+//         if (!matflag) {
+//             ComputeArrayAndStat();
+//         }
+//         return R[i];
+//     }
 
-    double Stationary(int i) override {
-        if (!matflag) {
-            ComputeArrayAndStat();
-        }
-        return stationary[i];
-    }
+//     double Stationary(int i) override {
+//         if (!matflag) {
+//             ComputeArrayAndStat();
+//         }
+//         return stationary[i];
+//     }
 
-    double operator()(int i, int j) override {
-        if (!matflag) {
-            ComputeArrayAndStat();
-        }
-        return R[i][j];
-    }
+//     double operator()(int i, int j) override {
+//         if (!matflag) {
+//             ComputeArrayAndStat();
+//         }
+//         return R[i][j];
+//     }
 
-    void BackwardPropagate(const double* down, double* up, double /*length*/) override {
-        if (!matflag) {
-            ComputeArrayAndStat();
-        }
-        for (int i = 0; i < Nstate; i++) {
-            double tmp = 0;
-            for (int j = 0; j < Nstate; j++) {
-                tmp += R[i][j] * down[j];
-            }
-            up[i] = tmp;
-        }
-        up[Nstate] = down[Nstate];
-    }
+//     void BackwardPropagate(const double* down, double* up, double /*length*/) override {
+//         if (!matflag) {
+//             ComputeArrayAndStat();
+//         }
+//         for (int i = 0; i < Nstate; i++) {
+//             double tmp = 0;
+//             for (int j = 0; j < Nstate; j++) {
+//                 tmp += R[i][j] * down[j];
+//             }
+//             up[i] = tmp;
+//         }
+//         up[Nstate] = down[Nstate];
+//     }
 
-    void ForwardPropagate(const double* up, double* down, double /*length*/) override {
-        cerr << "in forward\n";
-        exit(1);
-        if (!matflag) {
-            ComputeArrayAndStat();
-        }
-        for (int i = 0; i < Nstate; i++) {
-            double tmp = 0;
-            for (int j = 0; j < Nstate; j++) {
-                tmp += up[j] * R[j][i];
-            }
-            down[i] = tmp;
-        }
-    }
+//     void ForwardPropagate(const double* up, double* down, double /*length*/) override {
+//         cerr << "in forward\n";
+//         exit(1);
+//         if (!matflag) {
+//             ComputeArrayAndStat();
+//         }
+//         for (int i = 0; i < Nstate; i++) {
+//             double tmp = 0;
+//             for (int j = 0; j < Nstate; j++) {
+//                 tmp += up[j] * R[j][i];
+//             }
+//             down[i] = tmp;
+//         }
+//     }
 
-    void CorruptMatrix() override { matflag = false; }
+//     void CorruptMatrix() override { matflag = false; }
 
-  protected:
-    void ComputeArrayAndStat() {
-        ComputeStationary();
-        ComputeArray();
-        matflag = true;
-    }
+//   protected:
+//     void ComputeArrayAndStat() {
+//         ComputeStationary();
+//         ComputeArray();
+//         matflag = true;
+//     }
 
-    virtual void ComputeArray() = 0;
-    virtual void ComputeStationary() = 0;
+//     virtual void ComputeArray() = 0;
+//     virtual void ComputeStationary() = 0;
 
-    bool check() override {
-        bool ok = true;
-        for (int i = 0; i < Nstate; i++) {
-            double total = 0;
-            for (int j = 0; j < Nstate; j++) {
-                if (R[i][j] < 0) {
-                    // cerr << "Error : negative value in transition matrix : R[" << i << "][" << j
-                    // << "] = " << R[i][j] << endl;
-                    ok = false;
-                }
-                total += R[i][j];
-            }
-            if (total - 1 > 10e-6 || total - 1 < -10e-6) {
-                // cerr << "Error : a line in transition matrix does not sum to 1 : Line " << i <<
-                // ", sum " << total << endl;
-                ok = false;
-            }
-        }
-        return ok;
-    }
+//     bool check() override {
+//         bool ok = true;
+//         for (int i = 0; i < Nstate; i++) {
+//             double total = 0;
+//             for (int j = 0; j < Nstate; j++) {
+//                 if (R[i][j] < 0) {
+//                     // cerr << "Error : negative value in transition matrix : R[" << i << "][" <<
+//                     j
+//                     // << "] = " << R[i][j] << endl;
+//                     ok = false;
+//                 }
+//                 total += R[i][j];
+//             }
+//             if (total - 1 > 10e-6 || total - 1 < -10e-6) {
+//                 // cerr << "Error : a line in transition matrix does not sum to 1 : Line " << i
+//                 <<
+//                 // ", sum " << total << endl;
+//                 ok = false;
+//             }
+//         }
+//         return ok;
+//     }
 
-    void Create() {
-        stationary = new double[Nstate];
-        // bkstationary = new double[Nstate];
-        R = new double*[Nstate];
-        // bkR = new double*[Nstate];
-        for (int i = 0; i < Nstate; i++) {
-            R[i] = new double[Nstate];
-            // bkR[i] = new double[Nstate];
-        }
-    }
+//     void Create() {
+//         stationary = new double[Nstate];
+//         // bkstationary = new double[Nstate];
+//         R = new double*[Nstate];
+//         // bkR = new double*[Nstate];
+//         for (int i = 0; i < Nstate; i++) {
+//             R[i] = new double[Nstate];
+//             // bkR[i] = new double[Nstate];
+//         }
+//     }
 
-    void Delete() {
-        delete[] stationary;
-        // delete[] bkstationary;
-        for (int i = 0; i < Nstate; i++) {
-            delete[] R[i];
-            // delete[] bkR[i];
-        }
-        delete[] R;
-        // delete[] bkR;
-    }
+//     void Delete() {
+//         delete[] stationary;
+//         // delete[] bkstationary;
+//         for (int i = 0; i < Nstate; i++) {
+//             delete[] R[i];
+//             // delete[] bkR[i];
+//         }
+//         delete[] R;
+//         // delete[] bkR;
+//     }
 
-    int Nstate;
-    double* stationary;
-    double** R;
-    bool matflag;
-};
+//     int Nstate;
+//     double* stationary;
+//     double** R;
+//     bool matflag;
+// };
+
 
 class SubMatrix : public virtual AbstractTransitionMatrix {
   protected:
