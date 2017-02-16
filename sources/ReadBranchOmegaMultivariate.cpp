@@ -1641,7 +1641,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			
 			double beta = log(t0)+log(365)-log(4);
 			
-			meanNe->AddNe(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), alpha, beta, dim);
+			meanNe->AddNe(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), alpha, beta, dim, indice1, indice2);
 
 			for (int k=0; k<Ncont; k++)	{
 				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), GetModel()->GetL()+k);

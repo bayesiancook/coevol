@@ -402,7 +402,7 @@ class MeanExpNormTree : public NewickTree {
 	}
 	
 	
-	void AddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, double alpha[], double beta, int dim, Var<Real>* Offset = 0)	{
+	void AddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, double alpha[], double beta, int dim, int indice1, int indice2, Var<Real>* Offset = 0)	{
 		meanleaf = 0;
 		meanroot = 0;
 		leafsize = 0;
@@ -410,7 +410,7 @@ class MeanExpNormTree : public NewickTree {
 		if (Offset)	{
 			offset = Offset->val();
 		}
-		RecursiveAddNe(sample, chronogram, GetTree()->GetRoot(), alpha, beta, dim, offset);
+		RecursiveAddNe(sample, chronogram, GetTree()->GetRoot(), alpha, beta, dim, offset, indice1, indice2);
 		meanleaf /= leafsize;
 		if (meanleaf > meanroot)	{
 			ppleafroot++;
@@ -671,13 +671,11 @@ class MeanExpNormTree : public NewickTree {
 	}
 	
 	
-	void RecursiveAddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, double alpha[], double beta, int dim, double offset)	{
+	void RecursiveAddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, double alpha[], double beta, int dim, int indice1, int indice2, double offset)	{
 		double tmp(0);
-		for (int i; i<dim; i++) {
-			if (alpha[i] != 0) {
-				tmp += alpha[i] * (* sample->GetNodeVal(from->GetNode()))[i];
-			}
-		}
+		tmp += alpha[0] * (* sample->GetNodeVal(from->GetNode()))[0];
+		tmp += alpha[indice1] * (* sample->GetNodeVal(from->GetNode()))[indice1];
+		tmp += alpha[indice2] * (* sample->GetNodeVal(from->GetNode()))[indice2];
 		tmp += beta;		
 		tmp += offset;
 		if (from->isRoot())	{
@@ -695,7 +693,7 @@ class MeanExpNormTree : public NewickTree {
 		dist[from->GetNode()].push_front(tmp);
 
 		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
-			RecursiveAddNe(sample, chronogram, link->Out(), alpha, beta, dim, offset);
+			RecursiveAddNe(sample, chronogram, link->Out(), alpha, beta, dim, indice1, indice2, offset);
 			double time = chronogram->GetBranchVal(link->GetBranch())->val();
 			meantime[link->GetBranch()] += time;
 			vartime[link->GetBranch()] += time * time;
