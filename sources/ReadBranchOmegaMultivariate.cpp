@@ -1595,16 +1595,16 @@ class BranchOmegaMultivariateSample : public Sample	{
 		
 		for (int k=0; k<Ncont; k++)	{
 			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity")	{
-				int indice1(k+2);
+				indice1 = k+2;
 			}
 			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
-				int indice2(k+2);
+				indice2 = k+2;
 			}	
 		}
 		
 		if (indice1 == 0 || indice2 == 0) {
-				exit(1);
-			}
+			exit(1);
+		}
 		
 		alpha[0] = 1;
 		alpha[indice1] = -1;
