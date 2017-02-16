@@ -1651,7 +1651,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			mat->Add(&m);
 			
 			double mas1[dim][dim];
-			double my1[dim][dim];
+			CovMatrix my1 = *(GetModel()->GetCovMatrix());;
 			
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
@@ -1677,7 +1677,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			
 			
 			double mas2[dim][dim];
-			double my2[dim][dim];
+			CovMatrix my2 = *(GetModel()->GetCovMatrix());;
 			
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
@@ -1701,8 +1701,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 					}
 				}
 			}
-			// for loop ... 
-			// maty->Add(my,dim);
+		
+			maty1->Add(&my1);
+			maty2->Add(&my2);
+			
 		}
 		cerr << '\n';
 		cerr << "normalise\n";
@@ -1713,6 +1715,22 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cout << *mat;
 
 		cerr << "covariance matrix in " << name << ".cov\n";
+		cerr << '\n';
+
+		maty1->Normalize();
+		ofstream cout1((GetName() + ".covNe_ds").c_str());
+
+		cout1 << *maty1;
+
+		cerr << "covariance matrix in " << name << ".covNe_ds\n";
+		cerr << '\n';
+
+		maty2->Normalize();
+		ofstream cout2((GetName() + ".covNe_pis").c_str());
+
+		cout2 << *maty2;
+
+		cerr << "covariance matrix in " << name << ".covNe_pis\n";
 		cerr << '\n';
 
 		meanchrono->Normalise();
