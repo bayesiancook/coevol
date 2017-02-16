@@ -1639,7 +1639,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			double t0 = GetModel()->GetRootAge();
 			
-			double beta = log(t0)+log(365)-log(4);
+			double beta = log(t0 * 1000000)+log(365)-log(4);
 			
 			meanNe->AddNe(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), alpha, beta, dim, indice1, indice2);
 
