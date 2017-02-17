@@ -1592,10 +1592,12 @@ class BranchOmegaMultivariateSample : public Sample	{
 		
 		int indice1(0);
 		int indice2(0);
-		int indice3(0);
 		
 		for (int k=0; k<Ncont; k++)	{
-			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity")	{
+			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "generation_time") {
+				indice1 = k+2;
+			}	
+			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity" && indice1 == 0)	{
 				indice1 = k+2;
 			}
 			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
