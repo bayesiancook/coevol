@@ -13,28 +13,28 @@ using namespace std;
 // ---------------------------------------------------------------------------
 
 
-static inline int EquivalentStrings(string a, string b) {
-    if (a.length() != b.length()) {
-        return 0;
-    }
-    unsigned int k = 0;
-    int cont = 1;
-    while ((k < a.length()) && ((cont) != 0)) {
-        char ca = a[k];
-        char cb = b[k];
-        if ((ca >= 65) && (ca <= 90)) {
-            ca += 32;
-        }
-        if ((cb >= 65) && (cb <= 90)) {
-            cb += 32;
-        }
-        if (ca != cb) {
-            cont = 0;
-        }
-        k++;
-    }
-    return cont;
-}
+// static inline int EquivalentStrings(string a, string b) {
+//     if (a.length() != b.length()) {
+//         return 0;
+//     }
+//     unsigned int k = 0;
+//     int cont = 1;
+//     while ((k < a.length()) && ((cont) != 0)) {
+//         char ca = a[k];
+//         char cb = b[k];
+//         if ((ca >= 65) && (ca <= 90)) {
+//             ca += 32;
+//         }
+//         if ((cb >= 65) && (cb <= 90)) {
+//             cb += 32;
+//         }
+//         if (ca != cb) {
+//             cont = 0;
+//         }
+//         k++;
+//     }
+//     return cont;
+// }
 
 string SimpleStateSpace::GetState(int state) {
     ostringstream s;

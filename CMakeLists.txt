@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
-project(mini-coevol CXX)
 set (CMAKE_CXX_COMPILER "clang++")
+project(mini-coevol CXX)
 
 # Compilation options
 set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic")
