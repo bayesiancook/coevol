@@ -18,8 +18,8 @@ class SiteMapping {
     virtual Tree* GetTree() = 0;
     Link* GetRoot();
 
-    virtual void Print(ostream& os, bool redundant);
-    void Print(ostream& os, Link* from, bool redundant);
+    virtual void Print(std::ostream& os, bool redundant);
+    void Print(std::ostream& os, Link* from, bool redundant);
 };
 
 inline Link* SiteMapping::GetRoot() { return GetTree()->GetRoot(); }

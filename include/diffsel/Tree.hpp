@@ -7,17 +7,17 @@
 class Node {
   private:
     int index;
-    string name;
+    std::string name;
 
   public:
     Node() : index(0), name("") {}
-    Node(string s) : index(0), name(std::move(s)) {}
+    Node(std::string s) : index(0), name(std::move(s)) {}
     Node(const Node* from) : index(from->index), name(from->name) {}
 
     virtual ~Node() = default;
 
-    virtual string GetName() const { return name; }
-    virtual void SetName(string inname) { name = inname; }
+    virtual std::string GetName() const { return name; }
+    virtual void SetName(std::string inname) { name = inname; }
     int GetIndex() const { return index; }
     void SetIndex(int i) { index = i; }
 };
@@ -25,17 +25,17 @@ class Node {
 class Branch {
   private:
     int index;
-    string name;
+    std::string name;
 
   public:
     Branch() : index(0), name("") {}
-    Branch(string s) : index(0), name(std::move(s)) {}
+    Branch(std::string s) : index(0), name(std::move(s)) {}
     Branch(const Branch* from) : index(from->index), name(from->name) {}
 
     virtual ~Branch() = default;
 
-    virtual string GetName() const { return name; }
-    virtual void SetName(string inname) { name = inname; }
+    virtual std::string GetName() const { return name; }
+    virtual void SetName(std::string inname) { name = inname; }
     int GetIndex() const { return index; }
     void SetIndex(int i) { index = i; }
 };
@@ -128,7 +128,7 @@ class Link {
     }
 
     const Link* GetUp(int& d) const {
-        cerr << "in getup\n";
+        std::cerr << "in getup\n";
         exit(1);
         d = 1;
         const Link* link = Out();
@@ -147,9 +147,9 @@ class NewickTree {
     virtual ~NewickTree() = default;
     virtual const Link* GetRoot() const = 0;
 
-    void ToStream(ostream& os) const;
-    void ToStream(ostream& os, const Link* from) const;
-    double ToStreamSimplified(ostream& os, const Link* from) const;
+    void ToStream(std::ostream& os) const;
+    void ToStream(std::ostream& os, const Link* from) const;
+    double ToStreamSimplified(std::ostream& os, const Link* from) const;
 
     const Link* GetLeftMostLink(const Link* from) const {
         if (from->isLeaf()) {
@@ -169,14 +169,14 @@ class NewickTree {
         return GetRightMostLink(link->Out());
     }
 
-    string GetLeftMost(const Link* from) const {
+    std::string GetLeftMost(const Link* from) const {
         if (from->isLeaf()) {
             return GetNodeName(from);
         }
         return GetLeftMost(from->Next()->Out());
     }
 
-    string GetRightMost(const Link* from) const {
+    std::string GetRightMost(const Link* from) const {
         if (from->isLeaf()) {
             return GetNodeName(from);
         }
@@ -189,9 +189,9 @@ class NewickTree {
 
     static void Simplify() { simplify = true; }
 
-    void PrintTab(ostream& os) { RecursivePrintTab(os, GetRoot()); }
+    void PrintTab(std::ostream& os) { RecursivePrintTab(os, GetRoot()); }
 
-    void RecursivePrintTab(ostream& os, const Link* from) {
+    void RecursivePrintTab(std::ostream& os, const Link* from) {
         os << GetLeftMost(from) << '\t' << GetRightMost(from) << '\t' << GetNodeName(from) << '\n';
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             RecursivePrintTab(os, link->Out());
@@ -222,10 +222,10 @@ class NewickTree {
     }
 
   protected:
-    virtual string GetNodeName(const Link* link) const = 0;
-    virtual string GetBranchName(const Link* link) const = 0;
+    virtual std::string GetNodeName(const Link* link) const = 0;
+    virtual std::string GetBranchName(const Link* link) const = 0;
 
-    virtual string GetLeafNodeName(const Link* link) const { return GetNodeName(link); }
+    virtual std::string GetLeafNodeName(const Link* link) const { return GetNodeName(link); }
 
     static bool simplify;
 };
@@ -241,7 +241,7 @@ class Tree : public NewickTree {
     // but does NOT clone the Nodes and Branches
     // calls RecursiveClone
 
-    Tree(string filename);
+    Tree(std::string filename);
     // create a tree by reading into a file (netwick format expected)
     // calls ReadFromStream
 
@@ -302,7 +302,7 @@ class Tree : public NewickTree {
         return min;
     }
 
-    void ToStreamRenorm(const Link* from, ostream& os, double normfactor) {
+    void ToStreamRenorm(const Link* from, std::ostream& os, double normfactor) {
         if (from->isLeaf()) {
             os << GetNodeName(from);
         } else {
@@ -324,20 +324,22 @@ class Tree : public NewickTree {
         }
     }
 
-    string GetBranchName(const Link* link) const override { return link->GetBranch()->GetName(); }
+    std::string GetBranchName(const Link* link) const override {
+        return link->GetBranch()->GetName();
+    }
 
-    string GetNodeName(const Link* link) const override {
+    std::string GetNodeName(const Link* link) const override {
         return link->GetNode()->GetName();
         /*
           if (! link->isLeaf())	{
           return link->GetNode()->GetName();
           }
-          string s = link->GetNode()->GetName();
+          std::string s = link->GetNode()->GetName();
           unsigned int l = s.length();
           unsigned int i = 0;
           while ((i < l) && (s[i] != '_')) i++;
           if (i == l)	{
-          cerr << "error in get name\n";
+                  std::cerr << "error in get name\n";
           exit(1);
           }
           i++;
@@ -350,8 +352,8 @@ class Tree : public NewickTree {
     void EraseInternalNodeName();
     void EraseInternalNodeName(Link* from);
 
-    // void Print(ostream& os,const Link* from) const ;
-    // void Print(ostream& os) const;
+    // void Print(std::ostream& os,const Link* from) const ;
+    // void Print(std::ostream& os) const;
     // printing int netwick format
 
     /*
@@ -390,21 +392,21 @@ class Tree : public NewickTree {
         return 0;
     }
 
-    virtual const Link* GetLCA(string tax1, string tax2) {
+    virtual const Link* GetLCA(std::string tax1, std::string tax2) {
         bool found1 = false;
         bool found2 = false;
         const Link* link = RecursiveGetLCA(GetRoot(), tax1, tax2, found1, found2);
-        // Print(cerr);
-        // cerr << tax1 << '\t' << tax2 << '\n';
-        // Print(cerr,link);
-        // cerr << '\n' << '\n';
+        // Print(        std::cerr);
+        //         std::cerr << tax1 << '\t' << tax2 << '\n';
+        // Print(        std::cerr,link);
+        //         std::cerr << '\n' << '\n';
         /*
-          cerr << link << '\t' << tax1 << '\t' << tax2 << '\t';
+                  std::cerr << link << '\t' << tax1 << '\t' << tax2 << '\t';
           if (link)	{
-          cerr << GetLeftMost(link) << '\t' << GetRightMost(link) << '\n';
+                  std::cerr << GetLeftMost(link) << '\t' << GetRightMost(link) << '\n';
           }
           else	{
-          cerr << '\n';
+                  std::cerr << '\n';
           }
         */
         return link;
@@ -419,18 +421,18 @@ class Tree : public NewickTree {
 
     void Subdivide(Link* from, int Ninterpol);
 
-    string Reduce(Link* from = nullptr) {
+    std::string Reduce(Link* from = nullptr) {
         if (from == nullptr) {
             from = GetRoot();
         }
         if (from->isLeaf()) {
-            cerr << from->GetNode()->GetName() << '\n';
+            std::cerr << from->GetNode()->GetName() << '\n';
             ;
             return from->GetNode()->GetName();
         }
-        string name = "None";
+        std::string name = "None";
         for (Link* link = from->Next(); link != from; link = link->Next()) {
-            string tmp = Reduce(link->Out());
+            std::string tmp = Reduce(link->Out());
             if (tmp == "diff") {
                 name = "diff";
             } else if (name == "None") {
@@ -439,14 +441,14 @@ class Tree : public NewickTree {
                 name = "diff";
             }
         }
-        cerr << '\t' << name << '\n';
+        std::cerr << '\t' << name << '\n';
         from->GetNode()->SetName(name);
         return name;
 
         return "";
     }
 
-    void PrintReduced(ostream& os, const Link* from = nullptr) {
+    void PrintReduced(std::ostream& os, const Link* from = nullptr) {
         if (from == nullptr) {
             from = GetRoot();
         }
@@ -473,7 +475,7 @@ class Tree : public NewickTree {
         const Link* tmp;
         const Link* chosen = ChooseInternalNode(GetRoot(), tmp, m);
         if (chosen == nullptr) {
-            cerr << "error in choose internal node: null pointer\n";
+            std::cerr << "error in choose internal node: null pointer\n";
             exit(1);
         }
         return chosen;
@@ -487,14 +489,14 @@ class Tree : public NewickTree {
   protected:
     // returns 0 if not found
     // returns link if found (then found1 and found2 must
-    const Link* RecursiveGetLCA(const Link* from, string tax1, string tax2, bool& found1,
+    const Link* RecursiveGetLCA(const Link* from, std::string tax1, std::string tax2, bool& found1,
                                 bool& found2) {
         const Link* ret = nullptr;
         if (from->isLeaf()) {
             // found1 |= (from->GetNode()->GetName() == tax1);
             // found2 |= (from->GetNode()->GetName() == tax2);
-            string name1 = GetLeafNodeName(from).substr(0, tax1.size());
-            string name2 = GetLeafNodeName(from).substr(0, tax2.size());
+            std::string name1 = GetLeafNodeName(from).substr(0, tax1.size());
+            std::string name2 = GetLeafNodeName(from).substr(0, tax2.size());
             found1 |= static_cast<int>(name1 == tax1);
             found2 |= static_cast<int>(name2 == tax2);
             /*
@@ -515,12 +517,12 @@ class Tree : public NewickTree {
                 found2 |= static_cast<int>(tmp2);
                 if (ret2 != nullptr) {
                     if (ret != nullptr) {
-                        cerr << "error : found node twice\n";
-                        cerr << tax1 << '\t' << tax2 << '\n';
-                        ToStream(cerr, ret2->Out());
-                        cerr << '\n';
-                        ToStream(cerr, ret->Out());
-                        cerr << '\n';
+                        std::cerr << "error : found node twice\n";
+                        std::cerr << tax1 << '\t' << tax2 << '\n';
+                        ToStream(std::cerr, ret2->Out());
+                        std::cerr << '\n';
+                        ToStream(std::cerr, ret->Out());
+                        std::cerr << '\n';
                         exit(1);
                     }
                     ret = ret2;
@@ -553,12 +555,12 @@ class Tree : public NewickTree {
             found2 |= static_cast<int>(tmp2);
             if (ret2 != nullptr) {
                 if (ret != nullptr) {
-                    cerr << "error : found node twice\n";
-                    cerr << from1 << '\t' << from2 << '\n';
-                    ToStream(cerr, ret2->Out());
-                    cerr << '\n';
-                    ToStream(cerr, ret->Out());
-                    cerr << '\n';
+                    std::cerr << "error : found node twice\n";
+                    std::cerr << from1 << '\t' << from2 << '\n';
+                    ToStream(std::cerr, ret2->Out());
+                    std::cerr << '\n';
+                    ToStream(std::cerr, ret->Out());
+                    std::cerr << '\n';
                     exit(1);
                 }
                 ret = ret2;
@@ -572,24 +574,24 @@ class Tree : public NewickTree {
         return ret;
     }
 
-    void ReadFromStream(istream& is);
+    void ReadFromStream(std::istream& is);
     // reading a tree from a stream:
     // recursively invokes the two following functions
 
-    Link* ParseGroup(string input, Link* from);
+    Link* ParseGroup(std::string input, Link* from);
     // a group is an expression of one of the two following forms:
     //
     //  (Body)Node_name
     //  (Body)Node_name:Branch_name
     //
-    // where Body is a list, and Node_name and Branch_name are 2 strings
-    // Node_name may be an empty string
+    // where Body is a list, and Node_name and Branch_name are 2     std::strings
+    // Node_name may be an empty     std::string
     //
     // Node_name cannot contain the ':' character, but Branch_name can
     // thus, if the group reads "(BODY)A:B:C"
     // then Node_name = "A" and Branch_name = "B:C"
 
-    Link* ParseList(string input, Node* node);
+    Link* ParseList(std::string input, Node* node);
     // a list is an expression of the form X1,X2,...Xn
     // where Xi is a group
 

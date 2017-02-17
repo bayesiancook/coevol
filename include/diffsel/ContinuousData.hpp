@@ -22,7 +22,7 @@ class ContinuousData {
                 Data[i][j] = 0;
             }
         }
-        charname = new string[GetNsite()];
+        charname = new std::string[GetNsite()];
         for (int j = 0; j < Nsite; j++) {
             charname[j] = "none";
         }
@@ -38,25 +38,25 @@ class ContinuousData {
                 Data[i][j] = from->Data[i][j];
             }
         }
-        charname = new string[GetNsite()];
+        charname = new std::string[GetNsite()];
         for (int j = 0; j < Nsite; j++) {
             charname[j] = from->charname[j];
         }
     }
 
-    void ToStream(ostream& os, TaxonSet* taxset = nullptr) {
+    void ToStream(std::ostream& os, TaxonSet* taxset = nullptr) {
         if (taxset == nullptr) {
-            // cerr << "??? in taxon set\n";
+            //             std::cerr << "??? in taxon set\n";
             os << GetNtaxa() << '\t' << GetNsite() << '\n';
             for (int i = 0; i < GetNtaxa(); i++) {
                 os << GetTaxonSet()->GetTaxon(i);
                 /*
-                  string s = taxset->GetTaxon(i);
+                  std::string s = taxset->GetTaxon(i);
                   unsigned int l = s.length();
                   unsigned int k = 0;
                   while ((k < l) && (s[k] != '_')) k++;
                   if (k == l)	{
-                  cerr << "error in get name\n";
+                              std::cerr << "error in get name\n";
                   exit(1);
                   }
                   k++;
@@ -98,17 +98,17 @@ class ContinuousData {
         }
     }
 
-    void ToStreamLog(ostream& os) {
+    void ToStreamLog(std::ostream& os) {
         os << GetNtaxa() << '\t' << GetNsite() << '\n';
         for (int i = 0; i < GetNtaxa(); i++) {
             os << GetTaxonSet()->GetTaxon(i);
             /*
-              string s = taxset->GetTaxon(i);
+              std::string s = taxset->GetTaxon(i);
               unsigned int l = s.length();
               unsigned int k = 0;
               while ((k < l) && (s[k] != '_')) k++;
               if (k == l)	{
-              cerr << "error in get name\n";
+                          std::cerr << "error in get name\n";
               exit(1);
               }
               k++;
@@ -142,14 +142,14 @@ class ContinuousData {
         return mis;
     }
 
-    bool isMissing(string taxname) {
+    bool isMissing(std::string taxname) {
         int index = GetTaxonSet()->GetTaxonIndex(taxname);
         return (index == -1);
     }
     /*
       if (index == -1)	{
-      cerr << "error : taxon not found : " << taxname << '\n';
-      GetTaxonSet()->ToStream(cerr);
+                  std::cerr << "error : taxon not found : " << taxname << '\n';
+      GetTaxonSet()->ToStream(            std::cerr);
       exit(1);
       }
       return isMissing(index);
@@ -168,9 +168,11 @@ class ContinuousData {
         return total / n;
     }
 
-    string GetCharacterName(int site) { return charname[site]; }
+    std::string GetCharacterName(int site) { return charname[site]; }
 
-    double GetState(string taxon, int site) { return Data[taxset->GetTaxonIndex(taxon)][site]; }
+    double GetState(std::string taxon, int site) {
+        return Data[taxset->GetTaxonIndex(taxon)][site];
+    }
 
     // char       GetCharState(int taxon, int state);
     double GetState(int taxon, int site) { return Data[taxon][site]; }
@@ -179,47 +181,47 @@ class ContinuousData {
     int Nsite;
     const TaxonSet* taxset;
     double** Data;
-    string* charname;
+    std::string* charname;
 };
 
 class FileContinuousData : public ContinuousData {
   public:
-    FileContinuousData(istream& is) { ReadDataFromFile(is); }
+    FileContinuousData(std::istream& is) { ReadDataFromFile(is); }
 
-    FileContinuousData(string filename) {
-        ifstream is(filename.c_str());
+    FileContinuousData(std::string filename) {
+        std::ifstream is(filename.c_str());
         if (!is) {
-            cerr << "error when opening file : " << filename << '\n';
+            std::cerr << "error when opening file : " << filename << '\n';
             exit(1);
         }
         ReadDataFromFile(is);
     }
 
   private:
-    int ReadDataFromFile(istream& is) {
-        string temp;
+    int ReadDataFromFile(std::istream& is) {
+        std::string temp;
         is >> temp;
         int Ntaxa;
         if (temp == "#TRAITS") {
             is >> Ntaxa;
             is >> Nsite;
-            charname = new string[Nsite];
+            charname = new std::string[Nsite];
             for (int j = 0; j < Nsite; j++) {
                 is >> charname[j];
             }
         } else {
             Ntaxa = atoi(temp.c_str());
             is >> Nsite;
-            charname = new string[Nsite];
+            charname = new std::string[Nsite];
             for (int j = 0; j < Nsite; j++) {
-                ostringstream s;
+                std::ostringstream s;
                 s << "character" << j + 1;
                 charname[j] = s.str();
             }
         }
 
 
-        auto name = new string[Ntaxa];
+        auto name = new std::string[Ntaxa];
         Data = new double*[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             is >> name[i];

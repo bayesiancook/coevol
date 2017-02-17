@@ -46,7 +46,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
             i++;
         }
         Nsite -= Eliminated;
-        cout << "number of positions eliminated : " << Eliminated << '\n';
+        std::cout << "number of positions eliminated : " << Eliminated << '\n';
     }
 
     double Nucleotide123CompositionalHeterogeneity() {
@@ -115,8 +115,9 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    double NucleotideCompositionalHeterogeneity(ostream* os, int pos = -1, double** comp = nullptr,
-                                                ostream* os2 = nullptr) {
+    double NucleotideCompositionalHeterogeneity(std::ostream* os, int pos = -1,
+                                                double** comp = nullptr,
+                                                std::ostream* os2 = nullptr) {
         double** taxfreq = nullptr;
         if (comp != nullptr) {
             taxfreq = comp;
@@ -145,9 +146,9 @@ class CodonSequenceAlignment : public SequenceAlignment {
                         taxfreq[j][GetCodonStateSpace()->GetCodonPosition(1, state)]++;
                         taxfreq[j][GetCodonStateSpace()->GetCodonPosition(2, state)]++;
                     } else if (pos > 2) {
-                        cerr << "error in "
-                                "CodonSequenceAlignment::NucleotideCompositionHeterogeneity : "
-                             << pos << '\n';
+                        std::cerr << "error in "
+                                     "CodonSequenceAlignment::NucleotideCompositionHeterogeneity : "
+                                  << pos << '\n';
                         exit(1);
                     } else {
                         taxfreq[j][GetCodonStateSpace()->GetCodonPosition(pos, state)]++;
@@ -232,7 +233,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    double NucleotideCompositionalHeterogeneityOld(ostream* os, int pos = -1,
+    double NucleotideCompositionalHeterogeneityOld(std::ostream* os, int pos = -1,
                                                    double** comp = nullptr) {
         double** taxfreq = nullptr;
         if (comp != nullptr) {
@@ -262,9 +263,9 @@ class CodonSequenceAlignment : public SequenceAlignment {
                         taxfreq[j][GetCodonStateSpace()->GetCodonPosition(1, state)]++;
                         taxfreq[j][GetCodonStateSpace()->GetCodonPosition(2, state)]++;
                     } else if (pos > 2) {
-                        cerr << "error in "
-                                "CodonSequenceAlignment::NucleotideCompositionHeterogeneity : "
-                             << pos << '\n';
+                        std::cerr << "error in "
+                                     "CodonSequenceAlignment::NucleotideCompositionHeterogeneity : "
+                                  << pos << '\n';
                         exit(1);
                     } else {
                         taxfreq[j][GetCodonStateSpace()->GetCodonPosition(pos, state)]++;
@@ -333,7 +334,7 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    double AminoAcidCompositionalHeterogeneity(ostream* os) {
+    double AminoAcidCompositionalHeterogeneity(std::ostream* os) {
         auto taxfreq = new double*[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq[j] = new double[Naa];
@@ -414,13 +415,13 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return (CodonStateSpace*)(statespace);
     }
 
-    void ToStream(ostream& os);
-    void ToStream(ostream& os, int pos);
-    void ToStreamFourFoldThird(ostream& os);
-    void ToStreamFourFoldTriplet(ostream& os);
-    void ToStreamFourFoldThirdwoCpG(ostream& os);
+    void ToStream(std::ostream& os);
+    void ToStream(std::ostream& os, int pos);
+    void ToStreamFourFoldThird(std::ostream& os);
+    void ToStreamFourFoldTriplet(std::ostream& os);
+    void ToStreamFourFoldThirdwoCpG(std::ostream& os);
 
-    void ToStreamRandomJackknife(ostream& os, double p);
+    void ToStreamRandomJackknife(std::ostream& os, double p);
 
   private:
     SequenceAlignment* DNAsource;
@@ -443,7 +444,7 @@ class GCContinuousData : public ContinuousData {
             double tmp = freq[i][1] + freq[i][2];
             Data[i][0] = tmp;
             // Data[i][0] = log(tmp / (1-tmp));
-            cerr << taxset->GetTaxon(i) << '\t' << tmp << '\t' << Data[i][0] << '\n';
+            std::cerr << taxset->GetTaxon(i) << '\t' << tmp << '\t' << Data[i][0] << '\n';
         }
     }
 };

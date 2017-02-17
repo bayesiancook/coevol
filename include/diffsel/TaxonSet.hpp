@@ -5,31 +5,29 @@
 #include <map>
 #include <string>
 
-using namespace std;
-
 
 class Tree;
 class Link;
 
 class TaxonSet {
   public:
-    TaxonSet(const string* names, int ntaxa);
+    TaxonSet(const std::string* names, int ntaxa);
     TaxonSet(const Tree* tree, const Link* subgroup = nullptr);
     ~TaxonSet();
 
     int GetNtaxa() const;
-    string GetTaxon(int index) const;
-    int GetTaxonIndex(string intaxon) const;
-    int GetTaxonIndexWithIncompleteName(string taxname) const;
+    std::string GetTaxon(int index) const;
+    int GetTaxonIndex(std::string intaxon) const;
+    int GetTaxonIndexWithIncompleteName(std::string taxname) const;
 
-    void ToStream(ostream& os) const;
+    void ToStream(std::ostream& os) const;
 
   private:
     void RecursiveGetSubSet(const Link* from, int& i);
 
     int Ntaxa;
-    mutable map<string, int> taxmap;
-    string* taxlist;
+    mutable std::map<std::string, int> taxmap;
+    std::string* taxlist;
 };
 
 //-------------------------------------------------------------------------
@@ -40,7 +38,7 @@ class TaxonSet {
 
 
 inline int TaxonSet::GetNtaxa() const { return Ntaxa; }
-inline string TaxonSet::GetTaxon(int index) const { return taxlist[index]; }
-inline int TaxonSet::GetTaxonIndex(string intaxon) const { return taxmap[intaxon] - 1; }
+inline std::string TaxonSet::GetTaxon(int index) const { return taxlist[index]; }
+inline int TaxonSet::GetTaxonIndex(std::string intaxon) const { return taxmap[intaxon] - 1; }
 
 #endif  // TAXONSET_H

@@ -3,7 +3,7 @@
 #include "diffsel/BiologicalSequences.hpp"
 #include "utils/Random.hpp"
 #include "utils/StringStreamUtils.hpp"
-
+using namespace std;
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------

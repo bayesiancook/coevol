@@ -2,6 +2,7 @@
 #include <fstream>
 #include <list>
 #include <sstream>
+using namespace std;
 
 bool NewickTree::simplify = false;
 

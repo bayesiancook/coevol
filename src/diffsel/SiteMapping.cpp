@@ -1,5 +1,6 @@
 #include "diffsel/SiteMapping.hpp"
 #include "diffsel/BranchSitePath.hpp"
+using namespace std;
 
 //-------------------------------------------------------------------------
 //	* SiteMapping

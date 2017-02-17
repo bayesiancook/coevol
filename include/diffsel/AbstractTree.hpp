@@ -18,7 +18,7 @@ class BranchVarTree : public virtual AbstractTree {
   public:
     virtual Var<V>* GetBranchVal(const Branch* branch) = 0;
 
-    void SetName(string inname) { RecursiveSetName(this->GetRoot(), inname); }
+    void SetName(std::string inname) { RecursiveSetName(this->GetRoot(), inname); }
 
     void PrintLengths() { RecursivePrintLengths(this->GetRoot()); }
 
@@ -68,7 +68,7 @@ class BranchVarTree : public virtual AbstractTree {
       }
     */
 
-    void RecursiveSetName(Link* from, string inname) {
+    void RecursiveSetName(Link* from, std::string inname) {
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
             GetBranchVal(link->GetBranch())->SetName(inname);
             RecursiveSetName(link->Out(), inname);
@@ -84,7 +84,7 @@ class BranchVarTree : public virtual AbstractTree {
 
     void RecursivePrintLengths(Link* from) {
         for (const Link* link = from->Next(); link != from; link = link->Next()) {
-            ostringstream s;
+            std::ostringstream s;
             s << GetBranchVal(link->GetBranch())->val();
             link->GetBranch()->SetName(s.str());
             RecursivePrintLengths(link->Out());
@@ -267,7 +267,7 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
   public:
     void CheckRootToTip(const Link* from, double p = 0) {
         if (from->isLeaf()) {
-            cerr << p << '\t';
+            std::cerr << p << '\t';
         } else {
             for (const Link* link = from->Next(); link != from; link = link->Next()) {
                 CheckRootToTip(link->Out(), p + GetBranchLength(link->GetBranch())->val());

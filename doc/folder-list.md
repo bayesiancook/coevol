@@ -1,4 +1,5 @@
 ## Phylogeny ##
+* TaxonSet.hpp
 
 ### Trees ###
 * AbstractTree.hpp
@@ -25,7 +26,6 @@
 * RandomSubMatrix.hpp
 * SubMatrix.hpp
 
-
 ## Proba / stat ##
 * InverseWishartMatrix.hpp
 * ValArray.hpp
@@ -37,8 +37,9 @@
 * IIDNormalIIDArray.hpp
 * IID.hpp
 
+## Core ##
+* Chain.hpp
 
-Chain.hpp
 ContinuousData.hpp
 DirichletNormalCodonUsageSelectionModelMS.hpp
 GenericTimeLine.hpp
@@ -47,4 +48,3 @@ OneMatrixPhyloProcess.hpp
 PhyloProcess.hpp
 SelectionPhyloProcess.hpp
 StateSpace.hpp
-TaxonSet.hpp
