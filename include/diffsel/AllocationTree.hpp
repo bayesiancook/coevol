@@ -30,7 +30,7 @@ class AllocationTree {
         if (k < 0 || k >= K) {
             std::cerr << "error : allocation out of bound\n";
             std::cerr << "k" << '\t' << "K" << '\n';
-            //std::cerr << tree->GetBranchVal(branch)->val() << '\t' << k <<
+            // std::cerr << tree->GetBranchVal(branch)->val() << '\t' << k <<
             //'\n';
             exit(1);
         }
