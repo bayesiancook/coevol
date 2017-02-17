@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
-set (CMAKE_CXX_COMPILER "clang++")
+# set (CMAKE_CXX_COMPILER "clang++")
 project(mini-coevol CXX)
 
 # Compilation options
