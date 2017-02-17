@@ -1592,6 +1592,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		
 		int indice1(0);
 		int indice2(0);
+		int indice3(0);
 		
 		for (int k=0; k<Ncont; k++)	{
 			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity")	{
@@ -1638,6 +1639,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 1);
 
 			double t0 = GetModel()->GetRootAge();
+
 			
 			double beta = log(t0 * 1000000)+log(365)-log(4);
 			
@@ -1742,6 +1744,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		meanchrono->Tabulate(cchos);
 
 		meanomega->Normalise();
+		cerr << meanomega;
 		ofstream oos((GetName() + ".postmeanomega.tre").c_str());
 		meanomega->ToStream(oos);
 		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
@@ -1750,7 +1753,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		
 		meanNe->Normalise();
 		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
-		meanomega->ToStream(Neos);
+		meanNe->ToStream(Neos);
 		cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meanNe->GetPPLeafRoot() << '\n';
 
