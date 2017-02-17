@@ -13,7 +13,7 @@ TMP_FILES = $(shell find . -name "tmp*")
 # Requires: cmake
 
 all: cmake
-	@cd _build ; make --no-print-directory
+	@cd _build ; make --no-print-directory -j8
 
 cmake: _build/Makefile
 
