@@ -1609,7 +1609,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			exit(1);
 		}
 		
-		alpha[0] = 1;
+		alpha[0] = -1;
 		alpha[indice1] = -1;
 		alpha[indice2] = 1;
 		
