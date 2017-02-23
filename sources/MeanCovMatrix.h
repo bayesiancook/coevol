@@ -298,6 +298,7 @@ class MeanCovMatrix {
 		}
 	}
 
+
 	void PrintPrecisions(ostream& os) const	{
 		os.precision(3);
 		// output matrix of covariance
@@ -497,13 +498,14 @@ class MeanCovMatrix {
 					int l = (int) (0.025 * size);
 					// l = 0;
 					// os << setw(7) << meanslope[j][i] << " ( " << setw(7) << slope[j][i][l] << " , " << setw(7) << slope[j][i][size-1-l] << " ) " << '\t';
-					os << setw(7) << meanslope[j][i] << " : " << sqrt(varslope[j][i]) << " ( " << setw(7) << slope[j][i][l] << " , " << setw(7) << slope[j][i][size-1-l] << " ) " << '\t';
+					os << meanslope[j][i] << " : " << sqrt(varslope[j][i]) << " ( " << slope[j][i][l] << " , " << slope[j][i][size-1-l] << " ) " << '\t';
 				}
 				else	{
-					os << setw(7) << '-' << '(' << setw(7) << '-' << " , " << setw(7) << '-' << " ) " << '\t';
+					os << '-' << '(' << '-' << " , " << '-' << " ) " << '\t';
 				}
 
 			}
+			os << '\n';
 			os << '\n';
 		}
 		os << '\n';

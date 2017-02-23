@@ -1008,6 +1008,7 @@ class CovMatrix : public BaseType, public Multiplicative {
 		}
 	}
 
+
 	void PrintEigenVectors(ostream& os)	{
 		os << "val";
 		for (int j=0; j<GetDim(); j++)	{

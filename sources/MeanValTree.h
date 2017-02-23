@@ -672,9 +672,9 @@ class MeanExpNormTree : public NewickTree {
 	
 	void RecursiveAddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, double alpha[], double beta, int dim, int indice1, int indice2, double offset)	{
 		double tmp(0);
-		tmp += alpha[0] * ((* sample->GetNodeVal(from->GetNode()))[0]);
-		tmp += alpha[indice1] * ((* sample->GetNodeVal(from->GetNode()))[indice1]);
-		tmp += alpha[indice2] * ((* sample->GetNodeVal(from->GetNode()))[indice2]);
+		tmp += alpha[0] * ((* sample->GetNodeVal(from->GetNode()))[0])/log(10);
+		tmp += alpha[indice1] * ((* sample->GetNodeVal(from->GetNode()))[indice1])/log(10);
+		tmp += alpha[indice2] * ((* sample->GetNodeVal(from->GetNode()))[indice2])/log(10);
 		tmp += beta;
 		tmp += offset;
 		if (from->isRoot())	{
@@ -684,7 +684,7 @@ class MeanExpNormTree : public NewickTree {
 			meanleaf += tmp;
 			leafsize++;
 		}
-		double temp = logit ? exp(tmp) / (1 + exp(tmp)) : exp(tmp);
+		double temp = logit ? exp(tmp*log(10)) / (1 + exp(tmp*log(10))) : exp(tmp*log(10));
 		meanlog[from->GetNode()] += tmp;
 		varlog[from->GetNode()] += tmp * tmp;
 		mean[from->GetNode()] += temp;

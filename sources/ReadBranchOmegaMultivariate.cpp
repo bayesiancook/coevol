@@ -1642,7 +1642,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			double t0 = GetModel()->GetRootAge();
 
-			double beta = log(t0 * 1000000)+log(365)-log(4);
+			double beta = log(t0 * 1000000)/log(10)+log(365)/log(10)-log(4)/log(10);
 			
 			
 			meanNe->AddNe(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), alpha, beta, dim, indice1, indice2);
@@ -1721,6 +1721,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		cerr << "covariance matrix in " << name << ".cov\n";
 		cerr << '\n';
+		
+		
+		mat->PrintSlopes(cout);
+		
 
 		maty1->Normalize();
 		ofstream cout1((GetName() + ".covNe_ds").c_str());
