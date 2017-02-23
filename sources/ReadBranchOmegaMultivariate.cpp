@@ -1612,7 +1612,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		alpha[0] = -1;
 		alpha[indice1] = -1;
 		alpha[indice2] = 1;
-		
+
 		
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
@@ -1642,8 +1642,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			double t0 = GetModel()->GetRootAge();
 
-			
 			double beta = log(t0 * 1000000)+log(365)-log(4);
+			
 			
 			meanNe->AddNe(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), alpha, beta, dim, indice1, indice2);
 

@@ -410,7 +410,7 @@ class MeanExpNormTree : public NewickTree {
 		if (Offset)	{
 			offset = Offset->val();
 		}
-		RecursiveAddNe(sample, chronogram, GetTree()->GetRoot(), alpha, beta, dim, offset, indice1, indice2);
+		RecursiveAddNe(sample, chronogram, GetTree()->GetRoot(), alpha, beta, dim, indice1, indice2, offset);
 		meanleaf /= leafsize;
 		if (meanleaf > meanroot)	{
 			ppleafroot++;
@@ -661,7 +661,6 @@ class MeanExpNormTree : public NewickTree {
 		mean[from->GetNode()] += temp;
 		var[from->GetNode()] += temp * temp;
 		dist[from->GetNode()].push_front(tmp);
-
 		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
 			RecursiveAdd(sample, chronogram, slopes, offset, link->Out());
 			double time = chronogram->GetBranchVal(link->GetBranch())->val();
@@ -673,10 +672,10 @@ class MeanExpNormTree : public NewickTree {
 	
 	void RecursiveAddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, double alpha[], double beta, int dim, int indice1, int indice2, double offset)	{
 		double tmp(0);
-		tmp += alpha[0] * (* sample->GetNodeVal(from->GetNode()))[0];
-		tmp += alpha[indice1] * (* sample->GetNodeVal(from->GetNode()))[indice1];
-		tmp += alpha[indice2] * (* sample->GetNodeVal(from->GetNode()))[indice2];
-		tmp += beta;		
+		tmp += alpha[0] * ((* sample->GetNodeVal(from->GetNode()))[0]);
+		tmp += alpha[indice1] * ((* sample->GetNodeVal(from->GetNode()))[indice1]);
+		tmp += alpha[indice2] * ((* sample->GetNodeVal(from->GetNode()))[indice2]);
+		tmp += beta;
 		tmp += offset;
 		if (from->isRoot())	{
 			meanroot = tmp;
@@ -691,7 +690,6 @@ class MeanExpNormTree : public NewickTree {
 		mean[from->GetNode()] += temp;
 		var[from->GetNode()] += temp * temp;
 		dist[from->GetNode()].push_front(tmp);
-
 		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
 			RecursiveAddNe(sample, chronogram, link->Out(), alpha, beta, dim, indice1, indice2, offset);
 			double time = chronogram->GetBranchVal(link->GetBranch())->val();
