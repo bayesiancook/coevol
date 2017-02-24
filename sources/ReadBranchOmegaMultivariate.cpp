@@ -1595,13 +1595,13 @@ class BranchOmegaMultivariateSample : public Sample	{
 		
 		for (int k=0; k<Ncont; k++)	{
 			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "generation_time") {
-				indice1 = k+2;
+				indice1 = k+dim-Ncont;
 			}	
 			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity" && indice1 == 0)	{
-				indice1 = k+2;
+				indice1 = k+dim-Ncont;
 			}
 			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
-				indice2 = k+2;
+				indice2 = k+dim-Ncont;
 			}	
 		}
 		
