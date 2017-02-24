@@ -5,7 +5,7 @@
 #include "ValTree.h"
 #include "Var.h"
 #include "MultiVariateTreeProcess.h"
-
+#include <cmath>
 #include <list>
 
 class MeanBranchTree : public NewickTree {
@@ -262,9 +262,9 @@ class MeanExpNormTree : public NewickTree {
 				return tmp;
 			}
 			else if (logit)	{
-				return exp(tmp) / (1 + exp(tmp));
+				return pow(10,tmp) / (1 + pow(10,tmp));
 			}
-			return exp(tmp);
+			return pow(10,tmp);
 		}
 		map<const Node*, list<double> >::const_iterator f = dist.find(node);
 		list<double> l = f->second;
@@ -273,7 +273,7 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit? exp(*i) / (1 + exp(*i)) : exp(*i));
+		return printlog ? *i : (logit? pow(10,*i) / (1 + pow(10,*i)) : pow(10,*i));
 	}
 
 	double GetMax95(const Node* node) const {
@@ -283,9 +283,9 @@ class MeanExpNormTree : public NewickTree {
 				return tmp;
 			}
 			else if (logit)	{
-				return exp(tmp) / (1 + exp(tmp));
+				return pow(10,tmp) / (1 + pow(10,tmp));
 			}
-			return exp(tmp);
+			return pow(10,tmp);
 		}
 		map<const Node*, list<double> >::const_iterator f = dist.find(node);
 		list<double> l = f->second;
@@ -294,7 +294,7 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit ? exp(*i) / (1 + exp(*i)) : exp(*i));
+		return printlog ? *i : (logit ? pow(10,*i) / (1 + pow(10,*i)) : pow(10,*i));
 	}
 
 	double _GetMean(const Node* node) const	{
@@ -684,7 +684,7 @@ class MeanExpNormTree : public NewickTree {
 			meanleaf += tmp;
 			leafsize++;
 		}
-		double temp = logit ? exp(tmp*log(10)) / (1 + exp(tmp*log(10))) : exp(tmp*log(10));
+		double temp = logit ? pow(10,tmp) / (1 + pow(10,tmp)) : pow(10,tmp);
 		meanlog[from->GetNode()] += tmp;
 		varlog[from->GetNode()] += tmp * tmp;
 		mean[from->GetNode()] += temp;
