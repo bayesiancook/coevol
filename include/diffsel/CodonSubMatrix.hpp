@@ -47,7 +47,8 @@ class NucCodonSubMatrix : public virtual CodonSubMatrix {
     void SetNucMatrix(SubMatrix* inmatrix) {
         NucMatrix = inmatrix;
         if (NucMatrix->GetNstate() != Nnuc) {
-            std::cerr << "error in CodonSubMatrix: underyling mutation process should be a 4x4 matrix\n";
+            std::cerr
+                << "error in CodonSubMatrix: underyling mutation process should be a 4x4 matrix\n";
             throw;
         }
     }

@@ -1,8 +1,8 @@
 #include "diffsel/Tree.hpp"
-#include "diffsel/TaxonSet.hpp"
 #include <fstream>
 #include <list>
 #include <sstream>
+#include "diffsel/TaxonSet.hpp"
 using namespace std;
 
 bool NewickTree::simplify = false;

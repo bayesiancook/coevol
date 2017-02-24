@@ -1,8 +1,8 @@
+#include "diffsel/RandomBranchSitePath.hpp"
 #include <algorithm>
 #include <utility>
 #include <vector>
 #include "diffsel/PhyloProcess.hpp"
-#include "diffsel/RandomBranchSitePath.hpp"
 
 using namespace std;
 

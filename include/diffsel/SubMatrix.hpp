@@ -155,7 +155,8 @@ class AbstractTransitionMatrix {
 //             double total = 0;
 //             for (int j = 0; j < Nstate; j++) {
 //                 if (R[i][j] < 0) {
-//                     // std::cerr << "Error : negative value in transition matrix : R[" << i << "][" <<
+//                     // std::cerr << "Error : negative value in transition matrix : R[" << i <<
+//                     "][" <<
 //                     j
 //                     // << "] = " << R[i][j] << endl;
 //                     ok = false;
@@ -163,7 +164,8 @@ class AbstractTransitionMatrix {
 //                 total += R[i][j];
 //             }
 //             if (total - 1 > 10e-6 || total - 1 < -10e-6) {
-//                 // std::cerr << "Error : a line in transition matrix does not sum to 1 : Line " << i
+//                 // std::cerr << "Error : a line in transition matrix does not sum to 1 : Line "
+//                 << i
 //                 <<
 //                 // ", sum " << total << endl;
 //                 ok = false;
