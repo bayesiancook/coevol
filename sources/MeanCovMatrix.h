@@ -27,6 +27,11 @@ class MeanCovMatrix {
 			slope[i] = new vector<double>[GetDim()];
 		}
 
+		slope2 = new vector<double>*[GetDim()];
+		for (int i=0; i<GetDim(); i++)	{
+			slope2[i] = new vector<double>[GetDim()];
+		}
+
 		mean = new double*[GetDim()];
 		for (int i=0; i<GetDim(); i++)	{
 			mean[i] = new double[GetDim()];
@@ -39,9 +44,17 @@ class MeanCovMatrix {
 		for (int i=0; i<GetDim(); i++)	{
 			meanslope[i] = new double[GetDim()];
 		}
+		meanslope2= new double*[GetDim()];
+		for (int i=0; i<GetDim(); i++)	{
+			meanslope2[i] = new double[GetDim()];
+		}
 		varslope= new double*[GetDim()];
 		for (int i=0; i<GetDim(); i++)	{
 			varslope[i] = new double[GetDim()];
+		}
+		varslope2= new double*[GetDim()];
+		for (int i=0; i<GetDim(); i++)	{
+			varslope2[i] = new double[GetDim()];
 		}
 		var = new double*[GetDim()];
 		for (int i=0; i<GetDim(); i++)	{
@@ -85,6 +98,8 @@ class MeanCovMatrix {
 			delete[] meaninv[i];
 			delete[] meanslope[i];
 			delete[] varslope[i];
+			delete[] meanslope2[i];
+			delete[] varslope2[i];
 			delete[] var[i];
 			delete[] varinv[i];
 			delete[] correl[i];
@@ -96,11 +111,14 @@ class MeanCovMatrix {
 			delete[] val[i];
 			delete[] invval[i];
 			delete[] slope[i];
+			delete[] slope2[i];
 		}
 		delete[] mean;
 		delete[] meaninv;
 		delete[] meanslope;
 		delete[] varslope;
+		delete[] meanslope2;
+		delete[] varslope2;
 		delete[] var;
 		delete[] varinv;
 		delete[] correl;
@@ -112,6 +130,7 @@ class MeanCovMatrix {
 		delete[] val;
 		delete[] invval;
 		delete[] slope;
+		delete[] slope2;
 
 		delete[] meanpropvar;
 	}
@@ -180,6 +199,32 @@ class MeanCovMatrix {
 			}
 		}
 	}
+	
+	
+	void ComputeSlopes2()	{
+		for (int i=0; i<GetDim(); i++)	{
+			for (int j=0; j<GetDim(); j++)	{
+				if (i != j)	{
+					meanslope2[i][j] = 0;
+					varslope2[i][j] = 0;
+					for (unsigned int k=0; k<size; k++)	{
+						double sxy = val[i][j][k];
+						double sx = val[i][i][k];
+						double sy = val[j][j][k];
+						// double tmp = (sy + sqrt((sy - sx)*(sy - sx) - 4 *sxy *sxy - 2 * sx * sy)) / 2 / sxy;
+						double tmp = sxy/sx;
+						slope2[i][j].push_back(tmp);
+						meanslope2[i][j] += tmp;
+						varslope2[i][j] += tmp * tmp;
+					}
+					meanslope2[i][j] /= size;
+					varslope2[i][j] /= size;
+					varslope2[i][j] -= meanslope[i][j] * meanslope[i][j];
+					sort(slope2[i][j].begin(), slope2[i][j].end());
+				}
+			}
+		}
+	}
 
 	void Normalize()	{
 		for (int i=0; i<GetDim(); i++)	{
@@ -238,6 +283,7 @@ class MeanCovMatrix {
 			}
 		}
 		ComputeSlopes();
+		ComputeSlopes2();
 	}
 
 	double GetPropVariance(int i)	const {
@@ -510,6 +556,32 @@ class MeanCovMatrix {
 		}
 		os << '\n';
 	}
+	
+	void PrintSlopes2(ostream& os) const	{
+
+		os.precision(3);
+
+		// slopes
+		os << "slopes2 \n";
+		os << '\n';
+		for (int i=0; i<GetDim(); i++)	{
+			for (int j=0; j<GetDim(); j++)	{
+				if (i != j)	{
+					int l = (int) (0.025 * size);
+					// l = 0;
+					// os << setw(7) << meanslope[j][i] << " ( " << setw(7) << slope[j][i][l] << " , " << setw(7) << slope[j][i][size-1-l] << " ) " << '\t';
+					os << meanslope2[j][i] << " : " << sqrt(varslope2[j][i]) << " ( " << slope2[j][i][l] << " , " << slope2[j][i][size-1-l] << " ) " << '\t';
+				}
+				else	{
+					os << '-' << '(' << '-' << " , " << '-' << " ) " << '\t';
+				}
+
+			}
+			os << '\n';
+			os << '\n';
+		}
+		os << '\n';
+	}
 
 	void ToStream(ostream& os) const {
 		if (tex)	{
@@ -552,10 +624,13 @@ class MeanCovMatrix {
 	vector<double>** val;
 	vector<double>** invval;
 	vector<double>** slope;
-
+	vector<double>** slope2;
+	
 	double** mean;
 	double** meanslope;
+	double** meanslope2;
 	double** varslope;
+	double** varslope2;
 	double** var;
 	double** pp;
 	double** correl;

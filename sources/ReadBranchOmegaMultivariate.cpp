@@ -1724,6 +1724,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		
 		
 		mat->PrintSlopes(cout);
+		mat->PrintSlopes2(cout);
 		
 
 		maty1->Normalize();
@@ -1735,6 +1736,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << '\n';
 
 		maty1->PrintSlopes(cout1);
+		maty1->PrintSlopes2(cout1);
 
 		maty2->Normalize();
 		ofstream cout2((GetName() + ".covNe_pis").c_str());
@@ -1745,6 +1747,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << '\n';
 
 		maty2->PrintSlopes(cout2);
+		maty2->PrintSlopes2(cout2);
 
 		meanchrono->Normalise();
 		ofstream chos((GetName() + ".postmeandates.tre").c_str());
