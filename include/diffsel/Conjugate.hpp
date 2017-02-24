@@ -2,14 +2,12 @@
 #define CONJUGATE_H
 
 #include <set>
-#include "core/DAGnode.hpp"
 #include "core/Var.hpp"
 
 class SemiConjPrior {
   public:
     // to be implemented in non-abstract subclasses
 
-    //
     virtual void ResetSufficientStatistic() = 0;
     virtual void SaveSufficientStatistic() = 0;
     virtual void RestoreSufficientStatistic() = 0;

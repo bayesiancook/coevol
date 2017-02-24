@@ -47,7 +47,7 @@ class NucCodonSubMatrix : public virtual CodonSubMatrix {
     void SetNucMatrix(SubMatrix* inmatrix) {
         NucMatrix = inmatrix;
         if (NucMatrix->GetNstate() != Nnuc) {
-            cerr << "error in CodonSubMatrix: underyling mutation process should be a 4x4 matrix\n";
+            std::cerr << "error in CodonSubMatrix: underyling mutation process should be a 4x4 matrix\n";
             throw;
         }
     }
@@ -185,7 +185,7 @@ class MGOmegaCodonSubMatrix : public MGCodonSubMatrix {
 
     void ComputeNucArrays() override;
 
-    void ToStream(ostream& os) override {
+    void ToStream(std::ostream& os) override {
         os << "Omega : " << omega << '\n';
         os << "nuc matrix\n";
         GetNucMatrix()->ToStream(os);

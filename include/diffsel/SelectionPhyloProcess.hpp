@@ -3,7 +3,6 @@
 
 #include "AllocationTree.hpp"
 #include "PhyloProcess.hpp"
-#include "RandomSubMatrix.hpp"
 #include "ValArray.hpp"
 
 class SelectionMatrixTree {

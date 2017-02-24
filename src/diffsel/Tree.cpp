@@ -1,4 +1,5 @@
 #include "diffsel/Tree.hpp"
+#include "diffsel/TaxonSet.hpp"
 #include <fstream>
 #include <list>
 #include <sstream>

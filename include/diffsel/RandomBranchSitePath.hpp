@@ -7,8 +7,6 @@
 #include "core/BaseType.hpp"
 #include "core/Var.hpp"
 
-// #include "diffsel/EmpiricalSubMatrix.hpp"
-
 // RandomBranchSitePath
 // - represents a branch- and site-specific substitution process (the BranchSiteSubstitutionProcess
 // superclass)
@@ -49,12 +47,12 @@ class RandomBranchSitePath : public virtual Rnode,
         stationary = instationary;
         active_flag = true;
         if (stationary != nullptr) {
-            cerr << "in random branch site path: stat is non null\n";
+            std::cerr << "in random branch site path: stat is non null\n";
             exit(1);
         }
 
         if ((matrix == nullptr) && (stationary == nullptr)) {
-            cerr << "error in RandomBranchSitePath: should specify a matrix or a stationary\n";
+            std::cerr << "error in RandomBranchSitePath: should specify a matrix or a stationary\n";
             exit(1);
         }
 
@@ -78,7 +76,7 @@ class RandomBranchSitePath : public virtual Rnode,
         stationary = instationary;
         Register(transitionmatrix);
         if (stationary != nullptr) {
-            cerr << "non null stat in random branch site path\n";
+            std::cerr << "non null stat in random branch site path\n";
             exit(1);
         }
         // Register(stationary);
@@ -94,13 +92,13 @@ class RandomBranchSitePath : public virtual Rnode,
     SubMatrix* GetSubMatrix() override {
         if (matswap) {
             if (propmatrix == nullptr) {
-                cerr << "error in random branch site path: null prop matrix\n";
+                std::cerr << "error in random branch site path: null prop matrix\n";
                 exit(1);
             }
             return propmatrix;
         }
         if (matrix == nullptr) {
-            cerr << "error in random branch site path: getsubmatrix\n";
+            std::cerr << "error in random branch site path: getsubmatrix\n";
             exit(1);
         }
         return matrix;
@@ -108,7 +106,7 @@ class RandomBranchSitePath : public virtual Rnode,
 
     virtual void SwapMatrices() {
         if ((!matswap) && (propmatrix == nullptr)) {
-            cerr << "error in random branch site path swap matrix: null prop matrix\n";
+            std::cerr << "error in random branch site path swap matrix: null prop matrix\n";
             exit(1);
         }
         matswap = !matswap;
@@ -186,7 +184,7 @@ class RandomBranchSitePath : public virtual Rnode,
         if (transitionmatrix != nullptr) {
             return transitionmatrix->GetNstate();
         } else {
-            cerr << "error in RandomBranchSitePath: GetNstate\n";
+            std::cerr << "error in RandomBranchSitePath: GetNstate\n";
             exit(1);
         }
     }
@@ -195,7 +193,7 @@ class RandomBranchSitePath : public virtual Rnode,
 
     const double* GetStationary() override {
         if (stationary != nullptr) {
-            cerr << "error : non null stationary in log prob path\n";
+            std::cerr << "error : non null stationary in log prob path\n";
             exit(1);
             return stationary->GetArray();
         }
@@ -209,8 +207,8 @@ class RandomBranchSitePath : public virtual Rnode,
     double GetTime() override {
         //    return return length ? ((double) length->val()) : 0;}
         if (length != nullptr) {
-            if (isnan(((double)(length->val())))) {
-                cerr << "length is nan\n";
+            if (std::isnan(((double)(length->val())))) {
+                std::cerr << "length is nan\n";
             }
             return length->val();
         }
@@ -232,7 +230,7 @@ class RandomBranchSitePath : public virtual Rnode,
     void SetTotalTime(double intime) override {
         // what about corruption ?
         if (length == nullptr) {
-            cerr << "error in RandomBranchSitePath::SetTotalTime\n";
+            std::cerr << "error in RandomBranchSitePath::SetTotalTime\n";
             exit(1);
         }
         length->setval(intime);
@@ -242,15 +240,15 @@ class RandomBranchSitePath : public virtual Rnode,
 
     virtual void Resample() {
         if (!SampleBranchMapping()) {
-            cerr << "error in random branch site path : resample map called\n";
+            std::cerr << "error in random branch site path : resample map called\n";
             exit(1);
         }
         if (isRoot()) {
-            cerr << "error in RandomBranchSitePath::Resample : called on root\n";
+            std::cerr << "error in RandomBranchSitePath::Resample : called on root\n";
             exit(1);
         } else {
             if (GetTime() == 0) {
-                cerr << "error in resample : null bl\n";
+                std::cerr << "error in resample : null bl\n";
                 exit(1);
             }
             bool ok = ResampleAcceptReject(GetMaxTrial());
@@ -287,8 +285,8 @@ class RandomBranchSitePath : public virtual Rnode,
             logprob = bklogprob;
             /*
               if (logprob != logProb()) {
-              cerr << "error in local restore\n";
-              cerr << logprob - logProb() << '\n';
+              std::cerr << "error in local restore\n";
+              std::cerr << logprob - logProb() << '\n';
               exit(1);
               }
             */
@@ -313,7 +311,7 @@ class RandomBranchSitePath : public virtual Rnode,
     }
 
     void drawSample() override {
-        cerr << "in random branch site path drawsample\n";
+        std::cerr << "in random branch site path drawsample\n";
         exit(1);
         Resample();
     }
@@ -348,7 +346,7 @@ class RandomBranchSitePath : public virtual Rnode,
     void SetMatrix(RandomSubMatrix* inmatrix) { matrix = inmatrix; }
 
     double ProposeMove(double /*tuning*/) override {
-        cerr << "error : in random branch site path propose move(tuning)\n";
+        std::cerr << "error : in random branch site path propose move(tuning)\n";
         exit(1);
     }
 

@@ -1,5 +1,5 @@
 #include "diffsel/MSCodonSubMatrix.hpp"
-
+using namespace std;
 
 void MGFitnessCodonSubMatrix::ComputeStationary() {
     // compute stationary probabilities

@@ -1,8 +1,12 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include "diffsel/TaxonSet.hpp"  // FIXME should be able to remove but errors too horrible
+#include <iostream>
+#include <string>
 #include "utils/Random.hpp"
+#include "utils/StringStreamUtils.hpp"
+
+class TaxonSet;  // forward decl
 
 class Node {
   private:

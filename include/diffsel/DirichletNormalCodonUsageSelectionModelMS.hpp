@@ -2,7 +2,6 @@
 #define SELECTIONGTR_H
 
 #include <stdio.h>
-
 #include "BranchProcess.hpp"
 #include "CodonSequenceAlignment.hpp"
 #include "GTRSubMatrix.hpp"
@@ -225,8 +224,8 @@ class RenormalizedIIDStat : public Dvar<Profile> {
     RenormalizedIIDStat(Var<Profile>* ina, Var<RealVector>* inb, Var<RealVector>* inc,
                         Var<PosReal>* inbeta) {
         if (ina->GetDim() != inb->GetDim()) {
-            cerr << "error in RenormalizedIIDStat : non matching dimension (" << ina->GetDim()
-                 << " vs " << inb->GetDim() << ")\n";
+            std::cerr << "error in RenormalizedIIDStat : non matching dimension (" << ina->GetDim()
+                      << " vs " << inb->GetDim() << ")\n";
             throw;
         }
         setval(Profile(ina->GetDim()));
@@ -364,16 +363,16 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     Dirichlet* codonusageselection;
 
     int conjugate;
-    string type;
-    string mechanism;
+    std::string type;
+    std::string mechanism;
 
   public:
     // constructor
     // this is where the entire graph structure of the model is created
 
-    DirichletNormalCodonUsageSelectionModelMS(string datafile, string treefile, int inK,
-                                              string intype, int inconjugate, string inmechanism,
-                                              bool sample = true) {
+    DirichletNormalCodonUsageSelectionModelMS(std::string datafile, std::string treefile, int inK,
+                                              std::string intype, int inconjugate,
+                                              std::string inmechanism, bool sample = true) {
         conjugate = inconjugate;
         type = intype;
         mechanism = inmechanism;
@@ -389,7 +388,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         int Nnuc = 4;
         int Naa = 20;
 
-        cerr << Nsite << '\t' << Nstate << '\n';
+        std::cerr << Nsite << '\t' << Nstate << '\n';
 
         taxonset = codondata->GetTaxonSet();
 
@@ -399,7 +398,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         // check whether tree and data fits together
         tree->RegisterWith(taxonset);
 
-        cerr << "tree and data ok\n";
+        std::cerr << "tree and data ok\n";
 
         // ----------
         // construction of the graph
@@ -480,13 +479,13 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         statarray = new RenormalizedIIDStat**[K];
 
 
-        cerr << "selection profiles\n";
+        std::cerr << "selection profiles\n";
         for (int k = 1; k < K; k++) {
             selectionnormal[k] = new IIDNormalIIDArray(Nsite, Naa, Zero, var[k]);
         }
 
         /*
-          cerr << "stat arrays\n";
+                      std::cerr << "stat arrays\n";
           for (int k=1; k<K; k++)	{
           selectionprofile[k] = new SumConstrainedRealVector*[Nsite];
           for (int i=0; i<Nsite;i++){
@@ -528,7 +527,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             }
         }
 
-        cerr << "submatrices\n";
+        std::cerr << "submatrices\n";
 
         // Square Root //phenimenological
         if (mechanism == "SR") {
@@ -558,7 +557,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
 
         if (conjugate != 0) {
-            cerr << "conjugate\n";
+            std::cerr << "conjugate\n";
             matrixtree = nullptr;
             patharray = new ProfilePathConjugateArray(Nsite, K, submatrix);
             patharray->InactivateSufficientStatistic();
@@ -566,14 +565,14 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
                                                                      codondata, patharray);
         } else {
             matrixtree = new SelectionMatrixTree(allocatetree, submatrix);
-            cerr << "create phylo process\n";
+            std::cerr << "create phylo process\n";
             phyloprocess = new SelectionPhyloProcess(gamtree, nullptr, matrixtree, codondata);
         }
 
-        cerr << "unfold\n";
+        std::cerr << "unfold\n";
         phyloprocess->Unfold();
 
-        cerr << "register\n";
+        std::cerr << "register\n";
         RootRegister(Zero);
         RootRegister(One);
         RootRegister(Ten);
@@ -588,23 +587,23 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         Register();
 
         if (sample) {
-            cerr << "initialise\n";
+            std::cerr << "initialise\n";
             // Sample();
-            cerr << "sample completed\n";
+            std::cerr << "sample completed\n";
             Update();
-            cerr << "update completed\n";
-            cerr << "ln L " << GetLogLikelihood() << '\n';
-            // cerr << "random calls " << Random::GetCount() << '\n';
-            // Trace(cerr);
-            Trace(cerr);
+            std::cerr << "update completed\n";
+            std::cerr << "ln L " << GetLogLikelihood() << '\n';
+            //             std::cerr << "random calls " << Random::GetCount() << '\n';
+            // Trace(            std::cerr);
+            Trace(std::cerr);
         }
 
-        cerr << "trace completed\n";
+        std::cerr << "trace completed\n";
 
-        cerr << "scheduler\n";
+        std::cerr << "scheduler\n";
         MakeScheduler();
 
-        cerr << "model created\n";
+        std::cerr << "model created\n";
     }
 
     // destructor
@@ -617,7 +616,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     Tree* GetTree() { return tree; }
 
     double Update(bool /*check*/ = false) override {
-        cerr << "update with phyloprocess\n";
+        std::cerr << "update with phyloprocess\n";
         double ret = ProbModel::Update();
         phyloprocess->Move(1);
         ret = ProbModel::Update();
@@ -760,7 +759,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
 
     void drawSample() override {
-        cerr << "in sample\n";
+        std::cerr << "in sample\n";
         exit(1);
     }
 
@@ -774,12 +773,12 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
     double GetBeta() { return beta->val(); }
 
-    void OutputSelectionProfile(string basename, int sitemin, int sitemax) {
+    void OutputSelectionProfile(std::string basename, int sitemin, int sitemax) {
         if (sitemin == -1) {
             sitemin = 0;
             sitemax = Nsite;
         }
-        ofstream os((basename + ".trueprofiles").c_str());
+        std::ofstream os((basename + ".trueprofiles").c_str());
         for (int k = 1; k < K; k++) {
             os << k << '\n';
             for (int i = sitemin; i < sitemax; i++) {
@@ -793,14 +792,14 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         }
     }
 
-    void GetSelectionProfile(string basename) {
-        ifstream is((basename + ".trueprofiles").c_str());
+    void GetSelectionProfile(std::string basename) {
+        std::ifstream is((basename + ".trueprofiles").c_str());
 
         for (int k = 1; k < K; k++) {
             int tmp;
             is >> tmp;
             if (tmp != k) {
-                cerr << "error when reading true selection profiles\n";
+                std::cerr << "error when reading true selection profiles\n";
                 exit(1);
             }
             for (int i = 0; i < Nsite; i++) {
@@ -808,7 +807,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
                 is >> tmp;
                 /*
                   if (tmp != i)	{
-                  cerr << "error when reading true selection profiles\n";
+                              std::cerr << "error when reading true selection profiles\n";
                   exit(1);
                   }
                 */
@@ -881,7 +880,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     CodonStateSpace* GetCodonStateSpace() { return codondata->GetCodonStateSpace(); }
 
     // creates the header of the <model_name>.trace file
-    void TraceHeader(ostream& os) override {
+    void TraceHeader(std::ostream& os) override {
         os << "#logprior\tlnL\tlength\t";
         os << "globent\tcenter\tconc\t";
         for (int i = 1; i < K; i++) {
@@ -894,7 +893,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
     // writes all summary statistics on one single line
     // in the same order as that provided by the header
-    void Trace(ostream& os) override {
+    void Trace(std::ostream& os) override {
         os << GetLogPrior();
         os << '\t' << GetLogLikelihood();
         os << '\t' << GetLength();
@@ -910,7 +909,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         os.flush();
     }
 
-    void ToStream(ostream& os) override {
+    void ToStream(std::ostream& os) override {
         os.precision(7);
         os << *lambda << '\n';
         os << *gamtree << '\n';
@@ -926,7 +925,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         }
     }
 
-    void FromStream(istream& is) override {
+    void FromStream(std::istream& is) override {
         is >> *lambda;
         is >> *gamtree;
         is >> *relrate;
@@ -937,18 +936,18 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         is >> *globalselectionprofile;
         for (int i = 1; i < K; i++) {
             is >> *var[i];
-            // cerr << "var : " << *var[i]<< '\n';
+            //             std::cerr << "var : " << *var[i]<< '\n';
             is >> *selectionnormal[i];
-            // cerr << " selectionnormal : " << *selectionnormal[1]<< '\n';
+            //             std::cerr << " selectionnormal : " << *selectionnormal[1]<< '\n';
         }
     }
 
-    void PostPredAli(string name, int sitemin, int sitemax) {
+    void PostPredAli(std::string name, int sitemin, int sitemax) {
         auto datacopy = new CodonSequenceAlignment(codondata);
         phyloprocess->PostPredSample(false);
         phyloprocess->GetLeafData(datacopy);
-        ostringstream s;
-        ofstream os((name + ".ali").c_str());
+        std::ostringstream s;
+        std::ofstream os((name + ".ali").c_str());
         if (sitemax != -1) {
             auto datacopy2 = new CodonSequenceAlignment(datacopy, sitemin, sitemax);
             datacopy2->ToStream(os);

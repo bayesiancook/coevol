@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include "diffsel/ValTree.hpp"
-// #include "diffsel/BranchSitePath.hpp"
 
 class BranchSitePath;
 class Branch;

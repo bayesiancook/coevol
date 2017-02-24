@@ -69,7 +69,7 @@ inline double BranchSiteSubstitutionProcess::ReducedWaitingTimeLogProb(int state
 
 inline double BranchSiteSubstitutionProcess::OneStepLogProb(int stateup, int statedown) {
     const double* row = GetSubMatrix()->GetRow(stateup);
-    cerr << "in BranchSiteSubstitutionProcess::OneStepLogProb : check code\n";
+    std::cerr << "in BranchSiteSubstitutionProcess::OneStepLogProb : check code\n";
     exit(1);
     return log(row[statedown]) - log(row[stateup]);
 }
@@ -102,7 +102,7 @@ inline int BranchSiteSubstitutionProcess::DrawOneStep(int state) {
         }
     } while ((k < GetNstate()) && (tot < p));
     if (k == GetNstate()) {
-        cerr << "error in BranchSiteSubstitutionProcess::DrawOneStep\n";
+        std::cerr << "error in BranchSiteSubstitutionProcess::DrawOneStep\n";
         exit(1);
     }
     return k;
@@ -121,10 +121,10 @@ inline void BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int state
         tot += p[k];
     }
     if (fabs(1 - tot) > 1e-5) {
-        cerr << "error in forward propagate: normalization : " << tot << '\t' << fabs(1 - tot)
-             << '\n';
-        cerr << GetTime() << '\t' << GetRate() << '\n';
-        GetSubMatrix()->ToStream(cerr);
+        std::cerr << "error in forward propagate: normalization : " << tot << '\t' << fabs(1 - tot)
+                  << '\n';
+        std::cerr << GetTime() << '\t' << GetRate() << '\n';
+        GetSubMatrix()->ToStream(std::cerr);
         exit(1);
     }
     delete[] p1;
@@ -146,9 +146,9 @@ inline double BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int sta
         tot += p[k];
     }
     if (fabs(1 - tot) > 1e-5) {
-        cerr << "error in forward propagate: normalization : " << tot << '\t' << fabs(1 - tot)
-             << '\n';
-        GetSubMatrix()->ToStream(cerr);
+        std::cerr << "error in forward propagate: normalization : " << tot << '\t' << fabs(1 - tot)
+                  << '\n';
+        GetSubMatrix()->ToStream(std::cerr);
         exit(1);
     }
     double ret = p[statedown];
@@ -171,7 +171,7 @@ inline int BranchSiteSubstitutionProcess::DrawStationary() {
         tot += stat[k];
     } while ((k < GetNstate()) && (tot < p));
     if (k == GetNstate()) {
-        cerr << "erroro in BranchSiteSubstitutionProcess::DrawOneStep\n";
+        std::cerr << "erroro in BranchSiteSubstitutionProcess::DrawOneStep\n";
         exit(1);
     }
     return k;
@@ -201,12 +201,12 @@ inline bool BranchSiteSubstitutionProcess::CheckUniformizedSubstitutionNumber(in
         total += GetSubMatrix()->Power(m, stateup, statedown) * fact;
     }
     if (fabs(total - Z) > 1e-12) {
-        cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber: "
-                "normalising constant\n";
-        cerr << total << '\t' << Z << '\n';
-        cerr << mu << '\n';
-        cerr << m << '\n';
-        cerr << stateup << '\t' << statedown << '\n';
+        std::cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber: "
+                     "normalising constant\n";
+        std::cerr << total << '\t' << Z << '\n';
+        std::cerr << mu << '\n';
+        std::cerr << m << '\n';
+        std::cerr << stateup << '\t' << statedown << '\n';
         throw;
     }
     return true;
@@ -227,15 +227,16 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber(int 
         fact *= mu * efflength / m;
         total += GetSubMatrix()->Power(m, stateup, statedown) * fact;
         if ((total - Z) > 1e-12) {
-            cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber: "
-                    "normalising constant\n";
-            cerr << total << '\t' << Z << '\t' << total - Z << '\n';
+            std::cerr
+                << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber: "
+                   "normalising constant\n";
+            std::cerr << total << '\t' << Z << '\t' << total - Z << '\n';
             /*
-              cerr << mu << '\n';
-              cerr << m << '\n';
-              cerr << stateup << '\t' << statedown << '\n';
+              std::cerr << mu << '\n';
+              std::cerr << m << '\n';
+              std::cerr << stateup << '\t' << statedown << '\n';
 
-              GetSubMatrix()->ToStream(cerr);
+              GetSubMatrix()->ToStream(std::cerr);
               GetSubMatrix()->CheckReversibility();
               throw;
             */
@@ -244,7 +245,7 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber(int 
 
     /*
       if (m >= SubMatrix::UniSubNmax)	{
-      cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber:
+      std::cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber:
       overflow\n";
       throw;
       }
@@ -271,7 +272,8 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedTransition(int state, i
         k++;
     }
     if (k == GetNstate()) {
-        cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedTransition: overflow\n";
+        std::cerr
+            << "error in BranchSiteSubstitutionProcess::DrawUniformizedTransition: overflow\n";
         throw;
     }
     delete[] p;

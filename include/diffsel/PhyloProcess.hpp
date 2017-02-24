@@ -2,11 +2,9 @@
 #define PHYLOPROCESS_H
 
 #include <map>
-#include "BranchSiteSubstitutionProcess.hpp"
 #include "RandomBranchSitePath.hpp"
 #include "SequenceAlignment.hpp"
 #include "SiteMapping.hpp"
-#include "core/MCMC.hpp"
 #include "utils/Chrono.hpp"
 
 
@@ -72,7 +70,7 @@ class PhyloProcess : public MCMC {
     void RecursiveSetStateSpace(const Link* from);
     SequenceAlignment* GetData() { return data; }
 
-    double PrintRootLikelihood(ostream& os);
+    double PrintRootLikelihood(std::ostream& os);
 
     int GetNsite();
     int GetNtaxa();
@@ -93,7 +91,7 @@ class PhyloProcess : public MCMC {
     // computes the frequencies of states in each taxon
     // the global frequencies
     // and returns the chi-square score
-    double CompositionalHeterogeneityIndex(ostream& os);
+    double CompositionalHeterogeneityIndex(std::ostream& os);
     void GetLeafFreqs(const Link* from, double** taxfreq);
 
     void GetLeafData(SequenceAlignment* data);
@@ -107,7 +105,7 @@ class PhyloProcess : public MCMC {
     BranchSiteSubstitutionProcess* GetBranchSiteSubstitutionProcess(const Branch* branch,
                                                                     int site) {
         if (isMissing(branch, site)) {
-            cerr << "as bssub\n";
+            std::cerr << "as bssub\n";
             exit(1);
         }
         return (BranchSiteSubstitutionProcess*)GetPath(branch, site);
@@ -128,8 +126,8 @@ class PhyloProcess : public MCMC {
     void SetData(SequenceAlignment* indata);
     virtual void Unfold();
 
-    void SetName(string inname);
-    void RecursiveSetName(const Link* from, string inname);
+    void SetName(std::string inname);
+    void RecursiveSetName(const Link* from, std::string inname);
 
     int GetTotMissing(const Node* node) { return totmissingmap[node]; }
 
@@ -139,7 +137,7 @@ class PhyloProcess : public MCMC {
         if ((!missingmap[link->GetNode()][site]) && (!missingmap[link->Out()->GetNode()][site]) &&
             ((pathmap[link->GetBranch()]) != nullptr) &&
             (pathmap[link->GetBranch()][site] == nullptr)) {
-            cerr << "error in is missing\n";
+            std::cerr << "error in is missing\n";
             exit(1);
         }
         return (missingmap[link->GetNode()][site] || missingmap[link->Out()->GetNode()][site]);
@@ -219,7 +217,7 @@ class PhyloProcess : public MCMC {
 
     int* sitearray;
     double* sitelnL;
-    map<const Link*, double*> condlmap;
+    std::map<const Link*, double*> condlmap;
 
     int MaxNstate;
 
@@ -231,11 +229,11 @@ class PhyloProcess : public MCMC {
     RandomBranchSitePath* GetPath(const Branch* branch, int site);
 
   private:
-    map<const Branch*, RandomBranchSitePath**> pathmap;
-    map<const Node*, int*> statemap;
-    map<const Node*, int> bkstatemap;
-    map<const Node*, bool*> missingmap;
-    map<const Node*, int> totmissingmap;
+    std::map<const Branch*, RandomBranchSitePath**> pathmap;
+    std::map<const Node*, int*> statemap;
+    std::map<const Node*, int> bkstatemap;
+    std::map<const Node*, bool*> missingmap;
+    std::map<const Node*, int> totmissingmap;
 
     void RecursiveSetProposalMatrices(const Link* from);
 
@@ -253,7 +251,7 @@ class PhyloProcess : public MCMC {
     void RecursiveRegister(const Link* from, int site, Mnode* mnode);
     void ResetFlagMap(const Link* from, bool in);
     const Link* ChooseNodeSet(const Link* from, double s01, double s10, int sw);
-    map<const Node*, bool> flagmap;
+    std::map<const Node*, bool> flagmap;
 
     int maxtrial;
     PhyloProcessSiteMapping** sitemapping;
@@ -286,7 +284,7 @@ inline PhyloProcess::PhyloProcessSiteMapping::PhyloProcessSiteMapping(PhyloProce
 inline Tree* PhyloProcess::PhyloProcessSiteMapping::GetTree() { return myprocess->GetTree(); }
 inline BranchSitePath* PhyloProcess::PhyloProcessSiteMapping::GetPath(const Branch* branch) {
     if (myprocess->isMissing(branch, site)) {
-        cerr << "PhyloProcessSiteMapping::GetPath called on null path\n";
+        std::cerr << "PhyloProcessSiteMapping::GetPath called on null path\n";
         exit(1);
     }
     return myprocess->GetPath(branch, site);
@@ -307,7 +305,7 @@ inline int PhyloProcess::GetNstate(int site) {
 
 inline RandomBranchSitePath* PhyloProcess::GetPath(const Branch* branch, int site) {
     if (pathmap[branch][site] == nullptr) {
-        cerr << "error in phyloprocess::getpath: null path\n";
+        std::cerr << "error in phyloprocess::getpath: null path\n";
         exit(1);
     }
     return pathmap[branch][site];

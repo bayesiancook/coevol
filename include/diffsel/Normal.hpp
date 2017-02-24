@@ -2,14 +2,11 @@
 #define NORMAL_H
 
 #include <cmath>
-#include "core/RandomTypes.hpp"  // FIXME not necessary for compilation
+#include "core/RandomTypes.hpp"
 #include "core/Var.hpp"
-// #include "diffsel/BiologicalSequences.hpp"
-// #include "core/Move.hpp"
 
 
 // iid normal with same mean and variance
-
 class IIDUniform : public virtual Rvar<RealVector> {
   public:
     IIDUniform(Var<Real>* inroot, int dim, double inmax = 100) {

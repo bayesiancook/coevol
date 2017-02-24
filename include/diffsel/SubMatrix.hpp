@@ -29,7 +29,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-using namespace std;
 
 class AbstractTransitionMatrix {
   public:
@@ -124,7 +123,7 @@ class AbstractTransitionMatrix {
 //     }
 
 //     void ForwardPropagate(const double* up, double* down, double /*length*/) override {
-//         cerr << "in forward\n";
+//         std::cerr << "in forward\n";
 //         exit(1);
 //         if (!matflag) {
 //             ComputeArrayAndStat();
@@ -156,7 +155,7 @@ class AbstractTransitionMatrix {
 //             double total = 0;
 //             for (int j = 0; j < Nstate; j++) {
 //                 if (R[i][j] < 0) {
-//                     // cerr << "Error : negative value in transition matrix : R[" << i << "][" <<
+//                     // std::cerr << "Error : negative value in transition matrix : R[" << i << "][" <<
 //                     j
 //                     // << "] = " << R[i][j] << endl;
 //                     ok = false;
@@ -164,7 +163,7 @@ class AbstractTransitionMatrix {
 //                 total += R[i][j];
 //             }
 //             if (total - 1 > 10e-6 || total - 1 < -10e-6) {
-//                 // cerr << "Error : a line in transition matrix does not sum to 1 : Line " << i
+//                 // std::cerr << "Error : a line in transition matrix does not sum to 1 : Line " << i
 //                 <<
 //                 // ", sum " << total << endl;
 //                 ok = false;
@@ -257,7 +256,7 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
     double** GetInvEigenVect();
 
 
-    virtual void ToStream(ostream& os);
+    virtual void ToStream(std::ostream& os);
     void CheckReversibility();
 
     int GetDiagStat() { return ndiagfailed; }
@@ -434,10 +433,10 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
 
 
     for (int i = 0; i < GetNstate(); i++) {
-        if (isnan(down[i])) {
-            cerr << "error in back prop\n";
+        if (std::isnan(down[i])) {
+            std::cerr << "error in back prop\n";
             for (int j = 0; j < GetNstate(); j++) {
-                cerr << up[j] << '\t' << down[j] << '\t' << Stationary(j) << '\n';
+                std::cerr << up[j] << '\t' << down[j] << '\t' << Stationary(j) << '\n';
             }
             exit(1);
         }
@@ -445,7 +444,7 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
     double maxup = 0;
     for (int k = 0; k < GetNstate(); k++) {
         if (up[k] < 0) {
-            cerr << "error in backward propagate: negative prob : " << up[k] << "\n";
+            std::cerr << "error in backward propagate: negative prob : " << up[k] << "\n";
             // down[k] = 0;
         }
         if (maxup < up[k]) {
@@ -462,15 +461,15 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
         }
     }
     if (maxup == 0) {
-        cerr << "error in backward propagate: null up array\n";
+        std::cerr << "error in backward propagate: null up array\n";
         exit(1);
     }
     if (max == 0) {
-        cerr << "error in backward propagate: null array\n";
+        std::cerr << "error in backward propagate: null array\n";
         for (int k = 0; k < GetNstate(); k++) {
-            cerr << up[k] << '\t' << down[k] << '\n';
+            std::cerr << up[k] << '\t' << down[k] << '\n';
         }
-        cerr << '\n';
+        std::cerr << '\n';
         exit(1);
     }
     down[GetNstate()] = up[GetNstate()];
@@ -571,10 +570,10 @@ inline void SubMatrix::ForwardPropagate(const double* down, double* up, double l
   }
 
   for (int i=0; i<GetNstate(); i++)	{
-  if (isnan(down[i]))	{
-  cerr << "error in back prop\n";
+  if (std::isnan(down[i]))	{
+  std::cerr << "error in back prop\n";
   for (int j=0; j<GetNstate(); j++)	{
-  cerr << up[j] << '\t' << down[j] << '\n';
+  std::cerr << up[j] << '\t' << down[j] << '\n';
   }
   exit(1);
   }
@@ -582,7 +581,7 @@ inline void SubMatrix::ForwardPropagate(const double* down, double* up, double l
   double maxup = 0;
   for (int k=0; k<GetNstate(); k++)	{
   if (up[k] <0)	{
-  cerr << "error in backward propagate: negative prob : " << up[k] << "\n";
+  std::cerr << "error in backward propagate: negative prob : " << up[k] << "\n";
   // down[k] = 0;
   }
   if (maxup < up[k])	{
@@ -599,15 +598,15 @@ inline void SubMatrix::ForwardPropagate(const double* down, double* up, double l
   }
   }
   if (maxup == 0)	{
-  cerr << "error in backward propagate: null up array\n";
+  std::cerr << "error in backward propagate: null up array\n";
   exit(1);
   }
   if (max == 0)	{
-  cerr << "error in backward propagate: null array\n";
+  std::cerr << "error in backward propagate: null array\n";
   for (int k=0; k<GetNstate(); k++)	{
-  cerr << up[k] << '\t' << down[k] << '\n';
+  std::cerr << up[k] << '\t' << down[k] << '\n';
   }
-  cerr << '\n';
+  std::cerr << '\n';
   exit(1);
   }
   down[GetNstate()] = up[GetNstate()];

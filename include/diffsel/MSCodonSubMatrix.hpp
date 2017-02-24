@@ -1,6 +1,7 @@
 #ifndef MSCODONSUBMATRIX_H
 #define MSCODONSUBMATRIX_H
 
+#include <iostream>
 #include "CodonSubMatrix.hpp"
 
 // The Muse and Gaut codon substitution process
@@ -196,9 +197,10 @@ class RandomMGSRFitnessNormalCodonUsageSubMatrix : public MGSRFitnessNormalCodon
         specialUpdate();
 
 
-        // cerr << "nucmatrix= "  << *matrix << '\n';
-        // cerr << "stationary= " << *(RandomFitnessProfile->GetArray()) << '\n';
-        // cerr << "codonusage= " << *(RandomCodonUsageSelection->GetArray()) <<'\n';
+        //             std::cerr << "nucmatrix= "  << *matrix << '\n';
+        //             std::cerr << "stationary= " << *(RandomFitnessProfile->GetArray()) << '\n';
+        //             std::cerr << "codonusage= " << *(RandomCodonUsageSelection->GetArray())
+        //             <<'\n';
     }
 
     CodonStateSpace* GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
@@ -277,9 +279,10 @@ class RandomMGMSFitnessNormalCodonUsageSubMatrix : public MGMSFitnessNormalCodon
         specialUpdate();
 
 
-        // cerr << "nucmatrix= "  << *matrix << '\n';
-        // cerr << "stationary= " << *(RandomFitnessProfile->GetArray()) << '\n';
-        // cerr << "codonusage= " << *(RandomCodonUsageSelection->GetArray()) <<'\n';
+        //             std::cerr << "nucmatrix= "  << *matrix << '\n';
+        //             std::cerr << "stationary= " << *(RandomFitnessProfile->GetArray()) << '\n';
+        //             std::cerr << "codonusage= " << *(RandomCodonUsageSelection->GetArray())
+        //             <<'\n';
     }
 
     CodonStateSpace* GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
@@ -408,22 +411,22 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
         codonusageselection = incodonusageselection;
     }
 
-    void ToStream(ostream& /*os*/) override {  // FIXME unused parameter
-        cerr << "nucmatrix : \n";
+    void ToStream(std::ostream& /*os*/) override {  // FIXME unused parameter
+        std::cerr << "nucmatrix : \n";
         NucMatrix->CheckReversibility();
-        cerr << '\n';
+        std::cerr << '\n';
         NucMatrix->CorruptMatrix();
         NucMatrix->UpdateMatrix();
-        NucMatrix->ToStream(cerr);
-        cerr << '\n';
+        NucMatrix->ToStream(std::cerr);
+        std::cerr << '\n';
         NucMatrix->CheckReversibility();
-        cerr << '\n';
+        std::cerr << '\n';
 
         for (int i = 0; i < Naa; i++) {
-            cerr << fitness[i] << '\t';
+            std::cerr << fitness[i] << '\t';
         }
-        cerr << '\n';
-        cerr << '\n';
+        std::cerr << '\n';
+        std::cerr << '\n';
         double total = 0;
         for (int i = 0; i < GetNstate(); i++) {
             total += NucMatrix->Stationary(GetCodonPosition(0, i)) *
@@ -432,20 +435,20 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
                      GetFitness(GetCodonStateSpace()->Translation(i)) * GetCodonUsageSelection(i);
         }
         for (int i = 0; i < GetNstate(); i++) {
-            cerr << i << '\t' << NucMatrix->Stationary(GetCodonPosition(0, i));
-            cerr << '\t' << NucMatrix->Stationary(GetCodonPosition(1, i));
-            cerr << '\t' << NucMatrix->Stationary(GetCodonPosition(2, i));
-            cerr << '\t' << GetFitness(GetCodonStateSpace()->Translation(i));
-            cerr << '\t' << GetCodonUsageSelection(i);
-            cerr << '\t'
-                 << NucMatrix->Stationary(GetCodonPosition(0, i)) *
-                        NucMatrix->Stationary(GetCodonPosition(1, i)) *
-                        NucMatrix->Stationary(GetCodonPosition(2, i)) *
-                        GetFitness(GetCodonStateSpace()->Translation(i)) *
-                        GetCodonUsageSelection(i) / total;
-            cerr << '\n';
+            std::cerr << i << '\t' << NucMatrix->Stationary(GetCodonPosition(0, i));
+            std::cerr << '\t' << NucMatrix->Stationary(GetCodonPosition(1, i));
+            std::cerr << '\t' << NucMatrix->Stationary(GetCodonPosition(2, i));
+            std::cerr << '\t' << GetFitness(GetCodonStateSpace()->Translation(i));
+            std::cerr << '\t' << GetCodonUsageSelection(i);
+            std::cerr << '\t'
+                      << NucMatrix->Stationary(GetCodonPosition(0, i)) *
+                             NucMatrix->Stationary(GetCodonPosition(1, i)) *
+                             NucMatrix->Stationary(GetCodonPosition(2, i)) *
+                             GetFitness(GetCodonStateSpace()->Translation(i)) *
+                             GetCodonUsageSelection(i) / total;
+            std::cerr << '\n';
         }
-        cerr << '\n';
+        std::cerr << '\n';
         for (int i = 0; i < GetNstate(); i++) {
             for (int j = 0; j < GetNstate(); j++) {
                 if (i != j) {
@@ -470,8 +473,8 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
                         if (deltaS != 0) {
                             fix = deltaS / (1.0 - exp(-deltaS));
                         }
-                        cerr << i << '\t' << j << '\t' << mut << '\t' << deltaS << '\t' << fix
-                             << '\t' << mut * fix << '\t' << Q[i][j] << '\n';
+                        std::cerr << i << '\t' << j << '\t' << mut << '\t' << deltaS << '\t' << fix
+                                  << '\t' << mut * fix << '\t' << Q[i][j] << '\n';
                     }
                 }
             }

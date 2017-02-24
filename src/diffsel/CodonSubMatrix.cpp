@@ -1,4 +1,5 @@
 #include "diffsel/CodonSubMatrix.hpp"
+using namespace std;
 
 void MGCodonSubMatrix::ComputeArray(int i) {
     double total = 0;

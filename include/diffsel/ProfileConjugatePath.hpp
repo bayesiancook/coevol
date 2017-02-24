@@ -1,15 +1,12 @@
 #ifndef PROFILECONJUGATEPATH_H
 #define PROFILECONJUGATEPATH_H
 
+#include <map>
+#include <utility>
 #include "AllocationTree.hpp"
 #include "Conjugate.hpp"
 #include "PhyloProcess.hpp"
-#include "RandomBranchSitePath.hpp"
-#include "RandomSubMatrix.hpp"
 #include "core/Move.hpp"
-
-#include <map>
-#include <utility>
 
 
 class ProfilePathConjugate : public DSemiConjugatePrior<void> {
@@ -48,12 +45,12 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
     }
 
     void SaveSufficientStatistic() override {
-        cerr << "save sufficient\n";
+        std::cerr << "save sufficient\n";
         exit(1);
     }
 
     void RestoreSufficientStatistic() override {
-        cerr << "restore sufficient\n";
+        std::cerr << "restore sufficient\n";
         exit(1);
     }
 
@@ -61,7 +58,9 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
 
     void AddWaitingTime(int state, double time) { waitingtime[state] += time; }
 
-    void IncrementPairCount(int state1, int state2) { paircount[pair<int, int>(state1, state2)]++; }
+    void IncrementPairCount(int state1, int state2) {
+        paircount[std::pair<int, int>(state1, state2)]++;
+    }
 
     /*
       double SuffStatLogProb()	{
@@ -70,7 +69,7 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
       // int totnsub = 0;
 
       const double* rootstat = GetStationary();
-      for (map<int,int>::iterator i = rootcount.begin(); i!= rootcount.end(); i++)	{
+      for (std::map<int,int>::iterator i = rootcount.begin(); i!= rootcount.end(); i++)	{
       double tmp = rootstat[i->first];
       for (int k=0; k<i->second; k++)	{
       exptot *= tmp;
@@ -79,10 +78,11 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
       }
 
       SubMatrix& mat = *GetMatrix();
-      for (map<int,double>::iterator i = waitingtime.begin(); i!= waitingtime.end(); i++)	{
+      for (std::map<int,double>::iterator i = waitingtime.begin(); i!= waitingtime.end(); i++)	{
       total += i->second * mat(i->first,i->first);
       }
-      for (map<pair<int,int>, int>::iterator i = paircount.begin(); i!= paircount.end(); i++)	{
+      for (std::map<std::pair<int,int>, int>::iterator i = paircount.begin(); i!= paircount.end();
+      i++)	{
       // total += i->second * log(mat(i->first.first, i->first.second));
       double tmp = mat(i->first.first, i->first.second);
       for (int k=0; k<i->second; k++)	{
@@ -127,9 +127,9 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
     }
 
   protected:
-    map<int, int> rootcount;
-    map<pair<int, int>, int> paircount;
-    map<int, double> waitingtime;
+    std::map<int, int> rootcount;
+    std::map<std::pair<int, int>, int> paircount;
+    std::map<int, double> waitingtime;
 
     RandomSubMatrix* matrix;
 };
@@ -144,7 +144,7 @@ class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<vo
         pathconj = inpathconj;
 
         if (pathconj == nullptr) {
-            cerr << "error in ProfileConjugateRandomBranchSitePath\n";
+            std::cerr << "error in ProfileConjugateRandomBranchSitePath\n";
             exit(1);
         }
 
@@ -167,7 +167,7 @@ class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<vo
   protected:
     void AddSufficientStatistic(SemiConjPrior* parent) override {
         if (parent != pathconj) {
-            cerr << "error in ProfileConjugateRandomBranchSitePath::AddSufficientStatistic\n";
+            std::cerr << "error in ProfileConjugateRandomBranchSitePath::AddSufficientStatistic\n";
             exit(1);
         }
 
