@@ -1734,6 +1734,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "covariance matrix in " << name << ".covNe_ds\n";
 		cerr << '\n';
 
+		maty1->PrintSlopes(cout1);
+
 		maty2->Normalize();
 		ofstream cout2((GetName() + ".covNe_pis").c_str());
 
@@ -1741,6 +1743,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		cerr << "covariance matrix in " << name << ".covNe_pis\n";
 		cerr << '\n';
+
+		maty2->PrintSlopes(cout2);
 
 		meanchrono->Normalise();
 		ofstream chos((GetName() + ".postmeandates.tre").c_str());
