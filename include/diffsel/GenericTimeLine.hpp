@@ -1,11 +1,9 @@
 #ifndef GENERICTIMELINE_H
 #define GENERICTIMELINE_H
 
-// #include "diffsel/StringStreamUtils.hpp"
 #include <iostream>
 #include <map>
 #include <vector>
-using namespace std;
 
 class GenericTimeLine {
   public:
@@ -32,7 +30,7 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
         if (TimeLineIndex > NumberOfTimeLines) {
             return (0);
         }
-        map<double, double>::iterator Younger, Older;
+        std::map<double, double>::iterator Younger, Older;
         double ValueYounger, ValueOlder;
         Younger = TimesAndValues[TimeLineIndex].lower_bound(abstime);
         Older = TimesAndValues[TimeLineIndex].upper_bound(abstime);
@@ -73,26 +71,26 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
       date2 value2
       ...
     */
-    void ToStream(ostream& os) const {
-        map<double, double>::iterator it;
-        map<double, double> temp;
-        os << NumberOfTimeLines << endl;
+    void ToStream(std::ostream& os) const {
+        std::map<double, double>::iterator it;
+        std::map<double, double> temp;
+        os << NumberOfTimeLines << std::endl;
         for (const auto& TimesAndValue : TimesAndValues) {
             temp = TimesAndValue;
-            os << temp.size() << endl;
+            os << temp.size() << std::endl;
             for (it = temp.begin(); it != temp.end(); it++) {
-                os << (*it).first << "\t" << (*it).second << endl;
+                os << (*it).first << "\t" << (*it).second << std::endl;
             }
         }
         return;
     }
 
-    void FromStream(istream& is) {
+    void FromStream(std::istream& is) {
         double Age;
         double Value;
         int NumberOfValues;
-        pair<double, double> ageValue;
-        map<double, double> TimeValueMap;
+        std::pair<double, double> ageValue;
+        std::map<double, double> TimeValueMap;
         is >> NumberOfTimeLines;
         for (int i = 0; i < NumberOfTimeLines; i++) {
             is >> NumberOfValues;
@@ -106,7 +104,7 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
     }
 
   private:
-    vector<map<double, double> > TimesAndValues;
+    std::vector<std::map<double, double> > TimesAndValues;
 };
 
 #endif

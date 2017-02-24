@@ -112,24 +112,24 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
             cont = Invert();
             /*
               if (Invert())	{
-              cerr << "in regular draw sample\n";
+              std::cerr << "in regular draw sample\n";
 
-              cerr << '\n';
-              cerr << "diag matrix\n";
+              std::cerr << '\n';
+              std::cerr << "diag matrix\n";
               for (int i=0; i<GetDim(); i++)	{
-              cerr << diagonalMatrix->val(i) << '\n';
+              std::cerr << diagonalMatrix->val(i) << '\n';
               }
-              cerr << '\n';
+              std::cerr << '\n';
 
-              cerr << "P : " << P << '\n';
-              cerr << '\n';
+              std::cerr << "P : " << P << '\n';
+              std::cerr << '\n';
 
-              cerr << "sample\n";
+              std::cerr << "sample\n";
               for (int i=0; i< P ; i++) {
               for (int j=0; j<GetDim(); j++)	{
-              cerr << echantillon[i][j] << '\t';
+              std::cerr << echantillon[i][j] << '\t';
               }
-              cerr << '\n';
+              std::cerr << '\n';
               }
 
               exit(1);
@@ -239,9 +239,9 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
         }
         delete[] echantillon;
         if (Invert() != 0) {
-            cerr << "in draw sample cov matrix A\n";
-            cerr << '\n' << *A << '\n';
-            cerr << "DF : " << P << '\n';
+            std::cerr << "in draw sample cov matrix A\n";
+            std::cerr << '\n' << *A << '\n';
+            std::cerr << "DF : " << P << '\n';
             exit(1);
         }
     }
@@ -291,7 +291,7 @@ class InverseWishartMatrix : public virtual Rvar<CovMatrix> {
             d += diagonalMatrix->GetLogDeterminant() * P * 0.5;
             return d;
         }
-        // cerr << "singular cov matrix\n";
+        // std::cerr << "singular cov matrix\n";
         return -1000;
     }
 
@@ -455,7 +455,7 @@ class BoundForMultiNormal {
   public:
     BoundForMultiNormal() : tax1(""), tax2(""), lowerbound(-1), upperbound(-1), index(-1) {}
 
-    BoundForMultiNormal(string intax1, string intax2, int inindex, double inlowerbound,
+    BoundForMultiNormal(std::string intax1, std::string intax2, int inindex, double inlowerbound,
                         double inupperbound)
         : tax1(std::move(intax1)),
           tax2(std::move(intax2)),
@@ -470,32 +470,32 @@ class BoundForMultiNormal {
 
     int GetIndex() const { return index; }
 
-    string GetTaxon1() const { return tax1; }
-    string GetTaxon2() const { return tax2; }
+    std::string GetTaxon1() const { return tax1; }
+    std::string GetTaxon2() const { return tax2; }
 
-    void ToStream(ostream& os) const {
+    void ToStream(std::ostream& os) const {
         os << tax1 << '\t' << tax2 << '\t' << index << '\t' << lowerbound << '\t' << upperbound
            << '\n';
     }
 
-    void FromStream(istream& is) {
+    void FromStream(std::istream& is) {
         is >> tax1 >> tax2 >> index >> lowerbound >> upperbound;
-        cerr << index << '\n';
+        std::cerr << index << '\n';
     }
 
-    friend ostream& operator<<(ostream& os, const BoundForMultiNormal& cal) {
+    friend std::ostream& operator<<(std::ostream& os, const BoundForMultiNormal& cal) {
         cal.ToStream(os);
         return os;
     }
 
-    friend istream& operator>>(istream& is, BoundForMultiNormal& cal) {
+    friend std::istream& operator>>(std::istream& is, BoundForMultiNormal& cal) {
         cal.FromStream(is);
         return is;
     }
 
   private:
-    string tax1;
-    string tax2;
+    std::string tax1;
+    std::string tax2;
     double lowerbound;
     double upperbound;
     int index;
@@ -505,7 +505,7 @@ class BoundSet {
   public:
     BoundSet(Tree* intree) : tree(intree) {}
 
-    void ToStream(ostream& os) const {
+    void ToStream(std::ostream& os) const {
         int Ncalib = 0;
         for (auto i = nodemap.begin(); i != nodemap.end(); i++) {
             Ncalib++;
@@ -516,7 +516,7 @@ class BoundSet {
         }
     }
 
-    void FromStream(istream& is) {
+    void FromStream(std::istream& is) {
         int Ncalib;
         is >> Ncalib;
         for (int i = 0; i < Ncalib; i++) {
@@ -524,7 +524,7 @@ class BoundSet {
             is >> bound;
             const Link* link = tree->GetLCA(bound.GetTaxon1(), bound.GetTaxon2());
             if (link == nullptr) {
-                cerr << "error in calibration set: did not find common ancestor of " << bound
+                std::cerr << "error in calibration set: did not find common ancestor of " << bound
                      << '\n';
                 exit(1);
             }
@@ -532,17 +532,17 @@ class BoundSet {
         }
     }
 
-    const map<const Node*, BoundForMultiNormal>& GetNodeMap() const { return nodemap; }
+    const std::map<const Node*, BoundForMultiNormal>& GetNodeMap() const { return nodemap; }
 
   private:
-    map<const Node*, BoundForMultiNormal> nodemap;
+    std::map<const Node*, BoundForMultiNormal> nodemap;
     Tree* tree;
 };
 
 class FileBoundSet : public BoundSet {
   public:
-    FileBoundSet(string filename, Tree* intree) : BoundSet(intree) {
-        ifstream is(filename.c_str());
+    FileBoundSet(std::string filename, Tree* intree) : BoundSet(intree) {
+        std::ifstream is(filename.c_str());
         FromStream(is);
     }
 };
@@ -696,7 +696,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         if (driftphi != nullptr) {
             Register(driftphi);
             if (date == nullptr) {
-                cerr << "error in MultiNormal::MultiNormal: null date\n";
+                std::cerr << "error in MultiNormal::MultiNormal: null date\n";
                 exit(1);
             }
             Register(date);
@@ -730,10 +730,10 @@ class MultiNormal : public virtual Rvar<RealVector> {
         hasbounds = true;
         int index = bound.GetIndex() + offset;
         double upper = bound.GetUpperBound();
-        cerr << bound.GetIndex() << '\t' << offset << '\t' << index << '\t' << upper << '\n';
+        std::cerr << bound.GetIndex() << '\t' << offset << '\t' << index << '\t' << upper << '\n';
         if (upper != -1) {
             if (upper <= 0) {
-                cerr << "error : negative upper bound : " << upper << '\n';
+                std::cerr << "error : negative upper bound : " << upper << '\n';
                 exit(1);
             }
             SetUpperBound(index, log(upper));
@@ -741,7 +741,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         double lower = bound.GetLowerBound();
         if (lower != -1) {
             if (lower <= 0) {
-                cerr << "error : negative lower bound : " << lower << '\n';
+                std::cerr << "error : negative lower bound : " << lower << '\n';
                 exit(1);
             }
             SetLowerBound(index, log(lower));
@@ -788,7 +788,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
 
     void drawSampleUnclamped() {
         if (HasBounds()) {
-            cerr << "error: resampling a multinormal with bounds\n";
+            std::cerr << "error: resampling a multinormal with bounds\n";
             exit(1);
         }
         if (isRoot()) {
@@ -842,7 +842,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
 
     void drawSample() override {
         if (HasBounds()) {
-            cerr << "error: resampling a multinormal with bounds\n";
+            std::cerr << "error: resampling a multinormal with bounds\n";
             exit(1);
         }
         if (isRoot()) {
@@ -903,7 +903,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         int k = cov->GetDim();
         /*
           if (k > 1)	{
-          cerr << "dim error\n";
+          std::cerr << "dim error\n";
           exit(1);
           }
         */
@@ -911,7 +911,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         cov->drawValInv(t);
         for (int i = 0; i < k; i++) {
             if (ClampVector[i + offset]) {
-                cerr << "error in MultiNormal::DrawNormal: clamped\n";
+                std::cerr << "error in MultiNormal::DrawNormal: clamped\n";
                 exit(1);
             }
             val()[i + offset] = t[i] + mean[i][0];
@@ -924,7 +924,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         cov->drawValInv(t);
         for (int i = 0; i < k; i++) {
             if (ClampVector[index[i]]) {
-                cerr << "error in MultiNormal::DrawNormal: clamped\n";
+                std::cerr << "error in MultiNormal::DrawNormal: clamped\n";
                 exit(1);
             }
             val()[index[i]] = t[i] + mean[i][0];
@@ -1025,7 +1025,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
 
     bool CheckIdentity() {
         if (GetDim() != bkvalue.GetDim()) {
-            cerr << "non matching dimension : " << GetDim() << '\t' << bkvalue.GetDim() << '\n';
+            std::cerr << "non matching dimension : " << GetDim() << '\t' << bkvalue.GetDim() << '\n';
             exit(1);
         }
         bool ok = true;
@@ -1034,7 +1034,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
         }
         if (!ok) {
             for (int i = 0; i < GetDim(); i++) {
-                cerr << (*this)[i] << '\t' << (bkvalue)[i] << '\n';
+                std::cerr << (*this)[i] << '\t' << (bkvalue)[i] << '\n';
             }
         }
         return ok;
@@ -1078,7 +1078,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
     double PiecewiseTranslation(double u, int index, int n) {
         for (int i = 0; i < n; i++) {
             if (i + index >= GetDim()) {
-                cerr << "error in MultiNormal::PiecewiseTranslationMove : " << index << '\t' << n
+                std::cerr << "error in MultiNormal::PiecewiseTranslationMove : " << index << '\t' << n
                      << '\t' << GetDim() << "\n";
                 exit(1);
             }
@@ -1090,7 +1090,7 @@ class MultiNormal : public virtual Rvar<RealVector> {
           bool noclamped = true;
           for ( int i=0; i <n; i++){
           if (i+index >= GetDim())	{
-          cerr << "error in MultiNormal::PiecewiseTranslationMove : " << index << '\t' << n << '\t'
+          std::cerr << "error in MultiNormal::PiecewiseTranslationMove : " << index << '\t' << n << '\t'
           << GetDim() << "\n";
           exit(1);
           }
@@ -1147,8 +1147,8 @@ class MultiNormal : public virtual Rvar<RealVector> {
 
     double ProposeSegmentMove(double tuning, int imin, int size) {
         if ((imin < 0) || (imin + size >= GetDim())) {
-            cerr << "error in propose segment move: overflow\n";
-            cerr << imin << '\t' << size << '\t' << GetDim() << '\n';
+            std::cerr << "error in propose segment move: overflow\n";
+            std::cerr << imin << '\t' << size << '\t' << GetDim() << '\n';
             exit(1);
         }
 
@@ -1290,8 +1290,8 @@ class MultiNormal : public virtual Rvar<RealVector> {
                 double t2 = date->val() * agescale->val();
                 double t1 = (date->val() + time->val()) * agescale->val();
                 if ((t1 < 0) || (t1 > 2000) || (t2 < 0) || (t2 > 2000)) {
-                    cerr << "error in timeline2\n";
-                    cerr << t1 << '\t' << t2 << '\n';
+                    std::cerr << "error in timeline2\n";
+                    std::cerr << t1 << '\t' << t2 << '\n';
                     exit(1);
                 }
                 for (int i = 0; i < GetDim(); i++) {

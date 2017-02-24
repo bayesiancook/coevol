@@ -1,5 +1,6 @@
 ## Phylogeny ##
 * TaxonSet.hpp
+* ContinuousData.hpp
 
 ### Trees ###
 * AbstractTree.hpp
@@ -26,7 +27,7 @@
 * RandomSubMatrix.hpp
 * SubMatrix.hpp
 
-## Proba / stat ##
+## Distributions ##
 * InverseWishartMatrix.hpp
 * ValArray.hpp
 * ProfileConjugatePath.hpp
@@ -37,11 +38,14 @@
 * IIDNormalIIDArray.hpp
 * IID.hpp
 
-## Core ##
+## MCMC ##
 * Chain.hpp
+* MCMC.hpp (from core)
 
-ContinuousData.hpp
-DirichletNormalCodonUsageSelectionModelMS.hpp
+## Apps ##
+* DirichletNormalCodonUsageSelectionModelMS.hpp
+
+
 GenericTimeLine.hpp
 GlobalScalingFunction.hpp
 OneMatrixPhyloProcess.hpp
