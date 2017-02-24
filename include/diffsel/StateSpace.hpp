@@ -1,6 +1,7 @@
 #ifndef STATESPACE_H
 #define STATESPACE_H
 
+#include <string>
 #include "diffsel/BiologicalSequences.hpp"  //FIXME only here because constant unknown
 
 // pure interface

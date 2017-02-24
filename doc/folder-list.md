@@ -1,6 +1,9 @@
 ## Phylogeny ##
-* TaxonSet.hpp
 * ContinuousData.hpp
+* TaxonSet.hpp
+* OneMatrixPhyloProcess.hpp
+* PhyloProcess.hpp
+* SelectionPhyloProcess.hpp
 
 ### Trees ###
 * AbstractTree.hpp
@@ -19,6 +22,7 @@
 * CodonSubMatrix.hpp
 * SequenceAlignment.hpp
 * SiteMapping.hpp
+* StateSpace.hpp
 
 ### Substitution matrices ###
 * EmpiricalSubMatrix.hpp
@@ -28,15 +32,17 @@
 * SubMatrix.hpp
 
 ## Distributions ##
-* InverseWishartMatrix.hpp
-* ValArray.hpp
-* ProfileConjugatePath.hpp
-* Normal.hpp
-* CovMatrix.hpp
-* ConjugateInverseWishart.hpp
 * Conjugate.hpp
-* IIDNormalIIDArray.hpp
+* ConjugateInverseWishart.hpp
+* CovMatrix.hpp
+* GenericTimeLine.hpp
+* GlobalScalingFunction.hpp
 * IID.hpp
+* IIDNormalIIDArray.hpp
+* InverseWishartMatrix.hpp
+* Normal.hpp
+* ProfileConjugatePath.hpp
+* ValArray.hpp
 
 ## MCMC ##
 * Chain.hpp
@@ -44,11 +50,3 @@
 
 ## Apps ##
 * DirichletNormalCodonUsageSelectionModelMS.hpp
-
-
-GenericTimeLine.hpp
-GlobalScalingFunction.hpp
-OneMatrixPhyloProcess.hpp
-PhyloProcess.hpp
-SelectionPhyloProcess.hpp
-StateSpace.hpp
