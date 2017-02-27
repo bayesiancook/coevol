@@ -32,8 +32,3 @@ file (GLOB DIFFSEL "src/diffsel/*.cpp")
 add_executable(diffsel "src/DirichletNormalCodonUsageSelectionMS.cpp" ${DIFFSEL})
 target_link_libraries(diffsel coevol_core)
 target_compile_features(diffsel PRIVATE ${CXX_FEATURES})
-
-# Test features
-add_executable(move_test "src/Test.cpp")
-target_link_libraries(move_test coevol_core)
-target_compile_features(move_test PRIVATE ${CXX_FEATURES})
