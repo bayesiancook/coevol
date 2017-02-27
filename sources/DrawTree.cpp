@@ -2,6 +2,7 @@
 #include "DrawTree.h"
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 #include <cmath>
 #include "StringStreamUtils.h"
@@ -729,11 +730,18 @@ void HeatTree::MakeScale(ostream& os)	{
 	os << " (" << texapprox(x) << "," << texapprox(y-0.5*thickness) << ") rectangle (" << texapprox(x+dx-0.04) << ',' << texapprox(y+0.5*thickness) << ");\n";
 
 	int ngrad = 2;
+	int z = 100;
+	std::ostringstream strs;
+	strs << min;
+	std::string str = strs.str();
+	if (str.at(0) == '0') {
+		z=pow(10,std::count(str.begin(), str.end(), '0'));
+	}
 	for (int i=0; i <= ngrad; i++)	{
 		double xx = texapprox(x + dx * ((double) i) / ngrad);
 		os << "\\path [draw] (" << xx << "," << y + dy << ") -- +(0," << -2 *dy << ");\n";
 		os.precision(3);
-		double x = ((double) ((int) (10 * (min + (max-min) * ((double) i) / ngrad)))) / 10;
+		double x = ((double) ((int) (z * (min + (max-min) * ((double) i) / ngrad)))) / z;
 		os << "\\path (" << xx << "," << -8 *dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << x << "};\n";
 	// 	os << "\\path (" << xx << "," << -8 *dy << ") node[below] {" << min + (max - min) * ((double) i) / ngrad  << "};\n";
 	}
