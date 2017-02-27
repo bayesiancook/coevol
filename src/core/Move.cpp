@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include "core/ProbModel.hpp"
+#include "core/Var.hpp"
 #include "utils/Chrono.hpp"
 #include "utils/Exception.hpp"
 #include "utils/Random.hpp"

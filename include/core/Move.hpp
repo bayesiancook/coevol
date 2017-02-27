@@ -5,8 +5,9 @@
 #include <vector>
 #include "BaseType.hpp"
 #include "DAGnode.hpp"
-#include "MCMC.hpp"
-#include "Var.hpp"
+
+template <class T>
+class Rvar;
 
 // MCMC Update mechanisms (Metroplois Hastings, or Gibbs)
 // can be done in 2 different ways
