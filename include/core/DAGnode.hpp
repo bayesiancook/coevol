@@ -4,12 +4,10 @@
 #include <map>
 #include <set>
 #include <string>
-
 #include "MCMC.hpp"
-#include "utils/Random.hpp"
+
 
 class ProbModel;
-
 
 class DAGnode {
   public:

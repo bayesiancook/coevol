@@ -1,14 +1,11 @@
+#include "core/DAGnode.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
-using namespace std;
-
-#include "core/DAGnode.hpp"
 #include "core/ProbModel.hpp"
 #include "utils/Exception.hpp"
-
-
-bool DAGnode::initmode = true;  // (VL) FIXME
+#include "utils/Random.hpp"
+using namespace std;
 
 
 //-------------------------------------------------------------------------
@@ -16,6 +13,8 @@ bool DAGnode::initmode = true;  // (VL) FIXME
 // * DAGnode
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
+bool DAGnode::initmode = true;  // (VL) FIXME
+
 const double MCMC::MAXDIFF = 1e-4;
 
 DAGnode::~DAGnode() { Detach(); }

@@ -1,5 +1,6 @@
 #include "core/BaseType.hpp"
 #include <cmath>
+#include "utils/Random.hpp"
 using namespace std;
 
 

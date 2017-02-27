@@ -15,7 +15,6 @@ class SemiConjPrior {
     // this function
     virtual double SuffStatLogProb() = 0;
 
-
     SemiConjPrior() {
         suffstat_flag = false;
         active_flag = false;
@@ -29,7 +28,6 @@ class SemiConjPrior {
     virtual void ConjugateNotifyCorrupt(bool bk) = 0;
     virtual double ConjugateNotifyUpdate() = 0;
     virtual void ConjugateNotifyRestore() = 0;
-
 
     virtual void CorruptSufficientStatistic() { suffstat_flag = false; }
 

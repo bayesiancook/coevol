@@ -3,9 +3,10 @@
 
 #include <sstream>
 #include <vector>
-
-#include "RandomTypes.hpp"
-
+#include "BaseType.hpp"
+#include "DAGnode.hpp"
+#include "MCMC.hpp"
+#include "Var.hpp"
 
 // MCMC Update mechanisms (Metroplois Hastings, or Gibbs)
 // can be done in 2 different ways
@@ -170,8 +171,7 @@ class ConjugateMove : public MCUpdate {
     ConjugateMove(P* inprior, S* insampling, double intuning, int inn)
         : prior(inprior), sampling(insampling), tuning(intuning), n(inn) {}
 
-    double Move(
-        double tuning_modulator = 1) override {  // (VL) left there since it is in a template
+    double Move(double tuning_modulator = 1) override {
         prior->Integrate();
         double total = 0;
         for (int i = 0; i < n; i++) {

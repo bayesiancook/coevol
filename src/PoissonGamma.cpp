@@ -1,5 +1,6 @@
 #include <fstream>
 #include "core/ProbModel.hpp"
+#include "core/RandomTypes.hpp"
 
 using namespace std;
 

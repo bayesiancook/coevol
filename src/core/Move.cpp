@@ -1,11 +1,12 @@
+#include "core/Move.hpp"
 #include <cmath>
 #include <iostream>
-using namespace std;
-
-#include "core/Move.hpp"
 #include "core/ProbModel.hpp"
 #include "utils/Chrono.hpp"
 #include "utils/Exception.hpp"
+#include "utils/Random.hpp"
+using namespace std;
+
 
 double MCScheduler::Move(double tuning_modulator) {
     if (random) {
