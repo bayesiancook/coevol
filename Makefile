@@ -4,7 +4,7 @@
 
 SRC_FILES = $(shell find include -name "*.hpp") $(shell find src -name "*.cpp")
 TMP_FILES = $(shell find . -name "tmp*")
-.PHONY: cmake clean doc fix check format dot test
+.PHONY: cmake clean doc fix check format dot test tests
 
 
 # ====================================
@@ -33,6 +33,9 @@ clean:
 # Requires: graphviz (for dot)
 
 test: all
+	@_build/move_test
+
+tests: all
 	@_build/poisson_gamma data/test.data _build/test.out
 	@less _build/test.out.trace
 	@_build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 1 tmp_diffsel_result clamp_MCMC 1 MS
