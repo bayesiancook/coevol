@@ -48,6 +48,14 @@ void DAGnode::DeregisterFrom(DAGnode* parent) {
     }
 }
 
+bool DAGnode::parentsUpdated() {
+    bool up_ok = true;
+    for (auto i : up) {
+        up_ok &= i->isUpdated();
+    }
+    return up_ok;
+}
+
 void DAGnode::Register(DAGnode* parent) {
     if (parent != nullptr) {
         parent->down.insert(this);
@@ -85,16 +93,7 @@ set<string> DAGnode::getDotVertices() {
 }
 
 void DAGnode::RecursiveRegister(ProbModel* model) {
-    auto i = up.begin();
-    while ((i != up.end()) && (*i)->updateFlag) {
-        i++;
-    }
-    bool up_ok = (i == up.end());
-
-    for (auto i : up) {
-        up_ok &= static_cast<int>(i->updateFlag);
-    }
-    if (up_ok) {
+    if (parentsUpdated()) {
         model->Register(this);
         updateFlag = true;
         for (auto i : down) {
@@ -186,17 +185,11 @@ void Rnode::FullCorrupt(map<DAGnode*, int>& m) {
 //-------------------------------------------------------------------------
 double Rnode::Update() {
     double ret = 0;
-    if (!updateFlag) {
-        auto i = up.begin();
-        while ((i != up.end()) && ((*i)->isValueUpdated())) {
-            i++;
-        }
-        if (i == up.end()) {
-            ret = localUpdate();
-            value_updated = true;
-            for (auto i : down) {
-                ret += i->NotifyUpdate();
-            }
+    if (!updateFlag and parentsUpdated()) {
+        ret = localUpdate();
+        value_updated = true;
+        for (auto i : down) {
+            ret += i->NotifyUpdate();
         }
     }
     return ret;
@@ -204,18 +197,12 @@ double Rnode::Update() {
 
 double Rnode::NotifyUpdate() {
     double ret = 0;
-    if (!updateFlag) {
-        auto i = up.begin();
-        while ((i != up.end()) && ((*i)->isValueUpdated())) {
-            i++;
-        }
-        if (i == up.end()) {
-            ret = localUpdate();
-            if (!value_updated) {
-                value_updated = true;
-                for (auto i : down) {
-                    ret += i->NotifyUpdate();
-                }
+    if (!updateFlag and parentsUpdated()) {
+        ret = localUpdate();
+        if (!value_updated) {
+            value_updated = true;
+            for (auto i : down) {
+                ret += i->NotifyUpdate();
             }
         }
     }
@@ -230,30 +217,16 @@ double Rnode::localUpdate() {
 
 double Rnode::FullUpdate(bool check) {
     double ret = 0;
-    if (!updateFlag) {
-        auto i = up.begin();
-        while ((i != up.end()) && ((*i)->isValueUpdated())) {
-            i++;
+    if (!updateFlag and parentsUpdated()) {
+        ret = localUpdate();
+        value_updated = true;
+        if ((fabs(ret) > MCMC::MAXDIFF) && check) {
+            cerr << "NON ZERO CHECKSUM : " << GetName() << '\n';
+            cerr << "number of parents : " << up.size() << '\n';
+            throw CheckSumException(ret);
         }
-        bool up_ok = (i == up.end());
-        /*
-          bool up_ok = true;
-          for (auto i=up.begin(); i!=up.end(); i++) {
-          up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->updateFlag;
-          }
-        */
-        if (up_ok) {
-            ret = localUpdate();
-            value_updated = true;
-            if ((fabs(ret) > MCMC::MAXDIFF) && check) {
-                cerr << "NON ZERO CHECKSUM : " << GetName() << '\n';
-                cerr << "number of parents : " << up.size() << '\n';
-                throw CheckSumException(ret);
-            }
-            for (auto i : down) {
-                ret += i->FullUpdate(check);
-            }
+        for (auto i : down) {
+            ret += i->FullUpdate(check);
         }
     }
     return ret;

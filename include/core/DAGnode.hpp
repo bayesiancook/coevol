@@ -50,6 +50,9 @@ class DAGnode {
     void Detach();
     void DeregisterFrom(DAGnode* parent);
 
+    // VL refactoring
+    bool parentsUpdated();
+
     bool updateFlag;
     std::string name;
 };
