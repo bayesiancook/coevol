@@ -13,15 +13,15 @@ class DAGnode {
   public:
     static bool initmode;
 
-    DAGnode() : flag(false), name("") {}
+    DAGnode() : updateFlag(false), name("") {}
     virtual ~DAGnode();
 
     // Getters
     inline int GetChildNumber() { return down.size(); }
     inline void SetName(std::string inname) { name = inname; }
     inline std::string GetName() { return name; }
-    inline bool isUpdated() { return flag; }
-    inline virtual bool isValueUpdated() { return flag; }
+    inline bool isUpdated() { return updateFlag; }
+    inline virtual bool isValueUpdated() { return updateFlag; }
 
     virtual void Register(DAGnode* parent);
     void RecursiveRegister(ProbModel* model);
@@ -50,7 +50,7 @@ class DAGnode {
     void Detach();
     void DeregisterFrom(DAGnode* parent);
 
-    bool flag;
+    bool updateFlag;
     std::string name;
 };
 
@@ -77,7 +77,7 @@ class Rnode : public virtual DAGnode, public MH {
     virtual double localUpdate();
 
     // Getters
-    inline virtual double GetFastLogProb() { return (flag ? logprob : logProb()); }
+    inline virtual double GetFastLogProb() { return (updateFlag ? logprob : logProb()); }
     inline double GetLogProb() override { return logProb(); }
     inline bool isValueUpdated() override { return value_updated; }
 
@@ -119,7 +119,7 @@ class Dnode : public virtual DAGnode {
 
 class Mnode : public virtual DAGnode {
   public:
-    Mnode(bool inflag = true) { flag = inflag; }
+    Mnode(bool inflag = true) { updateFlag = inflag; }
 
     void Corrupt(bool bk) override;
     double Update() override;

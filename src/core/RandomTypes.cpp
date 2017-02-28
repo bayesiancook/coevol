@@ -265,9 +265,9 @@ double Binomial::logProb() {
     return ret;
 }
 
-double Binomial::ProposeMove(double /*tuning*/) {  // FIXME unused parameter!
+double Binomial::ProposeMove(double /*tuning*/) {
     bkvalue = *this;
-    flag = false;
+    updateFlag = false;
     drawSample();
     return 0;
 }

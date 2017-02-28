@@ -167,7 +167,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         if (!isActive()) {
             ret = Dvar<T>::Update();
         } else {
-            if (!this->flag) {
+            if (!this->updateFlag) {
                 bool up_ok = true;
                 for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
@@ -228,7 +228,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         if (!isActive()) {
             ret = Dvar<T>::NotifyUpdate();
         } else {
-            if (!this->flag) {
+            if (!this->updateFlag) {
                 bool up_ok = true;
                 for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
@@ -279,7 +279,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
         exit(1);
         corrupt_counter--;
         if (corrupt_counter == 0) {
-            this->flag = false;
+            this->updateFlag = false;
             ComputeSufficientStatistic();
             // return  this->localUpdate();
             this->localUpdate();
@@ -305,7 +305,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
             if (bk) {
                 bklogprob = logprob;
             }
-            this->flag = true;
+            this->updateFlag = true;
         }
         corrupt_counter++;
     }
@@ -425,7 +425,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         if (!isActive()) {
             ret = Rvar<T>::Update();
         } else {
-            if (!this->flag) {
+            if (!this->updateFlag) {
                 bool up_ok = true;
                 for (auto i = this->up.begin(); i != this->up.end(); i++) {
                     up_ok &= (*i)->isUpdated();
@@ -469,7 +469,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
     double ConjugateNotifyUpdate() override {
         corrupt_counter--;
         if (corrupt_counter == 0) {
-            this->flag = false;
+            this->updateFlag = false;
             ComputeSufficientStatistic();
             return this->localUpdate();
         }
@@ -487,7 +487,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
             }
             CorruptSufficientStatistic();
             this->localCorrupt(bk);
-            this->flag = true;
+            this->updateFlag = true;
         }
         corrupt_counter++;
     }
@@ -640,7 +640,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                 if (!active) {
                     ret += this->localUpdate();
                 } else {
-                    this->flag = true;
+                    this->updateFlag = true;
                 }
                 this->value_updated = true;
                 for (auto i = this->down.begin(); i != this->down.end(); i++) {
@@ -666,7 +666,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                 if (!active) {
                     this->localRestore();
                 } else {
-                    this->flag = true;
+                    this->updateFlag = true;
                 }
                 this->value_updated = true;
                 for (auto i = this->down.begin(); i != this->down.end(); i++) {
@@ -696,7 +696,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                         }
                     }
                 } else {
-                    this->flag = true;
+                    this->updateFlag = true;
                     this->value_updated = true;
                 }
             }
@@ -726,7 +726,7 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
                         }
                     }
                 } else {
-                    this->flag = true;
+                    this->updateFlag = true;
                     this->value_updated = true;
                 }
             }

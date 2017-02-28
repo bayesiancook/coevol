@@ -290,7 +290,7 @@ class RandomBranchSitePath : public virtual Rnode,
               exit(1);
               }
             */
-            flag = true;
+            updateFlag = true;
         } else {
             Rnode::localRestore();
         }
@@ -304,7 +304,7 @@ class RandomBranchSitePath : public virtual Rnode,
                 BackupPath();
                 bklogprob = logprob;
             }
-            flag = false;
+            updateFlag = false;
         } else {
             Rnode::localCorrupt(bk);
         }

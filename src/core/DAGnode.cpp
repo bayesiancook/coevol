@@ -86,17 +86,17 @@ set<string> DAGnode::getDotVertices() {
 
 void DAGnode::RecursiveRegister(ProbModel* model) {
     auto i = up.begin();
-    while ((i != up.end()) && (*i)->flag) {
+    while ((i != up.end()) && (*i)->updateFlag) {
         i++;
     }
     bool up_ok = (i == up.end());
 
     for (auto i : up) {
-        up_ok &= static_cast<int>(i->flag);
+        up_ok &= static_cast<int>(i->updateFlag);
     }
     if (up_ok) {
         model->Register(this);
-        flag = true;
+        updateFlag = true;
         for (auto i : down) {
             i->RecursiveRegister(model);
         }
@@ -104,9 +104,9 @@ void DAGnode::RecursiveRegister(ProbModel* model) {
 }
 
 bool DAGnode::CheckUpdateFlags() {
-    bool ret = flag;
-    if (!flag) {
-        cerr << "flag error : " << GetName() << '\n';
+    bool ret = updateFlag;
+    if (!updateFlag) {
+        cerr << "updateFlag error : " << GetName() << '\n';
     }
     for (auto i : down) {
         ret &= static_cast<int>(i->CheckUpdateFlags());
@@ -168,7 +168,7 @@ void Rnode::localCorrupt(bool bk) {
     if (bk) {
         bklogprob = logprob;
     }
-    flag = false;
+    updateFlag = false;
 }
 
 void Rnode::FullCorrupt(map<DAGnode*, int>& m) {
@@ -186,20 +186,12 @@ void Rnode::FullCorrupt(map<DAGnode*, int>& m) {
 //-------------------------------------------------------------------------
 double Rnode::Update() {
     double ret = 0;
-    if (!flag) {
+    if (!updateFlag) {
         auto i = up.begin();
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
         }
-        bool up_ok = (i == up.end());
-        /*
-          bool up_ok = true;
-          for (auto i=up.begin(); i!=up.end(); i++) {
-          up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->flag;
-          }
-        */
-        if (up_ok) {
+        if (i == up.end()) {
             ret = localUpdate();
             value_updated = true;
             for (auto i : down) {
@@ -212,7 +204,7 @@ double Rnode::Update() {
 
 double Rnode::NotifyUpdate() {
     double ret = 0;
-    if (!flag) {
+    if (!updateFlag) {
         auto i = up.begin();
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
@@ -222,7 +214,7 @@ double Rnode::NotifyUpdate() {
           bool up_ok = true;
           for (auto i=up.begin(); i!=up.end(); i++) {
           up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->flag;
+          // up_ok &= (*i)->updateFlag;
           }
           if (GetName() == "BD Chrono") {
           cerr << "BD::NotifyUpdate : " << up_ok << '\n';
@@ -243,13 +235,13 @@ double Rnode::NotifyUpdate() {
 
 double Rnode::localUpdate() {
     logprob = logProb();
-    flag = true;
+    updateFlag = true;
     return logprob - bklogprob;
 }
 
 double Rnode::FullUpdate(bool check) {
     double ret = 0;
-    if (!flag) {
+    if (!updateFlag) {
         auto i = up.begin();
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
@@ -259,7 +251,7 @@ double Rnode::FullUpdate(bool check) {
           bool up_ok = true;
           for (auto i=up.begin(); i!=up.end(); i++) {
           up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->flag;
+          // up_ok &= (*i)->updateFlag;
           }
         */
         if (up_ok) {
@@ -282,7 +274,7 @@ double Rnode::FullUpdate(bool check) {
 // * restore
 //-------------------------------------------------------------------------
 void Rnode::Restore() {
-    if (!flag) {
+    if (!updateFlag) {
         auto i = up.begin();
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
@@ -292,7 +284,7 @@ void Rnode::Restore() {
           bool up_ok = true;
           for (auto i=up.begin(); i!=up.end(); i++) {
           up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->flag;
+          // up_ok &= (*i)->updateFlag;
           }
         */
         if (up_ok) {
@@ -306,7 +298,7 @@ void Rnode::Restore() {
 }
 
 void Rnode::NotifyRestore() {
-    if (!flag) {
+    if (!updateFlag) {
         auto i = up.begin();
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
@@ -316,7 +308,7 @@ void Rnode::NotifyRestore() {
           bool up_ok = true;
           for (auto i=up.begin(); i!=up.end(); i++) {
           up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->flag;
+          // up_ok &= (*i)->updateFlag;
           }
         */
         if (up_ok) {
@@ -339,7 +331,7 @@ void Rnode::localRestore() {
       exit(1);
       }
     */
-    flag = true;
+    updateFlag = true;
 }
 
 
@@ -361,7 +353,7 @@ void Dnode::Corrupt(bool bk) {
 
 void Dnode::NotifyCorrupt(bool bk) { Corrupt(bk); }
 
-void Dnode::localCorrupt(bool /*unused*/) { flag = false; }
+void Dnode::localCorrupt(bool /*unused*/) { updateFlag = false; }
 
 void Dnode::FullCorrupt(map<DAGnode*, int>& m) {
     localCorrupt(true);
@@ -378,7 +370,7 @@ void Dnode::FullCorrupt(map<DAGnode*, int>& m) {
 //-------------------------------------------------------------------------
 double Dnode::Update() {
     double ret = 0;
-    if (!flag) {
+    if (!updateFlag) {
         auto i = up.begin();
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
@@ -388,7 +380,7 @@ double Dnode::Update() {
           bool up_ok = true;
           for (auto i=up.begin(); i!=up.end(); i++) {
           up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->flag;
+          // up_ok &= (*i)->updateFlag;
           }
         */
         if (up_ok) {
@@ -405,13 +397,13 @@ double Dnode::NotifyUpdate() { return Update(); }
 
 double Dnode::localUpdate() {
     specialUpdate();
-    flag = true;
+    updateFlag = true;
     return 0;
 }
 
 double Dnode::FullUpdate(bool check) {
     double ret = 0;
-    if (!flag) {
+    if (!updateFlag) {
         auto i = up.begin();
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
@@ -421,7 +413,7 @@ double Dnode::FullUpdate(bool check) {
           bool up_ok = true;
           for (auto i=up.begin(); i!=up.end(); i++) {
           up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->flag;
+          // up_ok &= (*i)->updateFlag;
           }
         */
         if (up_ok) {
@@ -438,7 +430,7 @@ double Dnode::FullUpdate(bool check) {
 // * restore
 //-------------------------------------------------------------------------
 void Dnode::Restore() {
-    if (!flag) {
+    if (!updateFlag) {
         auto i = up.begin();
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
@@ -448,7 +440,7 @@ void Dnode::Restore() {
           bool up_ok = true;
           for (auto i=up.begin(); i!=up.end(); i++) {
           up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->flag;
+          // up_ok &= (*i)->updateFlag;
           }
         */
         if (up_ok) {
@@ -462,7 +454,7 @@ void Dnode::Restore() {
 
 void Dnode::NotifyRestore() { Restore(); }
 
-void Dnode::localRestore() { flag = true; }
+void Dnode::localRestore() { updateFlag = true; }
 
 
 //-------------------------------------------------------------------------
@@ -475,7 +467,7 @@ void Dnode::localRestore() { flag = true; }
 // * corrupt
 //-------------------------------------------------------------------------
 void Mnode::Corrupt(bool bk) {
-    flag = false;
+    updateFlag = false;
     for (auto i : down) {
         i->Corrupt(bk);
     }
@@ -485,7 +477,7 @@ void Mnode::Corrupt(bool bk) {
 // * update
 //-------------------------------------------------------------------------
 double Mnode::Update() {
-    flag = true;
+    updateFlag = true;
     double ret = 0;
     for (auto i : down) {
         ret += i->Update();
@@ -497,7 +489,7 @@ double Mnode::Update() {
 // * restore
 //-------------------------------------------------------------------------
 void Mnode::Restore() {
-    flag = true;
+    updateFlag = true;
     for (auto i : down) {
         i->Restore();
     }
