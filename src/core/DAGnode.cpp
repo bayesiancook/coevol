@@ -209,18 +209,7 @@ double Rnode::NotifyUpdate() {
         while ((i != up.end()) && ((*i)->isValueUpdated())) {
             i++;
         }
-        bool up_ok = (i == up.end());
-        /*
-          bool up_ok = true;
-          for (auto i=up.begin(); i!=up.end(); i++) {
-          up_ok &= (*i)->isValueUpdated();
-          // up_ok &= (*i)->updateFlag;
-          }
-          if (GetName() == "BD Chrono") {
-          cerr << "BD::NotifyUpdate : " << up_ok << '\n';
-          }
-        */
-        if (up_ok) {
+        if (i == up.end()) {
             ret = localUpdate();
             if (!value_updated) {
                 value_updated = true;
