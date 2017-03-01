@@ -54,6 +54,7 @@ class MeanBranchTree : public NewickTree {
 		return i->second;
 	}
 
+
 	double GetVar(const Branch* branch) const	{
 		map<const Branch*, double>::const_iterator i = var.find(branch);
 		return i->second;
@@ -262,9 +263,9 @@ class MeanExpNormTree : public NewickTree {
 				return tmp;
 			}
 			else if (logit)	{
-				return pow(10,tmp) / (1 + pow(10,tmp));
+				return exp(tmp) / (1 + exp(tmp));
 			}
-			return pow(10,tmp);
+			return exp(tmp);
 		}
 		map<const Node*, list<double> >::const_iterator f = dist.find(node);
 		list<double> l = f->second;
@@ -273,7 +274,7 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit? pow(10,*i) / (1 + pow(10,*i)) : pow(10,*i));
+		return printlog ? *i : (logit? exp(*i) / (1 + exp(*i)) : exp(*i));
 	}
 
 	double GetMax95(const Node* node) const {
@@ -283,9 +284,9 @@ class MeanExpNormTree : public NewickTree {
 				return tmp;
 			}
 			else if (logit)	{
-				return pow(10,tmp) / (1 + pow(10,tmp));
+				return exp(tmp) / (1 + exp(tmp));
 			}
-			return pow(10,tmp);
+			return exp(tmp);
 		}
 		map<const Node*, list<double> >::const_iterator f = dist.find(node);
 		list<double> l = f->second;
@@ -294,12 +295,36 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit ? pow(10,*i) / (1 + pow(10,*i)) : pow(10,*i));
+		return printlog ? *i : (logit ? exp(*i) / (1 + exp(*i)) : exp(*i));
+	}
+
+
+	double GetMedian(const Node* node) const { 
+		map<const Node*, list<double> >::const_iterator f = dist.find(node);
+		list<double> l = f->second;
+		list<double>::const_iterator i = l.begin();
+		int n = ((int) (((double) l.size()) / 100 * 50));
+		for (int j=0; j<n; j++)	{
+			i++;
+		}
+		return printlog ? *i : (logit ? exp(*i) / (1 + exp(*i)) : exp(*i));
 	}
 
 	double _GetMean(const Node* node) const	{
 		map<const Node*, double>::const_iterator i = mean.find(node);
 		return i->second;
+	}
+
+
+	double _GetMeannew(const Node* node) const	{
+		map<const Node*, list<double> >::const_iterator f = dist.find(node);
+		list<double> l = f->second;
+		list<double>::const_iterator i = l.begin();
+		int n = ((int) (((double) l.size()) / 100 * 50));
+		for (int j=0; j<n; j++)	{
+			i++;
+		}
+		return exp(*i);
 	}
 
 	double _GetVar(const Node* node) const	{
@@ -313,6 +338,17 @@ class MeanExpNormTree : public NewickTree {
 			return meanreg * i->second + stdevreg;
 		}
 		return i->second;
+	}
+
+	double _GetMeannewLog(const Node* node) const	{
+		map<const Node*, list<double> >::const_iterator f = dist.find(node);
+		list<double> l = f->second;
+		list<double>::const_iterator i = l.begin();
+		int n = ((int) (((double) l.size()) / 100 * 50));
+		for (int j=0; j<n; j++)	{
+			i++;
+		}
+		return *i;
 	}
 
 	double _GetVarLog(const Node* node) const	{
@@ -337,6 +373,10 @@ class MeanExpNormTree : public NewickTree {
 
 	double GetMean(const Node* node) const {
 		return printlog ? _GetMeanLog(node) : _GetMean(node);
+	}
+
+	double GetMeannew(const Node* node) const {
+		return printlog ? _GetMeannewLog(node) : _GetMeannew(node);
 	}
 
 	double GetVar(const Node* node) const {
