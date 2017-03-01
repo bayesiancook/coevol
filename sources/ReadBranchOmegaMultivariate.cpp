@@ -1796,7 +1796,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		ooos.close();
 
 		ofstream NeNeos((GetName() + ".postmeanNe.tab").c_str());
-		meanNe->Tabulate(NeNeos);
+		meanNe->TabulateNe(NeNeos);
 		NeNeos.close();
 
 		for (int k=0; k<Ncont; k++)	{
