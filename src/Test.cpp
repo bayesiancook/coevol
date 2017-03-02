@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <vector>
+#include <list>
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
 using namespace std;
@@ -9,14 +9,13 @@ class MySimpleMove : public MCUpdate {};
 class MyModel : public ProbModel {
     Const<PosReal>* One;
     Beta* p;
-    vector<Binomial> vec;
+    list<Binomial> leaves;
 
   public:
-    MyModel() : One(new Const<PosReal>(1)), p(new Beta(One, One)), vec(5, Binomial(1, p)) {
-        for (unsigned int i = 0; i < vec.size(); i++) {
-            vec.at(i).ClampAt(i < 3 ? 1 : 0);
+    MyModel() : One(new Const<PosReal>(1)), p(new Beta(One, One)), leaves(5, Binomial(1, p)) {
+        for (auto i=leaves.begin(); i!=leaves.end(); i++) {
+            i->ClampAt(distance(leaves.begin(),i)<3?1:0);
         }
-
         RootRegister(One);
         Register();
         Update();
