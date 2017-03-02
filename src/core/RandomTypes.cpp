@@ -124,6 +124,7 @@ double Gamma::logProb() {
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 Beta::Beta(Var<PosReal>* inalpha, Var<PosReal>* inbeta) {
+    SetName("beta");
     alpha = inalpha;
     beta = inbeta;
     Register(alpha);
@@ -240,6 +241,7 @@ double PosUniform::logProb() {
 //-------------------------------------------------------------------------
 
 Binomial::Binomial(int inN, Var<UnitReal>* intheta) {
+    SetName("binomial");
     N = inN;
     theta = intheta;
     Register(theta);

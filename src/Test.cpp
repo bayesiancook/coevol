@@ -12,9 +12,10 @@ class MyModel : public ProbModel {
     Beta* p;
     list<Binomial> leaves;
 
-    MyModel() : One(new Const<PosReal>(1)), p(new Beta(One, One)), leaves(5, Binomial(1, p)) {
-        for (auto i = leaves.begin(); i != leaves.end(); i++) {
-            i->ClampAt(distance(leaves.begin(), i) < 3 ? 1 : 0);
+    MyModel() : One(new Const<PosReal>(1)), p(new Beta(One, One)) {
+        for (int i=0; i<5; i++) {
+            leaves.emplace_back(1, p);
+            leaves.back().ClampAt(i<3?1:0);
         }
         RootRegister(One);
         Register();
