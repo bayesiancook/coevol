@@ -7,14 +7,14 @@ using namespace std;
 class MySimpleMove : public MCUpdate {};
 
 class MyModel : public ProbModel {
+  public:
     Const<PosReal>* One;
     Beta* p;
     list<Binomial> leaves;
 
-  public:
     MyModel() : One(new Const<PosReal>(1)), p(new Beta(One, One)), leaves(5, Binomial(1, p)) {
-        for (auto i=leaves.begin(); i!=leaves.end(); i++) {
-            i->ClampAt(distance(leaves.begin(),i)<3?1:0);
+        for (auto i = leaves.begin(); i != leaves.end(); i++) {
+            i->ClampAt(distance(leaves.begin(), i) < 3 ? 1 : 0);
         }
         RootRegister(One);
         Register();
@@ -23,9 +23,7 @@ class MyModel : public ProbModel {
         getDot();
     }
 
-    void MakeScheduler() override {
-        scheduler.Register(new SimpleMove(p, 1.0), 1, "p");  // TODO what are those parameters
-    }
+    void MakeScheduler() override { scheduler.Register(new SimpleMove(p, 1.0), 1, "p"); }
 
     double GetLogProb() override { return p->GetLogProb(); }
 
@@ -38,8 +36,14 @@ class MyModel : public ProbModel {
 
 int main() {
     MyModel model;
-    for (int i = 0; i < 100; i++) {
+    vector<double> results;
+    for (int i = 0; i < 100000; i++) {
         model.Move(1.0);
-        model.ToStream(cout);
+        results.push_back(model.p->val());
     }
+    double mean = 0.0;
+    for (auto i : results) {
+        mean += i;
+    }
+    cout << mean / results.size() << endl;
 }
