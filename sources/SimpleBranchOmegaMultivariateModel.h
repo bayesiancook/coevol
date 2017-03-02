@@ -65,6 +65,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	ConjugateMultiVariateTreeProcess* process;
 
+
+	MeanExpTreeFromMultiVariate* mutratetree;
 	MeanExpTreeFromMultiVariate* synratetree;
 	MeanExpTreeFromMultiVariate* omegatree;
 
@@ -106,8 +108,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		meanexp = inmeanexp;
 
 		// number of components of the Brownian process corresponding to rates
-		// here L = 2: dS and dN/dS
-		L = 2;
+		// here L = 3: dS, dN/dS and u
+		L = 3;
 
 		// get data from file
 		nucdata = new FileSequenceAlignment(datafile);
@@ -198,7 +200,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
 		// note the offset here : first trait corresponds to entry L+1 of the process, etc.
-		// this is because the first L entries of the process correspond to the substitution variables (dS, dN/dS)
+		// this is because the first L entries of the process correspond to the substitution variables (dS, dN/dS, mut)
 		for (int i=0; i<Ncont; i++)	{
 			process->SetAndClamp(contdata,L+i,i,contdatatype);
 		}
@@ -210,11 +212,15 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// create the branch lengths resulting from combining
 		// the times given by the chronogram with the rate (first entry of the multivariate process)
-		cerr << "syn and omega\n";
+		cerr << "syn, omega and u\n";
 		synratetree = new MeanExpTreeFromMultiVariate(process,0,INTEGRAL,false,meanexp);
 
 		// create the dN/dS on each branch, nased on the second entry of the multivariate process
 		omegatree = new MeanExpTreeFromMultiVariate(process,1,MEAN,false,meanexp);
+
+		
+		// create u on each branch, nased on the third entry of the multivariate process
+		muttree = new MeanExpTreeFromMultiVariate(process,2,MEAN,false,meanexp);
 		cerr << "matrix\n";
 
 		// create a GTR nucleotide matrix
@@ -270,6 +276,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	MeanExpTreeFromMultiVariate* GetSynRateTree() {return synratetree;}
 	MeanExpTreeFromMultiVariate* GetOmegaTree() {return omegatree;}
+	MeanExpTreeFromMultiVariate* GetMutTree() {return muttree;}
 
 	MultiVariateTreeProcess* GetMultiVariateProcess() {return process;}
 
