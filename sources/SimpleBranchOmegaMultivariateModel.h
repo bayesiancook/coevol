@@ -2,6 +2,10 @@
 #ifndef BRANCHOMEGAMULTI
 #define BRANCHOMEGAMULTI
 
+#include <iostream>
+
+#include <string> 
+
 #include "MeanValTree.h"
 
 #include "BaseType.h"
@@ -18,6 +22,7 @@
 #include "GeneralConjugatePath.h"
 #include "Jeffreys.h"
 #include "ConjugateMultiVariateTreeProcess.h"
+#include "LinearCombinationNodeTree.h"
 #include "MeanChronogram.h"
 #include "AuxCoevol.h"
 
@@ -64,11 +69,21 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	Const<PosRealVector>* rootvar;
 
 	ConjugateMultiVariateTreeProcess* process;
+	
+	//parameter of the linear combination
+	
+	Normal* gamma;
+	Normal* beta;	
+	
+	double* synrateslope;
+	double* omegaslope;
 
+	SynrateLinearCombinationNodeTree* nodesynratetree;
+	OmegaLinearCombinationNodeTree* nodeomegatree;
 
 	MeanExpTreeFromMultiVariate* mutratetree;
-	MeanExpTreeFromMultiVariate* synratetree;
-	MeanExpTreeFromMultiVariate* omegatree;
+	MeanExpTree* synratetree;
+	MeanExpTree* omegatree;
 
 	// nucleotide mutation matrix is relrate * stationary
 	Dirichlet* relrate;
@@ -108,8 +123,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		meanexp = inmeanexp;
 
 		// number of components of the Brownian process corresponding to rates
-		// here L = 3: dS, dN/dS and u
-		L = 3;
+		// here L = 1: u
+		L = 1;
 
 		// get data from file
 		nucdata = new FileSequenceAlignment(datafile);
@@ -163,6 +178,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		else	{
 			iscalib = false;
+			cerr << "impossible to drive this model";
+			exit(1);
 			chronogram = new Chronogram(tree,One);
 		}
 		if (clamptree)	{
@@ -200,7 +217,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
 		// note the offset here : first trait corresponds to entry L+1 of the process, etc.
-		// this is because the first L entries of the process correspond to the substitution variables (dS, dN/dS, mut)
+		// this is because the first L entries of the process correspond to the substitution variables (mut)
 		for (int i=0; i<Ncont; i++)	{
 			process->SetAndClamp(contdata,L+i,i,contdatatype);
 		}
@@ -210,17 +227,34 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			process->CutOff(1,l);
 		}
 
+		//create the combination factors 
+		
+		gamma = new Normal(Zero, One);
+		beta = new Normal(Zero, One);
+
+		//create the slopes which define the linear combination
+		
+		synrateslope = new double[L + Ncont];
+		omegaslope = new double[L + Ncont]; 
+		
+		CreateSynrateSlope();
+		CreateOmegaSlope();
+		
+
+		// create the node tree obtained from the linear combinations
+		
+		nodesynratetree = new SynrateLinearCombinationNodeTree(process, GetCalibratedChronogram()->GetScale(), synrateslope);
+		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope); 
+
 		// create the branch lengths resulting from combining
-		// the times given by the chronogram with the rate (first entry of the multivariate process)
-		cerr << "syn, omega and u\n";
-		synratetree = new MeanExpTreeFromMultiVariate(process,0,INTEGRAL,false,meanexp);
+		// the times given by the chronogram with the rate 
+		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL);
 
 		// create the dN/dS on each branch, nased on the second entry of the multivariate process
-		omegatree = new MeanExpTreeFromMultiVariate(process,1,MEAN,false,meanexp);
-
+		omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN);
 		
 		// create u on each branch, nased on the third entry of the multivariate process
-		mutratetree = new MeanExpTreeFromMultiVariate(process,2,MEAN,false,meanexp);
+		mutratetree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);
 		cerr << "matrix\n";
 
 		// create a GTR nucleotide matrix
@@ -253,6 +287,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		RootRegister(One);
 		RootRegister(relrate);
 		RootRegister(stationary);
+		RootRegister(gamma);
+		RootRegister(beta);
 		Register();
 
 		MakeScheduler();
@@ -264,8 +300,47 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	// destructor
 	// deallocations should normally be done here
 	// but in general, the model is deleted just before the program exits, so we can dispense with it for the moment
-	~BranchOmegaMultivariateModel() {}
+	~BranchOmegaMultivariateModel() {
+		DeleteSynrateSlope();
+		DeleteOmegaSlope();
+		}
+	
+	void CreateSynrateSlope() {
+			string cha("generation_time");
+			synrateslope[0] = 1;
+			for (int i=0; i<Ncont; i++) {
+				if (GetContinuousData()->GetCharacterName(i)==cha) {
+					synrateslope[i+1] = -1;
+				}	
+				else {
+					synrateslope[i+1] = 0;
+				}
+			}
+	}	
 
+		 
+	void DeleteSynrateSlope() {
+		delete synrateslope;
+	}
+	
+	void CreateOmegaSlope() {
+		string cha("piS");
+		omegaslope[0] = 1;
+		for (int i=0; i<Ncont; i++) {
+			if (GetContinuousData()->GetCharacterName(i)==cha) {
+				omegaslope[i+1] = -1;
+			}	
+			else {
+				omegaslope[i+1] = 0;
+			}
+		}
+	}				
+		 
+	
+	void DeleteOmegaSlope() {
+		delete omegaslope;
+	}
+	
 
 	// accessors
 	Tree* GetTree() {return tree;}
@@ -274,8 +349,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		return codondata;
 	}
 
-	MeanExpTreeFromMultiVariate* GetSynRateTree() {return synratetree;}
-	MeanExpTreeFromMultiVariate* GetOmegaTree() {return omegatree;}
+	MeanExpTree* GetSynRateTree() {return synratetree;}
+	MeanExpTree* GetOmegaTree() {return omegatree;}
 	MeanExpTreeFromMultiVariate* GetMutTree() {return mutratetree;}
 
 	MultiVariateTreeProcess* GetMultiVariateProcess() {return process;}
@@ -311,6 +386,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	ContinuousData* GetContinuousData() {return contdata;}
 
 	int GetL() {return L;}
+	
 
 	CovMatrix* GetCovMatrix() {return sigma;}
 
@@ -330,6 +406,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		total += relrate->GetLogProb();
 		total += stationary->GetLogProb();
+		total += gamma->GetLogProb();
+		total += beta->GetLogProb();
 		return total;
 	}
 
@@ -382,6 +460,15 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new ProfileMove(stationary,0.03,2),10,"stat4");
 			scheduler.Register(new ProfileMove(stationary,0.01,5),10,"stat10");
 			scheduler.Register(new SimpleMove(stationary,0.001),10,"stat");
+			
+			scheduler.Register(new SimpleMove(gamma,10),10,"gamma");
+			scheduler.Register(new SimpleMove(gamma,1),10,"gamma");
+			scheduler.Register(new SimpleMove(gamma,0.1),10,"gamma");
+			
+			scheduler.Register(new SimpleMove(beta,10),10,"beta");
+			scheduler.Register(new SimpleMove(beta,1),10,"beta");
+			scheduler.Register(new SimpleMove(beta,0.1),10,"beta");
+			
 		}
 	}
 
@@ -394,6 +481,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		for (int l=0; l<L; l++)	{
 			process->CutOff(1,l);
 		}
+		gamma->Sample();
+		beta->Sample();
 		relrate->Sample();
 		stationary->Sample();
 		phyloprocess->Sample();
@@ -462,6 +551,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << *DiagArray << '\n';
 		os << *sigma << '\n';
 		os << *process << '\n';
+		os << *gamma << '\n';
+		os << *beta << '\n';
 		os << *relrate << '\n';
 		os << *stationary << '\n';
 	}
@@ -474,6 +565,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		is >> *DiagArray;
 		is >> *sigma;
 		is >> *process;
+		is >> *gamma;
+		is >> *beta;
 		is >> *relrate;
 		is >> *stationary;
 	}
