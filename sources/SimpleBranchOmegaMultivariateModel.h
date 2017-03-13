@@ -71,6 +71,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	Const<PosRealVector>* rootvar;
 
 	ConjugateMultiVariateTreeProcess* process;
+
 	
 	//parameter of the linear combination
 	
@@ -86,6 +87,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	MeanExpTreeFromMultiVariate* mutratetree;
 	MeanExpTree* synratetree;
 	MeanExpTree* omegatree;
+
 
 	// nucleotide mutation matrix is relrate * stationary
 	Dirichlet* relrate;
@@ -125,6 +127,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		meanexp = inmeanexp;
 
 		// number of components of the Brownian process corresponding to rates
+
 		// here L = 1: u
 		L = 1;
 
@@ -220,7 +223,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
 		// note the offset here : first trait corresponds to entry L+1 of the process, etc.
+
 		// this is because the first L entries of the process correspond to the substitution variables (mut)
+
 		for (int i=0; i<Ncont; i++)	{
 			process->SetAndClamp(contdata,L+i,i,contdatatype);
 		}
@@ -250,6 +255,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope); 
 
 		// create the branch lengths resulting from combining
+
 		// the times given by the chronogram with the rate 
 		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL);
 
@@ -258,6 +264,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		// create u on each branch, nased on the third entry of the multivariate process
 		mutratetree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);
+
 		cerr << "matrix\n";
 
 		// create a GTR nucleotide matrix
@@ -353,9 +360,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		return codondata;
 	}
 
+
 	MeanExpTree* GetSynRateTree() {return synratetree;}
 	MeanExpTree* GetOmegaTree() {return omegatree;}
 	MeanExpTreeFromMultiVariate* GetMutTree() {return mutratetree;}
+
 
 	MultiVariateTreeProcess* GetMultiVariateProcess() {return process;}
 
