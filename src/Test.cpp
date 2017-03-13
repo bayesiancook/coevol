@@ -1,16 +1,46 @@
+#include <cmath>
 #include <cstdio>
 #include <list>
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
+#include "utils/Random.hpp"
 using namespace std;
 
 class MySimpleMove : public MCUpdate {
-    MCMC* managedNode;
-public:
-    MySimpleMove(MCMC* managedNode): managedNode(managedNode) {}
+    Rnode* managedNode;
 
-    double Move(double) override { // decided to ignore tuning modulator (ie, assume = 1)
-        return managedNode->Move(1.0);
+  public:
+    MySimpleMove(Rnode* managedNode) : managedNode(managedNode) {}
+
+    double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
+        // if node is clamped print a warning message
+        if (managedNode->isClamped()) {
+            printf("WARNING: Trying to move a clamped node!\n");
+            exit(1);
+        } else {
+            // update node
+            managedNode->Corrupt(true);  // it seems important to put this BEFORE proposemove
+            double logHastings = managedNode->ProposeMove(1.0);  // ProposeMove modifies the actual
+                                                                 // value of the node and returns
+                                                                 // the log of the Hastings ratio
+                                                                 // (proposal ratio)
+
+            double logMetropolis = managedNode->Update();
+
+            bool accepted = log(Random::Uniform()) < logMetropolis + logHastings;
+            if (!accepted) {
+                managedNode->Corrupt(false);
+                managedNode->Restore();
+            }
+
+            // do something with children
+            // do something with parents?
+
+            // return somehting
+            return (double)accepted;  // for some reason Move seems to return (double)accepted where
+                                      // accepted is a
+                                      // bool that says if the move was accepted
+        }
     }
 };
 
@@ -21,9 +51,9 @@ class MyModel : public ProbModel {
     list<Binomial> leaves;
 
     MyModel() : one(new Const<PosReal>(1)), p(new Beta(one, one)) {
-        for (int i=0; i<5; i++) {
+        for (int i = 0; i < 5; i++) {
             leaves.emplace_back(1, p);
-            leaves.back().ClampAt(i<3?1:0);
+            leaves.back().ClampAt(i < 3 ? 1 : 0);
         }
         RootRegister(one);
         Register();
