@@ -177,9 +177,10 @@ class NormalNormalCompMove : public MCUpdate	{
 				mnode->Restore();
 				Naccepted ++;
 			}
+
 		}
 		}
-		return (double) Naccepted / GetSize();
+		return (double) Naccepted / GetSize() / nrep;
 	}	
 
 	private:
@@ -737,9 +738,9 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 
 				/*
 				for(int i=2;i<K;i++){
-					scheduler.Register(new NormalNormalCompMove(selectionnormal[1],selectionnormal[i],1,10,5),1,"diff diff comp 1/10");
-					scheduler.Register(new NormalNormalCompMove(selectionnormal[1],selectionnormal[i],3,10,5),1,"diff diff comp 3/10");
-					scheduler.Register(new NormalNormalCompMove(selectionnormal[1],selectionnormal[i],5,3,5),1,"diff diff comp 5/3");
+					scheduler.Register(new NormalNormalCompMove(selectionnormal[1],selectionnormal[i],1,3,5),1,"diff diff comp");
+					scheduler.Register(new NormalNormalCompMove(selectionnormal[1],selectionnormal[i],0.3,10,5),1,"diff diff comp");
+					scheduler.Register(new NormalNormalCompMove(selectionnormal[1],selectionnormal[i],0.1,10,5),1,"diff diff comp");
 				}
 				*/
 

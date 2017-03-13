@@ -20,6 +20,8 @@
 #include "MeanExpTree.h"
 #include "Normal.h"
 #include "GeneralConjugatePath.h"
+#include "CodonConjugatePath.h"
+#include "MultiVariatePropagateMove.h"
 #include "Jeffreys.h"
 #include "ConjugateMultiVariateTreeProcess.h"
 #include "LinearCombinationNodeTree.h"
@@ -213,6 +215,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// along the chronogram, and with covariance matrix sigma
 		cerr << "process\n";
 		process = new ConjugateMultiVariateTreeProcess(sigma,chronogram);
+		process->Reset();
 
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
@@ -268,7 +271,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// create a phylo process based on this array of branch specific matrices
 		// and condition it on the multiple alignment codondata
-		pathconjtree = new BranchMatrixPathConjugateTree(synratetree, matrixtree, codondata);
+		// pathconjtree = new BranchMatrixPathConjugateTree(synratetree, matrixtree, codondata);
+		pathconjtree = new MGCodonBranchMatrixPathConjugateTree(synratetree, matrixtree, codondata);
 		phyloprocess = new PathConjugatePhyloProcess(pathconjtree);
 
 
@@ -441,6 +445,16 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.01),10,"root age");
 				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.001),10,"root age");
 			}
+
+			int n = taxonset->GetNtaxa() * 100;
+			scheduler.Register(new MultiVariatePropagateMove(process,1,0.1,0.1),n,"propmove");
+			scheduler.Register(new MultiVariatePropagateMove(process,0.1,0.5,0.5),n,"propmove");
+			scheduler.Register(new MultiVariatePropagateMove(process,0.1,0.9,0.9),n,"propmove");
+			scheduler.Register(new MultiVariatePropagateMove(process,0.01,0.99,0.99),n,"propmove");
+
+			scheduler.Register(new SimpleMove(process,1),150,"multinormal");
+			scheduler.Register(new SimpleMove(process,0.1),150,"multinormal");
+			scheduler.Register(new SimpleMove(process,0.01),150,"multinormal");
 
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,10,10),1,"conjugate sigma - process");
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,1,10),1,"conjugate sigma - process");
