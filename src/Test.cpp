@@ -18,8 +18,11 @@ class MySimpleMove : public MCUpdate {
             printf("WARNING: Trying to move a clamped node!\n");
             exit(1);
         } else {
-            // update node
-            managedNode->Corrupt(true);  // it seems important to put this BEFORE proposemove
+            // It seems important to put this BEFORE proposemove. Corrupt sets value_updated to
+            // false on the node and its direct children (in Rnode default implementation). The
+            // parameter determines if a backup of logprob should be kept.
+            managedNode->Corrupt(true);
+
             double logHastings = managedNode->ProposeMove(1.0);  // ProposeMove modifies the actual
                                                                  // value of the node and returns
                                                                  // the log of the Hastings ratio
@@ -32,9 +35,6 @@ class MySimpleMove : public MCUpdate {
                 managedNode->Corrupt(false);
                 managedNode->Restore();
             }
-
-            // do something with children
-            // do something with parents?
 
             // return somehting
             return (double)accepted;  // for some reason Move seems to return (double)accepted where

@@ -154,8 +154,9 @@ double Rnode::Move(double tuning) {
 // * corrupt
 //-------------------------------------------------------------------------
 void Rnode::Corrupt(bool bk) {
-    value_updated = false;
-    localCorrupt(bk);
+    value_updated = false;  // (Sets value_updated) to false here...
+    localCorrupt(bk);       //... and then calls localcorrupt which does the same with updateFlag...
+                            // cf (1) below
     for (auto i : down) {
         i->NotifyCorrupt(bk);
     }
@@ -167,14 +168,14 @@ void Rnode::localCorrupt(bool bk) {
     if (bk) {
         bklogprob = logprob;
     }
-    updateFlag = false;
+    updateFlag = false;  // (1)
 }
 
-void Rnode::FullCorrupt(map<DAGnode*, int>& m) {
-    localCorrupt(true);
-    if (m.find(this) == m.end()) {
-        m[this] = 1;
-        for (auto i : down) {
+void Rnode::FullCorrupt(map<DAGnode*, int>& m) {  // why does it have these weird parameters?
+    localCorrupt(true);             // (in the case of fullcorrupt, value_updated is not set; why?)
+    if (m.find(this) == m.end()) {  // if this not in m (whatever m is)
+        m[this] = 1;                // add it with value 1 (?)
+        for (auto i : down) {       // and recursive call on its children
             i->FullCorrupt(m);
         }
     }
@@ -187,7 +188,7 @@ double Rnode::Update() {
     double ret = 0;
     if (!updateFlag and parentsUpdated()) {
         ret = localUpdate();
-        value_updated = true;
+        value_updated = true;  // Again, value_updated and updateFlag seem to be interchangeable
         for (auto i : down) {
             ret += i->NotifyUpdate();
         }
@@ -210,7 +211,7 @@ double Rnode::NotifyUpdate() {
 }
 
 double Rnode::localUpdate() {
-    logprob = logProb();
+    logprob = logProb(); // update logProb (based on what?)
     updateFlag = true;
     return logprob - bklogprob;
 }
