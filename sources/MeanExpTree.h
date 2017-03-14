@@ -18,7 +18,7 @@ class MeanExp: public Dvar<PosReal>{
 
 	public:
 
-	MeanExp(Var<Real>* inup, Var<Real>* indown, Var<PosReal>* intime, BranchValType inbval = INTEGRAL, Var<Real>* inoffset = 0){
+	MeanExp(Var<Real>* inup, Var<Real>* indown, Var<PosReal>* intime, BranchValType inbval, Var<Real>* inoffset = 0){
 		up =inup;
 		down = indown;
 		time = intime;
@@ -60,7 +60,7 @@ class MeanExpTree : public BranchValPtrTree<Dvar<PosReal> >	{
 
 	public:
 
-	MeanExpTree(NodeVarTree<Real>* inprocess, LengthTree* inlengthtree, BranchValType inbval = INTEGRAL, Var<Real>* inoffset = 0)	{
+	MeanExpTree(NodeVarTree<Real>* inprocess, LengthTree* inlengthtree, BranchValType inbval, Var<Real>* inoffset = 0)	{
 		SetWithRoot(true);
 		process = inprocess;
 		lengthtree = inlengthtree;
