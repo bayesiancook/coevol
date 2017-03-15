@@ -26,7 +26,7 @@ class SynrateLinearCombination : public Dvar<Real> {
 		for (int i=0; i<x->GetDim(); i++) {
 			a+= (*x)[i] * synrateslope[i];
 		}
-		a += -1 * log(rootage->val() * 365);
+		a += -1 * log(rootage->val() * 365 * pow(10, 6));
 		setval(a);	
 	}	
 	
@@ -99,8 +99,7 @@ class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		double* p;
-		*p = SynrateLinearCombination(process->GetNodeVal(link->GetNode()), rootage, synrateslope);
+		return new SynrateLinearCombination(process->GetNodeVal(link->GetNode()), rootage, synrateslope);
 	}
 	
 	
@@ -134,8 +133,7 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		double* p;
-		*p = OmegaLinearCombination(process->GetNodeVal(link->GetNode()), gamma, beta, omegaslope);
+		return new OmegaLinearCombination(process->GetNodeVal(link->GetNode()), gamma, beta, omegaslope);
 	}
 	
 	

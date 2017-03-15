@@ -182,6 +182,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			chronogram = new CalibratedChronogram(tree,One,a,b,calibset);
 		}
 		else	{
+			iscalib = false;
 			chronogram = new Chronogram(tree,One);
 		}
 		if (clamptree)	{
@@ -248,7 +249,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// create the node tree obtained from the linear combinations
 		
-		nodesynratetree = new SynrateLinearCombinationNodeTree(process, GetChronogram()->GetRootAge(), synrateslope);
+		nodesynratetree = new SynrateLinearCombinationNodeTree(process, GetCalibratedChronogram()->GetScale(), synrateslope);
 		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope); 
 
 		// create the branch lengths resulting from combining
