@@ -254,10 +254,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// create the branch lengths resulting from combining
 
 		// the times given by the chronogram with the rate 
-		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL);
+		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL, false);
 
 		// create the dN/dS on each branch, nased on the second entry of the multivariate process
-		omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN);
+		omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN, false);
 		
 		// create u on each branch, nased on the third entry of the multivariate process
 		mutratetree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);

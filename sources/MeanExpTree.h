@@ -4,6 +4,7 @@
 #define MEANEXPTREE_H
 
 #include "MultiVariateTreeProcess.h"
+#include "LinearCombinationNodeTree.h"
 
 
 class MeanExp: public Dvar<PosReal>{
@@ -38,6 +39,15 @@ class MeanExp: public Dvar<PosReal>{
 		}
 		if (time)	{
 			if (bval == INTEGRAL)	{
+				cerr << "\n";
+				cerr << up;
+				cerr << "\n";
+				cerr << down;
+				cerr << "\n";
+				cerr << time;
+				cerr << "\n";
+				cerr << tmpoffset;
+				cerr << "\n";				
 				setval( (exp(up->val()) + exp(down->val()))/2 * time->val() * tmpoffset);
 			}
 			else	{
@@ -60,12 +70,16 @@ class MeanExpTree : public BranchValPtrTree<Dvar<PosReal> >	{
 
 	public:
 
-	MeanExpTree(NodeVarTree<Real>* inprocess, LengthTree* inlengthtree, BranchValType inbval, Var<Real>* inoffset = 0)	{
-		SetWithRoot(true);
+	MeanExpTree(NodeVarTree<Real>* inprocess, LengthTree* inlengthtree, BranchValType inbval, bool withroot, Var<Real>* inoffset = 0)	{
 		process = inprocess;
 		lengthtree = inlengthtree;
 		bval = inbval;
 		offset = inoffset;
+		SetWithRoot(withroot);
+		if ((bval == INTEGRAL) && (WithRoot()))	{
+			cerr << "error in mean exp tree : integral is always without root\n";
+			exit(1);
+		}
 		RecursiveCreate(GetRoot());
 	}
 
@@ -95,8 +109,11 @@ class MeanExpTree : public BranchValPtrTree<Dvar<PosReal> >	{
 
 	double RecursiveGetMean(Link* from, int& n)	{
 		double tmp = 0;
+		if ((! from->isRoot()) || WithRoot())	{
+			tmp += GetBranchVal(from->GetBranch())->val();
+			n++;
+		}
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
-			tmp += GetBranchVal(link->GetBranch())->val();
 			tmp += RecursiveGetMean(link->Out(),n);
 			n++;
 		}
@@ -104,8 +121,10 @@ class MeanExpTree : public BranchValPtrTree<Dvar<PosReal> >	{
 	}
 
 	void specialUpdate(Link* from)	{
+		if ((! from->isRoot()) || WithRoot())	{
+			GetBranchVal(from->GetBranch())->specialUpdate();
+		}
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
-			GetBranchVal(link->GetBranch())->specialUpdate();
 			specialUpdate(link->Out());
 		}
 	}
@@ -113,7 +132,8 @@ class MeanExpTree : public BranchValPtrTree<Dvar<PosReal> >	{
 	Dvar<PosReal>* CreateBranchVal(const Link* link)	{
 		if (link->isRoot())	{
 			if (bval == INTEGRAL)	{
-				return 0;
+				cerr << "error in MeanExp::CreateBranchVal\n";
+				exit(1);
 			}
 			else	{
 				return new MeanExp(process->GetNodeVal(link->GetNode()), process->GetNodeVal(link->Out()->GetNode()), lengthtree->GetBranchVal(link->GetBranch()), bval, offset);
@@ -317,6 +337,7 @@ class MeanExpTreeFromMultiVariate : public BranchValPtrTree<Dvar<PosReal> >	{
 			specialUpdate(link->Out());
 		}
 	}
+	
 
 	Dvar<PosReal>* CreateBranchVal(const Link* link)	{
 		if (link->isRoot())	{
