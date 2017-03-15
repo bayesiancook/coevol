@@ -525,7 +525,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (isCalibrated())	{
 			os << "\trootage";
 		}
-
+		os << "\tgamma";
+		os << "\tbeta";
 		for (int k=0; k<Ncont+L; k++)	{
 			for (int l=k+1; l<Ncont+L; l++)	{
 				os << '\t' << "sigma_" << k << '_' << l;
@@ -548,7 +549,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (isCalibrated())	{
 			os << '\t' << GetRootAge();
 		}
-
+		os << gamma->val();
+		os << beta->val();
 		for (int k=0; k<Ncont+L; k++)	{
 			for (int l=k+1; l<Ncont+L; l++)	{
 				os << '\t' << (*sigma)[k][l];
