@@ -78,6 +78,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	Normal* gamma;
 	Normal* beta;	
 	
+	Var<PosReal>* absrootage;
+	
 	double* synrateslope;
 	double* omegaslope;
 
@@ -143,7 +145,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// number of MCMC cycles per point
 		nrep = innrep;
 		if (nrep == 0)	{
-			nrep = 30;
+			nrep = 150;
 		}
 
 		taxonset = nucdata->GetTaxonSet();
@@ -188,7 +190,17 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (clamptree)	{
 			chronogram->Clamp();
 		}
+	
 		cerr << "ok\n";
+		
+		if (iscalib) {
+			absrootage = GetCalibratedChronogram()->GetScale();
+		}
+		else {
+			absrootage = new Const<PosReal>(rootage);	
+		}
+		
+		cerr << "checking rootage" << absrootage->val();	
 
 		// Ncont : number of quantitative traits
 		// L : number of substitution parameters coevolving with traits (typically, 2: dS and dN/dS).
@@ -249,7 +261,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// create the node tree obtained from the linear combinations
 		
-		nodesynratetree = new SynrateLinearCombinationNodeTree(process, GetCalibratedChronogram()->GetScale(), synrateslope);
+		nodesynratetree = new SynrateLinearCombinationNodeTree(process, absrootage, synrateslope);
 		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope); 
 
 		// create the branch lengths resulting from combining
@@ -298,6 +310,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		RootRegister(stationary);
 		RootRegister(gamma);
 		RootRegister(beta);
+		RootRegister(absrootage);
 		Register();
 
 		MakeScheduler();
@@ -482,13 +495,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new ProfileMove(stationary,0.01,5),10,"stat10");
 			scheduler.Register(new SimpleMove(stationary,0.001),10,"stat");
 			
-			scheduler.Register(new SimpleMove(gamma,10),10,"gamma");
-			scheduler.Register(new SimpleMove(gamma,1),10,"gamma");
 			scheduler.Register(new SimpleMove(gamma,0.1),10,"gamma");
+			scheduler.Register(new SimpleMove(gamma,0.03),10,"gamma");
+			scheduler.Register(new SimpleMove(gamma,0.01),10,"gamma");
 			
-			scheduler.Register(new SimpleMove(beta,10),10,"beta");
-			scheduler.Register(new SimpleMove(beta,1),10,"beta");
+			scheduler.Register(new SimpleMove(beta,0.3),10,"beta");
 			scheduler.Register(new SimpleMove(beta,0.1),10,"beta");
+			scheduler.Register(new SimpleMove(beta,0.03),10,"beta");
 			
 		}
 	}

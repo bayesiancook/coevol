@@ -38,16 +38,7 @@ class MeanExp: public Dvar<PosReal>{
 			tmpoffset = exp(offset->val());
 		}
 		if (time)	{
-			if (bval == INTEGRAL)	{
-				cerr << "\n";
-				cerr << up;
-				cerr << "\n";
-				cerr << down;
-				cerr << "\n";
-				cerr << time;
-				cerr << "\n";
-				cerr << tmpoffset;
-				cerr << "\n";				
+			if (bval == INTEGRAL)	{			
 				setval( (exp(up->val()) + exp(down->val()))/2 * time->val() * tmpoffset);
 			}
 			else	{
