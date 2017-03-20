@@ -10,11 +10,12 @@ template <class T>
 class MySimpleMove : public MCUpdate {
     Rvar<T> &managedNode;
     vector<double> values;
-    double sum;
+    double mean;
     int nbVal;
+    double M2;
 
   public:
-    MySimpleMove(Rvar<T>& managedNode) : managedNode(managedNode), sum(0), nbVal(0) {}
+    MySimpleMove(Rvar<T>& managedNode) : managedNode(managedNode), mean(0), nbVal(0), M2(0) {}
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
         // if node is clamped print a warning message
@@ -51,8 +52,17 @@ class MySimpleMove : public MCUpdate {
                 managedNode.Restore();
             }
             values.push_back(managedNode);
-            sum += managedNode;
+
+
+
             nbVal += 1;
+            double delta = managedNode - mean;
+            mean += delta/nbVal;
+            double delta2 = managedNode - mean;
+            M2 += delta * delta2;
+
+
+
 
             // return somehting
             return (double)accepted;  // for some reason Move seems to return (double)accepted where
@@ -62,7 +72,7 @@ class MySimpleMove : public MCUpdate {
     }
 
     void debug() {
-        printf("New value %f, mean=%f\n", double(managedNode), sum/nbVal);
+        printf("New value %f, mean=%f, variance=%f\n", double(managedNode), mean, M2/nbVal);
         }
 };
 
@@ -110,6 +120,10 @@ int main() {
     for (auto i : results) {
         mean += i;
     }
-    cout << mean / results.size() << endl;
+    double variance = 0.0;
+    for (auto i : results) {
+        variance += i*i;
+    }
+    cout << "Mean: " << mean / results.size() << " ; variance: " << (variance - (mean * mean / results.size())) / results.size() << endl;
     model.mymove->debug();
 }
