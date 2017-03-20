@@ -8,48 +8,51 @@ using namespace std;
 
 template <class T>
 class MySimpleMove : public MCUpdate {
-    Rvar<T>* managedNode;
+    Rvar<T> &managedNode;
+    vector<double> values;
+    double sum;
+    int nbVal;
 
   public:
-    MySimpleMove(Rvar<T>* managedNode) : managedNode(managedNode) {}
+    MySimpleMove(Rvar<T>& managedNode) : managedNode(managedNode), sum(0), nbVal(0) {}
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
         // if node is clamped print a warning message
-        if (managedNode->isClamped()) {
+        if (managedNode.isClamped()) {
             printf("WARNING: Trying to move a clamped node!\n");
             exit(1);
         } else {
             // It seems important to put this BEFORE proposemove. Corrupt sets value_updated to
             // false on the node and its direct children (in Rnode default implementation). The
             // parameter determines if a backup of logprob should be kept.
-            managedNode->Corrupt(true);
+            managedNode.Corrupt(true);
 
-            // double logHastings = managedNode->ProposeMove(1.0);  // ProposeMove modifies the actual
-                                                                 // value of the node and returns
-                                                                 // the log of the Hastings ratio
-                                                                 // (proposal ratio)
+            // double logHastings = managedNode.ProposeMove(1.0);  // ProposeMove modifies the
+            // actual value of the node and returns the log of the Hastings ratio (proposal ratio)
 
             double m = (Random::Uniform() - 0.5);
-            T& myref = *managedNode;
-            myref += m;
-            while ((myref < 0) || (myref > 1)) {
-                if (myref < 0) {
-                    myref = -myref;
+            managedNode += m;
+            while ((managedNode < 0) || (managedNode > 1)) {
+                if (managedNode < 0) {
+                    (T&)managedNode = -managedNode;
                 }
-                if (myref > 1) {
-                    myref = 2 - myref;
+                if (managedNode > 1) {
+                    (T&)managedNode = 2 - managedNode;
                 }
             }
 
             double logHastings = 0;
 
-            double logMetropolis = managedNode->Update();
+            double logMetropolis = managedNode.Update();
 
             bool accepted = log(Random::Uniform()) < logMetropolis + logHastings;
             if (!accepted) {
-                managedNode->Corrupt(false);
-                managedNode->Restore();
+                managedNode.Corrupt(false);
+                managedNode.Restore();
             }
+            values.push_back(managedNode);
+            sum += managedNode;
+            nbVal += 1;
 
             // return somehting
             return (double)accepted;  // for some reason Move seems to return (double)accepted where
@@ -57,6 +60,10 @@ class MySimpleMove : public MCUpdate {
                                       // bool that says if the move was accepted
         }
     }
+
+    void debug() {
+        printf("New value %f, mean=%f\n", double(managedNode), sum/nbVal);
+        }
 };
 
 class MyModel : public ProbModel {
@@ -64,6 +71,7 @@ class MyModel : public ProbModel {
     Const<PosReal>* one;
     Beta* p;
     list<Binomial> leaves;
+    MySimpleMove<UnitReal>* mymove;
 
     MyModel() : one(new Const<PosReal>(1)), p(new Beta(one, one)) {
         for (int i = 0; i < 5; i++) {
@@ -77,7 +85,10 @@ class MyModel : public ProbModel {
         getDot();
     }
 
-    void MakeScheduler() override { scheduler.Register(new MySimpleMove<UnitReal>(p), 1, "p"); }
+    void MakeScheduler() override {
+        mymove = new MySimpleMove<UnitReal>(*p);
+        scheduler.Register(mymove, 1, "p");
+    }
 
     double GetLogProb() override { return p->GetLogProb(); }
 
@@ -100,4 +111,5 @@ int main() {
         mean += i;
     }
     cout << mean / results.size() << endl;
+    model.mymove->debug();
 }
