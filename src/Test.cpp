@@ -30,13 +30,14 @@ class MySimpleMove : public MCUpdate {
                                                                  // (proposal ratio)
 
             double m = (Random::Uniform() - 0.5);
-            managedNode->value += m;
-            while ((managedNode->value < 0) || (managedNode->value > 1)) {
-                if (managedNode->value < 0) {
-                    managedNode->value = -managedNode->value;
+            T& myref = *managedNode;
+            myref += m;
+            while ((myref < 0) || (myref > 1)) {
+                if (myref < 0) {
+                    myref = -myref;
                 }
-                if (managedNode->value > 1) {
-                    managedNode->value = 2 - managedNode->value;
+                if (myref > 1) {
+                    myref = 2 - myref;
                 }
             }
 
