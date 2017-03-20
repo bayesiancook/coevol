@@ -123,6 +123,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
 		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
 		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meanmutrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 
 		// MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		// double alpha[dim];
@@ -149,8 +150,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			meanchrono->Add(GetModel()->GetChronogram());
 
-			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);
-			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 1);
+			meanmutrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);
+			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetChronogram());
+			meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetChronogram());
 
 			// double t0 = GetModel()->GetRootAge();
 			// recalculer beta

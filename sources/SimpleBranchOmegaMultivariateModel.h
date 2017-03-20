@@ -378,6 +378,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 
 	MultiVariateTreeProcess* GetMultiVariateProcess() {return process;}
+	
+	SynrateLinearCombinationNodeTree*  GetSynrateNodeTree() {return nodesynratetree;}
+	
+	OmegaLinearCombinationNodeTree*  GetOmegaNodeTree() {return nodeomegatree;}
+
 
 	Chronogram* GetChronogram() {return chronogram;}
 

@@ -435,8 +435,8 @@ class MeanExpNormTree : public NewickTree {
 		return printlog ? _GetMeannewLog(node) : _GetMeannew(node);
 	}
 	
-	double GetMeanNenew(const Node* node) const {
-		return printlog ? _GetMeanLog(node) : _GetMeanNe(node);
+	double GetMeannewNe(const Node* node) const {
+		return printlog ? _GetMeannewLog(node) : _GetMeannewNe(node);
 	}
 
 	double GetVar(const Node* node) const {
