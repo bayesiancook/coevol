@@ -6,11 +6,12 @@
 #include "utils/Random.hpp"
 using namespace std;
 
+template <class T>
 class MySimpleMove : public MCUpdate {
-    Rnode* managedNode;
+    Rvar<T>* managedNode;
 
   public:
-    MySimpleMove(Rnode* managedNode) : managedNode(managedNode) {}
+    MySimpleMove(Rvar<T>* managedNode) : managedNode(managedNode) {}
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
         // if node is clamped print a warning message
@@ -23,10 +24,23 @@ class MySimpleMove : public MCUpdate {
             // parameter determines if a backup of logprob should be kept.
             managedNode->Corrupt(true);
 
-            double logHastings = managedNode->ProposeMove(1.0);  // ProposeMove modifies the actual
+            // double logHastings = managedNode->ProposeMove(1.0);  // ProposeMove modifies the actual
                                                                  // value of the node and returns
                                                                  // the log of the Hastings ratio
                                                                  // (proposal ratio)
+
+            double m = (Random::Uniform() - 0.5);
+            managedNode->value += m;
+            while ((managedNode->value < 0) || (managedNode->value > 1)) {
+                if (managedNode->value < 0) {
+                    managedNode->value = -managedNode->value;
+                }
+                if (managedNode->value > 1) {
+                    managedNode->value = 2 - managedNode->value;
+                }
+            }
+
+            double logHastings = 0;
 
             double logMetropolis = managedNode->Update();
 
@@ -62,7 +76,7 @@ class MyModel : public ProbModel {
         getDot();
     }
 
-    void MakeScheduler() override { scheduler.Register(new MySimpleMove(p), 1, "p"); }
+    void MakeScheduler() override { scheduler.Register(new MySimpleMove<UnitReal>(p), 1, "p"); }
 
     double GetLogProb() override { return p->GetLogProb(); }
 

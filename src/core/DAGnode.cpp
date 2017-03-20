@@ -211,7 +211,7 @@ double Rnode::NotifyUpdate() {
 }
 
 double Rnode::localUpdate() {
-    logprob = logProb(); // update logProb (based on what?)
+    logprob = logProb();  // update logProb (based on what?)
     updateFlag = true;
     return logprob - bklogprob;
 }

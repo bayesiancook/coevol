@@ -117,7 +117,6 @@ class UnitReal : public BaseType {
     double ProposeMove(double tuning) override;
     int check() final;
 
-  protected:
     double value;
 };
 
