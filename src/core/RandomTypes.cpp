@@ -10,6 +10,7 @@ using namespace std;
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 Normal::Normal(Var<Real>* inmean, Var<PosReal>* invariance) {
+    SetName("normal");
     meanvec = nullptr;
     mean = inmean;
     variance = invariance;

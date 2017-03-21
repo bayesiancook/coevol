@@ -7,21 +7,22 @@
 using namespace std;
 
 double lambda = 4;
-bool adaptive =  true;
+bool adaptive = true;
 
 template <class T>
 class MyDoubleMove : public MCUpdate {
     Rvar<T>& managedNode;
 
     // move memory
-    vector<double> values; // list of all values
-    double mean; // on-line mean (approximation)
-    int nbVal; // number of values computed so far (accepted and refused)
-    double M2; // variance * nbVals (approximation)
-    int accept; // number of accepted proposals
+    vector<double> values;  // list of all values
+    double mean;            // on-line mean (approximation)
+    int nbVal;              // number of values computed so far (accepted and refused)
+    double M2;              // variance * nbVals (approximation)
+    int accept;             // number of accepted proposals
 
   public:
-    MyDoubleMove(Rvar<T>& managedNode) : managedNode(managedNode), mean(0), nbVal(0), M2(0), accept(0) {}
+    MyDoubleMove(Rvar<T>& managedNode)
+        : managedNode(managedNode), mean(0), nbVal(0), M2(0), accept(0) {}
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
         // if node is clamped print a warning message
@@ -81,23 +82,31 @@ class MyDoubleMove : public MCUpdate {
     }
 
     void debug() {
-        printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode), mean, M2 / nbVal, (accept*100.0)/nbVal);
+        printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode), mean,
+               M2 / nbVal, (accept * 100.0) / nbVal);
     }
 };
 
 class MyModel : public ProbModel {
   public:
-    Const<PosReal>* one;
-    Beta* p;
-    list<Binomial> leaves;
+    Const<PosReal>* posOne;
+    Const<Real>* one;
+    Normal* a;
+    Exponential* b;
+    list<Normal> leaves;
     MyDoubleMove<UnitReal>* mymove;
 
-    MyModel() : one(new Const<PosReal>(1)), p(new Beta(one, one)) {
+    MyModel()
+        : posOne(new Const<PosReal>(1)),
+          one(new Const<Real>(1)),
+          a(new Normal(one, posOne)),
+          b(new Exponential(posOne, Exponential::MEAN)) {
         for (int i = 0; i < 5; i++) {
-            leaves.emplace_back(1, p);
+            leaves.emplace_back(a, b);
             leaves.back().ClampAt(i < 3 ? 1 : 0);
         }
         RootRegister(one);
+        RootRegister(posOne);
         Register();
         Update();
         MakeScheduler();
@@ -105,15 +114,15 @@ class MyModel : public ProbModel {
     }
 
     void MakeScheduler() override {
-        mymove = new MyDoubleMove<UnitReal>(*p);
-        scheduler.Register(mymove, 1, "p");
+        // mymove = new MyDoubleMove<UnitReal>(*p);
+        // scheduler.Register(mymove, 1, "p");
     }
 
-    double GetLogProb() override { return p->GetLogProb(); }
+    double GetLogProb() override { return a->GetLogProb(); }
 
-    void drawSample() override { p->drawSample(); }
+    void drawSample() override { a->drawSample(); }
 
-    void ToStream(ostream& os) override { os << p->val() << endl; }
+    void ToStream(ostream& os) override { os << a->val() << endl; }
 
     void FromStream(istream&) override {}
 };
@@ -123,7 +132,7 @@ int main() {
     vector<double> results;
     for (int i = 0; i < 100000; i++) {
         model.Move(1.0);
-        results.push_back(model.p->val());
+        // results.push_back(model.a->val());
     }
     double mean = 0.0;
     for (auto i : results) {

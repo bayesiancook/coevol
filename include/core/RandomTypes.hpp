@@ -16,7 +16,6 @@ class Normal : public virtual Rvar<Real> {
 
     double logProb() override;
 
-  protected:
     void drawSample() override;
 
   private:
