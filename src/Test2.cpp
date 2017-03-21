@@ -10,7 +10,7 @@ double lambda = 4;
 bool adaptive =  true;
 
 template <class T>
-class MySimpleMove : public MCUpdate {
+class MyDoubleMove : public MCUpdate {
     Rvar<T>& managedNode;
 
     // move memory
@@ -21,7 +21,7 @@ class MySimpleMove : public MCUpdate {
     int accept; // number of accepted proposals
 
   public:
-    MySimpleMove(Rvar<T>& managedNode) : managedNode(managedNode), mean(0), nbVal(0), M2(0), accept(0) {}
+    MyDoubleMove(Rvar<T>& managedNode) : managedNode(managedNode), mean(0), nbVal(0), M2(0), accept(0) {}
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
         // if node is clamped print a warning message
@@ -90,7 +90,7 @@ class MyModel : public ProbModel {
     Const<PosReal>* one;
     Beta* p;
     list<Binomial> leaves;
-    MySimpleMove<UnitReal>* mymove;
+    MyDoubleMove<UnitReal>* mymove;
 
     MyModel() : one(new Const<PosReal>(1)), p(new Beta(one, one)) {
         for (int i = 0; i < 5; i++) {
@@ -105,7 +105,7 @@ class MyModel : public ProbModel {
     }
 
     void MakeScheduler() override {
-        mymove = new MySimpleMove<UnitReal>(*p);
+        mymove = new MyDoubleMove<UnitReal>(*p);
         scheduler.Register(mymove, 1, "p");
     }
 
@@ -133,7 +133,7 @@ int main() {
     for (auto i : results) {
         variance += i * i;
     }
-    cout << "Mean: " << mean / results.size()
+    cout << "<DOUBLE_TEST> Mean: " << mean / results.size()
          << " ; variance: " << (variance - (mean * mean / results.size())) / results.size() << endl;
     model.mymove->debug();
 }

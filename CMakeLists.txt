@@ -37,3 +37,8 @@ target_compile_features(diffsel PRIVATE ${CXX_FEATURES})
 add_executable(move_test "src/Test.cpp")
 target_link_libraries(move_test coevol_core)
 target_compile_features(move_test PRIVATE ${CXX_FEATURES})
+
+# Test features
+add_executable(move_test2 "src/Test2.cpp")
+target_link_libraries(move_test2 coevol_core)
+target_compile_features(move_test2 PRIVATE ${CXX_FEATURES})

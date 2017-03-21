@@ -35,6 +35,9 @@ clean:
 test: all
 	@_build/move_test
 
+test2: all
+	@_build/move_test2
+
 tests: all
 	@_build/poisson_gamma data/test.data _build/test.out
 	@less _build/test.out.trace
