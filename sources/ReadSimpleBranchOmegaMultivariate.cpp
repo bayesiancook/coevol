@@ -126,6 +126,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meanmutrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meanadaptative_omega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meanoppositealpha = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		
 		// double alpha[dim];
 		// definir alpha
@@ -156,6 +157,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetChronogram());
 			meanNe->Add(GetModel()->GetNeNodeTree(), GetModel()->GetChronogram());
 			meanadaptative_omega->Add(GetModel()->GetAdaptative_omegaNodeTree(), GetModel()->GetChronogram());
+			meanoppositealpha->Add(GetModel()->GetOppositeAlphaNodeTree(), GetModel()->GetChronogram());
 
 			// double t0 = GetModel()->GetRootAge();
 			// recalculer beta
@@ -217,6 +219,14 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "pp of mean leaf values > root value : " << meanadaptative_omega->GetPPLeafRoot() << '\n';
 
 
+		meanoppositealpha->Normalise();
+		ofstream alos((GetName() + ".postmeanoppositealpha.tre").c_str());
+		meanoppositealpha->ToStream(alos);
+		cerr << "reconstructed variations of alpha opposite in " << name << ".postmeanoppositealpha.tre\n";
+		cerr << "pp of mean leaf values > root value : " << meanoppositealpha->GetPPLeafRoot() << '\n';
+
+
+
 		for (int k=0; k<Ncont; k++)	{
 			tree[k]->Normalise();
 			ostringstream s;
@@ -243,6 +253,11 @@ class BranchOmegaMultivariateSample : public Sample	{
 		ofstream aaos((GetName() + ".postmeanadaptative_omega.tab").c_str());
 		meanadaptative_omega->Tabulate(aaos);
 		aaos.close();
+		
+		
+		ofstream alalos((GetName() + ".postmeanoppositealpha.tab").c_str());
+		meanoppositealpha->Tabulate(alalos);
+		alalos.close();
 
 		for (int k=0; k<Ncont; k++)	{
 			ostringstream s;

@@ -84,11 +84,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	double* omegaslope;
 	double* Neslope;
 	double* adaptative_omegaslope;
+	double* oppositealphaslope;
 
 	SynrateLinearCombinationNodeTree* nodesynratetree;
 	OmegaLinearCombinationNodeTree* nodeomegatree;
 	NeLinearCombinationNodeTree* nodeNetree;
 	Adaptative_omegaLinearCombinationNodeTree* nodeadaptative_omegatree;
+	OppositeAlphaLinearCombinationNodeTree* nodeoppositealphatree;
 
 	MeanExpTreeFromMultiVariate* mutratetree;
 	MeanExpTree* synratetree;
@@ -261,11 +263,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		omegaslope = new double[L + Ncont];
 		Neslope = new double[L + Ncont]; 
 		adaptative_omegaslope = new double[L + Ncont];
+		oppositealphaslope = new double[L + Ncont];
 		
 		CreateSynrateSlope();
 		CreateOmegaSlope();
 		CreateNeSlope();
 		CreateAdaptative_omegaSlope();
+		CreateOppositeAlphaSlope();
 		
 
 		// create the node tree obtained from the linear combinations
@@ -274,6 +278,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope);
 		nodeNetree = new NeLinearCombinationNodeTree(process, Neslope); 
 		nodeadaptative_omegatree = new Adaptative_omegaLinearCombinationNodeTree(process, nodeomegatree, adaptative_omegaslope);
+		nodeoppositealphatree = new OppositeAlphaLinearCombinationNodeTree(process, nodeomegatree, oppositealphaslope);
 		
 		// create the branch lengths resulting from combining
 
@@ -342,6 +347,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		DeleteOmegaSlope();
 		DeleteNeSlope();
 		DeleteAdaptative_omegaSlope();
+		DeleteOppositeAlphaSlope();
 		}
 	
 	void CreateSynrateSlope() {
@@ -414,6 +420,26 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	void DeleteAdaptative_omegaSlope() {
 		delete adaptative_omegaslope;
 	}	
+	
+	
+		
+	void CreateOppositeAlphaSlope() {
+		string cha("piNpiS");
+		oppositealphaslope[0] = 0;
+		for (int i=0; i<Ncont; i++) {
+			if (GetContinuousData()->GetCharacterName(i)==cha) {
+				oppositealphaslope[i+1] = 1;
+			}	
+			else {
+				oppositealphaslope[i+1] = 0;
+			}
+		}
+	}	
+	
+	void DeleteOppositeAlphaSlope() {
+		delete oppositealphaslope;
+	}			
+		
 		
 	// accessors
 	Tree* GetTree() {return tree;}
@@ -438,6 +464,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	NeLinearCombinationNodeTree* GetNeNodeTree() {return nodeNetree;}
 	
 	Adaptative_omegaLinearCombinationNodeTree* GetAdaptative_omegaNodeTree() {return nodeadaptative_omegatree;}
+	
+	OppositeAlphaLinearCombinationNodeTree* GetOppositeAlphaNodeTree() {return nodeoppositealphatree;}
 
 
 	Chronogram* GetChronogram() {return chronogram;}

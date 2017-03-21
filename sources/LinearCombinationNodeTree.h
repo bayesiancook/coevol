@@ -135,7 +135,41 @@ class Adaptative_omegaLinearCombination : public Dvar<Real> {
 	Var<Real>* o;
 	double* adaptative_omegaslope;
 	
-};			
+};	
+
+
+class OppositeAlphaLinearCombination : public Dvar<Real> {
+	
+	public :
+	
+	OppositeAlphaLinearCombination(Var<RealVector>* inx, Var<Real>* ino, double* inoppositealphaslope) {
+		x = inx;
+		o = ino;
+		oppositealphaslope = inoppositealphaslope;
+		Register(x);
+		Register(o);
+		specialUpdate();
+	}
+			
+		
+	void specialUpdate() {
+		double a(0);
+		for (int i=0; i<x->GetDim(); i++) {
+			a+= (*x)[i] * oppositealphaslope[i];
+		}
+		a-= *o;
+		setval(log(a));	
+	}	
+	
+	private :
+	
+	
+	Var<RealVector>* x;
+	Var<Real>* o;
+	double* oppositealphaslope;
+	
+};
+			
 			
 	
 class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
@@ -169,7 +203,8 @@ class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	Var<PosReal>* rootage;
 	double* synrateslope;
 	
-};		
+};
+		
 		
 	
 class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
@@ -269,6 +304,42 @@ class Adaptative_omegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Rea
 	double* adaptative_omegaslope;
 	
 };				
+
+			
+			
+class OppositeAlphaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
+	
+	public :
+	
+	OppositeAlphaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, NodeVarTree<Real>* innodeomegatree, double* inoppositealphaslope) {
+		process	= inprocess;
+		nodeomegatree = innodeomegatree;
+		oppositealphaslope = inoppositealphaslope;
+		RecursiveCreate(GetRoot());
+	}
+	
+	~OppositeAlphaLinearCombinationNodeTree() {
+		RecursiveDelete(GetRoot());
+	}
+	
+	Tree* GetTree() {
+		return process->GetTree();
+	}	
+		
+	private :
+
+	Dvar<Real>* CreateNodeVal(const Link* link){
+		return new OppositeAlphaLinearCombination(process->GetNodeVal(link->GetNode()), nodeomegatree->GetNodeVal(link->GetNode()), oppositealphaslope);
+	}
+	
+	
+	NodeVarTree<RealVector>* process;
+	NodeVarTree<Real>* nodeomegatree;
+	double* oppositealphaslope;
+	
+};							
+			
+			
 			
 #endif	
 	
