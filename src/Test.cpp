@@ -6,16 +6,22 @@
 #include "utils/Random.hpp"
 using namespace std;
 
+double lambda = 4;
+bool adaptive =  true;
+
 template <class T>
 class MySimpleMove : public MCUpdate {
-    Rvar<T> &managedNode;
-    vector<double> values;
-    double mean;
-    int nbVal;
-    double M2;
+    Rvar<T>& managedNode;
+
+    // move memory
+    vector<double> values; // list of all values
+    double mean; // on-line mean (approximation)
+    int nbVal; // number of values computed so far (accepted and refused)
+    double M2; // variance * nbVals (approximation)
+    int accept; // number of accepted proposals
 
   public:
-    MySimpleMove(Rvar<T>& managedNode) : managedNode(managedNode), mean(0), nbVal(0), M2(0) {}
+    MySimpleMove(Rvar<T>& managedNode) : managedNode(managedNode), mean(0), nbVal(0), M2(0), accept(0) {}
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
         // if node is clamped print a warning message
@@ -31,8 +37,12 @@ class MySimpleMove : public MCUpdate {
             // double logHastings = managedNode.ProposeMove(1.0);  // ProposeMove modifies the
             // actual value of the node and returns the log of the Hastings ratio (proposal ratio)
 
-            double m = (Random::Uniform() - 0.5);
-            managedNode += m;
+            if (nbVal > 100 and adaptive) {
+                (T&)managedNode = mean + Random::sNormal() * lambda * sqrt(M2 / nbVal);
+            } else {
+                double m = (Random::Uniform() - 0.5);
+                managedNode += m;
+            }
             while ((managedNode < 0) || (managedNode > 1)) {
                 if (managedNode < 0) {
                     (T&)managedNode = -managedNode;
@@ -50,18 +60,17 @@ class MySimpleMove : public MCUpdate {
             if (!accepted) {
                 managedNode.Corrupt(false);
                 managedNode.Restore();
+            } else {
+                accept += 1;
             }
             values.push_back(managedNode);
 
 
-
             nbVal += 1;
             double delta = managedNode - mean;
-            mean += delta/nbVal;
+            mean += delta / nbVal;
             double delta2 = managedNode - mean;
             M2 += delta * delta2;
-
-
 
 
             // return somehting
@@ -72,8 +81,8 @@ class MySimpleMove : public MCUpdate {
     }
 
     void debug() {
-        printf("New value %f, mean=%f, variance=%f\n", double(managedNode), mean, M2/nbVal);
-        }
+        printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode), mean, M2 / nbVal, (accept*100.0)/nbVal);
+    }
 };
 
 class MyModel : public ProbModel {
@@ -122,8 +131,9 @@ int main() {
     }
     double variance = 0.0;
     for (auto i : results) {
-        variance += i*i;
+        variance += i * i;
     }
-    cout << "Mean: " << mean / results.size() << " ; variance: " << (variance - (mean * mean / results.size())) / results.size() << endl;
+    cout << "Mean: " << mean / results.size()
+         << " ; variance: " << (variance - (mean * mean / results.size())) / results.size() << endl;
     model.mymove->debug();
 }
