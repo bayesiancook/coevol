@@ -74,6 +74,68 @@ class OmegaLinearCombination : public Dvar<Real> {
 	double* omegaslope;
 	
 };		
+
+class NeLinearCombination : public Dvar<Real> {
+	
+	public :
+	
+	NeLinearCombination(Var<RealVector>* inx, double* inNeslope) {
+		x = inx;
+		Neslope = inNeslope;
+		Register(x);
+		specialUpdate();
+	}
+			
+		
+	void specialUpdate() {
+		double a(0);
+		for (int i=0; i<x->GetDim(); i++) {
+			a+= (*x)[i] * Neslope[i];
+		}
+		a += log(4);	
+		setval(a);	
+	}	
+	
+	private :
+	
+	
+	Var<RealVector>* x;
+	double* Neslope;
+	
+};
+
+
+class Adaptative_omegaLinearCombination : public Dvar<Real> {
+	
+	public :
+	
+	Adaptative_omegaLinearCombination(Var<RealVector>* inx, Var<Real>* ino, double* inadaptative_omegaslope) {
+		x = inx;
+		o = ino;
+		adaptative_omegaslope = inadaptative_omegaslope;
+		Register(x);
+		Register(o);
+		specialUpdate();
+	}
+			
+		
+	void specialUpdate() {
+		double a(0);
+		for (int i=0; i<x->GetDim(); i++) {
+			a+= exp((*x)[i]) * adaptative_omegaslope[i];
+		}
+		a+= exp(*o);
+		setval(log(a));	
+	}	
+	
+	private :
+	
+	
+	Var<RealVector>* x;
+	Var<Real>* o;
+	double* adaptative_omegaslope;
+	
+};			
 			
 	
 class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
@@ -142,7 +204,71 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	Var<Real>* beta;
 	double* omegaslope;
 	
-};		
+};	
+	
+		
+class NeLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
+	
+	public :
+	
+	NeLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, double* inNeslope) {
+		process	= inprocess;
+		Neslope = inNeslope;
+		RecursiveCreate(GetRoot());
+	}
+	
+	~NeLinearCombinationNodeTree() {
+		RecursiveDelete(GetRoot());
+	}
+	
+	Tree* GetTree() {
+		return process->GetTree();
+	}	
+		
+	private :
+
+	Dvar<Real>* CreateNodeVal(const Link* link){
+		return new NeLinearCombination(process->GetNodeVal(link->GetNode()), Neslope);
+	}
+	
+	
+	NodeVarTree<RealVector>* process;
+	double* Neslope;
+	
+};			
+
+
+class Adaptative_omegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
+	
+	public :
+	
+	Adaptative_omegaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, NodeVarTree<Real>* innodeomegatree, double* inadaptative_omegaslope) {
+		process	= inprocess;
+		nodeomegatree = innodeomegatree;
+		adaptative_omegaslope = inadaptative_omegaslope;
+		RecursiveCreate(GetRoot());
+	}
+	
+	~Adaptative_omegaLinearCombinationNodeTree() {
+		RecursiveDelete(GetRoot());
+	}
+	
+	Tree* GetTree() {
+		return process->GetTree();
+	}	
+		
+	private :
+
+	Dvar<Real>* CreateNodeVal(const Link* link){
+		return new Adaptative_omegaLinearCombination(process->GetNodeVal(link->GetNode()), nodeomegatree->GetNodeVal(link->GetNode()), adaptative_omegaslope);
+	}
+	
+	
+	NodeVarTree<RealVector>* process;
+	NodeVarTree<Real>* nodeomegatree;
+	double* adaptative_omegaslope;
+	
+};				
 			
 #endif	
 	

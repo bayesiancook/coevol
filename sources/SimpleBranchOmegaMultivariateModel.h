@@ -82,14 +82,19 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	
 	double* synrateslope;
 	double* omegaslope;
+	double* Neslope;
+	double* adaptative_omegaslope;
 
 	SynrateLinearCombinationNodeTree* nodesynratetree;
 	OmegaLinearCombinationNodeTree* nodeomegatree;
+	NeLinearCombinationNodeTree* nodeNetree;
+	Adaptative_omegaLinearCombinationNodeTree* nodeadaptative_omegatree;
 
 	MeanExpTreeFromMultiVariate* mutratetree;
 	MeanExpTree* synratetree;
 	MeanExpTree* omegatree;
-
+	//MeanExpTree* Netree;
+	//MeanExpTree* adaptative_omegatree;
 
 	// nucleotide mutation matrix is relrate * stationary
 	Dirichlet* relrate;
@@ -253,17 +258,23 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		//create the slopes which define the linear combination
 		
 		synrateslope = new double[L + Ncont];
-		omegaslope = new double[L + Ncont]; 
+		omegaslope = new double[L + Ncont];
+		Neslope = new double[L + Ncont]; 
+		adaptative_omegaslope = new double[L + Ncont];
 		
 		CreateSynrateSlope();
 		CreateOmegaSlope();
+		CreateNeSlope();
+		CreateAdaptative_omegaSlope();
 		
 
 		// create the node tree obtained from the linear combinations
 		
 		nodesynratetree = new SynrateLinearCombinationNodeTree(process, absrootage, synrateslope);
-		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope); 
-
+		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope);
+		nodeNetree = new NeLinearCombinationNodeTree(process, Neslope); 
+		nodeadaptative_omegatree = new Adaptative_omegaLinearCombinationNodeTree(process, nodeomegatree, adaptative_omegaslope);
+		
 		// create the branch lengths resulting from combining
 
 		// the times given by the chronogram with the rate 
@@ -271,6 +282,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// create the dN/dS on each branch, nased on the second entry of the multivariate process
 		omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN, false);
+
+		//Netree = new MeanExpTree(nodeNetree, chronogram, MEAN, false);
+		
+		//adaptative_omegatree = new MeanExpTree(nodeadaptative_omegatree, chronogram, MEAN, false);
 		
 		// create u on each branch, nased on the third entry of the multivariate process
 		mutratetree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);
@@ -325,6 +340,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	~BranchOmegaMultivariateModel() {
 		DeleteSynrateSlope();
 		DeleteOmegaSlope();
+		DeleteNeSlope();
+		DeleteAdaptative_omegaSlope();
 		}
 	
 	void CreateSynrateSlope() {
@@ -363,7 +380,41 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		delete omegaslope;
 	}
 	
-
+	void CreateNeSlope() {
+		string cha("piS");
+		omegaslope[0] = -1;
+		for (int i=0; i<Ncont; i++) {
+			if (GetContinuousData()->GetCharacterName(i)==cha) {
+				omegaslope[i+1] = 1;
+			}	
+			else {
+				omegaslope[i+1] = 0;
+			}
+		}
+	}				
+		
+	void DeleteNeSlope() {
+		delete Neslope;
+	}
+	
+	
+	void CreateAdaptative_omegaSlope() {
+		string cha("piNpiS");
+		adaptative_omegaslope[0] = 0;
+		for (int i=0; i<Ncont; i++) {
+			if (GetContinuousData()->GetCharacterName(i)==cha) {
+				adaptative_omegaslope[i+1] = -1;
+			}	
+			else {
+				adaptative_omegaslope[i+1] = 0;
+			}
+		}
+	}	
+	
+	void DeleteAdaptative_omegaSlope() {
+		delete adaptative_omegaslope;
+	}	
+		
 	// accessors
 	Tree* GetTree() {return tree;}
 
@@ -371,7 +422,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		return codondata;
 	}
 
-
+	//MeanExpTree* GetAdaptative_omegaTree() {return adaptative_omegatree;}
+	//MeanExpTree* GetNeTree() {return Netree;}
 	MeanExpTree* GetSynRateTree() {return synratetree;}
 	MeanExpTree* GetOmegaTree() {return omegatree;}
 	MeanExpTreeFromMultiVariate* GetMutTree() {return mutratetree;}
@@ -382,6 +434,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	SynrateLinearCombinationNodeTree*  GetSynrateNodeTree() {return nodesynratetree;}
 	
 	OmegaLinearCombinationNodeTree*  GetOmegaNodeTree() {return nodeomegatree;}
+	
+	NeLinearCombinationNodeTree* GetNeNodeTree() {return nodeNetree;}
+	
+	Adaptative_omegaLinearCombinationNodeTree* GetAdaptative_omegaNodeTree() {return nodeadaptative_omegatree;}
 
 
 	Chronogram* GetChronogram() {return chronogram;}
