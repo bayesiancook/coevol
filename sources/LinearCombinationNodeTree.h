@@ -26,7 +26,7 @@ class SynrateLinearCombination : public Dvar<Real> {
 		for (int i=0; i<x->GetDim(); i++) {
 			a+= (*x)[i] * synrateslope[i];
 		}
-		a += -1 * log(rootage->val() * 365 * pow(10, 6));
+		a += log(rootage->val() * 365 * pow(10, 6));
 		setval(a);	
 	}	
 	
