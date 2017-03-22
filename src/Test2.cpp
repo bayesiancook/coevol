@@ -9,9 +9,10 @@ using namespace std;
 double lambda = 4;
 bool adaptive = true;
 
-template <class T>
+template <class T1, class T2>
 class MyDoubleMove : public MCUpdate {
-    Rvar<T>& managedNode;
+    Rvar<T1>& managedNode1;
+    Rvar<T2>& managedNode2;
 
     // move memory
     vector<double> values;  // list of all values
@@ -21,56 +22,61 @@ class MyDoubleMove : public MCUpdate {
     int accept;             // number of accepted proposals
 
   public:
-    MyDoubleMove(Rvar<T>& managedNode)
-        : managedNode(managedNode), mean(0), nbVal(0), M2(0), accept(0) {}
+    MyDoubleMove(Rvar<T1>& managedNode1, Rvar<T2>& managedNode2)
+        : managedNode1(managedNode1),
+          managedNode2(managedNode2),
+          mean(0),
+          nbVal(0),
+          M2(0),
+          accept(0) {}
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
         // if node is clamped print a warning message
-        if (managedNode.isClamped()) {
+        if (managedNode1.isClamped()) {
             printf("WARNING: Trying to move a clamped node!\n");
             exit(1);
         } else {
             // It seems important to put this BEFORE proposemove. Corrupt sets value_updated to
             // false on the node and its direct children (in Rnode default implementation). The
             // parameter determines if a backup of logprob should be kept.
-            managedNode.Corrupt(true);
+            managedNode1.Corrupt(true);
 
-            // double logHastings = managedNode.ProposeMove(1.0);  // ProposeMove modifies the
+            // double logHastings = managedNode1.ProposeMove(1.0);  // ProposeMove modifies the
             // actual value of the node and returns the log of the Hastings ratio (proposal ratio)
 
             if (nbVal > 100 and adaptive) {
-                (T&)managedNode = mean + Random::sNormal() * lambda * sqrt(M2 / nbVal);
+                (T1&)managedNode1 = mean + Random::sNormal() * lambda * sqrt(M2 / nbVal);
             } else {
                 double m = (Random::Uniform() - 0.5);
-                managedNode += m;
+                managedNode1 += m;
             }
-            while ((managedNode < 0) || (managedNode > 1)) {
-                if (managedNode < 0) {
-                    (T&)managedNode = -managedNode;
+            while ((managedNode1 < 0) || (managedNode1 > 1)) {
+                if (managedNode1 < 0) {
+                    (T1&)managedNode1 = -managedNode1;
                 }
-                if (managedNode > 1) {
-                    (T&)managedNode = 2 - managedNode;
+                if (managedNode1 > 1) {
+                    (T1&)managedNode1 = 2 - managedNode1;
                 }
             }
 
             double logHastings = 0;
 
-            double logMetropolis = managedNode.Update();
+            double logMetropolis = managedNode1.Update();
 
             bool accepted = log(Random::Uniform()) < logMetropolis + logHastings;
             if (!accepted) {
-                managedNode.Corrupt(false);
-                managedNode.Restore();
+                managedNode1.Corrupt(false);
+                managedNode1.Restore();
             } else {
                 accept += 1;
             }
-            values.push_back(managedNode);
+            values.push_back(managedNode1);
 
 
             nbVal += 1;
-            double delta = managedNode - mean;
+            double delta = managedNode1 - mean;
             mean += delta / nbVal;
-            double delta2 = managedNode - mean;
+            double delta2 = managedNode1 - mean;
             M2 += delta * delta2;
 
 
@@ -82,19 +88,22 @@ class MyDoubleMove : public MCUpdate {
     }
 
     void debug() {
-        printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode), mean,
+        printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode1), mean,
                M2 / nbVal, (accept * 100.0) / nbVal);
     }
 };
 
 class MyModel : public ProbModel {
   public:
+    // graphical model
     Const<PosReal>* posOne;
     Const<Real>* one;
     Normal* a;
     Exponential* b;
     list<Normal> leaves;
-    MyDoubleMove<UnitReal>* mymove;
+
+    // moves
+    MyDoubleMove<PosReal, Real>* myPosRealMove;
 
     MyModel()
         : posOne(new Const<PosReal>(1)),
@@ -103,7 +112,7 @@ class MyModel : public ProbModel {
           b(new Exponential(posOne, Exponential::MEAN)) {
         for (int i = 0; i < 5; i++) {
             leaves.emplace_back(a, b);
-            leaves.back().ClampAt(i < 3 ? 1 : 0);
+            leaves.back().ClampAt(i < 3 ? 4 : 1);
         }
         RootRegister(one);
         RootRegister(posOne);
@@ -114,7 +123,7 @@ class MyModel : public ProbModel {
     }
 
     void MakeScheduler() override {
-        // mymove = new MyDoubleMove<UnitReal>(*p);
+        myPosRealMove = new MyDoubleMove<PosReal, Real>(*b, *a);
         // scheduler.Register(mymove, 1, "p");
         scheduler.Register(new SimpleMove(a, 1.0), 1, "a");
         scheduler.Register(new SimpleMove(b, 1.0), 1, "b");
@@ -129,22 +138,31 @@ class MyModel : public ProbModel {
     void FromStream(istream&) override {}
 };
 
-int main() {
-    MyModel model;
-    vector<double> results;
-    for (int i = 0; i < 100000; i++) {
-        model.Move(1.0);
-        results.push_back(model.a->val());
-    }
+
+void printCaracs(vector<double> data, string name) {
     double mean = 0.0;
-    for (auto i : results) {
+    for (auto i : data) {
         mean += i;
     }
     double variance = 0.0;
-    for (auto i : results) {
+    for (auto i : data) {
         variance += i * i;
     }
-    cout << "<DOUBLE_TEST> Mean: " << mean / results.size()
-         << " ; variance: " << (variance - (mean * mean / results.size())) / results.size() << endl;
-    // model.mymove->debug();
+    cout << "<" << name << "> Mean: " << mean / data.size()
+         << " ; variance: " << (variance - (mean * mean / data.size())) / data.size() << endl;
+
+}
+
+
+int main() {
+    MyModel model;
+    vector<double> resultsA, resultsB;
+    for (int i = 0; i < 1000000; i++) {
+        model.Move(1.0);
+        resultsA.push_back(model.a->val());
+        resultsB.push_back(model.b->val());
+    }
+    printCaracs(resultsA, "a"); // expected 2.27
+    printCaracs(resultsB, "b"); // expected 2.18
+        // model.mymove->debug();
 }
