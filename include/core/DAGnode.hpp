@@ -13,7 +13,7 @@ class DAGnode {
   public:
     static bool initmode;
 
-    DAGnode() : updateFlag(false), name("") {}
+    DAGnode() : updateFlag(false), dotNodeFlag(false), dotVertexFlag(false), name("") {}
     virtual ~DAGnode();
 
     // Getters
@@ -54,6 +54,8 @@ class DAGnode {
     bool parentsUpdated();
 
     bool updateFlag;
+    bool dotNodeFlag;
+    bool dotVertexFlag;
     std::string name;
 };
 

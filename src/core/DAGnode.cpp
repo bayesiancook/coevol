@@ -64,32 +64,42 @@ void DAGnode::Register(DAGnode* parent) {
 }
 
 set<string> DAGnode::getDotNodes() {
-    ostringstream stringStream;
-    set<string> result;
-    stringStream << "\tNode" << this << " [label=\"" << name << "\"]" << endl;
-    ;
-    result.insert(stringStream.str());
-    for (auto i : down) {
-        set<string> tmp = i->getDotNodes();
-        result.insert(tmp.begin(), tmp.end());
+    if (!dotNodeFlag) {
+        dotNodeFlag = true;
+        ostringstream stringStream;
+        set<string> result;
+        stringStream << "\tNode" << this << " [label=\"" << name << "\"]" << endl;
+        ;
+        result.insert(stringStream.str());
+        for (auto i : down) {
+            set<string> tmp = i->getDotNodes();
+            result.insert(tmp.begin(), tmp.end());
+        }
+        return result;
+    } else {
+        return {""};
     }
-    return result;
 }
 
 set<string> DAGnode::getDotVertices() {
-    ostringstream stringStream;
-    set<string> result;
-    for (auto i : down) {
-        stringStream << "\tNode" << this << " -> Node" << &(*i) << endl;
-        ;
-        result.insert(stringStream.str());
-        stringStream.str("");
+    if (!dotVertexFlag) {
+        dotVertexFlag = true;
+        ostringstream stringStream;
+        set<string> result;
+        for (auto i : down) {
+            stringStream << "\tNode" << this << " -> Node" << &(*i) << endl;
+            ;
+            result.insert(stringStream.str());
+            stringStream.str("");
+        }
+        for (auto i : down) {
+            set<string> tmp = i->getDotVertices();
+            result.insert(tmp.begin(), tmp.end());
+        }
+        return result;
+    } else {
+        return {""};
     }
-    for (auto i : down) {
-        set<string> tmp = i->getDotVertices();
-        result.insert(tmp.begin(), tmp.end());
-    }
-    return result;
 }
 
 void DAGnode::RecursiveRegister(ProbModel* model) {
