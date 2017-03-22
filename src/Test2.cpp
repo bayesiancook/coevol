@@ -48,37 +48,39 @@ class MyDoubleMove : public MCUpdate {
             // false on the node and its direct children (in Rnode default implementation). The
             // parameter determines if a backup of logprob should be kept.
             managedNode1.Corrupt(true);
+            managedNode2.Corrupt(true);
 
             // double logHastings = managedNode1.ProposeMove(1.0);  // ProposeMove modifies the
             // actual value of the node and returns the log of the Hastings ratio (proposal ratio)
 
-            if (nbVal > 100 and adaptive) {
-                (T1&)managedNode1 = mean + Random::sNormal() * lambda * sqrt(M2 / nbVal);
-            } else {
-                double m = (Random::Uniform() - 0.5);
-                managedNode1 += m;
-            }
+            // if (nbVal > 100 and adaptive) {
+                // (T1&)managedNode1 = mean + Random::sNormal() * lambda * sqrt(M2 / nbVal);
+            // } else {
+            //     double m = (Random::Uniform() - 0.5);
+            //     managedNode1 += m;
+            // }
+            managedNode1 += Random::sNormal();
+            managedNode2 += Random::sNormal();
 
             double logHastings = 0;
-
-            double logMetropolis = managedNode1.Update();
+            double logMetropolis = managedNode1.Update() + managedNode2.Update();
 
             bool accepted = log(Random::Uniform()) < logMetropolis + logHastings;
             if (!accepted) {
                 managedNode1.Corrupt(false);
                 managedNode1.Restore();
+                managedNode2.Corrupt(false);
+                managedNode2.Restore();
             } else {
                 accept += 1;
             }
             values.push_back(managedNode1);
 
-
-            nbVal += 1;
-            double delta = managedNode1 - mean;
-            mean += delta / nbVal;
-            double delta2 = managedNode1 - mean;
-            M2 += delta * delta2;
-
+            // nbVal += 1;
+            // double delta = managedNode1 - mean;
+            // mean += delta / nbVal;
+            // double delta2 = managedNode1 - mean;
+            // M2 += delta * delta2;
 
             // return something
             return (double)accepted;  // for some reason Move seems to return (double)accepted where
