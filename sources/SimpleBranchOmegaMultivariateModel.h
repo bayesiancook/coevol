@@ -82,14 +82,14 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	
 	double* synrateslope;
 	double* omegaslope;
-	double* Neslope;
+	double* u_Neslope;
 	double* adaptative_omegaslope;
 	double* oppositealphaslope;
 	
 
 	SynrateLinearCombinationNodeTree* nodesynratetree;
 	OmegaLinearCombinationNodeTree* nodeomegatree;
-	NeLinearCombinationNodeTree* nodeNetree;
+	U_NeLinearCombinationNodeTree* nodeu_Netree;
 	Adaptative_omegaLinearCombinationNodeTree* nodeadaptative_omegatree;
 	OppositeAlphaLinearCombinationNodeTree* nodeoppositealphatree;
 
@@ -266,13 +266,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		synrateslope = new double[L + Ncont];
 		omegaslope = new double[L + Ncont];
-		if (!withNe) {Neslope = new double[L + Ncont];} 
+		u_Neslope = new double[L + Ncont];
 		adaptative_omegaslope = new double[L + Ncont];
 		oppositealphaslope = new double[L + Ncont];
 		
 		CreateSynrateSlope();
 		CreateOmegaSlope();
-		if (!withNe) {CreateNeSlope();}
+		CreateU_NeSlope();
 		CreateAdaptative_omegaSlope();
 		CreateOppositeAlphaSlope();
 		
@@ -281,7 +281,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		nodesynratetree = new SynrateLinearCombinationNodeTree(process, absrootage, synrateslope, withNe);
 		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope, withNe);
-		if (!withNe) {nodeNetree = new NeLinearCombinationNodeTree(process, Neslope);} 
+		nodeu_Netree = new U_NeLinearCombinationNodeTree(process, u_Neslope); 
 		nodeadaptative_omegatree = new Adaptative_omegaLinearCombinationNodeTree(process, nodeomegatree, adaptative_omegaslope);
 		nodeoppositealphatree = new OppositeAlphaLinearCombinationNodeTree(process, nodeomegatree, oppositealphaslope);
 		
@@ -351,7 +351,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	~BranchOmegaMultivariateModel() {
 		DeleteSynrateSlope();
 		DeleteOmegaSlope();
-		if (!withNe) {DeleteNeSlope();}
+		DeleteU_NeSlope();
 		DeleteAdaptative_omegaSlope();
 		DeleteOppositeAlphaSlope();
 		}
@@ -417,21 +417,21 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		delete omegaslope;
 	}
 	
-	void CreateNeSlope() {
+	void CreateU_NeSlope() {
 		string cha("piS");
-		omegaslope[0] = -1;
+		u_Neslope[0] = -1;
 		for (int i=0; i<Ncont; i++) {
 			if (GetContinuousData()->GetCharacterName(i)==cha) {
-				omegaslope[i+1] = 1;
+				u_Neslope[i+1] = 1;
 			}	
 			else {
-				omegaslope[i+1] = 0;
+				u_Neslope[i+1] = 0;
 			}
 		}
 	}				
 		
-	void DeleteNeSlope() {
-		delete Neslope;
+	void DeleteU_NeSlope() {
+		delete u_Neslope;
 	}
 	
 	
@@ -493,7 +493,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	
 	OmegaLinearCombinationNodeTree*  GetOmegaNodeTree() {return nodeomegatree;}
 	
-	NeLinearCombinationNodeTree* GetNeNodeTree() {return nodeNetree;}
+	U_NeLinearCombinationNodeTree* GetNeNodeTree() {return nodeu_Netree;}
 	
 	Adaptative_omegaLinearCombinationNodeTree* GetAdaptative_omegaNodeTree() {return nodeadaptative_omegatree;}
 	

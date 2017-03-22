@@ -127,7 +127,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
 		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meanmutrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meanu_Ne = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);	
 		MeanExpNormTree* meanadaptative_omega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meanoppositealpha = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		
@@ -159,7 +160,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			if (withNe) {meanNe->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);}
 			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetChronogram());
 			meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetChronogram());
-			if (!withNe) {meanNe->Add(GetModel()->GetNeNodeTree(), GetModel()->GetChronogram());}
+			meanu_Ne->Add(GetModel()->GetNeNodeTree(), GetModel()->GetChronogram());
 			meanadaptative_omega->Add(GetModel()->GetAdaptative_omegaNodeTree(), GetModel()->GetChronogram());
 			meanoppositealpha->Add(GetModel()->GetOppositeAlphaNodeTree(), GetModel()->GetChronogram());
 
@@ -197,19 +198,31 @@ class BranchOmegaMultivariateSample : public Sample	{
 		ofstream cchos((GetName() + ".postmeandates.tab").c_str());
 		meanchrono->Tabulate(cchos);
 
+
+		if (!withNe) {
+			meanmutrate->Normalise();
+			ofstream mos((GetName() + ".postmeanmutrate.tre").c_str());
+			meanmutrate->ToStream(mos);
+			cerr << "reconstructed variations of mutrate in " << name << ".postmeanmutrate.tre\n";
+			cerr << "pp of mean leaf values > root value : " << meanmutrate->GetPPLeafRoot() << '\n';
+		}	
+
+
 		meanomega->Normalise();
 		ofstream oos((GetName() + ".postmeanomega.tre").c_str());
 		meanomega->ToStream(oos);
 		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meanomega->GetPPLeafRoot() << '\n';
 
-		
-		meanNe->Normalise();
-		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
-		meanNe->ToStream(Neos);
-		cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
-		cerr << "pp of mean leaf values > root value : " << meanNe->GetPPLeafRoot() << '\n';
 
+		if (withNe) {
+			meanNe->Normalise();
+			ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
+			meanNe->ToStream(Neos);
+			cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
+			cerr << "pp of mean leaf values > root value : " << meanNe->GetPPLeafRoot() << '\n';
+		}
+		
 		meansynrate->Normalise();
 		ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
 		meansynrate->ToStream(sos);
@@ -229,7 +242,20 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "reconstructed variations of alpha opposite in " << name << ".postmeanoppositealpha.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meanoppositealpha->GetPPLeafRoot() << '\n';
 
-
+		meanu_Ne->Normalise();
+		if (!withNe) {
+			ofstream mnos((GetName() + ".postmeanNe.tre").c_str());
+			meanu_Ne->ToStream(mnos);
+			cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
+			cerr << "pp of mean leaf values > root value : " << meanu_Ne->GetPPLeafRoot() << '\n';
+		}
+		if (withNe) {
+			ofstream mnos((GetName() + ".postmeanmutrate.tre").c_str());
+			meanu_Ne->ToStream(mnos);
+			cerr << "reconstructed variations of mutrate in " << name << ".postmeanmutrate.tre\n";
+			cerr << "pp of mean leaf values > root value : " << meanu_Ne->GetPPLeafRoot() << '\n';
+		}
+		
 
 		for (int k=0; k<Ncont; k++)	{
 			tree[k]->Normalise();
@@ -241,6 +267,12 @@ class BranchOmegaMultivariateSample : public Sample	{
 			cerr << "pp of mean leaf values > root value : " << tree[k]->GetPPLeafRoot() << '\n';
 		}
 
+		if (!withNe) {
+		ofstream mmos((GetName() + ".postmeanmutrate.tab").c_str());
+		meanNe->Tabulate(mmos);
+		mmos.close();
+		}
+		
 		ofstream ssos((GetName() + ".postmeansynrate.tab").c_str());
 		meansynrate->Tabulate(ssos);
 		ssos.close();
@@ -249,10 +281,11 @@ class BranchOmegaMultivariateSample : public Sample	{
 		meanomega->Tabulate(ooos);
 		ooos.close();
 
-
-		ofstream Neoos((GetName() + ".postmeanNe.tab").c_str());
-		meanNe->Tabulate(Neoos);
-		Neoos.close();
+		if (withNe) {
+			ofstream Neoos((GetName() + ".postmeanNe.tab").c_str());
+			meanNe->Tabulate(Neoos);
+			Neoos.close();
+		}	
 
 		ofstream aaos((GetName() + ".postmeanadaptative_omega.tab").c_str());
 		meanadaptative_omega->Tabulate(aaos);
@@ -262,6 +295,19 @@ class BranchOmegaMultivariateSample : public Sample	{
 		ofstream alalos((GetName() + ".postmeanoppositealpha.tab").c_str());
 		meanoppositealpha->Tabulate(alalos);
 		alalos.close();
+		
+		if (!withNe) {
+			ofstream mnoos((GetName() + ".postmeanNe.tab").c_str());
+			meanu_Ne->Tabulate(mnoos);
+			mnoos.close();
+		}
+		if (withNe) {
+			ofstream mnoos((GetName() + ".postmeanmutrate.tab").c_str());
+			meanu_Ne->Tabulate(mnoos);
+			mnoos.close();
+		}	
+		
+		
 
 		for (int k=0; k<Ncont; k++)	{
 			ostringstream s;

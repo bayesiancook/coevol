@@ -101,13 +101,13 @@ class OmegaLinearCombination : public Dvar<Real> {
 	
 };		
 
-class NeLinearCombination : public Dvar<Real> {
+class U_NeLinearCombination : public Dvar<Real> {
 	
 	public :
 	
-	NeLinearCombination(Var<RealVector>* inx, double* inNeslope) {
+	U_NeLinearCombination(Var<RealVector>* inx, double* inu_Neslope) {
 		x = inx;
-		Neslope = inNeslope;
+		u_Neslope = inu_Neslope;
 		Register(x);
 		specialUpdate();
 	}
@@ -116,9 +116,9 @@ class NeLinearCombination : public Dvar<Real> {
 	void specialUpdate() {
 		double a(0);
 		for (int i=0; i<x->GetDim(); i++) {
-			a+= (*x)[i] * Neslope[i];
+			a+= (*x)[i] * u_Neslope[i];
 		}
-		a += log(4);	
+		a -= log(4);	
 		setval(a);	
 	}	
 	
@@ -126,7 +126,7 @@ class NeLinearCombination : public Dvar<Real> {
 	
 	
 	Var<RealVector>* x;
-	double* Neslope;
+	double* u_Neslope;
 	
 };
 
@@ -272,17 +272,17 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 };	
 	
 		
-class NeLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
+class U_NeLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	
 	public :
 	
-	NeLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, double* inNeslope) {
+	U_NeLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, double* inu_Neslope) {
 		process	= inprocess;
-		Neslope = inNeslope;
+		u_Neslope = inu_Neslope;
 		RecursiveCreate(GetRoot());
 	}
 	
-	~NeLinearCombinationNodeTree() {
+	~U_NeLinearCombinationNodeTree() {
 		RecursiveDelete(GetRoot());
 	}
 	
@@ -293,12 +293,12 @@ class NeLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		return new NeLinearCombination(process->GetNodeVal(link->GetNode()), Neslope);
+		return new U_NeLinearCombination(process->GetNodeVal(link->GetNode()), u_Neslope);
 	}
 	
 	
 	NodeVarTree<RealVector>* process;
-	double* Neslope;
+	double* u_Neslope;
 	
 };			
 
