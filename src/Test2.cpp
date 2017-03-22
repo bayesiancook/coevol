@@ -11,11 +11,14 @@ using namespace std;
 //        CONSTANTS
 // =======================
 // #define REFERENCE_TEST2
-double lambda = 4;
+double lambda = 0.75;
 bool adaptive = false;
 // =======================
 
 
+// =======================
+//       CUSTOM MOVE
+// =======================
 template <class T1, class T2>
 class MyDoubleMove : public MCUpdate {
     Rvar<T1>& managedNode1;
@@ -59,8 +62,11 @@ class MyDoubleMove : public MCUpdate {
             //     double m = (Random::Uniform() - 0.5);
             //     managedNode1 += m;
             // }
-            managedNode1 += Random::sNormal();
-            managedNode2 += Random::sNormal();
+            managedNode1 += lambda * Random::sNormal();
+            managedNode2 += lambda * Random::sNormal();
+            if (managedNode2 < 0) { // posReal specific :/
+                (T2&)managedNode2 = - managedNode2 ;
+            }
 
             double logHastings = 0;
             double logMetropolis = managedNode1.Update() + managedNode2.Update();
@@ -98,6 +104,10 @@ class MyDoubleMove : public MCUpdate {
     }
 };
 
+
+// ======================
+//         MODEL
+// ======================
 class MyModel : public ProbModel {
   public:
     // graphical model
@@ -151,6 +161,10 @@ class MyModel : public ProbModel {
 };
 
 
+
+// ======================
+//      AUX FUNCTIONS
+// ======================
 void printCaracs(vector<double> data, string name) {
     double mean = 0.0;
     for (auto i : data) {
@@ -165,6 +179,9 @@ void printCaracs(vector<double> data, string name) {
 }
 
 
+// ======================
+//           MAIN
+// ======================
 int main() {
     MyModel model;
     vector<double> resultsA, resultsB;
