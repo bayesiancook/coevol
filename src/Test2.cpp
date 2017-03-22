@@ -175,6 +175,7 @@ int main() {
     }
     printCaracs(resultsA, "a");  // expected 2.27
     printCaracs(resultsB, "b");  // expected 2.18
-
+#ifndef REFERENCE_TEST2
     model.myMove->debug();
+#endif
 }
