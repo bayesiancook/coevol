@@ -85,6 +85,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	double* Neslope;
 	double* adaptative_omegaslope;
 	double* oppositealphaslope;
+	
 
 	SynrateLinearCombinationNodeTree* nodesynratetree;
 	OmegaLinearCombinationNodeTree* nodeomegatree;
@@ -93,6 +94,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	OppositeAlphaLinearCombinationNodeTree* nodeoppositealphatree;
 
 	MeanExpTreeFromMultiVariate* mutratetree;
+	MeanExpTreeFromMultiVariate* Netree;
 	MeanExpTree* synratetree;
 	MeanExpTree* omegatree;
 	//MeanExpTree* Netree;
@@ -297,6 +299,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		// create u on each branch, nased on the third entry of the multivariate process
 		if (!withNe) {mutratetree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);}
+		if (withNe) {Netree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);}
 
 		cerr << "matrix\n";
 
@@ -354,7 +357,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 	
 	void CreateSynrateSlope() {
-			string cha("generation_time");
+		string cha("generation_time");
+		string cha2("piS");
+		if (!withNe) {
 			synrateslope[0] = 1;
 			for (int i=0; i<Ncont; i++) {
 				if (GetContinuousData()->GetCharacterName(i)==cha) {
@@ -364,7 +369,22 @@ class BranchOmegaMultivariateModel : public ProbModel {
 					synrateslope[i+1] = 0;
 				}
 			}
-	}	
+		}
+		else {
+			synrateslope[0] = -1;
+			for (int i=0; i<Ncont; i++) {
+				if (GetContinuousData()->GetCharacterName(i)==cha) {
+					synrateslope[i+1] = -1;
+				}	
+				else if (GetContinuousData()->GetCharacterName(i)==cha2) {
+					synrateslope[i+1] = 1;
+				}	
+				else {
+					synrateslope[i+1] = 0;
+				}
+			}
+		}
+	}			
 
 		 
 	void DeleteSynrateSlope() {
@@ -373,16 +393,24 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	
 	void CreateOmegaSlope() {
 		string cha("piS");
-		omegaslope[0] = 1;
-		for (int i=0; i<Ncont; i++) {
-			if (GetContinuousData()->GetCharacterName(i)==cha) {
-				omegaslope[i+1] = -1;
-			}	
-			else {
+		if (!withNe) {
+			omegaslope[0] = 1;
+			for (int i=0; i<Ncont; i++) {
+				if (GetContinuousData()->GetCharacterName(i)==cha) {
+					omegaslope[i+1] = -1;
+				}	
+				else {
+					omegaslope[i+1] = 0;
+				}
+			}
+		}
+		else {
+			omegaslope[0] = -1;			
+			for (int i=0; i<Ncont; i++) {
 				omegaslope[i+1] = 0;
 			}
 		}
-	}				
+	}		
 		 
 	
 	void DeleteOmegaSlope() {
@@ -456,6 +484,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	MeanExpTree* GetSynRateTree() {return synratetree;}
 	MeanExpTree* GetOmegaTree() {return omegatree;}
 	MeanExpTreeFromMultiVariate* GetMutTree() {return mutratetree;}
+	MeanExpTreeFromMultiVariate* GetNeTree() {return Netree;}
 
 
 	MultiVariateTreeProcess* GetMultiVariateProcess() {return process;}

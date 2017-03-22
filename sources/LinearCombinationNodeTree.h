@@ -31,7 +31,17 @@ class SynrateLinearCombination : public Dvar<Real> {
 			a += log(rootage->val() * 365 * pow(10, 6));
 			setval(a);	
 		}
-	}		
+		else {
+			double a(0);
+			for (int i=0; i<x->GetDim(); i++) {
+				a+= (*x)[i] * synrateslope[i];
+			}
+			a += log(rootage->val() * 365 * pow(10, 6) / 4);
+			setval(a);	
+		}
+	}	
+			
+			
 	
 	private :			
 	
@@ -68,6 +78,14 @@ class OmegaLinearCombination : public Dvar<Real> {
 				a+= (*x)[i] * omegaslope[i] * *gamma;
 			}
 			a += *beta + *gamma * log(4);	
+			setval(a);	
+		}
+		else {
+			double a(0);
+			for (int i=0; i<x->GetDim(); i++) {
+				a+= (*x)[i] * omegaslope[i] * *gamma;
+			}
+			a += *beta;	
 			setval(a);	
 		}
 	}		

@@ -156,6 +156,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meanchrono->Add(GetModel()->GetChronogram());
 
 			if (!withNe) {meanmutrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);}
+			if (withNe) {meanNe->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);}
 			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetChronogram());
 			meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetChronogram());
 			if (!withNe) {meanNe->Add(GetModel()->GetNeNodeTree(), GetModel()->GetChronogram());}
