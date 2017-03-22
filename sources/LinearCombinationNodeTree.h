@@ -11,10 +11,11 @@ class SynrateLinearCombination : public Dvar<Real> {
 	
 	public :
 	
-	SynrateLinearCombination(Var<RealVector>* inx, Var<PosReal>* inrootage, double* insynrateslope) {
+	SynrateLinearCombination(Var<RealVector>* inx, Var<PosReal>* inrootage, double* insynrateslope, bool inwithNe) {
 		x = inx;
 		rootage = inrootage;
 		synrateslope = insynrateslope;
+		withNe = inwithNe;
 		Register(x);
 		Register(rootage);
 		specialUpdate();
@@ -22,19 +23,22 @@ class SynrateLinearCombination : public Dvar<Real> {
 			
 		
 	void specialUpdate() {
-		double a(0);
-		for (int i=0; i<x->GetDim(); i++) {
-			a+= (*x)[i] * synrateslope[i];
+		if (!withNe) {
+			double a(0);
+			for (int i=0; i<x->GetDim(); i++) {
+				a+= (*x)[i] * synrateslope[i];
+			}
+			a += log(rootage->val() * 365 * pow(10, 6));
+			setval(a);	
 		}
-		a += log(rootage->val() * 365 * pow(10, 6));
-		setval(a);	
-	}	
+	}		
 	
 	private :			
 	
 	Var<RealVector>* x;
 	double* synrateslope;
 	Var<PosReal>* rootage;
+	bool withNe;
 		
 };		
 		
@@ -44,11 +48,12 @@ class OmegaLinearCombination : public Dvar<Real> {
 	
 	public :
 	
-	OmegaLinearCombination(Var<RealVector>* inx, Var<Real>* ingamma, Var<Real>* inbeta, double* inomegaslope) {
+	OmegaLinearCombination(Var<RealVector>* inx, Var<Real>* ingamma, Var<Real>* inbeta, double* inomegaslope, bool inwithNe) {
 		x = inx;
 		gamma = ingamma;
 		beta = inbeta;
 		omegaslope = inomegaslope;
+		withNe = inwithNe;
 		Register(x);
 		Register(gamma);
 		Register(beta);
@@ -57,13 +62,15 @@ class OmegaLinearCombination : public Dvar<Real> {
 			
 		
 	void specialUpdate() {
-		double a(0);
-		for (int i=0; i<x->GetDim(); i++) {
-			a+= (*x)[i] * omegaslope[i] * *gamma;
+		if (!withNe) {
+			double a(0);
+			for (int i=0; i<x->GetDim(); i++) {
+				a+= (*x)[i] * omegaslope[i] * *gamma;
+			}
+			a += *beta + *gamma * log(4);	
+			setval(a);	
 		}
-		a += *beta + *gamma * log(4);	
-		setval(a);	
-	}	
+	}		
 	
 	private :
 	
@@ -72,6 +79,7 @@ class OmegaLinearCombination : public Dvar<Real> {
 	Var<Real>* gamma;
 	Var<Real>* beta;
 	double* omegaslope;
+	bool withNe;
 	
 };		
 
@@ -176,10 +184,11 @@ class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	
 	public :
 	
-	SynrateLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<PosReal>* inrootage, double* insynrateslope) {
+	SynrateLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<PosReal>* inrootage, double* insynrateslope, bool inwithNe) {
 		process	= inprocess;
 		rootage = inrootage;
 		synrateslope = insynrateslope;
+		withNe = inwithNe;
 		RecursiveCreate(GetRoot());
 	}
 	
@@ -195,13 +204,14 @@ class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		return new SynrateLinearCombination(process->GetNodeVal(link->GetNode()), rootage, synrateslope);
+		return new SynrateLinearCombination(process->GetNodeVal(link->GetNode()), rootage, synrateslope, withNe);
 	}
 	
 	
 	NodeVarTree<RealVector>* process;
 	Var<PosReal>* rootage;
 	double* synrateslope;
+	bool withNe;
 	
 };
 		
@@ -211,11 +221,12 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	
 	public :
 	
-	OmegaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<Real>* ingamma, Var<Real>* inbeta, double* inomegaslope) {
+	OmegaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<Real>* ingamma, Var<Real>* inbeta, double* inomegaslope, bool inwithNe) {
 		process	= inprocess;
 		gamma = ingamma;
 		beta = inbeta;
 		omegaslope = inomegaslope;
+		withNe = inwithNe;
 		RecursiveCreate(GetRoot());
 	}
 	
@@ -230,7 +241,7 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		return new OmegaLinearCombination(process->GetNodeVal(link->GetNode()), gamma, beta, omegaslope);
+		return new OmegaLinearCombination(process->GetNodeVal(link->GetNode()), gamma, beta, omegaslope, withNe);
 	}
 	
 	
@@ -238,6 +249,7 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	Var<Real>* gamma;
 	Var<Real>* beta;
 	double* omegaslope;
+	bool withNe;
 	
 };	
 	

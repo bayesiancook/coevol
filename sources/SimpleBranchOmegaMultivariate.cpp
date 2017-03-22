@@ -15,6 +15,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 	double rootage;
 	double rootstdev;
 
+	bool withNe;
 	bool clamptree;
 	bool meanexp;
 
@@ -31,7 +32,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 
 	string GetModelType() {return modeltype;}
 
-	BranchOmegaMultivariateChain(string indata, string intree, string incontdata, string incalibfile, double inrootage, double inrootstdev, double inpriorsigma, int indf, GeneticCodeType intype, int incontdatatype,bool inclamptree, bool inmeanexp, int innrep, string filename, int force = 1)	{
+	BranchOmegaMultivariateChain(string indata, string intree, string incontdata, string incalibfile, double inrootage, double inrootstdev, double inpriorsigma, int indf, GeneticCodeType intype, int incontdatatype, bool inwithNe,bool inclamptree, bool inmeanexp, int innrep, string filename, int force = 1)	{
 		modeltype = "CONJUGATEBRANCHOMEGAMULTIVARIATE";
 
 		type = intype;
@@ -44,6 +45,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		priorsigma = inpriorsigma;
 		df = indf;
 		contdatatype = incontdatatype;
+		withNe = inwithNe;
 		clamptree = inclamptree;
 		meanexp = inmeanexp;
 		nrep = innrep;
@@ -56,6 +58,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		name = filename;
 		priorsigma = 1;
 		df = 2;
+		withNe = false;
 		clamptree = false;
 		meanexp = false;
 		Open();
@@ -63,7 +66,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 
 	void New(int force)	{
 		if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,contdatatype,clamptree,meanexp,nrep,true,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,contdatatype,withNe,clamptree,meanexp,nrep,true,type);
 		}
 		else	{
 			cerr << "error, does not recognise model type : " << modeltype << '\n';
@@ -89,6 +92,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		is >> df;
 		is >> priorsigma;
 		is >> clamptree;
+		is >> withNe;
 
 		int check;
 		is >> check;
@@ -100,7 +104,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		is >> every >> until >> size;
 
 		if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,contdatatype,clamptree,meanexp,nrep,true,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,contdatatype,withNe,clamptree,meanexp,nrep,true,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -119,6 +123,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		param_os << datafile << '\t' << treefile << '\t' << contdatafile << '\n';
 		param_os << calibfile << '\t' << rootage << '\t' << rootstdev << '\n';
 		param_os << contdatatype << '\n';
+		param_os << withNe << '\n';
 		param_os << meanexp << '\n';
 		param_os << nrep << '\n';
 		param_os << df << '\n';
@@ -162,6 +167,7 @@ int main(int argc, char* argv[])	{
 		double rootstdev = 0;
 
 		string name = "";
+		bool withNe = false;
 		bool clamptree = false;
 		bool meanexp = false;
 		GeneticCodeType type = Universal;
@@ -243,6 +249,9 @@ int main(int argc, char* argv[])	{
 					i++;
 					nrep = atoi(argv[i]);
 				}
+				else if (s == "-withNe") {
+					withNe = true;
+				}	
 				else if (s == "-fixbl")	{
 					clamptree = true;
 				}
@@ -290,7 +299,7 @@ int main(int argc, char* argv[])	{
 			exit(1);
 		}
 
-		BranchOmegaMultivariateChain* chain = new BranchOmegaMultivariateChain(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,type,contdatatype,clamptree,meanexp,nrep,name,force);
+		BranchOmegaMultivariateChain* chain = new BranchOmegaMultivariateChain(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,type,contdatatype,withNe,clamptree,meanexp,nrep,name,force);
 		chain->SetEvery(every);
 		chain->SetUntil(until);
 		cerr << "start\n";

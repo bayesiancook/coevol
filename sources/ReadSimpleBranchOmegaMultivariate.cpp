@@ -20,6 +20,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 	double rootage;
 	double rootstdev;
 
+	bool withNe;
 	bool clamptree;
 	bool meanexp;
 	GeneticCodeType type;
@@ -36,9 +37,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 	BranchOmegaMultivariateModel* GetModel() {return (BranchOmegaMultivariateModel*) model;}
 
-	BranchOmegaMultivariateSample(string filename, int inburnin, int inevery, int inuntil) : Sample(filename,inburnin,inevery,inuntil)	{
+	BranchOmegaMultivariateSample(string filename, int inburnin, int inevery, int inuntil) : Sample(filename,inburnin,inevery,inuntil) {	
 		Open();
 	}
+
 
 	void Open()	{
 
@@ -61,6 +63,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		is >> df;
 		is >> priorsigma;
 		is >> clamptree;
+		is >> withNe;
 
 		int check;
 		is >> check;
@@ -76,7 +79,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		// make a new model depending on the type obtained from the file
 		if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,contdatatype,clamptree,meanexp,nrep,false,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,contdatatype,withNe,clamptree,meanexp,nrep,false,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -152,10 +155,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			meanchrono->Add(GetModel()->GetChronogram());
 
-			meanmutrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);
+			if (!withNe) {meanmutrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);}
 			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetChronogram());
 			meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetChronogram());
-			meanNe->Add(GetModel()->GetNeNodeTree(), GetModel()->GetChronogram());
+			if (!withNe) {meanNe->Add(GetModel()->GetNeNodeTree(), GetModel()->GetChronogram());}
 			meanadaptative_omega->Add(GetModel()->GetAdaptative_omegaNodeTree(), GetModel()->GetChronogram());
 			meanoppositealpha->Add(GetModel()->GetOppositeAlphaNodeTree(), GetModel()->GetChronogram());
 
@@ -276,7 +279,7 @@ int main(int argc, char* argv[])	{
 	int burnin = 0;
 	int every = 1;
 	int until = -1;
-	string name;
+	string name; 
 
 	bool ic = false;
 

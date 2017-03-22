@@ -112,6 +112,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	// if true: covariances are all set equal to 0
 	bool clampdiag;
 
+	bool withNe;
 	bool clamptree;
 	bool meanexp;
 
@@ -127,7 +128,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	public:
 
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, double priorsigma, int indf, int contdatatype, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, double priorsigma, int indf, int contdatatype, bool inwithNe, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
+
+		withNe = inwithNe;
 
 		// if we want the divergence times to be fixed
 		clamptree = inclamptree;
@@ -261,22 +264,22 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		synrateslope = new double[L + Ncont];
 		omegaslope = new double[L + Ncont];
-		Neslope = new double[L + Ncont]; 
+		if (!withNe) {Neslope = new double[L + Ncont];} 
 		adaptative_omegaslope = new double[L + Ncont];
 		oppositealphaslope = new double[L + Ncont];
 		
 		CreateSynrateSlope();
 		CreateOmegaSlope();
-		CreateNeSlope();
+		if (!withNe) {CreateNeSlope();}
 		CreateAdaptative_omegaSlope();
 		CreateOppositeAlphaSlope();
 		
 
 		// create the node tree obtained from the linear combinations
 		
-		nodesynratetree = new SynrateLinearCombinationNodeTree(process, absrootage, synrateslope);
-		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope);
-		nodeNetree = new NeLinearCombinationNodeTree(process, Neslope); 
+		nodesynratetree = new SynrateLinearCombinationNodeTree(process, absrootage, synrateslope, withNe);
+		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope, withNe);
+		if (!withNe) {nodeNetree = new NeLinearCombinationNodeTree(process, Neslope);} 
 		nodeadaptative_omegatree = new Adaptative_omegaLinearCombinationNodeTree(process, nodeomegatree, adaptative_omegaslope);
 		nodeoppositealphatree = new OppositeAlphaLinearCombinationNodeTree(process, nodeomegatree, oppositealphaslope);
 		
@@ -293,7 +296,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		//adaptative_omegatree = new MeanExpTree(nodeadaptative_omegatree, chronogram, MEAN, false);
 		
 		// create u on each branch, nased on the third entry of the multivariate process
-		mutratetree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);
+		if (!withNe) {mutratetree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);}
 
 		cerr << "matrix\n";
 
@@ -345,7 +348,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	~BranchOmegaMultivariateModel() {
 		DeleteSynrateSlope();
 		DeleteOmegaSlope();
-		DeleteNeSlope();
+		if (!withNe) {DeleteNeSlope();}
 		DeleteAdaptative_omegaSlope();
 		DeleteOppositeAlphaSlope();
 		}
