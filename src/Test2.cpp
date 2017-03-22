@@ -6,8 +6,16 @@
 #include "utils/Random.hpp"
 using namespace std;
 
+
+// =======================
+//        CONSTANTS
+// =======================
+// #define REFERENCE_TEST2
 double lambda = 4;
-bool adaptive = true;
+bool adaptive = false;
+// =======================
+
+
 
 template <class T1, class T2>
 class MyDoubleMove : public MCUpdate {
@@ -49,14 +57,6 @@ class MyDoubleMove : public MCUpdate {
             } else {
                 double m = (Random::Uniform() - 0.5);
                 managedNode1 += m;
-            }
-            while ((managedNode1 < 0) || (managedNode1 > 1)) {
-                if (managedNode1 < 0) {
-                    (T1&)managedNode1 = -managedNode1;
-                }
-                if (managedNode1 > 1) {
-                    (T1&)managedNode1 = 2 - managedNode1;
-                }
             }
 
             double logHastings = 0;
@@ -103,7 +103,7 @@ class MyModel : public ProbModel {
     list<Normal> leaves;
 
     // moves
-    MyDoubleMove<PosReal, Real>* myPosRealMove;
+    MyDoubleMove<PosReal, Real>* myMove;
 
     MyModel()
         : posOne(new Const<PosReal>(1)),
@@ -123,15 +123,22 @@ class MyModel : public ProbModel {
     }
 
     void MakeScheduler() override {
-        myPosRealMove = new MyDoubleMove<PosReal, Real>(*b, *a);
+#ifndef REFERENCE_TEST2
+        myMove = new MyDoubleMove<PosReal, Real>(*b, *a);
+        scheduler.Register(myMove, 1, "ab");
+#else
         // scheduler.Register(mymove, 1, "p");
         scheduler.Register(new SimpleMove(a, 1.0), 1, "a");
         scheduler.Register(new SimpleMove(b, 1.0), 1, "b");
+#endif
     }
 
-    double GetLogProb() override { return a->GetLogProb(); }
+    double GetLogProb() override { return a->GetLogProb() + b->GetLogProb(); }
 
-    void drawSample() override { a->drawSample(); }
+    void drawSample() override {
+        a->drawSample();
+        b->drawSample();
+    }
 
     void ToStream(ostream& os) override { os << a->val() << endl; }
 
@@ -150,7 +157,6 @@ void printCaracs(vector<double> data, string name) {
     }
     cout << "<" << name << "> Mean: " << mean / data.size()
          << " ; variance: " << (variance - (mean * mean / data.size())) / data.size() << endl;
-
 }
 
 
@@ -162,7 +168,8 @@ int main() {
         resultsA.push_back(model.a->val());
         resultsB.push_back(model.b->val());
     }
-    printCaracs(resultsA, "a"); // expected 2.27
-    printCaracs(resultsB, "b"); // expected 2.18
-        // model.mymove->debug();
+    printCaracs(resultsA, "a");  // expected 2.27
+    printCaracs(resultsB, "b");  // expected 2.18
+
+    // model.mymove->debug();
 }
