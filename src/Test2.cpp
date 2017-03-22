@@ -116,6 +116,8 @@ class MyModel : public ProbModel {
     void MakeScheduler() override {
         // mymove = new MyDoubleMove<UnitReal>(*p);
         // scheduler.Register(mymove, 1, "p");
+        scheduler.Register(new SimpleMove(a, 1.0), 1, "a");
+        scheduler.Register(new SimpleMove(b, 1.0), 1, "b");
     }
 
     double GetLogProb() override { return a->GetLogProb(); }
@@ -132,7 +134,7 @@ int main() {
     vector<double> results;
     for (int i = 0; i < 100000; i++) {
         model.Move(1.0);
-        // results.push_back(model.a->val());
+        results.push_back(model.a->val());
     }
     double mean = 0.0;
     for (auto i : results) {
@@ -144,5 +146,5 @@ int main() {
     }
     cout << "<DOUBLE_TEST> Mean: " << mean / results.size()
          << " ; variance: " << (variance - (mean * mean / results.size())) / results.size() << endl;
-    model.mymove->debug();
+    // model.mymove->debug();
 }
