@@ -16,26 +16,26 @@ bool adaptive = false;
 // =======================
 
 
-
 template <class T1, class T2>
 class MyDoubleMove : public MCUpdate {
     Rvar<T1>& managedNode1;
     Rvar<T2>& managedNode2;
 
     // move memory
-    vector<double> values;  // list of all values
-    double mean;            // on-line mean (approximation)
-    int nbVal;              // number of values computed so far (accepted and refused)
-    double M2;              // variance * nbVals (approximation)
-    int accept;             // number of accepted proposals
+    typedef pair<double, double> mypair;
+    vector<pair<double, double>> values;  // list of all values
+    mypair mean;                          // on-line mean (approximation)
+    mypair M2;                            // variance * nbVals (approximation)
+    int nbVal;                            // number of values computed so far (accepted and refused)
+    int accept;                           // number of accepted proposals
 
   public:
     MyDoubleMove(Rvar<T1>& managedNode1, Rvar<T2>& managedNode2)
         : managedNode1(managedNode1),
           managedNode2(managedNode2),
-          mean(0),
+          mean(0, 0),
+          M2(0, 0),
           nbVal(0),
-          M2(0),
           accept(0) {}
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
@@ -54,7 +54,7 @@ class MyDoubleMove : public MCUpdate {
             // actual value of the node and returns the log of the Hastings ratio (proposal ratio)
 
             // if (nbVal > 100 and adaptive) {
-                // (T1&)managedNode1 = mean + Random::sNormal() * lambda * sqrt(M2 / nbVal);
+            // (T1&)managedNode1 = mean + Random::sNormal() * lambda * sqrt(M2 / nbVal);
             // } else {
             //     double m = (Random::Uniform() - 0.5);
             //     managedNode1 += m;
@@ -74,13 +74,15 @@ class MyDoubleMove : public MCUpdate {
             } else {
                 accept += 1;
             }
-            values.push_back(managedNode1);
+            values.push_back(mypair(managedNode1, managedNode2));
 
-            // nbVal += 1;
-            // double delta = managedNode1 - mean;
-            // mean += delta / nbVal;
-            // double delta2 = managedNode1 - mean;
-            // M2 += delta * delta2;
+            // updating mean and variance
+            nbVal += 1;
+            mypair delta = mypair(managedNode1 - mean.first, managedNode2 - mean.second);
+            mean = mypair(mean.first + delta.first / nbVal, mean.second + delta.second / nbVal);
+            mypair delta2 = mypair(managedNode1 - mean.first, managedNode2 - mean.second);
+            M2 = mypair(M2.first + delta.first * delta2.first,
+                        M2.second + delta.second * delta2.second);
 
             // return something
             return (double)accepted;  // for some reason Move seems to return (double)accepted where
@@ -90,8 +92,9 @@ class MyDoubleMove : public MCUpdate {
     }
 
     void debug() {
-        printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode1), mean,
-               M2 / nbVal, (accept * 100.0) / nbVal);
+        printf("New value %f/%f, first=%f|%f, second=%f|%f, acceptance=%f%%\n",
+               double(managedNode1), double(managedNode2), mean.first, M2.first / nbVal,
+               mean.second, M2.second / nbVal, (accept * 100.0) / nbVal);
     }
 };
 
@@ -105,7 +108,7 @@ class MyModel : public ProbModel {
     list<Normal> leaves;
 
     // moves
-    MyDoubleMove<PosReal, Real>* myMove;
+    MyDoubleMove<Real, PosReal>* myMove;
 
     MyModel()
         : posOne(new Const<PosReal>(1)),
@@ -126,7 +129,7 @@ class MyModel : public ProbModel {
 
     void MakeScheduler() override {
 #ifndef REFERENCE_TEST2
-        myMove = new MyDoubleMove<PosReal, Real>(*b, *a);
+        myMove = new MyDoubleMove<Real, PosReal>(*a, *b);
         scheduler.Register(myMove, 1, "ab");
 #else
         // scheduler.Register(mymove, 1, "p");
@@ -173,5 +176,5 @@ int main() {
     printCaracs(resultsA, "a");  // expected 2.27
     printCaracs(resultsB, "b");  // expected 2.18
 
-    // model.mymove->debug();
+    model.myMove->debug();
 }
