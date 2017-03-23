@@ -48,7 +48,7 @@ void test() {
 //        CONSTANTS
 // =======================
 // #define REFERENCE_TEST2
-double lambda = 0.75;
+double lambda = 1;
 bool adaptive = false;
 // =======================
 
@@ -61,12 +61,14 @@ class MyDoubleMove : public MCUpdate {
     Rvar<T1>& managedNode1;
     Rvar<T2>& managedNode2;
 
+    Vector2d newValue;
+
     // move memory
     // vector<Vector2d> values;  // list of all values
     Vector2d mean;  // on-line mean
     Matrix2d covar;
-    int t;          // number of values computed so far (accepted and refused)
-    int accept;     // number of accepted proposals
+    int t;       // number of values computed so far (accepted and refused)
+    int accept;  // number of accepted proposals
 
   public:
     MyDoubleMove(Rvar<T1>& managedNode1, Rvar<T2>& managedNode2)
@@ -89,8 +91,21 @@ class MyDoubleMove : public MCUpdate {
             // double logHastings = managedNode1.ProposeMove(1.0);  // ProposeMove modifies the
             // actual value of the node and returns the log of the Hastings ratio (proposal ratio)
 
-            managedNode1 += lambda * Random::sNormal();
-            managedNode2 += lambda * Random::sNormal();
+
+
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            // UPDATE VALUE OF NODES
+            if (t < 10000 or !adaptive) {
+                managedNode1 += Random::sNormal();
+                managedNode2 += Random::sNormal();
+                newValue = Vector2d(managedNode1, managedNode2);
+            } else {
+                normal_random_variable sample{lambda * covar};
+                newValue = mean + sample();
+                (T1&)managedNode1 = newValue(0);
+                (T2&)managedNode2 = newValue(1);
+            }
+            // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             if (managedNode2 < 0) {  // posReal specific :/
                 (T2&)managedNode2 = -managedNode2;
             }
@@ -99,11 +114,14 @@ class MyDoubleMove : public MCUpdate {
             double logMetropolis = managedNode1.Update() + managedNode2.Update();
 
 
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             // DECIDE ACCEPTATION
             bool accepted = log(Random::Uniform()) < logMetropolis + logHastings;
+            // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-            // RESTORE IF NOT ACCEPTED
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            // ACT DEPENDING OF ACCEPTATION
             if (!accepted) {
                 managedNode1.Corrupt(false);
                 managedNode1.Restore();
@@ -113,26 +131,25 @@ class MyDoubleMove : public MCUpdate {
                 accept += 1;
             }
             // values.push_back(Vector2d(managedNode1, managedNode2));
+            // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-            // ============================================================================
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             // UPDATING THINGS IN AN ON-LINE FASHION
             t += 1;  // counting iterations (t=k)
 
-            Vector2d newValue(managedNode1, managedNode2);  // used in the formulas below
-            Matrix2d firstOuterProduct = mean * mean.transpose(); // is useful for the variance update below
+            Matrix2d firstOuterProduct =
+                mean * mean.transpose();  // is useful for the variance update below
 
             Vector2d tmp = ((t - 1.0) / t) * mean + (1.0 / t) * newValue;  // updating mean
             mean = tmp;
 
-            Matrix2d tmp2 = ((t-1.0)/t) * covar + (1.0/t) *(
-                                                           t * firstOuterProduct
-                                                           - (t+1.0) * (mean * mean.transpose())
-                                                           + newValue * newValue.transpose()
-                                                           );
+            Matrix2d tmp2 =
+                ((t - 1.0) / t) * covar +
+                (1.0 / t) * (t * firstOuterProduct - (t + 1.0) * (mean * mean.transpose()) +
+                             newValue * newValue.transpose());
             covar = tmp2;
-
-            // ============================================================================
+            // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
             return (double)accepted;  // for some reason Move seems to return (double)accepted where
