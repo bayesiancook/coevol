@@ -183,6 +183,7 @@ int main(int argc, char* argv[])	{
 		int nrep = 0;
 
 		int force = 0;
+
 		try	{
 
 			if (argc == 1)	{
@@ -254,6 +255,10 @@ int main(int argc, char* argv[])	{
 				}	
 				else if (s == "-fixbl")	{
 					clamptree = true;
+				}
+				else if (s == "-rootage")	{
+					i++;
+					rootage = atof(argv[i]);
 				}
 				else if (s == "-meanexp")	{
 					meanexp = true;
