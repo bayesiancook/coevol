@@ -184,10 +184,11 @@ class MeanExpNormTree : public NewickTree {
 	*/
 
 	MeanExpNormTree(Tree* intree, bool inlogit, bool inprintlog, bool inprintmean, bool inprintci, bool inprintstdev, bool inwithleaf, bool inwithinternal, double inmeanreg = 0, double instdevreg = 0) : tree(intree), logit(inlogit), printlog(inprintlog), printmean(inprintmean), printci(inprintci), printstdev(inprintstdev), withleaf(inwithleaf), withinternal(inwithinternal), meanreg(inmeanreg), stdevreg(instdevreg) {
-		Reset();
 		ppleafroot = 0;
 		threshold = 0;
 		withpp = false;
+		withdepth = false;
+		Reset();
 	}
 
 	void ActivatePP(double inthreshold)	{
@@ -663,7 +664,12 @@ class MeanExpNormTree : public NewickTree {
 				os << GetDepth(from) << '\t';
 			}
 			else	{
-				os << GetMeanTime(from->GetBranch()) << '\t';
+				if (from->GetBranch())	{
+					os << GetMeanTime(from->GetBranch()) << '\t';
+				}
+				else	{
+					os << 0 << '\n';
+				}
 			}
 			if (printmean)	{
 				os << GetMean(from->GetNode()) << '\t';
