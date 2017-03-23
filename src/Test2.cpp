@@ -100,6 +100,7 @@ class MyDoubleMove : public MCUpdate {
                 managedNode2 += Random::sNormal();
                 newValue = Vector2d(managedNode1, managedNode2);
             } else {
+                printf("Adaptive move!\n");
                 normal_random_variable sample{lambda * covar};
                 newValue = mean + sample();
                 (T1&)managedNode1 = newValue(0);
@@ -137,6 +138,7 @@ class MyDoubleMove : public MCUpdate {
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             // UPDATING THINGS IN AN ON-LINE FASHION
             t += 1;  // counting iterations (t=k)
+            newValue = Vector2d(managedNode1, managedNode2);
 
             Matrix2d firstOuterProduct =
                 mean * mean.transpose();  // is useful for the variance update below
@@ -149,6 +151,7 @@ class MyDoubleMove : public MCUpdate {
                 (1.0 / t) * (t * firstOuterProduct - (t + 1.0) * (mean * mean.transpose()) +
                              newValue * newValue.transpose());
             covar = tmp2;
+            // cout << "COVAR = \n" << covar << endl;
             // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
