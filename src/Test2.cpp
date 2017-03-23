@@ -7,34 +7,34 @@
 #include "core/RandomTypes.hpp"
 #include "utils/Random.hpp"
 using namespace std;
+using namespace Eigen;
 
 
 struct normal_random_variable {
-    normal_random_variable(Eigen::MatrixXd const& covar)
-        : normal_random_variable(Eigen::VectorXd::Zero(covar.rows()), covar) {}
+    normal_random_variable(MatrixXd const& covar)
+        : normal_random_variable(VectorXd::Zero(covar.rows()), covar) {}
 
-    normal_random_variable(Eigen::VectorXd const& mean, Eigen::MatrixXd const& covar) : mean(mean) {
-        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(covar);
+    normal_random_variable(VectorXd const& mean, MatrixXd const& covar) : mean(mean) {
+        SelfAdjointEigenSolver<MatrixXd> eigenSolver(covar);
         transform = eigenSolver.eigenvectors() * eigenSolver.eigenvalues().cwiseSqrt().asDiagonal();
     }
 
-    Eigen::VectorXd mean;
-    Eigen::MatrixXd transform;
+    VectorXd mean;
+    MatrixXd transform;
 
-    Eigen::VectorXd operator()() const {
+    VectorXd operator()() const {
         static std::mt19937 gen{std::random_device{}()};
         static std::normal_distribution<> dist;
 
-        return mean + transform * Eigen::VectorXd{mean.size()}.unaryExpr([&](double) {
-            return dist(gen);
-        });
+        return mean +
+               transform * VectorXd{mean.size()}.unaryExpr([&](double) { return dist(gen); });
     }
 };
 
 
 void test() {
     int size = 2;
-    Eigen::MatrixXd covar(size, size);
+    MatrixXd covar(size, size);
     covar << 1, .5, .5, 1;
 
     normal_random_variable sample{covar};
@@ -62,21 +62,17 @@ class MyDoubleMove : public MCUpdate {
     Rvar<T2>& managedNode2;
 
     // move memory
-    typedef Eigen::Vector2d mypair;
-    vector<Eigen::Vector2d> values;  // list of all values
-    mypair mean;                     // on-line mean (approximation)
-    mypair M2;                       // variance * nbVals (approximation)
-    int nbVal;                       // number of values computed so far (accepted and refused)
-    int accept;                      // number of accepted proposals
+    // vector<Vector2d> values;  // list of all values
+    Vector2d mean;  // on-line mean
+    Matrix2d covar;
+    int t;          // number of values computed so far (accepted and refused)
+    int accept;     // number of accepted proposals
 
   public:
     MyDoubleMove(Rvar<T1>& managedNode1, Rvar<T2>& managedNode2)
-        : managedNode1(managedNode1),
-          managedNode2(managedNode2),
-          mean(0, 0),
-          M2(0, 0),
-          nbVal(0),
-          accept(0) {}
+        : managedNode1(managedNode1), managedNode2(managedNode2), mean(0, 0), t(0), accept(0) {
+        covar << 0, 0, 0, 0;
+    }
 
     double Move(double) override {  // decided to ignore tuning modulator (ie, assume = 1)
         // if node is clamped print a warning message
@@ -93,12 +89,6 @@ class MyDoubleMove : public MCUpdate {
             // double logHastings = managedNode1.ProposeMove(1.0);  // ProposeMove modifies the
             // actual value of the node and returns the log of the Hastings ratio (proposal ratio)
 
-            // if (nbVal > 100 and adaptive) {
-            // (T1&)managedNode1 = mean + Random::sNormal() * lambda * sqrt(M2 / nbVal);
-            // } else {
-            //     double m = (Random::Uniform() - 0.5);
-            //     managedNode1 += m;
-            // }
             managedNode1 += lambda * Random::sNormal();
             managedNode2 += lambda * Random::sNormal();
             if (managedNode2 < 0) {  // posReal specific :/
@@ -108,7 +98,12 @@ class MyDoubleMove : public MCUpdate {
             double logHastings = 0;
             double logMetropolis = managedNode1.Update() + managedNode2.Update();
 
+
+            // DECIDE ACCEPTATION
             bool accepted = log(Random::Uniform()) < logMetropolis + logHastings;
+
+
+            // RESTORE IF NOT ACCEPTED
             if (!accepted) {
                 managedNode1.Corrupt(false);
                 managedNode1.Restore();
@@ -117,16 +112,29 @@ class MyDoubleMove : public MCUpdate {
             } else {
                 accept += 1;
             }
-            values.push_back(mypair(managedNode1, managedNode2));
+            // values.push_back(Vector2d(managedNode1, managedNode2));
 
-            // updating mean and variance
-            nbVal += 1;
-            mypair delta = mypair(managedNode1 - mean(0), managedNode2 - mean(1));
-            mean = mypair(mean(0) + delta(0) / nbVal, mean(1) + delta(1) / nbVal);
-            mypair delta2 = mypair(managedNode1 - mean(0), managedNode2 - mean(1));
-            M2 = mypair(M2(0) + delta(0) * delta2(0), M2(1) + delta(1) * delta2(1));
 
-            // return something
+            // ============================================================================
+            // UPDATING THINGS IN AN ON-LINE FASHION
+            t += 1;  // counting iterations (t=k)
+
+            Vector2d newValue(managedNode1, managedNode2);  // used in the formulas below
+            Matrix2d firstOuterProduct = mean * mean.transpose(); // is useful for the variance update below
+
+            Vector2d tmp = ((t - 1.0) / t) * mean + (1.0 / t) * newValue;  // updating mean
+            mean = tmp;
+
+            Matrix2d tmp2 = ((t-1.0)/t) * covar + (1.0/t) *(
+                                                           t * firstOuterProduct
+                                                           - (t+1.0) * (mean * mean.transpose())
+                                                           + newValue * newValue.transpose()
+                                                           );
+            covar = tmp2;
+
+            // ============================================================================
+
+
             return (double)accepted;  // for some reason Move seems to return (double)accepted where
                                       // accepted is a
                                       // bool that says if the move was accepted
@@ -134,9 +142,9 @@ class MyDoubleMove : public MCUpdate {
     }
 
     void debug() {
-        printf("New value %f/%f, first=%f|%f, second=%f|%f, acceptance=%f%%\n",
-               double(managedNode1), double(managedNode2), mean(0), M2(0) / nbVal, mean(1),
-               M2(1) / nbVal, (accept * 100.0) / nbVal);
+        printf("New value %f/%f, first=%f, second=%f, acceptance=%f%%\n", double(managedNode1),
+               double(managedNode2), mean(0), mean(1), (accept * 100.0) / t);
+        cout << covar;
     }
 };
 
@@ -230,5 +238,4 @@ int main() {
 #ifndef REFERENCE_TEST2
     model.myMove->debug();
 #endif
-    test();
 }
