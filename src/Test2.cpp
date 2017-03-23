@@ -1,10 +1,49 @@
+#include <Eigen/Eigen>
 #include <cmath>
 #include <cstdio>
 #include <list>
+#include <random>
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
 #include "utils/Random.hpp"
 using namespace std;
+
+
+struct normal_random_variable {
+    normal_random_variable(Eigen::MatrixXd const& covar)
+        : normal_random_variable(Eigen::VectorXd::Zero(covar.rows()), covar) {}
+
+    normal_random_variable(Eigen::VectorXd const& mean, Eigen::MatrixXd const& covar) : mean(mean) {
+        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(covar);
+        transform = eigenSolver.eigenvectors() * eigenSolver.eigenvalues().cwiseSqrt().asDiagonal();
+    }
+
+    Eigen::VectorXd mean;
+    Eigen::MatrixXd transform;
+
+    Eigen::VectorXd operator()() const {
+        static std::mt19937 gen{std::random_device{}()};
+        static std::normal_distribution<> dist;
+
+        return mean + transform * Eigen::VectorXd{mean.size()}.unaryExpr([&](double) {
+            return dist(gen);
+        });
+    }
+};
+
+
+void test() {
+    int size = 2;
+    Eigen::MatrixXd covar(size,size);
+    covar << 1, .5,
+        .5, 1;
+
+    normal_random_variable sample { covar };
+
+    std::cout << sample() << std::endl;
+    std::cout << sample() << std::endl;
+}
+
 
 
 // =======================
@@ -64,8 +103,8 @@ class MyDoubleMove : public MCUpdate {
             // }
             managedNode1 += lambda * Random::sNormal();
             managedNode2 += lambda * Random::sNormal();
-            if (managedNode2 < 0) { // posReal specific :/
-                (T2&)managedNode2 = - managedNode2 ;
+            if (managedNode2 < 0) {  // posReal specific :/
+                (T2&)managedNode2 = -managedNode2;
             }
 
             double logHastings = 0;
@@ -161,7 +200,6 @@ class MyModel : public ProbModel {
 };
 
 
-
 // ======================
 //      AUX FUNCTIONS
 // ======================
@@ -195,4 +233,5 @@ int main() {
 #ifndef REFERENCE_TEST2
     model.myMove->debug();
 #endif
+    test();
 }
