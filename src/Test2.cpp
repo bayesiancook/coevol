@@ -1,4 +1,4 @@
-#include <Eigen/Eigen>
+#include <Eigen/Dense>
 #include <cmath>
 #include <cstdio>
 #include <list>
@@ -34,16 +34,14 @@ struct normal_random_variable {
 
 void test() {
     int size = 2;
-    Eigen::MatrixXd covar(size,size);
-    covar << 1, .5,
-        .5, 1;
+    Eigen::MatrixXd covar(size, size);
+    covar << 1, .5, .5, 1;
 
-    normal_random_variable sample { covar };
+    normal_random_variable sample{covar};
 
     std::cout << sample() << std::endl;
     std::cout << sample() << std::endl;
 }
-
 
 
 // =======================
@@ -64,12 +62,12 @@ class MyDoubleMove : public MCUpdate {
     Rvar<T2>& managedNode2;
 
     // move memory
-    typedef pair<double, double> mypair;
-    vector<pair<double, double>> values;  // list of all values
-    mypair mean;                          // on-line mean (approximation)
-    mypair M2;                            // variance * nbVals (approximation)
-    int nbVal;                            // number of values computed so far (accepted and refused)
-    int accept;                           // number of accepted proposals
+    typedef Eigen::Vector2d mypair;
+    vector<Eigen::Vector2d> values;  // list of all values
+    mypair mean;                     // on-line mean (approximation)
+    mypair M2;                       // variance * nbVals (approximation)
+    int nbVal;                       // number of values computed so far (accepted and refused)
+    int accept;                      // number of accepted proposals
 
   public:
     MyDoubleMove(Rvar<T1>& managedNode1, Rvar<T2>& managedNode2)
@@ -123,11 +121,10 @@ class MyDoubleMove : public MCUpdate {
 
             // updating mean and variance
             nbVal += 1;
-            mypair delta = mypair(managedNode1 - mean.first, managedNode2 - mean.second);
-            mean = mypair(mean.first + delta.first / nbVal, mean.second + delta.second / nbVal);
-            mypair delta2 = mypair(managedNode1 - mean.first, managedNode2 - mean.second);
-            M2 = mypair(M2.first + delta.first * delta2.first,
-                        M2.second + delta.second * delta2.second);
+            mypair delta = mypair(managedNode1 - mean(0), managedNode2 - mean(1));
+            mean = mypair(mean(0) + delta(0) / nbVal, mean(1) + delta(1) / nbVal);
+            mypair delta2 = mypair(managedNode1 - mean(0), managedNode2 - mean(1));
+            M2 = mypair(M2(0) + delta(0) * delta2(0), M2(1) + delta(1) * delta2(1));
 
             // return something
             return (double)accepted;  // for some reason Move seems to return (double)accepted where
@@ -138,8 +135,8 @@ class MyDoubleMove : public MCUpdate {
 
     void debug() {
         printf("New value %f/%f, first=%f|%f, second=%f|%f, acceptance=%f%%\n",
-               double(managedNode1), double(managedNode2), mean.first, M2.first / nbVal,
-               mean.second, M2.second / nbVal, (accept * 100.0) / nbVal);
+               double(managedNode1), double(managedNode2), mean(0), M2(0) / nbVal, mean(1),
+               M2(1) / nbVal, (accept * 100.0) / nbVal);
     }
 };
 
