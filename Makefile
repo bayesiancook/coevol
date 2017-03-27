@@ -4,7 +4,7 @@
 
 SRC_FILES = $(shell find include -name "*.hpp") $(shell find src -name "*.cpp")
 TMP_FILES = $(shell find . -name "tmp*")
-.PHONY: cmake clean doc fix check format dot test tests
+.PHONY: cmake clean doc fix check format dot test
 
 
 # ====================================

@@ -48,7 +48,7 @@ void test() {
 //        CONSTANTS
 // =======================
 // #define REFERENCE_TEST2
-double lambda = 1;
+double lambda = 0.5;
 bool adaptive = false;
 // =======================
 
@@ -95,7 +95,7 @@ class MyDoubleMove : public MCUpdate {
 
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             // UPDATE VALUE OF NODES
-            if (t < 10000 or !adaptive) {
+            if (t < 100 or !adaptive) {
                 managedNode1 += Random::sNormal();
                 managedNode2 += Random::sNormal();
                 newValue = Vector2d(managedNode1, managedNode2);
@@ -248,7 +248,7 @@ void printCaracs(vector<double> data, string name) {
 int main() {
     MyModel model;
     vector<double> resultsA, resultsB;
-    for (int i = 0; i < 1000000; i++) {
+    for (int i = 0; i < 10000; i++) {
         model.Move(1.0);
         resultsA.push_back(model.a->val());
         resultsB.push_back(model.b->val());
