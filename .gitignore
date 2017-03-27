@@ -4,3 +4,5 @@ tmp*
 _build/
 doc/html
 doc/latex
+perf.*
+include/Eigen
