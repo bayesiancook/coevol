@@ -233,6 +233,15 @@ int main(int argc, char* argv[])	{
 					}
 					rootstdev = atof(argv[i]);
 				}
+				else if (s == "-calspe")	{
+					i++;
+					if ((i == argc) || (! IsFloat(argv[i])))	{
+						cerr << "error in command: -cal <mean> <stdev>\n";
+						cerr << '\n';
+						exit(1);
+					}
+					rootage = atof(argv[i]);
+				}	
 				else if ((s == "-priorsigma") || (s == "-priornu"))	{
 					i++;
 					if ((i == argc) || (! IsFloat(argv[i])))	{

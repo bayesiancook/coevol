@@ -6,7 +6,7 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 
 	public:
 
-	ConjugateBranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double insofta, double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile, string insuffstatfile, bool intimeline, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
+	ConjugateBranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta, double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile, string insuffstatfile, bool intimeline, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
 
 		sample = insample;
 
@@ -90,6 +90,8 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 		clamproot = inclamproot;
 		clamptree = inclamptree;
 		meanexp = inmeanexp;
+
+		iscalspe = iniscalspe;
 
 		// A FROZEN ACCIDENT...
 		if (inomegaratiotree == 3)	{

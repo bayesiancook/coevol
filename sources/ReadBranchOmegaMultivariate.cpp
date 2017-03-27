@@ -33,6 +33,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 	int mutmodel;
 	int gc;
+	bool iscalspe;
 	bool clampdiag;
 	bool autoregressive;
 	bool clamproot;
@@ -129,6 +130,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		if (chronoprior == 4)	{
 			is >> softa;
 		}
+		is >> iscalspe;
 		is >> clampdiag >> autoregressive >> gc;
 		is >> conjpath;
 		is >> contdatatype;
@@ -217,10 +219,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		// make a new model depending on the type obtained from the file
 		if (modeltype == "BRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
 		}
 		else if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
+			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -1629,6 +1631,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			cerr << '.';
 
 			// get next point -> will be stored into "model", and thus, will be accessible through GetModel()
+			double t0;
 
 			GetNextPoint();
 
@@ -1640,8 +1643,13 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);
 			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 1);
 
-			double t0 = GetModel()->GetRootAge();
-
+			if (!iscalspe) {
+				t0 = GetModel()->GetRootAge();
+			}
+			else {
+				t0 = rootage;
+			}
+				
 			double beta = log(t0 * 1000000)/log(10)+log(365)/log(10)-log(4)/log(10);
 			
 			

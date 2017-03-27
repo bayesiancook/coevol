@@ -29,6 +29,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 	double meanchi;
 	double meanchi2;
 
+	bool iscalspe;
 	bool clampdiag;
 	bool autoregressive;
 	bool clamproot;
@@ -82,7 +83,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 
 	BranchOmegaMultivariateModel* GetModel() {return (BranchOmegaMultivariateModel*) model;}
 
-	BranchOmegaMultivariateChain(string indata, string intree, string incontdata, string incalibfile, double inrootage, double inrootstdev, int inchronoprior, double insofta, double inmeanchi, double inmeanchi2, double inpriorsigma, string inpriorsigmafile, int indf, int inmutmodel, int ingc, string filename, bool inclampdiag, bool inautoregressive, GeneticCodeType intype, bool conjugate, int inconjpath, double inmappingfreq, int incontdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int innsplit, int inwithdrift, int inuniformprior, string inrootfile, string insuffstatfile, bool inwithtimeline, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int force)	{
+	BranchOmegaMultivariateChain(string indata, string intree, string incontdata, string incalibfile, double inrootage, bool iniscalspe, double inrootstdev, int inchronoprior, double insofta, double inmeanchi, double inmeanchi2, double inpriorsigma, string inpriorsigmafile, int indf, int inmutmodel, int ingc, string filename, bool inclampdiag, bool inautoregressive, GeneticCodeType intype, bool conjugate, int inconjpath, double inmappingfreq, int incontdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int innsplit, int inwithdrift, int inuniformprior, string inrootfile, string insuffstatfile, bool inwithtimeline, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int force)	{
 		if (conjugate)	{
 			modeltype = "CONJUGATEBRANCHOMEGAMULTIVARIATE";
 		}
@@ -100,6 +101,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		calibfile = incalibfile;
 		suffstatfile = insuffstatfile;
 		rootage = inrootage;
+		iscalspe = iniscalspe;
 		rootstdev = inrootstdev;
 		chronoprior = inchronoprior;
 		softa = insofta;
@@ -175,10 +177,10 @@ class BranchOmegaMultivariateChain : public Chain	{
 	void New(int force)	{
 
 		if (modeltype == "BRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
 		}
 		else if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
+			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
 		}
 		else	{
 			cerr << "error, does not recognise model type : " << modeltype << '\n';
@@ -206,6 +208,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		if (chronoprior == 4)	{
 			is >> softa;
 		}
+		is >> iscalspe;
 		is >> clampdiag >> autoregressive >> gc;
 		is >> conjpath;
 		is >> contdatatype;
@@ -292,10 +295,10 @@ class BranchOmegaMultivariateChain : public Chain	{
 		is >> every >> until >> size;
 
 		if (modeltype == "BRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
 		}
 		else if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
+			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -327,6 +330,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		if (chronoprior == 4)	{
 			param_os << softa << '\n';
 		}
+		param_os << iscalspe << '\n';
 		param_os << clampdiag << '\t' << autoregressive << '\t' << gc << '\n';
 		param_os << conjpath << '\n';
 		param_os << contdatatype << '\n';
@@ -458,6 +462,7 @@ int main(int argc, char* argv[])	{
 		double meanchi2 = -1;
 
 		string name = "";
+		bool iscalspe = false;
 		bool autoregressive = false;
 		bool clampdiag = false;
 		bool clamproot = false;
@@ -642,6 +647,16 @@ int main(int argc, char* argv[])	{
 						exit(1);
 					}
 					rootstdev = atof(argv[i]);
+				}
+				else if (s == "-calspe")	{
+					iscalspe = true;
+					i++;
+					if ((i == argc) || (! IsFloat(argv[i])))	{
+						cerr << "error in command: -cal <mean> <stdev>\n";
+						cerr << '\n';
+						exit(1);
+					}
+					rootage = atof(argv[i]);
 				}
 				else if (s == "-unif")	{
 					chronoprior = 0;
@@ -854,7 +869,7 @@ int main(int argc, char* argv[])	{
 			cerr << "only classical hard bounds\n";
 			exit(1);
 		}
-		BranchOmegaMultivariateChain* chain = new BranchOmegaMultivariateChain(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,name,clampdiag,autoregressive,type,conjugate,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,force);
+		BranchOmegaMultivariateChain* chain = new BranchOmegaMultivariateChain(datafile,treefile,contdatafile,calibfile,rootage, iscalspe, rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,name,clampdiag,autoregressive,type,conjugate,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,force);
 		chain->SetEvery(every);
 		chain->SetUntil(until);
 		if (!myid)	{

@@ -212,6 +212,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			absrootage = new Const<PosReal>(rootage);	
 		}
 		
+		
 		cerr << "checking rootage" << absrootage->val();	
 
 		// Ncont : number of quantitative traits
@@ -241,7 +242,14 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		cerr << "process\n";
 		process = new ConjugateMultiVariateTreeProcess(sigma,chronogram);
 		process->Reset();
-
+		
+		if (! withNe) {
+			process->PiecewiseTranslation(-21, 0, 1);
+		}
+		else {
+			process->PiecewiseTranslation(18, 0, 1);
+		}
+		
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
 		// note the offset here : first trait corresponds to entry L+1 of the process, etc.
@@ -253,9 +261,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 
 		// just for numerical stability of the starting point
-		for (int l=0; l<L; l++)	{
-			process->CutOff(1,l);
-		}
+		//for (int l=0; l<L; l++)	{
+		//	process->CutOff(1,l);
+		//}
 
 		//create the combination factors 
 		
@@ -617,8 +625,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new SimpleMove(stationary,0.001),10,"stat");
 			
 			scheduler.Register(new SimpleMove(gamma,0.1),10,"gamma");
-			scheduler.Register(new SimpleMove(gamma,0.03),10,"gamma");
 			scheduler.Register(new SimpleMove(gamma,0.01),10,"gamma");
+			scheduler.Register(new SimpleMove(gamma,0.001),10,"gamma");
 			
 			scheduler.Register(new SimpleMove(beta,0.3),10,"beta");
 			scheduler.Register(new SimpleMove(beta,0.1),10,"beta");
