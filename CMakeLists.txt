@@ -46,3 +46,5 @@ target_compile_features(move_test2 PRIVATE ${CXX_FEATURES})
 # TESTS
 enable_testing()
 add_test(move1 move_test)
+add_test(move2 move_test2)
+add_test(poissonGamma poisson_gamma ../data/test.data test.out)
