@@ -33,12 +33,16 @@ add_executable(diffsel "src/DirichletNormalCodonUsageSelectionMS.cpp" ${DIFFSEL}
 target_link_libraries(diffsel coevol_core)
 target_compile_features(diffsel PRIVATE ${CXX_FEATURES})
 
-# Test features
+# move 1
 add_executable(move_test "src/Test.cpp")
 target_link_libraries(move_test coevol_core)
 target_compile_features(move_test PRIVATE ${CXX_FEATURES})
 
-# Test features
+# move 2
 add_executable(move_test2 "src/Test2.cpp")
 target_link_libraries(move_test2 coevol_core)
 target_compile_features(move_test2 PRIVATE ${CXX_FEATURES})
+
+# TESTS
+enable_testing()
+add_test(move1 move_test)
