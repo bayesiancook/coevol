@@ -12,7 +12,7 @@ TMP_FILES = $(shell find . -name "tmp*")
 # ====================================
 # Requires: cmake
 
-all: cmake
+all: cmake include/Eigen
 	@cd _build ; make --no-print-directory -j8
 
 cmake: _build/Makefile
@@ -26,7 +26,7 @@ clean:
 	@rm -rf _build doc/html
 	@rm -f *.dot $(TMP_FILES)
 
-eigen:
+include/Eigen:
 	@wget http://bitbucket.org/eigen/eigen/get/3.3.3.tar.gz
 	@tar -xvf 3.3.3.tar.gz
 	@cp -r eigen-eigen-67e894c6cd8f/Eigen include
