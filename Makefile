@@ -26,6 +26,12 @@ clean:
 	@rm -rf _build doc/html
 	@rm -f *.dot $(TMP_FILES)
 
+eigen:
+	@wget http://bitbucket.org/eigen/eigen/get/3.3.3.tar.gz
+	@tar -xvf 3.3.3.tar.gz
+	@cp -r eigen-eigen-67e894c6cd8f/Eigen include
+	@rm -rf 3.3.3.tar.gz eigen-eigen-67e894c6cd8f
+
 
 # ====================================
 #               TESTING
