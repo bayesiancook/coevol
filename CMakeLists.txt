@@ -46,7 +46,7 @@ enable_testing()
 
 file(GLOB APP_SOURCES test/*.cpp) # all files in test/
 foreach(testsourcefile ${APP_SOURCES})
-  # get filename withtout extension to use as executable name
+  # get filename without extension to use as executable name
   get_filename_component(testname ${testsourcefile} NAME_WE)
   message(STATUS "Found test " ${testname} ": " ${testsourcefile}) # pretty message :)
 

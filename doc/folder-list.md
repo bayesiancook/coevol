@@ -1,3 +1,19 @@
+## Core ##
+* BaseType.hpp
+* DAGnode.hpp
+* MCMC.hpp
+* Move.hpp
+* ProbModel.hpp
+* RandomTypes.hpp
+* Var.hpp
+ 
+## Utils ##
+* Chrono.hpp
+* Exception.hpp
+* linalg.hpp
+* Random.hpp
+* StringStreamUtils.hpp
+
 ## Phylogeny ##
 * ContinuousData.hpp
 * TaxonSet.hpp
