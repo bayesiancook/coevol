@@ -3,7 +3,10 @@
 ## Compilation ##
 
 `make`
-: Builds __`mini-coevol`__ (requires `cmake`); builds in the `_build` folder.
+: Builds __`mini-coevol`__ in parallel (requires `cmake`); builds in the `_build` folder.
+
+`make seq`
+: Builds __`mini-coevol`__ sequentially. Can be useful to catch errors one by one or to avoid occupying too many resources.
 
 `make clean`
 : Cleans the coevol directory; removes the `_build` folder among other things.
@@ -15,10 +18,10 @@
 ## Testing ##
 
 `make test`
-: Runs a two-step test. First, `poisson_gamma` is run and its output is displayed using `less`. Then `diffsel` is run; as it is very long, it should be interrupted after checking that it seems to run fine.
+: Runs all tests registered to `cmake`, ie, all tests from the `test/` folder.
 
 `make dot`
-: Runs `poisson_gamma` in order to display a graph representation of the graphical model (requires `graphviz` and `evince`).
+: Displays a graph representation of the graphical model of the last application that invoked `getDot` (requires `graphviz` and `evince`). You can run `make testmove` and then`make dot` to get an idea of what this does.
 
 
 ## Code quality ##

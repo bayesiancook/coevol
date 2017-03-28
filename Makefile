@@ -74,8 +74,8 @@ check:
 	@clang-check $(SRC_FILES) -- -I src/ -std=gnu++11
 
 # WARNING: clang-tidy is not 100% reliable; use with caution!
-fix:
-	@clang-tidy $(SRC_FILES) -checks=performance-* -fix -- -I src/ -std=gnu++11
+# fix:
+# 	@clang-tidy $(SRC_FILES) -checks=performance-* -fix -- -I src/ -std=gnu++11
 
 
 # ====================================
