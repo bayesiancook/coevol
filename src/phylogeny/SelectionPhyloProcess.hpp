@@ -3,7 +3,7 @@
 
 #include "AllocationTree.hpp"
 #include "PhyloProcess.hpp"
-#include "diffsel/ValArray.hpp"
+#include "core/ValArray.hpp"
 
 class SelectionMatrixTree {
   public:

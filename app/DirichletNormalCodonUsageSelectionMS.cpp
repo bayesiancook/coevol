@@ -1,6 +1,6 @@
 #include <cmath>
-#include "diffsel/Chain.hpp"
-#include "diffsel/DirichletNormalCodonUsageSelectionModelMS.hpp"
+#include "core/Chain.hpp"
+#include "DirichletNormalCodonUsageSelectionModelMS.hpp"
 using namespace std;
 
 class DirichletNormalCodonUsageSelectionChainMS : public Chain {

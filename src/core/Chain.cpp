@@ -1,4 +1,4 @@
-#include "diffsel/Chain.hpp"
+#include "Chain.hpp"
 #include <fstream>
 #include <iostream>
 #include "core/ProbModel.hpp"

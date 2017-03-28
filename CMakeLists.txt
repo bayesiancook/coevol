@@ -19,6 +19,7 @@ target_compile_features(coevol_utils PUBLIC ${CXX_FEATURES})
 # Core static library
 set(CORE
   src/core/BaseType.cpp
+  src/core/Chain.cpp
   src/core/DAGnode.cpp
   src/core/Move.cpp
   src/core/ProbModel.cpp
@@ -30,18 +31,18 @@ target_link_libraries(coevol_core coevol_utils)
 # Phylogeny
 set(PHYLOGENY
   src/phylogeny/BranchSitePath.cpp
-  src/phylogeny/CodonSubMatrix.cpp
-  src/phylogeny/PhyloProcess.cpp
-  src/phylogeny/SiteMapping.cpp
-  src/phylogeny/Tree.cpp
   src/phylogeny/CodonSequenceAlignment.cpp
-  src/phylogeny/GTRSubMatrix.cpp
-  src/phylogeny/RandomBranchSitePath.cpp
-  src/phylogeny/SubMatrix.cpp
   src/phylogeny/CodonStateSpace.cpp
+  src/phylogeny/CodonSubMatrix.cpp
+  src/phylogeny/GTRSubMatrix.cpp
   src/phylogeny/MSCodonSubMatrix.cpp
+  src/phylogeny/PhyloProcess.cpp
+  src/phylogeny/RandomBranchSitePath.cpp
   src/phylogeny/SequenceAlignment.cpp
+  src/phylogeny/SiteMapping.cpp
   src/phylogeny/StateSpace.cpp
+  src/phylogeny/SubMatrix.cpp
+  src/phylogeny/Tree.cpp
   src/phylogeny/TaxonSet.cpp)
 add_library (coevol_phylogeny STATIC ${PHYLOGENY})
 target_compile_features(coevol_phylogeny PUBLIC ${CXX_FEATURES})

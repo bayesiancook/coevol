@@ -3,7 +3,7 @@
 
 #include <map>
 #include <utility>
-#include "Conjugate.hpp"
+#include "core/Conjugate.hpp"
 #include "core/Move.hpp"
 #include "phylogeny/AllocationTree.hpp"
 #include "phylogeny/PhyloProcess.hpp"

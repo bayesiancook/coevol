@@ -2,8 +2,8 @@
 #define SELECTIONGTR_H
 
 #include <stdio.h>
-#include "IIDNormalIIDArray.hpp"
-#include "ProfileConjugatePath.hpp"
+#include "core/IIDNormalIIDArray.hpp"
+#include "phylogeny/ProfileConjugatePath.hpp"
 #include "core/ProbModel.hpp"
 #include "phylogeny/BranchProcess.hpp"
 #include "phylogeny/CodonSequenceAlignment.hpp"
