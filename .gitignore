@@ -5,4 +5,4 @@ _build/
 doc/html
 doc/latex
 perf.*
-include/Eigen
+src/Eigen
