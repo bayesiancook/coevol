@@ -42,13 +42,13 @@ test: all
 	@cd _build ; make --no-print-directory test
 
 testmove: all
-	@_build/move_test
+	@_build/CustomSimpleMove
 
 testmove2: all
-	@_build/move_test2
+	@_build/CustomDoubleMove
 
 testgamma: all
-	@_build/poisson_gamma data/test.data _build/test.out
+	@_build/PoissonGamma data/test.data _build/test.out
 	@less _build/test.out.trace
 
 testdiffsel: all
@@ -56,11 +56,6 @@ testdiffsel: all
 
 dot: tmp.dot
 	@dot -Tps $< -o tmp.ps
-	@evince tmp.ps &
-
-testdot: all
-	@_build/poisson_gamma data/test.data _build/test.out
-	@dot -Tps tmp.dot -o tmp.ps
 	@evince tmp.ps &
 
 

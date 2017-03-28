@@ -6,6 +6,11 @@ set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic")
 set(CXX_FEATURES cxx_auto_type cxx_nullptr cxx_final cxx_override cxx_range_for)
 include_directories("src")
 
+
+########################
+#     STATIC LIBS      #
+########################
+
 # Utils static library
 set(UTILS src/utils/Chrono.cpp src/utils/linalg.cpp src/utils/Random.cpp)
 add_library (coevol_utils STATIC ${UTILS})
@@ -22,29 +27,30 @@ add_library (coevol_core STATIC ${CORE})
 target_compile_features(coevol_core PUBLIC ${CXX_FEATURES})
 target_link_libraries(coevol_core coevol_utils)
 
-# PoissonGamma executable
-add_executable(poisson_gamma "src/PoissonGamma.cpp")
-target_link_libraries(poisson_gamma coevol_core)
-target_compile_features(poisson_gamma PRIVATE ${CXX_FEATURES})
 
-# Diffsel things
+########################
+#     EXECUTABLES      #
+########################
+
+# Diffsel
 file (GLOB DIFFSEL "src/diffsel/*.cpp")
-add_executable(diffsel "src/DirichletNormalCodonUsageSelectionMS.cpp" ${DIFFSEL})
+add_executable(diffsel "app/DirichletNormalCodonUsageSelectionMS.cpp" ${DIFFSEL})
 target_link_libraries(diffsel coevol_core)
 target_compile_features(diffsel PRIVATE ${CXX_FEATURES})
 
-# move 1
-add_executable(move_test "src/Test.cpp")
-target_link_libraries(move_test coevol_core)
-target_compile_features(move_test PRIVATE ${CXX_FEATURES})
 
-# move 2
-add_executable(move_test2 "src/Test2.cpp")
-target_link_libraries(move_test2 coevol_core)
-target_compile_features(move_test2 PRIVATE ${CXX_FEATURES})
-
-# TESTS
+########################
+#        TESTS         #
+########################
 enable_testing()
-add_test(move1 move_test)
-add_test(move2 move_test2)
-add_test(poissonGamma poisson_gamma ../data/test.data test.out)
+
+file(GLOB APP_SOURCES test/*.cpp)
+foreach(testsourcefile ${APP_SOURCES})
+  string(REPLACE ".cpp" "" testname ${testsourcefile})
+  get_filename_component(testname ${testsourcefile} NAME_WE)
+  add_executable(${testname} ${testsourcefile})
+  target_link_libraries(${testname} coevol_core)
+  target_compile_features(${testname} PRIVATE ${CXX_FEATURES})
+  message(STATUS "Found test " ${testname} " (" ${testsourcefile} ")")
+  add_test(${testname} ${testname})
+endforeach(testsourcefile ${APP_SOURCES})
