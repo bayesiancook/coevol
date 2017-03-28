@@ -1,10 +1,12 @@
 #include <cmath>
 #include <cstdio>
 #include <list>
+#include "TestUtils.hpp"
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
 #include "utils/Random.hpp"
 using namespace std;
+using namespace TestUtils;
 
 double lambda = 4;
 bool adaptive = true;
@@ -84,6 +86,8 @@ class MySimpleMove : public MCUpdate {
     void debug() {
         printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode), mean,
                M2 / nbVal, (accept * 100.0) / nbVal);
+        assert(mean, 0.575);
+        assert(M2 / nbVal, 0.03);
     }
 };
 
@@ -135,7 +139,10 @@ int main() {
     for (auto i : results) {
         variance += i * i;
     }
-    cout << "Mean: " << mean / results.size()
-         << " ; variance: " << (variance - (mean * mean / results.size())) / results.size() << endl;
+    double finalMean = mean / results.size();
+    double finalVariance = (variance - (mean * mean / results.size())) / results.size();
+    cout << "Mean: " << finalMean << " ; variance: " << finalVariance << endl;
     model.mymove->debug();
+    assert(finalMean, 0.575);
+    assert(finalVariance, 0.03);
 }
