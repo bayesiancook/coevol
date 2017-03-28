@@ -4,7 +4,7 @@ project(mini-coevol CXX)
 # Compilation options
 set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic")
 set(CXX_FEATURES cxx_auto_type cxx_nullptr cxx_final cxx_override cxx_range_for)
-include_directories("include")
+include_directories("src")
 
 # Utils static library
 set(UTILS src/utils/Chrono.cpp src/utils/linalg.cpp src/utils/Random.cpp)
