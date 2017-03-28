@@ -1,6 +1,6 @@
-#include "diffsel/SequenceAlignment.hpp"
+#include "SequenceAlignment.hpp"
 #include <fstream>
-#include "diffsel/BiologicalSequences.hpp"
+#include "BiologicalSequences.hpp"
 #include "utils/Random.hpp"
 #include "utils/StringStreamUtils.hpp"
 using namespace std;

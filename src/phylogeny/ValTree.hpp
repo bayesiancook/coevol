@@ -3,9 +3,9 @@
 
 #include <map>
 #include <sstream>
+#include "AbstractTree.hpp"
 #include "core/BaseType.hpp"
 #include "core/Var.hpp"
-#include "diffsel/AbstractTree.hpp"
 
 // implements recursive allocations and basic accessors
 

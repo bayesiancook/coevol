@@ -2,14 +2,14 @@
 #define SELECTIONGTR_H
 
 #include <stdio.h>
-#include "BranchProcess.hpp"
-#include "CodonSequenceAlignment.hpp"
-#include "GTRSubMatrix.hpp"
 #include "IIDNormalIIDArray.hpp"
-#include "MSCodonSubMatrix.hpp"
 #include "ProfileConjugatePath.hpp"
-#include "SelectionPhyloProcess.hpp"
 #include "core/ProbModel.hpp"
+#include "phylogeny/BranchProcess.hpp"
+#include "phylogeny/CodonSequenceAlignment.hpp"
+#include "phylogeny/GTRSubMatrix.hpp"
+#include "phylogeny/MSCodonSubMatrix.hpp"
+#include "phylogeny/SelectionPhyloProcess.hpp"
 
 
 class DirichletNormalCompMove : public MCUpdate {

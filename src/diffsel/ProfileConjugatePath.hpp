@@ -3,10 +3,10 @@
 
 #include <map>
 #include <utility>
-#include "AllocationTree.hpp"
 #include "Conjugate.hpp"
-#include "PhyloProcess.hpp"
 #include "core/Move.hpp"
+#include "phylogeny/AllocationTree.hpp"
+#include "phylogeny/PhyloProcess.hpp"
 
 
 class ProfilePathConjugate : public DSemiConjugatePrior<void> {

@@ -1,4 +1,4 @@
-#include "diffsel/CodonStateSpace.hpp"
+#include "CodonStateSpace.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <sstream>

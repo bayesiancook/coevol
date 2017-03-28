@@ -1,4 +1,4 @@
-#include "diffsel/CodonSequenceAlignment.hpp"
+#include "CodonSequenceAlignment.hpp"
 #include <cstdlib>
 #include <iostream>
 #include "utils/Exception.hpp"

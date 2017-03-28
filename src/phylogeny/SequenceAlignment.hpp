@@ -2,8 +2,8 @@
 #define SEQUENCEALIGNMENT_H
 
 #include <vector>
-#include "diffsel/StateSpace.hpp"
-#include "diffsel/TaxonSet.hpp"
+#include "StateSpace.hpp"
+#include "TaxonSet.hpp"
 
 
 // this class works like an interface

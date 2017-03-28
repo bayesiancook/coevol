@@ -1,4 +1,4 @@
-#include "diffsel/MSCodonSubMatrix.hpp"
+#include "MSCodonSubMatrix.hpp"
 using namespace std;
 
 void MGFitnessCodonSubMatrix::ComputeStationary() {

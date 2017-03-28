@@ -4,6 +4,7 @@
 #include <cmath>
 #include "core/RandomTypes.hpp"
 #include "core/Var.hpp"
+#include "utils/Random.hpp"
 
 
 // iid normal with same mean and variance

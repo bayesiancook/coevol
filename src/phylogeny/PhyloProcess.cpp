@@ -1,4 +1,4 @@
-#include "diffsel/PhyloProcess.hpp"
+#include "PhyloProcess.hpp"
 using namespace std;
 
 int PhyloProcess::GetMaxNstate() {

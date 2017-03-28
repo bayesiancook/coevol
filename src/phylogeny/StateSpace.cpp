@@ -3,8 +3,8 @@
 using namespace std;
 
 #include <sstream>
-#include "diffsel/BiologicalSequences.hpp"
-#include "diffsel/StateSpace.hpp"
+#include "BiologicalSequences.hpp"
+#include "StateSpace.hpp"
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#include "diffsel/SubMatrix.hpp"
+#include "SubMatrix.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <fstream>

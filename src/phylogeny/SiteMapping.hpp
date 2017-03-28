@@ -2,7 +2,7 @@
 #define SITEMAPPING_H
 
 #include <iostream>
-#include "diffsel/ValTree.hpp"
+#include "ValTree.hpp"
 
 class BranchSitePath;
 class Branch;
