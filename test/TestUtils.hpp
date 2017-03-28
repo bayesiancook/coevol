@@ -9,11 +9,14 @@ namespace TestUtils {
     }
 
     void fail() {
-        printf("A coevol automated test has failed!\n");
+        printf("-- A coevol automated test has failed!\n");
         exit(1);
     }
 
-    void assert(double x, double y) {
-        if (!compare(x, y)) fail();
+    void cassert(double x, double y, double relativeError = 0.01) {
+        if (!compare(x, y, relativeError)) {
+            printf("-- Expected valued %f (+/- %.2f%%) but got %f instead!\n", x, relativeError*100, y);
+            fail();
+        }
     }
 }

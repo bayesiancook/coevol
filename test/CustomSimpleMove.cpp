@@ -86,8 +86,8 @@ class MySimpleMove : public MCUpdate {
     void debug() {
         printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode), mean,
                M2 / nbVal, (accept * 100.0) / nbVal);
-        assert(mean, 0.575);
-        assert(M2 / nbVal, 0.03);
+        cassert(mean, 0.575, 0.05);
+        cassert(M2 / nbVal, 0.03, 0.05);
     }
 };
 
@@ -143,6 +143,6 @@ int main() {
     double finalVariance = (variance - (mean * mean / results.size())) / results.size();
     cout << "Mean: " << finalMean << " ; variance: " << finalVariance << endl;
     model.mymove->debug();
-    assert(finalMean, 0.575);
-    assert(finalVariance, 0.03);
+    cassert(finalMean, 0.575, 0.05);
+    cassert(finalVariance, 0.03, 0.05);
 }

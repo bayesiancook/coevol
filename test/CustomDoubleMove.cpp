@@ -3,11 +3,13 @@
 #include <cstdio>
 #include <list>
 #include <random>
+#include "TestUtils.hpp"
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
 #include "utils/Random.hpp"
 using namespace std;
 using namespace Eigen;
+using namespace TestUtils;
 
 
 struct normal_random_variable {
@@ -163,7 +165,11 @@ class MyDoubleMove : public MCUpdate {
     void debug() {
         printf("New value %f/%f, first=%f, second=%f, acceptance=%f%%\n", double(managedNode1),
                double(managedNode2), mean(0), mean(1), (accept * 100.0) / t);
-        cout << covar;
+        cout << covar << endl;
+        cassert(mean(0), 2.27, 0.1);
+        cassert(mean(1), 2.18, 0.1);
+        cassert(covar(0,0), 0.32, 0.1);
+        cassert(covar(1,1), 1.0, 0.1);
     }
 };
 
@@ -236,8 +242,14 @@ void printCaracs(vector<double> data, string name) {
     for (auto i : data) {
         variance += i * i;
     }
-    cout << "<" << name << "> Mean: " << mean / data.size()
-         << " ; variance: " << (variance - (mean * mean / data.size())) / data.size() << endl;
+    double finalMean = mean / data.size();
+    double finalVariance = (variance - (mean * mean / data.size())) / data.size();
+    cout << "<" << name << "> Mean: " << finalMean
+         << " ; variance: " << finalVariance << endl;
+    double expectedMean = (name == "a") ? 2.27 : 2.18;
+    double expectedVariance = name == "a" ? 0.32 : 1.0 ;
+    cassert(expectedMean, finalMean, 0.1);
+    cassert(expectedVariance, finalVariance, 0.1);
 }
 
 
@@ -247,7 +259,7 @@ void printCaracs(vector<double> data, string name) {
 int main() {
     MyModel model;
     vector<double> resultsA, resultsB;
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 100000; i++) {
         model.Move(1.0);
         resultsA.push_back(model.a->val());
         resultsB.push_back(model.b->val());
