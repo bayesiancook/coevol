@@ -15,6 +15,9 @@ TMP_FILES = $(shell find . -name "tmp*")
 all: cmake src/Eigen
 	@cd _build ; make --no-print-directory -j8
 
+seq: cmake src/Eigen
+	@cd _build ; make --no-print-directory
+
 cmake: _build/Makefile
 
 _build/Makefile: CMakeLists.txt
