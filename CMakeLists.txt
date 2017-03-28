@@ -44,13 +44,17 @@ target_compile_features(diffsel PRIVATE ${CXX_FEATURES})
 ########################
 enable_testing()
 
-file(GLOB APP_SOURCES test/*.cpp)
+file(GLOB APP_SOURCES test/*.cpp) # all files in test/
 foreach(testsourcefile ${APP_SOURCES})
-  string(REPLACE ".cpp" "" testname ${testsourcefile})
+  # get filename withtout extension to use as executable name
   get_filename_component(testname ${testsourcefile} NAME_WE)
+  message(STATUS "Found test " ${testname} ": " ${testsourcefile}) # pretty message :)
+
+  # add executable
   add_executable(${testname} ${testsourcefile})
   target_link_libraries(${testname} coevol_core)
   target_compile_features(${testname} PRIVATE ${CXX_FEATURES})
-  message(STATUS "Found test " ${testname} " (" ${testsourcefile} ")")
+
+  # add to tests
   add_test(${testname} ${testname})
 endforeach(testsourcefile ${APP_SOURCES})
