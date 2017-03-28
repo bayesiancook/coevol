@@ -20,7 +20,8 @@ class StateSpace {
     }
 };
 
-// simple state space: assumes that states are referred to using a one-letter code
+// simple state space: assumes that states are referred to using a one-letter
+// code
 //
 class SimpleStateSpace : public StateSpace {
   public:
@@ -32,9 +33,9 @@ class SimpleStateSpace : public StateSpace {
 
   protected:
     int Nstate;
-    char* Alphabet;
+    char *Alphabet;
     int NAlphabetSet;
-    char* AlphabetSet;
+    char *AlphabetSet;
 };
 
 class DNAStateSpace : public SimpleStateSpace {
@@ -65,7 +66,7 @@ class RYStateSpace : public SimpleStateSpace {
 
 class GenericStateSpace : public SimpleStateSpace {
   public:
-    GenericStateSpace(int inNstate, char* inAlphabet, int inNAlphabetSet, char* inAlphabetSet) {
+    GenericStateSpace(int inNstate, char *inAlphabet, int inNAlphabetSet, char *inAlphabetSet) {
         Nstate = inNstate;
         Alphabet = new char[Nstate];
         for (int i = 0; i < Nstate; i++) {

@@ -8,7 +8,7 @@
 
 class GTRSubMatrix : public virtual SubMatrix {
   public:
-    GTRSubMatrix(int inNstate, const double* rr, const double* stat, bool innormalise = false);
+    GTRSubMatrix(int inNstate, const double *rr, const double *stat, bool innormalise = false);
     ~GTRSubMatrix() override = default;
 
     int GetNRelativeRate() { return Nrr; }
@@ -21,23 +21,23 @@ class GTRSubMatrix : public virtual SubMatrix {
 
   protected:
     // make a copy of the entries (not of the pointer)
-    void CopyStationary(const double* instat);
+    void CopyStationary(const double *instat);
 
     // copy the pointer
-    void SetRelativeRate(const double* inrelrate) { mRelativeRate = inrelrate; }
+    void SetRelativeRate(const double *inrelrate) { mRelativeRate = inrelrate; }
 
   protected:
     void ComputeArray(int i) override;
     void ComputeStationary() override {}
 
     // data members
-    const double* mRelativeRate;
+    const double *mRelativeRate;
     int Nrr;
 };
 
 class GTRRandomSubMatrix : public RandomSubMatrix, public GTRSubMatrix {
   public:
-    GTRRandomSubMatrix(Var<PosRealVector>* inrelrate, Var<Profile>* instat,
+    GTRRandomSubMatrix(Var<PosRealVector> *inrelrate, Var<Profile> *instat,
                        bool innormalise = false)
         : SubMatrix(instat->GetDim(), innormalise),
           RandomSubMatrix(instat->GetDim(), innormalise),
@@ -50,8 +50,8 @@ class GTRRandomSubMatrix : public RandomSubMatrix, public GTRSubMatrix {
         specialUpdate();
     }
 
-    Var<Profile>* GetRandomStationaries() { return stat; }
-    Var<PosRealVector>* GetRandomRelativeRates() { return relrate; }
+    Var<Profile> *GetRandomStationaries() { return stat; }
+    Var<PosRealVector> *GetRandomRelativeRates() { return relrate; }
 
   protected:
     void SetParameters() override {
@@ -60,13 +60,13 @@ class GTRRandomSubMatrix : public RandomSubMatrix, public GTRSubMatrix {
     }
 
   private:
-    Var<PosRealVector>* relrate;
-    Var<Profile>* stat;
+    Var<PosRealVector> *relrate;
+    Var<Profile> *stat;
 };
 
 class GTRRandomSubMatrixWithNormRates : public RandomSubMatrix, public GTRSubMatrix {
   public:
-    GTRRandomSubMatrixWithNormRates(Var<Profile>* inrelrate, Var<Profile>* instat,
+    GTRRandomSubMatrixWithNormRates(Var<Profile> *inrelrate, Var<Profile> *instat,
                                     bool innormalise = false)
         : SubMatrix(instat->GetDim(), innormalise),
           RandomSubMatrix(instat->GetDim(), innormalise),
@@ -98,9 +98,9 @@ class GTRRandomSubMatrixWithNormRates : public RandomSubMatrix, public GTRSubMat
     }
 
   private:
-    Var<Profile>* relrate;
-    Var<Profile>* stat;
-    double* rescaledrelrate;
+    Var<Profile> *relrate;
+    Var<Profile> *stat;
+    double *rescaledrelrate;
 };
 
 const double LG_RR[] = {
@@ -129,10 +129,9 @@ const double LG_RR[] = {
     0.566405,  0.167174,  0.580707,  0.307606,  6.33164,    0.096231,  0.243453,   0.391844,
     2.14061,   0.137765,  0.240498,  0.185392,  0.243896,   3.08335};
 
-
 class LGSubMatrix : public GTRSubMatrix {
   public:
-    LGSubMatrix(const double* stat, bool innormalise = false)
+    LGSubMatrix(const double *stat, bool innormalise = false)
         : SubMatrix(Naa, innormalise), GTRSubMatrix(Naa, nullptr, stat, innormalise) {
         mRelativeRate = LG_RR;
     }
@@ -140,7 +139,7 @@ class LGSubMatrix : public GTRSubMatrix {
 
 class LGRandomSubMatrix : public RandomSubMatrix, public LGSubMatrix {
   public:
-    LGRandomSubMatrix(Var<Profile>* instat, bool innormalise = false)
+    LGRandomSubMatrix(Var<Profile> *instat, bool innormalise = false)
         : SubMatrix(instat->GetDim(), innormalise),
           RandomSubMatrix(instat->GetDim(), innormalise),
           LGSubMatrix(instat->val().GetArray(), innormalise) {
@@ -153,7 +152,7 @@ class LGRandomSubMatrix : public RandomSubMatrix, public LGSubMatrix {
     void SetParameters() override { CopyStationary(stat->val().GetArray()); }
 
   private:
-    Var<Profile>* stat;
+    Var<Profile> *stat;
 };
 
 #endif

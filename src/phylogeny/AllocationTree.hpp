@@ -5,12 +5,12 @@
 
 class AllocationTree {
   public:
-    AllocationTree(Tree* intree, int inK) {
+    AllocationTree(Tree *intree, int inK) {
         tree = intree;
         K = inK;
     }
 
-    int GetBranchAllocation(const Branch* branch) {
+    int GetBranchAllocation(const Branch *branch) {
         // if root : return 0
         if (branch == nullptr) {
             return 0;
@@ -41,7 +41,7 @@ class AllocationTree {
     int GetComponentNumber() { return K; }
 
   private:
-    Tree* tree;
+    Tree *tree;
     int K;
 };
 

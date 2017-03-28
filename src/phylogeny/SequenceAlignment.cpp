@@ -14,7 +14,7 @@ int Int(string s) { return atoi(s.c_str()); }
 
 double Double(string s) { return atof(s.c_str()); }
 
-void SequenceAlignment::GetEmpiricalFreq(double* in) {
+void SequenceAlignment::GetEmpiricalFreq(double *in) {
     int n = GetNstate();
     for (int i = 0; i < GetNstate(); i++) {
         in[i] = 1;
@@ -32,8 +32,7 @@ void SequenceAlignment::GetEmpiricalFreq(double* in) {
     }
 }
 
-
-void SequenceAlignment::GetSiteEmpiricalFreq(double** in, double pseudocount) {
+void SequenceAlignment::GetSiteEmpiricalFreq(double **in, double pseudocount) {
     if (pseudocount < 0) {
         for (int j = 0; j < GetNsite(); j++) {
             for (int i = 0; i < GetNstate(); i++) {
@@ -66,7 +65,7 @@ void SequenceAlignment::GetSiteEmpiricalFreq(double** in, double pseudocount) {
     }
 }
 
-void SequenceAlignment::ToFasta(ostream& os) {
+void SequenceAlignment::ToFasta(ostream &os) {
     for (int i = 0; i < Ntaxa; i++) {
         os << '>' << taxset->GetTaxon(i) << '\n';
         for (int j = 0; j < Nsite; j++) {
@@ -89,7 +88,8 @@ void SequenceAlignment::ToFasta(ostream& os) {
 
   for (int i=0; i<Ntaxa; i++)	{
   os << taxset->GetTaxon(i);
-  for (unsigned int j=0; j< 5 + max - taxset->GetTaxon(i).length(); j++)	{
+  for (unsigned int j=0; j< 5 + max - taxset->GetTaxon(i).length(); j++)
+  {
   os << ' ';
   }
   for (int j=0; j<Nsite; j++)	{
@@ -101,7 +101,7 @@ void SequenceAlignment::ToFasta(ostream& os) {
   }
 */
 
-void SequenceAlignment::ToStream(ostream& os) {
+void SequenceAlignment::ToStream(ostream &os) {
     // os << Ntaxa << '\t' << 876<< '\n';
     os << Ntaxa << '\t' << Nsite << '\n';
     int max = 0;
@@ -135,7 +135,7 @@ int SequenceAlignment::GetNonMissingTriplet() {
     return nsite;
 }
 
-void SequenceAlignment::ToStreamTriplet(ostream& os) {
+void SequenceAlignment::ToStreamTriplet(ostream &os) {
     int nsite = 0;
     for (int j = 2; j < Nsite - 3; j += 3) {
         if (NoMissingColumn(j - 1) && NoMissingColumn(j) && NoMissingColumn(j + 1)) {
@@ -245,7 +245,6 @@ int FileSequenceAlignment::ReadNexus(string filespec) {
         string type;
         theStream >> type;
 
-
         if (EquivalentStrings(type, "protein") != 0) {
             statespace = new ProteinStateSpace();
         } else if (EquivalentStrings(type, "dna") != 0) {
@@ -264,7 +263,7 @@ int FileSequenceAlignment::ReadNexus(string filespec) {
             }
             delete[] Data;
         }
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
         }
@@ -362,7 +361,6 @@ int FileSequenceAlignment::ReadNexus(string filespec) {
 //     ReadSpecial()
 // ---------------------------------------------------------------------------
 
-
 int FileSequenceAlignment::ReadSpecial(string filename) {
     int returnvalue = 0;
     try {
@@ -401,7 +399,7 @@ int FileSequenceAlignment::ReadSpecial(string filename) {
             }
             delete[] Data;
         }
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
         }
@@ -579,7 +577,6 @@ int FileSequenceAlignment::TestPhylipSequential(string filespec) {
     return 1;
 }
 
-
 void FileSequenceAlignment::ReadPhylipSequential(string filespec) {
     ifstream theStream((Path + filespec).c_str());
     try {
@@ -609,7 +606,7 @@ void FileSequenceAlignment::ReadPhylipSequential(string filespec) {
         }
         Nsite = Int(temp);
 
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
         }
@@ -768,7 +765,8 @@ int FileSequenceAlignment::TestPhylip(string filespec, int repeattaxa) {
                 } else {
                     if (m != k) {
                         cerr << "in test phylip\n";
-                        cerr << "error when reading data non matching number of sequences in block "
+                        cerr << "error when reading data non matching number of sequences "
+                                "in block "
                                 "number "
                              << block << " for taxon " << i + 1 << " " << SpeciesNames[i] << '\n';
                         cerr << "taxa : " << i << '\t' << SpeciesNames[i] << '\n';
@@ -839,7 +837,7 @@ void FileSequenceAlignment::ReadPhylip(string filespec, int repeattaxa) {
         Nsite = Int(temp);
         // cerr << Ntaxa << '\t' << Nsite << '\n';
 
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
         }
@@ -906,7 +904,8 @@ void FileSequenceAlignment::ReadPhylip(string filespec, int repeattaxa) {
                     m = k;
                 } else {
                     if (m != k) {
-                        cerr << "error when reading data non matching number of sequences in block "
+                        cerr << "error when reading data non matching number of sequences "
+                                "in block "
                                 "number "
                              << block << " for taxon " << i << " " << SpeciesNames[i] << '\n';
                         cerr << "taxa : " << i << '\t' << SpeciesNames[i] << '\n';
@@ -935,7 +934,6 @@ void FileSequenceAlignment::ReadPhylip(string filespec, int repeattaxa) {
 // ---------------------------------------------------------------------------
 //     EliminateUnnownColumns
 // ---------------------------------------------------------------------------
-
 
 /*
   void FileSequenceAlignment::EliminateUnknownColumns()	{
@@ -968,7 +966,8 @@ void FileSequenceAlignment::ReadPhylip(string filespec, int repeattaxa) {
   }
   Nsite -= Eliminated;
   if (Eliminated)	{
-  cerr << Eliminated << " columns completely undetermined (full of gaps, or unknown): eliminated\n";
+  cerr << Eliminated << " columns completely undetermined (full of gaps, or
+  unknown): eliminated\n";
   }
   }
 */
@@ -1142,7 +1141,8 @@ if (OrbitSize[i] == 1)	{
 nconst ++;
 }
 }
-// cerr << "empirical proportion of invariable sites : " << ((double) nconst) / Nsite << '\n';
+// cerr << "empirical proportion of invariable sites : " << ((double) nconst) /
+Nsite << '\n';
 }
 
 // ---------------------------------------------------------------------------
@@ -1298,7 +1298,8 @@ if (OrbitSize[i] == 1)	{
 nconst++;
 }
 }
-cerr << "number of constant columns: " << nconst << " (" << ((double) nconst) / Nsite * 100 << ")"
+cerr << "number of constant columns: " << nconst << " (" << ((double) nconst) /
+Nsite * 100 << ")"
 << '\n';
 
 }

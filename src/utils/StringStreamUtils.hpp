@@ -15,7 +15,7 @@
 
 const char digit[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-inline int GoPastNext(std::istream& is, const char inChar) {
+inline int GoPastNext(std::istream &is, const char inChar) {
     unsigned char c;
     if (!is.eof()) {
         do {
@@ -25,7 +25,7 @@ inline int GoPastNext(std::istream& is, const char inChar) {
     return static_cast<int>(!is.eof());
 }
 
-inline std::string ReadLine(std::istream& is) {
+inline std::string ReadLine(std::istream &is) {
     std::string str = "";
     char c;
     do {
@@ -37,7 +37,7 @@ inline std::string ReadLine(std::istream& is) {
     return str;
 }
 
-inline void GoPastNextWord(std::istream& is, const std::string inWord) {
+inline void GoPastNextWord(std::istream &is, const std::string inWord) {
     unsigned int k = 0;
     char c;
     while ((!is.eof()) && (k < inWord.length())) {
@@ -80,14 +80,13 @@ inline int EquivalentStrings(std::string a, std::string b) {
     return cont;
 }
 
-inline void GoPastNextLine(std::istream& is, const std::string inLine) {
+inline void GoPastNextLine(std::istream &is, const std::string inLine) {
     std::string theLine;
     do {
         theLine = ReadLine(is);
         std::cerr << theLine << "\n";
     } while (EquivalentStrings(theLine, inLine) == 0);
 }
-
 
 inline std::string StringReplace(char c, std::string by, std::string s) {
     std::string tmp;

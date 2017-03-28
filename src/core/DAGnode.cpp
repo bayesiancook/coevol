@@ -7,7 +7,6 @@
 #include "utils/Random.hpp"
 using namespace std;
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 // * DAGnode
@@ -41,7 +40,7 @@ void DAGnode::Detach() {
     */
 }
 
-void DAGnode::DeregisterFrom(DAGnode* parent) {
+void DAGnode::DeregisterFrom(DAGnode *parent) {
     if (parent != nullptr) {
         parent->down.erase(this);
         up.erase(parent);
@@ -56,7 +55,7 @@ bool DAGnode::parentsUpdated() {
     return up_ok;
 }
 
-void DAGnode::Register(DAGnode* parent) {
+void DAGnode::Register(DAGnode *parent) {
     if (parent != nullptr) {
         parent->down.insert(this);
         up.insert(parent);
@@ -100,7 +99,7 @@ set<string> DAGnode::getDotVertices() {
     }
 }
 
-void DAGnode::RecursiveRegister(ProbModel* model) {
+void DAGnode::RecursiveRegister(ProbModel *model) {
     if (parentsUpdated()) {
         model->Register(this);
         updateFlag = true;
@@ -121,7 +120,6 @@ bool DAGnode::CheckUpdateFlags() {
     return ret;
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 // * Rnode
@@ -130,7 +128,7 @@ bool DAGnode::CheckUpdateFlags() {
 set<string> Rnode::getDotNodes() {  // FIXME refactor with DAGnode version
     ostringstream stringStream;
     set<string> result;
-    stringStream << "\tNode" << dynamic_cast<DAGnode*>(this) << " [label=\"" << name
+    stringStream << "\tNode" << dynamic_cast<DAGnode *>(this) << " [label=\"" << name
                  << "\", shape=rectangle]" << endl;
     ;
     result.insert(stringStream.str());
@@ -140,7 +138,6 @@ set<string> Rnode::getDotNodes() {  // FIXME refactor with DAGnode version
     }
     return result;
 }
-
 
 double Rnode::Move(double tuning) {
     if (!isClamped()) {
@@ -163,8 +160,9 @@ double Rnode::Move(double tuning) {
 //-------------------------------------------------------------------------
 void Rnode::Corrupt(bool bk) {
     value_updated = false;  // (Sets value_updated) to false here...
-    localCorrupt(bk);       //... and then calls localcorrupt which does the same with updateFlag...
-                            // cf (1) below
+    localCorrupt(bk);       //... and then calls localcorrupt which does the same with
+                            // updateFlag...
+    // cf (1) below
     for (auto i : down) {
         i->NotifyCorrupt(bk);
     }
@@ -179,7 +177,7 @@ void Rnode::localCorrupt(bool bk) {
     updateFlag = false;  // (1)
 }
 
-void Rnode::FullCorrupt(map<DAGnode*, int>& m) {  // why does it have these weird parameters?
+void Rnode::FullCorrupt(map<DAGnode *, int> &m) {  // why does it have these weird parameters?
     localCorrupt(true);             // (in the case of fullcorrupt, value_updated is not set; why?)
     if (m.find(this) == m.end()) {  // if this not in m (whatever m is)
         m[this] = 1;                // add it with value 1 (?)
@@ -305,7 +303,6 @@ void Rnode::localRestore() {
     updateFlag = true;
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 // * Dnode
@@ -326,7 +323,7 @@ void Dnode::NotifyCorrupt(bool bk) { Corrupt(bk); }
 
 void Dnode::localCorrupt(bool /*unused*/) { updateFlag = false; }
 
-void Dnode::FullCorrupt(map<DAGnode*, int>& m) {
+void Dnode::FullCorrupt(map<DAGnode *, int> &m) {
     localCorrupt(true);
     if (m.find(this) == m.end()) {
         m[this] = 1;
@@ -426,7 +423,6 @@ void Dnode::Restore() {
 void Dnode::NotifyRestore() { Restore(); }
 
 void Dnode::localRestore() { updateFlag = true; }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------

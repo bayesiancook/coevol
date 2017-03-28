@@ -9,7 +9,8 @@ class CodonStateSpace : public StateSpace {
     static const int Npos = 3;
 
     // by default, codons always exclude stops
-    // if a method takes or returns a codon stops INCLUDED, then this is made explicit in the
+    // if a method takes or returns a codon stops INCLUDED, then this is made
+    // explicit in the
     // method's name
 
     CodonStateSpace(GeneticCodeType type);
@@ -27,13 +28,12 @@ class CodonStateSpace : public StateSpace {
     // give a codon (stops excluded), returns a three letter code
     std::string GetState(int codon) override;
 
-
     // -----
     // codon specific methods
 
-    DNAStateSpace* GetDNAStateSpace() { return nucstatespace; }
+    DNAStateSpace *GetDNAStateSpace() { return nucstatespace; }
 
-    ProteinStateSpace* GetProteinStateSpace() { return protstatespace; }
+    ProteinStateSpace *GetProteinStateSpace() { return protstatespace; }
 
     // returns a codon based on three letters
     // returns -1 (== unknown) if at least one of the positions is unknown
@@ -49,7 +49,8 @@ class CodonStateSpace : public StateSpace {
     // 2 codons excluding stops are compared
     // method returns -1 if identical
     // returns 3 is codons differ at more than one position
-    // otherwise, returns the position at which codons differ (i.e. returns 0,1 or 2 if the codons
+    // otherwise, returns the position at which codons differ (i.e. returns 0,1 or
+    // 2 if the codons
     // differ at position 1,2 or 3)
     int GetDifferingPosition(int i, int j);
 
@@ -81,7 +82,8 @@ class CodonStateSpace : public StateSpace {
     bool Synonymous(int codon1, int codon2) { return (CodonCode[codon1] == CodonCode[codon2]); }
 
     // returns -1 if stop codon
-    // otherwise returns integer in [0,19] standing for an amino-acid (one letter code, alphabetical
+    // otherwise returns integer in [0,19] standing for an amino-acid (one letter
+    // code, alphabetical
     // order)
     int TranslationWithStops(int codon) { return CodonCodeWithStops[codon]; }
 
@@ -102,18 +104,18 @@ class CodonStateSpace : public StateSpace {
 
     int GetNstop() { return Nstop; }
 
-    const int* GetStopPos1() { return StopPos1; }
+    const int *GetStopPos1() { return StopPos1; }
 
-    const int* GetStopPos2() { return StopPos2; }
+    const int *GetStopPos2() { return StopPos2; }
 
-    const int* GetStopPos3() { return StopPos3; }
+    const int *GetStopPos3() { return StopPos3; }
 
   private:
     void MakeDegeneracyMap();
 
     GeneticCodeType code;
-    DNAStateSpace* nucstatespace;
-    ProteinStateSpace* protstatespace;
+    DNAStateSpace *nucstatespace;
+    ProteinStateSpace *protstatespace;
     // number of codons, not including stops (61 in general)
     int Nstate;
 
@@ -121,14 +123,14 @@ class CodonStateSpace : public StateSpace {
     // whose entries are between -1 and 19
     // -1 : stop codon
     // 0..19 : amino acid encoded (1 letter code, alphabetical order)
-    int* CodonCodeWithStops;
-    int* CodonCode;
-    int** CodonPos;
-    int* StopCodons;
+    int *CodonCodeWithStops;
+    int *CodonCode;
+    int **CodonPos;
+    int *StopCodons;
     int Nstop;
-    int* StopPos1;
-    int* StopPos2;
-    int* StopPos3;
+    int *StopPos1;
+    int *StopPos2;
+    int *StopPos3;
 
     std::map<int, int> degeneracy;
 };

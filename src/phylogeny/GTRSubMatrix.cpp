@@ -6,8 +6,7 @@ using namespace std;
 //     GTRSubMatrix
 // ---------------------------------------------------------------------------
 
-
-GTRSubMatrix::GTRSubMatrix(int inNstate, const double* rr, const double* stat, bool innormalise)
+GTRSubMatrix::GTRSubMatrix(int inNstate, const double *rr, const double *stat, bool innormalise)
     : SubMatrix(inNstate, innormalise) {
     Nrr = Nstate * (Nstate - 1) / 2;
     mRelativeRate = rr;
@@ -16,7 +15,7 @@ GTRSubMatrix::GTRSubMatrix(int inNstate, const double* rr, const double* stat, b
     }
 }
 
-void GTRSubMatrix::CopyStationary(const double* instat) {
+void GTRSubMatrix::CopyStationary(const double *instat) {
     for (int k = 0; k < Nstate; k++) {
         mStationary[k] = instat[k];
     }
@@ -36,7 +35,8 @@ void GTRSubMatrix::ComputeArray(int i) {
             }
         }
 
-        // should always ensure that the diagonal entry of the matrix Q[i][i] is such that
+        // should always ensure that the diagonal entry of the matrix Q[i][i] is
+        // such that
         // the sum over all entries of the row is equal to 0
         Q[i][i] = -total;
     } else {

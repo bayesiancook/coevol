@@ -12,14 +12,14 @@ class Plink {
     Plink();
     Plink(int instate, double inrel_time);
     ~Plink();
-    Plink* Prev();
-    Plink* Next();
+    Plink *Prev();
+    Plink *Next();
 
     bool IsFirst();
     bool IsLast();
 
     void Splice();
-    void Insert(Plink* link);
+    void Insert(Plink *link);
 
     void SetState(int instate);
     int GetState();
@@ -28,8 +28,8 @@ class Plink {
     double GetRelativeTime();
 
   private:
-    Plink* next;
-    Plink* prev;
+    Plink *next;
+    Plink *prev;
 
     int state;
     double rel_time;
@@ -40,26 +40,26 @@ class BranchSitePath {
 
   public:
     BranchSitePath();
-    BranchSitePath(StateSpace* instatespace);
+    BranchSitePath(StateSpace *instatespace);
     virtual ~BranchSitePath();
 
     virtual double GetTotalTime() = 0;
     virtual void SetTotalTime(double intime) = 0;
 
-    Plink* Init();
-    Plink* Last();
-    StateSpace* GetStateSpace();
-    void SetStateSpace(StateSpace* instatespace) { statespace = instatespace; }
+    Plink *Init();
+    Plink *Last();
+    StateSpace *GetStateSpace();
+    void SetStateSpace(StateSpace *instatespace) { statespace = instatespace; }
     int GetNsub();
-    std::string GetState(Plink* link);
+    std::string GetState(Plink *link);
     std::string GetCharInitState();
     std::string GetCharFinalState();
     int GetInitState();
     int GetFinalState();
-    double GetAbsoluteTime(Plink* link);
-    double GetRelativeTime(Plink* link) { return link->GetRelativeTime(); }
+    double GetAbsoluteTime(Plink *link);
+    double GetRelativeTime(Plink *link) { return link->GetRelativeTime(); }
 
-    void AddCounts(int** paircounts, int* statecounts);
+    void AddCounts(int **paircounts, int *statecounts);
 
     void SetTimesRelativeToAbsolute();
     void SetTimesAbsoluteToRelative();
@@ -76,28 +76,26 @@ class BranchSitePath {
     // pulley: the beginning of path p, up to absolute time point t,
     // is inverted and transferred at the base of this path
     // path p is modified accordingly
-    void Prefix(BranchSitePath* p, BranchSitePath* root, double abstime);
+    void Prefix(BranchSitePath *p, BranchSitePath *root, double abstime);
 
     std::string ToString(bool redundant = false);
 
   protected:
-    Plink* init;
-    Plink* last;
+    Plink *init;
+    Plink *last;
     int nsub;
-    StateSpace* statespace;
+    StateSpace *statespace;
 
-    Plink* bkinit;
-    Plink* bklast;
+    Plink *bkinit;
+    Plink *bklast;
     int bknsub;
 };
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Inline definitions
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 
 //-------------------------------------------------------------------------
 //	* Plink
@@ -108,13 +106,13 @@ inline Plink::Plink(int instate, double inrel_time)
     : next(nullptr), prev(nullptr), state(instate), rel_time(inrel_time) {}
 inline Plink::~Plink() { Splice(); }
 
-inline Plink* Plink::Prev() { return prev; }
-inline Plink* Plink::Next() { return next; }
+inline Plink *Plink::Prev() { return prev; }
+inline Plink *Plink::Next() { return next; }
 
 inline bool Plink::IsFirst() { return prev == nullptr; }
 inline bool Plink::IsLast() { return next == nullptr; }
 
-inline void Plink::Insert(Plink* link) {
+inline void Plink::Insert(Plink *link) {
     link->next = next;
     if (next != nullptr) {
         next->prev = link;
@@ -138,14 +136,14 @@ inline void Plink::SetRelativeTime(double inrel_time) { rel_time = inrel_time; }
 inline double Plink::GetRelativeTime() { return rel_time; }
 inline int Plink::GetState() { return state; }
 
-inline Plink* BranchSitePath::Init() { return init; }
-inline Plink* BranchSitePath::Last() { return last; }
+inline Plink *BranchSitePath::Init() { return init; }
+inline Plink *BranchSitePath::Last() { return last; }
 
 //-------------------------------------------------------------------------
 //	* BranchSitePath
 //-------------------------------------------------------------------------
 
-inline StateSpace* BranchSitePath::GetStateSpace() {
+inline StateSpace *BranchSitePath::GetStateSpace() {
     if (statespace == nullptr) {
         std::cerr << "null pointer : BranchSitePath::statespace\n";
         throw(0);
@@ -171,7 +169,7 @@ inline void BranchSitePath::BKAppend(int instate, double reltimelength) {
 
 inline int BranchSitePath::GetNsub() { return nsub; }
 
-inline std::string BranchSitePath::GetState(Plink* link) {
+inline std::string BranchSitePath::GetState(Plink *link) {
     return GetStateSpace()->GetState(link->GetState());
 }
 inline std::string BranchSitePath::GetCharInitState() { return GetState(init); }
@@ -179,9 +177,8 @@ inline std::string BranchSitePath::GetCharFinalState() { return GetState(last); 
 inline int BranchSitePath::GetInitState() { return init->GetState(); }
 inline int BranchSitePath::GetFinalState() { return last->GetState(); }
 
-inline double BranchSitePath::GetAbsoluteTime(Plink* link) {
+inline double BranchSitePath::GetAbsoluteTime(Plink *link) {
     return link->GetRelativeTime() * GetTotalTime();
 }
-
 
 #endif  // SITEPATH_H

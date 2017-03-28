@@ -2,7 +2,7 @@
 #                LISTS
 # ====================================
 
-SRC_FILES = $(shell find src -name "*.hpp") $(shell find src -name "*.cpp")
+SRC_FILES = $(shell find src -name "*.hpp") $(shell find src -name "*.cpp") $(shell find test -name "*.hpp") $(shell find test -name "*.cpp") $(shell find app -name "*.hpp") $(shell find app -name "*.cpp")
 TMP_FILES = $(shell find . -name "tmp*")
 .PHONY: cmake clean doc fix check format dot testmove testmove2 testgamma testdiffsel
 

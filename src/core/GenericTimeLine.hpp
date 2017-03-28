@@ -19,7 +19,6 @@ class GenericTimeLine {
 
 /*****************************************************************/
 
-
 class LinearlyInterpolatedTimeLine : public GenericTimeLine {
   public:
     LinearlyInterpolatedTimeLine() {}
@@ -59,7 +58,6 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
 
     int GetNumberOfTimeLines() override { return NumberOfTimeLines; }
 
-
     // The format is going to be:
     /*
       numberOfTimelines
@@ -71,11 +69,11 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
       date2 value2
       ...
     */
-    void ToStream(std::ostream& os) const {
+    void ToStream(std::ostream &os) const {
         std::map<double, double>::iterator it;
         std::map<double, double> temp;
         os << NumberOfTimeLines << std::endl;
-        for (const auto& TimesAndValue : TimesAndValues) {
+        for (const auto &TimesAndValue : TimesAndValues) {
             temp = TimesAndValue;
             os << temp.size() << std::endl;
             for (it = temp.begin(); it != temp.end(); it++) {
@@ -85,7 +83,7 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
         return;
     }
 
-    void FromStream(std::istream& is) {
+    void FromStream(std::istream &is) {
         double Age;
         double Value;
         int NumberOfValues;
@@ -104,7 +102,7 @@ class LinearlyInterpolatedTimeLine : public GenericTimeLine {
     }
 
   private:
-    std::vector<std::map<double, double> > TimesAndValues;
+    std::vector<std::map<double, double>> TimesAndValues;
 };
 
 #endif

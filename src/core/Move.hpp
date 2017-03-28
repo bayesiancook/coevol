@@ -13,24 +13,29 @@ class Rvar;
 // can be done in 2 different ways
 //
 // 1. the simplest is to make a Move() method in the Model
-// which calls the Move() methods of all the random variables of the model, each in turn
+// which calls the Move() methods of all the random variables of the model, each
+// in turn
 //
 // 2. a more elaborate but more powerful method consists in
 // making objects deriving from MCUpdate
-// each object is responsible for making the update of one random node, or a group of nodes
+// each object is responsible for making the update of one random node, or a
+// group of nodes
 //
 // these objects are REGISTERED onto a MCScheduler object
 // MCScheduler will then call the updates each one by one
-// while maintaining statistics such as time spent in each update, success rates, etc
+// while maintaining statistics such as time spent in each update, success
+// rates, etc
 //
 // All this is created at the level of the model:
 // the model has a MCScheduler (called 'scheduler')
-// the model has a method called MakeScheduler(), whose job is to create and register all required
+// the model has a method called MakeScheduler(), whose job is to create and
+// register all required
 // MCUpdate objects
 // When the Move() method of the ProbModel object is called
 // this calls the Cycle() function of the MCScheduler object
 // which in turns calls the Move() function of each MCUpdate objects
-// which themselves call the relevant function (e.g. the Move() function) of the random variables
+// which themselves call the relevant function (e.g. the Move() function) of the
+// random variables
 // they are associated to
 
 // a MCUpdate object has a pure virtual Move function
@@ -41,16 +46,15 @@ class MCUpdate {
 
     virtual double Move(double tuning_modulator = 1) = 0;
 
-    virtual void ToStream(std::ostream& /*unused*/) {}
+    virtual void ToStream(std::ostream & /*unused*/) {}
 };
-
 
 // The MCScheduler class
 // a ProbModel has a MCScheduler object called scheduler
 //
 class MCScheduler : public MCUpdate {
   public:
-    MCScheduler(ProbModel* inmodel) : model(inmodel), closed(false), random(false) {}
+    MCScheduler(ProbModel *inmodel) : model(inmodel), closed(false), random(false) {}
 
     virtual void Cycle(double tuning_modulator, int nrep, bool verbose, bool check);
     void RandomCycle(double tuning_modulator, int nrep, bool verbose, bool check);
@@ -59,7 +63,7 @@ class MCScheduler : public MCUpdate {
     double Move(double tuning_modulator = 1) override;
 
     inline void SetRandom(bool inrand) { random = inrand; }
-    void Register(MCUpdate* inupdate, int inweight = 1, std::string inname = "");
+    void Register(MCUpdate *inupdate, int inweight = 1, std::string inname = "");
     void Reset();
 
     inline double GetTotalTime() { return totaltime; }
@@ -67,7 +71,7 @@ class MCScheduler : public MCUpdate {
     inline double GetTotalCycleNumber() { return ncycle; }
 
     using MCUpdate::ToStream;  // (VL) overload is intended
-    void ToStream(std::ostream& os, std::ostream& osdetail);
+    void ToStream(std::ostream &os, std::ostream &osdetail);
 
     inline void OpenLoop(int n) {
         std::ostringstream oss;
@@ -75,10 +79,10 @@ class MCScheduler : public MCUpdate {
         command += oss.str();
     }
     inline void CloseLoop() { command += ')'; }
-    std::vector<int> ReadCommand(unsigned int& n);
+    std::vector<int> ReadCommand(unsigned int &n);
 
   protected:
-    std::vector<MCUpdate*> update;
+    std::vector<MCUpdate *> update;
 
     std::vector<int> weight;
     std::vector<double> time;
@@ -93,47 +97,44 @@ class MCScheduler : public MCUpdate {
 
     std::string command;
 
-    ProbModel* model;
+    ProbModel *model;
 
     bool closed;
     bool random;
 };
-
 
 // The simplest MCUpdate object:
 // when its Move() function is called
 // it calls the Move() function of the random variable it is associated to
 class SimpleMove : public MCUpdate {
   public:
-    SimpleMove(MCMC* invar, double intuning) : var(invar), tuning(intuning) {}
+    SimpleMove(MCMC *invar, double intuning) : var(invar), tuning(intuning) {}
 
     inline double Move(double tuning_modulator = 1) override {
         return var->Move(tuning * tuning_modulator);
     }
 
   protected:
-    MCMC* var;
+    MCMC *var;
     double tuning;
 };
 
-
 class JointSimpleMove : public MCUpdate, public Mnode {
   public:
-    JointSimpleMove(Rnode* ina1, Rnode* ina2, double intuning);
+    JointSimpleMove(Rnode *ina1, Rnode *ina2, double intuning);
 
     double Move(double tuning_modulator = 1) override;
 
   private:
-    Rnode* a1;
-    Rnode* a2;
+    Rnode *a1;
+    Rnode *a2;
     double tuning;
 };
-
 
 template <class P, class S>
 class SemiConjugateMove : public MCUpdate {
   public:
-    SemiConjugateMove(P* inprior, S* insampling, double intuningprior, int innprior,
+    SemiConjugateMove(P *inprior, S *insampling, double intuningprior, int innprior,
                       double intuningsampling, int innsampling)
         : prior(inprior),
           sampling(insampling),
@@ -157,19 +158,18 @@ class SemiConjugateMove : public MCUpdate {
     }
 
   protected:
-    P* prior;
-    S* sampling;
+    P *prior;
+    S *sampling;
     double tuningprior;
     int nprior;
     double tuningsampling;
     int nsampling;
 };
 
-
 template <class P, class S>
 class ConjugateMove : public MCUpdate {
   public:
-    ConjugateMove(P* inprior, S* insampling, double intuning, int inn)
+    ConjugateMove(P *inprior, S *insampling, double intuning, int inn)
         : prior(inprior), sampling(insampling), tuning(intuning), n(inn) {}
 
     double Move(double tuning_modulator = 1) override {
@@ -184,105 +184,97 @@ class ConjugateMove : public MCUpdate {
     }
 
   protected:
-    P* prior;
-    S* sampling;
+    P *prior;
+    S *sampling;
     double tuning;
     int n;
 };
 
-
 // Compensatory compensatory move functions
 class MultiplicativeCompensatoryMove : public MCUpdate, public Mnode {
   public:
-    MultiplicativeCompensatoryMove(Multiplicative* inm1, Multiplicative* inm2, double intuning);
+    MultiplicativeCompensatoryMove(Multiplicative *inm1, Multiplicative *inm2, double intuning);
 
     double Move(double tuning_modulator = 1) override;
 
   private:
-    Multiplicative* m1;
-    Multiplicative* m2;
+    Multiplicative *m1;
+    Multiplicative *m2;
     double tuning;
 };
-
 
 // Compensatory compensatory move functions
 class AdditiveCompensatoryMove : public MCUpdate, public Mnode {
   public:
-    AdditiveCompensatoryMove(Additive* ina1, Additive* ina2, double intuning);
+    AdditiveCompensatoryMove(Additive *ina1, Additive *ina2, double intuning);
 
     double Move(double tuning_modulator = 1) override;
 
   private:
-    Additive* a1;
-    Additive* a2;
+    Additive *a1;
+    Additive *a2;
     double tuning;
 };
-
 
 // Compensatory compensatory move functions
 class AdditiveAntiCompensatoryMove : public MCUpdate, public Mnode {
   public:
-    AdditiveAntiCompensatoryMove(Additive* ina1, Additive* ina2, double intuning);
+    AdditiveAntiCompensatoryMove(Additive *ina1, Additive *ina2, double intuning);
 
     double Move(double tuning_modulator = 1) override;
 
   private:
-    Additive* a1;
-    Additive* a2;
+    Additive *a1;
+    Additive *a2;
     double tuning;
 };
 
-
 class RealVectorMove : public MCUpdate {
   public:
-    RealVectorMove(Rvar<RealVector>* invar, double intuning, int inm);
+    RealVectorMove(Rvar<RealVector> *invar, double intuning, int inm);
 
     double Move(double tuning_modulator = 1) override;
 
   private:
-    Rvar<RealVector>* var;
+    Rvar<RealVector> *var;
     double tuning;
     int m;
 };
 
-
 class RealVectorTranslationMove : public MCUpdate {
   public:
-    RealVectorTranslationMove(Rvar<RealVector>* invar, double intuning);
+    RealVectorTranslationMove(Rvar<RealVector> *invar, double intuning);
 
     double Move(double tuning_modulator = 1) override;
 
   private:
-    Rvar<RealVector>* var;
+    Rvar<RealVector> *var;
     double tuning;
 };
 
-
 class RealVectorComponentwiseCompensatoryMove : public MCUpdate, public Mnode {
   public:
-    RealVectorComponentwiseCompensatoryMove(Rvar<RealVector>* ina1, Rvar<RealVector>* ina2,
+    RealVectorComponentwiseCompensatoryMove(Rvar<RealVector> *ina1, Rvar<RealVector> *ina2,
                                             double intuning);
 
     double Move(double tuning_modulator = 1) override;
 
   private:
-    Rvar<RealVector>* a1;
-    Rvar<RealVector>* a2;
+    Rvar<RealVector> *a1;
+    Rvar<RealVector> *a2;
     double tuning;
 };
 
-
 class ProfileMove : public MCUpdate {
   public:
-    ProfileMove(Rvar<Profile>* invar, double intuning, int inn);
+    ProfileMove(Rvar<Profile> *invar, double intuning, int inn);
 
     double Move(double tuning_modulator = 1) override;
 
   private:
-    Rvar<Profile>* var;
+    Rvar<Profile> *var;
     double tuning;
     int n;
 };
-
 
 #endif

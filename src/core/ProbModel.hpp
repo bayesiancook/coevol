@@ -5,7 +5,6 @@
 #include <set>
 #include "Move.hpp"
 
-
 /// Probabilistic model
 /**
  * A model is defined as a Graphical Model:
@@ -16,7 +15,8 @@
  *   where  Pa(X_n) represents the set of all parents of node X_n
  *
  * A model implements MCMC:
- * - GetLogProb returns the log of the probability (or probability density) mentioned above
+ * - GetLogProb returns the log of the probability (or probability density)
+ * mentioned above
  * - Sample draws a model configuration from this joint probability
  * - Move resample the model's current configuration conditional on the data */
 class ProbModel : public MCMC {
@@ -24,14 +24,15 @@ class ProbModel : public MCMC {
     ProbModel();
     ~ProbModel() override;
 
-    /// obtain the set ("state") of all the nodes of the DAG by a recursive traversal from the root
+    /// obtain the set ("state") of all the nodes of the DAG by a recursive
+    /// traversal from the root
     /// nodes to the tips
     void Register();
-    void Register(DAGnode* var);
+    void Register(DAGnode *var);
     void getDot();
 
     /// registers "var" among the root nodes (i.e. into the set "root")
-    void RootRegister(DAGnode* var);
+    void RootRegister(DAGnode *var);
 
     // returns the log of the probability (or probability density) mentioned above
     double GetLogProb() override = 0;
@@ -52,24 +53,23 @@ class ProbModel : public MCMC {
     bool CheckUpdateFlags();
 
     // save model configuration to stream
-    virtual void ToStream(std::ostream& os) = 0;
+    virtual void ToStream(std::ostream &os) = 0;
     // get model configuration from stream
-    virtual void FromStream(std::istream& is) = 0;
+    virtual void FromStream(std::istream &is) = 0;
 
     // monitoring the run
-    virtual void Trace(std::ostream& /*unused*/) {}
-    virtual void TraceHeader(std::ostream& /*unused*/) {}
-    virtual void Monitor(std::ostream& os, std::ostream& osdetail);
+    virtual void Trace(std::ostream & /*unused*/) {}
+    virtual void TraceHeader(std::ostream & /*unused*/) {}
+    virtual void Monitor(std::ostream &os, std::ostream &osdetail);
     // virtual void Monitor(std::ostream& os);
 
-    virtual void Details(std::ostream& /*unused*/) {}
+    virtual void Details(std::ostream & /*unused*/) {}
     virtual void test() {}
 
-    std::set<DAGnode*> state;
-    std::set<DAGnode*> root;
+    std::set<DAGnode *> state;
+    std::set<DAGnode *> root;
 
     MCScheduler scheduler;
 };
-
 
 #endif  // PROBMODEL_H

@@ -10,11 +10,11 @@ using namespace std;
 //	* RandomBranchSitePath
 //-------------------------------------------------------------------------
 
-StateSpace* RandomBranchSitePath::GetStateSpace() { return GetPhyloProcess()->GetStateSpace(); }
+StateSpace *RandomBranchSitePath::GetStateSpace() { return GetPhyloProcess()->GetStateSpace(); }
 
 bool RandomBranchSitePath::SampleBranchMapping() { return myprocess->SampleBranchMapping(); }
 
-void RandomBranchSitePath::SetUp(RandomBranchSitePath* /*unused*/) {
+void RandomBranchSitePath::SetUp(RandomBranchSitePath * /*unused*/) {
     // pathup = inup;
     // Register(up);
 }
@@ -102,7 +102,8 @@ void RandomBranchSitePath::ResampleUniformized() {
 
   double t = unitime[0];
   for (int r=0; r<uninsub; r++)	{
-  int k = (r== uninsub-1) ? statedown : DrawUniformizedTransition(state,statedown,uninsub-r-1);
+  int k = (r== uninsub-1) ? statedown :
+  DrawUniformizedTransition(state,statedown,uninsub-r-1);
   unistate[r] = k;
   if (k != state)	{
   Append(k,t);
@@ -118,12 +119,14 @@ void RandomBranchSitePath::ResampleUniformized() {
 
   double total = 0;
 
-  total += RecordDrawUniformizedSubstitutionNumberLogProb(stateup, statedown, uninsub);
+  total += RecordDrawUniformizedSubstitutionNumberLogProb(stateup, statedown,
+  uninsub);
 
   int state = stateup;
   for (int r=0; r<uninsub; r++)	{
   int k = unistate[r];
-  total += RecordDrawUniformizedTransitionLogProb(state,statedown,uninsub-r-1,k);
+  total +=
+  RecordDrawUniformizedTransitionLogProb(state,statedown,uninsub-r-1,k);
   state = k;
   }
   return total;
@@ -152,13 +155,15 @@ double RandomBranchSitePath::PathLogProb() {
         return StationaryLogProb(init->GetState());
     }
     double total = 0;
-    Plink* link = init;
+    Plink *link = init;
     while (link != nullptr) {
         if (link != last) {
             total += ReducedWaitingTimeLogProb(link->GetState(), GetAbsoluteTime(link));
             total += ReducedOneStepLogProb(link->GetState(), link->next->GetState());
             /*
-              if (isinf(ReducedOneStepLogProb(link->GetState(),link->next->GetState())))	{
+              if
+              (isinf(ReducedOneStepLogProb(link->GetState(),link->next->GetState())))
+              {
               cerr << "forbidden transition\n";
               cerr << GetStateSpace()->GetState(link->GetState()) << '\t' <<
               GetStateSpace()->GetState(link->next->GetState()) << '\n';
@@ -180,6 +185,5 @@ double RandomBranchSitePath::PathLogProb() {
     }
     return total;
 }
-
 
 int RandomBranchSitePath::GetMaxTrial() { return myprocess->GetMaxTrial(); }

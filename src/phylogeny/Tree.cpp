@@ -7,7 +7,7 @@ using namespace std;
 
 bool NewickTree::simplify = false;
 
-void NewickTree::ToStream(ostream& os) const {
+void NewickTree::ToStream(ostream &os) const {
     if (simplify) {
         ToStreamSimplified(os, GetRoot());
     } else {
@@ -16,7 +16,7 @@ void NewickTree::ToStream(ostream& os) const {
     os << ";\n";
 }
 
-double NewickTree::ToStreamSimplified(ostream& os, const Link* from) const {
+double NewickTree::ToStreamSimplified(ostream &os, const Link *from) const {
     if (!from->isLeaf()) {
         if (from->Next()->Next() == from) {
             double tot = ToStreamSimplified(os, from->Next()->Out());
@@ -24,7 +24,7 @@ double NewickTree::ToStreamSimplified(ostream& os, const Link* from) const {
             return tot;
         }
         os << '(';
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             double tmp = ToStreamSimplified(os, link->Out());
             os << ':' << tmp;
             if (link->Next() != from) {
@@ -50,10 +50,10 @@ double NewickTree::ToStreamSimplified(ostream& os, const Link* from) const {
     return atof(GetBranchName(from).c_str());
 }
 
-void NewickTree::ToStream(ostream& os, const Link* from) const {
+void NewickTree::ToStream(ostream &os, const Link *from) const {
     if (!from->isLeaf()) {
         os << '(';
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             ToStream(os, link->Out());
             if (link->Next() != from) {
                 os << ',';
@@ -77,18 +77,18 @@ Tree::Tree() {
     taxset = nullptr;
 }
 
-Tree::Tree(const Tree* from) {
+Tree::Tree(const Tree *from) {
     taxset = nullptr;
     root = new Link(from->root);
     root->InsertOut(root);
     RecursiveClone(from->root, root);
 }
 
-void Tree::RecursiveClone(const Link* from, Link* to) {
+void Tree::RecursiveClone(const Link *from, Link *to) {
     auto node = new Node(from->GetNode());
     to->SetNode(node);
-    const Link* linkfrom = from->Next();
-    Link* linkto = to;
+    const Link *linkfrom = from->Next();
+    Link *linkto = to;
     while (linkfrom != from) {
         auto newnext = new Link(linkfrom);  // newnext points to same node and branch as linkfrom
         newnext->SetNode(node);
@@ -104,14 +104,13 @@ void Tree::RecursiveClone(const Link* from, Link* to) {
     }
 }
 
-
-void Tree::RecursiveDelete(Link* from) {
-    Link* link = from->Next();
+void Tree::RecursiveDelete(Link *from) {
+    Link *link = from->Next();
     while (link != from) {
         delete link->Out()->GetNode();
         delete link->GetBranch();
         RecursiveDelete(link->Out());
-        Link* keep = link->Next();
+        Link *keep = link->Next();
         delete link;
         link = keep;
     }
@@ -145,11 +144,11 @@ Tree::~Tree() {
     }
 }
 
-
-void Tree::DeleteNextLeaf(Link* previous) {
-    Link* link = previous->Next();
+void Tree::DeleteNextLeaf(Link *previous) {
+    Link *link = previous->Next();
     if (!link->Out()->isLeaf()) {
-        cout << "Bad call of DeleteNextLeaf, it must be call on a link pointing on a leaf\n";
+        cout << "Bad call of DeleteNextLeaf, it must be call on a link pointing on "
+                "a leaf\n";
         exit(1);
     }
     previous->Next()->Next()->AppendTo(previous);
@@ -159,13 +158,13 @@ void Tree::DeleteNextLeaf(Link* previous) {
     delete link;
 }
 
-void Tree::DeleteUnaryNode(Link* from) {
+void Tree::DeleteUnaryNode(Link *from) {
     if (!from->isUnary()) {
         cout << "Bad call of DeleteUnaryNode, node is not unary\n";
         exit(1);
     }
     if (from->isRoot()) {
-        Link* newroot = from->Next()->Out();
+        Link *newroot = from->Next()->Out();
         newroot->SetBranch(from->GetBranch());
         delete from->Next()->GetBranch();
         delete from->GetNode();
@@ -187,9 +186,8 @@ void Tree::DeleteUnaryNode(Link* from) {
     }
 }
 
-
-void Tree::RootAt(Link* from) {
-    Link* link = from->Next();
+void Tree::RootAt(Link *from) {
+    Link *link = from->Next();
     root->AppendTo(from);
     link->AppendTo(root);
     root->SetNode(from->GetNode());
@@ -197,16 +195,16 @@ void Tree::RootAt(Link* from) {
 
 void Tree::EraseInternalNodeName() { EraseInternalNodeName(GetRoot()); }
 
-void Tree::EraseInternalNodeName(Link* from) {
+void Tree::EraseInternalNodeName(Link *from) {
     if (!from->isLeaf()) {
         from->GetNode()->SetName("");
     }
-    for (Link* link = from->Next(); link != from; link = link->Next()) {
+    for (Link *link = from->Next(); link != from; link = link->Next()) {
         EraseInternalNodeName(link->Out());
     }
 }
 
-void Tree::RegisterWith(const TaxonSet* taxset) {
+void Tree::RegisterWith(const TaxonSet *taxset) {
     int tot = 0;
     if (!RegisterWith(taxset, GetRoot(), tot)) {
         cout << "There is no match between the tree and the sequences.\n";
@@ -220,7 +218,7 @@ void Tree::RegisterWith(const TaxonSet* taxset) {
     }
 }
 
-bool Tree::RegisterWith(const TaxonSet* taxset, Link* from, int& tot) {
+bool Tree::RegisterWith(const TaxonSet *taxset, Link *from, int &tot) {
     if (from->isLeaf()) {
         int i = taxset->GetTaxonIndex(from->GetNode()->GetName());
         if (i != -1) {
@@ -229,7 +227,7 @@ bool Tree::RegisterWith(const TaxonSet* taxset, Link* from, int& tot) {
         }
         return (i != -1);
     }
-    Link* previous = from;
+    Link *previous = from;
     while (previous->Next() != from) {
         if (RegisterWith(taxset, previous->Next()->Out(), tot)) {
             previous = previous->Next();
@@ -249,7 +247,6 @@ bool Tree::RegisterWith(const TaxonSet* taxset, Link* from, int& tot) {
     return (!from->isLeaf());
 }
 
-
 Tree::Tree(string filename) {
     ifstream is(filename.c_str());
     if (!is) {
@@ -259,7 +256,7 @@ Tree::Tree(string filename) {
     ReadFromStream(is);
 }
 
-void Tree::ReadFromStream(istream& is) {
+void Tree::ReadFromStream(istream &is) {
     string expr = "";
     int cont = 1;
     while (cont != 0) {
@@ -275,7 +272,7 @@ void Tree::ReadFromStream(istream& is) {
     SetRoot(ParseGroup(expr, nullptr));
 }
 
-Link* Tree::ParseList(string input, Node* node) {
+Link *Tree::ParseList(string input, Node *node) {
     try {
         // parse input as a list of strings separated by ','
         list<string> lst;
@@ -315,9 +312,9 @@ Link* Tree::ParseList(string input, Node* node) {
         // with one link for each term of the list
         // and call parse group on each term
         auto firstlink = new Link;
-        Link* prevlink = firstlink;
+        Link *prevlink = firstlink;
         firstlink->SetNode(node);
-        for (auto& i : lst) {
+        for (auto &i : lst) {
             auto link = new Link;
             link->SetNode(node);
             link->AppendTo(prevlink);
@@ -332,7 +329,7 @@ Link* Tree::ParseList(string input, Node* node) {
     }
 }
 
-Link* Tree::ParseGroup(string input, Link* from) {
+Link *Tree::ParseGroup(string input, Link *from) {
     try {
         // parse input as (body)nodeval:branchval
 
@@ -371,10 +368,10 @@ Link* Tree::ParseGroup(string input, Link* from) {
         }
 
         // make a new node and a new branch
-        Node* node = new Node(nodeval);
+        Node *node = new Node(nodeval);
 
         // call parse body
-        Link* link = nullptr;
+        Link *link = nullptr;
         if (body != "") {
             link = ParseList(body, node);
         } else {
@@ -382,7 +379,7 @@ Link* Tree::ParseGroup(string input, Link* from) {
             link->SetNode(node);
         }
         if (from != nullptr) {
-            Branch* branch = new Branch(branchval);
+            Branch *branch = new Branch(branchval);
             link->SetBranch(branch);
             from->SetBranch(branch);
             link->InsertOut(from);
@@ -394,8 +391,8 @@ Link* Tree::ParseGroup(string input, Link* from) {
     }
 }
 
-void Tree::Subdivide(Link* from, int Ninterpol) {
-    for (Link* link = from->Next(); link != from; link = link->Next()) {
+void Tree::Subdivide(Link *from, int Ninterpol) {
+    for (Link *link = from->Next(); link != from; link = link->Next()) {
         Subdivide(link->Out(), Ninterpol);
     }
     // if ((! from->isLeaf()) && (! from->isRoot()))	{
@@ -412,13 +409,13 @@ void Tree::Subdivide(Link* from, int Ninterpol) {
 
         delete from->GetBranch();
 
-        Link* current = from;
-        Link* final = from->Out();
+        Link *current = from;
+        Link * final = from->Out();
         int i = 0;
         while (i < Ninterpol - 1) {
             auto link1 = new Link;
             auto link2 = new Link;
-            Branch* newbranch = new Branch(s.str());
+            Branch *newbranch = new Branch(s.str());
             auto newnode = new Node();
             current->SetBranch(newbranch);
             link1->SetNext(link2);
@@ -433,37 +430,36 @@ void Tree::Subdivide(Link* from, int Ninterpol) {
         }
         current->SetOut(final);
         final->SetOut(current);
-        Branch* newbranch = new Branch(s.str());
+        Branch *newbranch = new Branch(s.str());
         final->SetBranch(newbranch);
         current->SetBranch(newbranch);
     }
 }
 
-
-int Tree::CountInternalNodes(const Link* from) {
+int Tree::CountInternalNodes(const Link *from) {
     int total = 0;
     if (!from->isLeaf()) {
         // if ((! from->isLeaf()) && (! from->isRoot()))	{
         total = 1;
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             total += CountInternalNodes(link->Out());
         }
     }
     return total;
 }
 
-const Link* Tree::ChooseInternalNode(const Link* from, const Link*& fromup, int& n) {
+const Link *Tree::ChooseInternalNode(const Link *from, const Link *&fromup, int &n) {
     if (from->isLeaf()) {
         return nullptr;
     }
-    const Link* ret = nullptr;
+    const Link *ret = nullptr;
     if (n == 0) {
         ret = from;
     } else {
         n--;
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             if (ret == nullptr) {
-                const Link* tmp = ChooseInternalNode(link->Out(), fromup, n);
+                const Link *tmp = ChooseInternalNode(link->Out(), fromup, n);
                 if (tmp != nullptr) {
                     ret = tmp;
                 }
@@ -476,23 +472,23 @@ const Link* Tree::ChooseInternalNode(const Link* from, const Link*& fromup, int&
     return ret;
 }
 
-int Tree::CountNodes(const Link* from) {
+int Tree::CountNodes(const Link *from) {
     int total = 1;
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         total += CountNodes(link->Out());
     }
     return total;
 }
 
-const Link* Tree::ChooseNode(const Link* from, const Link*& fromup, int& n) {
-    const Link* ret = nullptr;
+const Link *Tree::ChooseNode(const Link *from, const Link *&fromup, int &n) {
+    const Link *ret = nullptr;
     if (n == 0) {
         ret = from;
     } else {
         n--;
-        for (const Link* link = from->Next(); ((ret == nullptr) && (link != from));
+        for (const Link *link = from->Next(); ((ret == nullptr) && (link != from));
              link = link->Next()) {
-            const Link* tmp = ChooseNode(link->Out(), fromup, n);
+            const Link *tmp = ChooseNode(link->Out(), fromup, n);
             if (tmp != nullptr) {
                 ret = tmp;
             }

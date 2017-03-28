@@ -20,7 +20,8 @@ double SubMatrix::maxz = 0;
   SubMatrix::SubMatrix() : Nstate(0), normalise(false) {}
 
 
-  SubMatrix::SubMatrix(const SubMatrix& from) : Nstate(from.inNstate), normalise(from.innormalise)
+  SubMatrix::SubMatrix(const SubMatrix& from) : Nstate(from.inNstate),
+  normalise(from.innormalise)
   {
   Create();
   }
@@ -28,7 +29,8 @@ double SubMatrix::maxz = 0;
   SubMatrix& SubMatrix::operator=(const SubMatrix& from)	{
 
   if (Nstate != from.Nstate)	{
-  cerr << "error in SubMatrix::operator= : non matching dimensions : " << Nstate << " and " <<
+  cerr << "error in SubMatrix::operator= : non matching dimensions : " << Nstate
+  << " and " <<
   from.Nstate << '\n';
   throw;
   }
@@ -44,17 +46,17 @@ SubMatrix::SubMatrix(int inNstate, bool innormalise) : Nstate(inNstate), normali
 }
 
 void SubMatrix::Create() {
-    Q = new double*[Nstate];
+    Q = new double *[Nstate];
     for (int i = 0; i < Nstate; i++) {
         Q[i] = new double[Nstate];
     }
 
-    u = new double*[Nstate];
+    u = new double *[Nstate];
     for (int i = 0; i < Nstate; i++) {
         u[i] = new double[Nstate];
     }
 
-    invu = new double*[Nstate];
+    invu = new double *[Nstate];
     for (int i = 0; i < Nstate; i++) {
         invu[i] = new double[Nstate];
     }
@@ -75,7 +77,7 @@ void SubMatrix::Create() {
     mStationary = new double[Nstate];
 
     UniMu = 1;
-    mPow = new double**[UniSubNmax];
+    mPow = new double **[UniSubNmax];
     for (int n = 0; n < UniSubNmax; n++) {
         mPow[n] = nullptr;
         /*
@@ -94,7 +96,7 @@ void SubMatrix::Create() {
     }
     powflag = false;
 
-    aux = new double*[Nstate];
+    aux = new double *[Nstate];
     for (int i = 0; i < Nstate; i++) {
         aux[i] = new double[Nstate];
     }
@@ -103,7 +105,6 @@ void SubMatrix::Create() {
 // ---------------------------------------------------------------------------
 //     ~SubMatrix()
 // ---------------------------------------------------------------------------
-
 
 SubMatrix::~SubMatrix() {
     /*
@@ -155,7 +156,6 @@ void SubMatrix::ScalarMul(double e) {
     }
     UniMu *= e;
 }
-
 
 // ---------------------------------------------------------------------------
 //     Diagonalise()
@@ -221,7 +221,6 @@ int SubMatrix::Diagonalise() {
     return static_cast<int>(failed);
 }
 
-
 // ---------------------------------------------------------------------------
 //     ComputeRate()
 // ---------------------------------------------------------------------------
@@ -245,22 +244,21 @@ double SubMatrix::GetRate() {
     return 2 * norm;
 }
 
-
-double* SubMatrix::GetEigenVal() {
+double *SubMatrix::GetEigenVal() {
     if (!diagflag) {
         Diagonalise();
     }
     return v;
 }
 
-double** SubMatrix::GetEigenVect() {
+double **SubMatrix::GetEigenVect() {
     if (!diagflag) {
         Diagonalise();
     }
     return u;
 }
 
-double** SubMatrix::GetInvEigenVect() {
+double **SubMatrix::GetInvEigenVect() {
     if (!diagflag) {
         Diagonalise();
     }
@@ -284,7 +282,6 @@ void SubMatrix::UpdateMatrix() {
     }
     // CheckReversibility();
 }
-
 
 // ---------------------------------------------------------------------------
 //     Normalise()
@@ -364,13 +361,12 @@ void SubMatrix::InactivatePowers() {
 
 void SubMatrix::CreatePowers(int n) {
     if (mPow[n] == nullptr) {
-        mPow[n] = new double*[Nstate];
+        mPow[n] = new double *[Nstate];
         for (int i = 0; i < Nstate; i++) {
             mPow[n][i] = new double[Nstate];
         }
     }
 }
-
 
 double SubMatrix::GetUniformizationMu() {
     if (!powflag) {
@@ -395,7 +391,6 @@ double SubMatrix::Power(int n, int i, int j) {
     return mPow[n - 1][i][j];
 }
 
-
 void SubMatrix::ComputePowers(int N) {
     if (!powflag) {
         ActivatePowers();
@@ -405,7 +400,7 @@ void SubMatrix::ComputePowers(int N) {
             CreatePowers(n);
             for (int i = 0; i < Nstate; i++) {
                 for (int j = 0; j < Nstate; j++) {
-                    double& t = mPow[n][i][j];
+                    double &t = mPow[n][i][j];
                     t = 0;
                     for (int k = 0; k < Nstate; k++) {
                         t += mPow[n - 1][i][k] * mPow[0][k][j];
@@ -417,7 +412,7 @@ void SubMatrix::ComputePowers(int N) {
     }
 }
 
-void SubMatrix::ToStream(ostream& os) {
+void SubMatrix::ToStream(ostream &os) {
     os << GetNstate() << '\n';
     os << "stationaries: \n";
     for (int i = 0; i < GetNstate(); i++) {
@@ -462,8 +457,7 @@ void SubMatrix::CheckReversibility() {
     }
 }
 
-
-void SubMatrix::ComputeExponential(double range, double** expo) {
+void SubMatrix::ComputeExponential(double range, double **expo) {
     Diagonalise();
 
     for (int i = 0; i < Nstate; i++) {
@@ -475,7 +469,6 @@ void SubMatrix::ComputeExponential(double range, double** expo) {
             cerr << "error : row does not sum to 0\n";
             exit(1);
         }
-
 
         tot = 0;
         for (int j = 0; j < Nstate; j++) {
@@ -495,7 +488,7 @@ void SubMatrix::ComputeExponential(double range, double** expo) {
     }
 }
 
-void SubMatrix::ApproachExponential(double range, double** expo, int /*unused*/) {
+void SubMatrix::ApproachExponential(double range, double **expo, int /*unused*/) {
     for (int i = 0; i < Nstate; i++) {
         if (!flagarray[i]) {
             UpdateRow(i);
@@ -515,9 +508,7 @@ void SubMatrix::ApproachExponential(double range, double** expo, int /*unused*/)
         }
     }
 
-
     int z = 1;
-
 
     double maxdiag = 0;  // Max of diagonal coefficients
     for (int i = 0; i < GetNstate(); i++) {
@@ -527,7 +518,7 @@ void SubMatrix::ApproachExponential(double range, double** expo, int /*unused*/)
     }
 
     if (maxdiag > 300) {
-        const double* stat = GetStationary();
+        const double *stat = GetStationary();
         // exp(range Q) = stat(Q)
         for (int i = 0; i < GetNstate(); i++) {
             for (int j = 0; j < GetNstate(); j++) {
@@ -589,8 +580,7 @@ void SubMatrix::ApproachExponential(double range, double** expo, int /*unused*/)
     }
 }
 
-
-void SubMatrix::PowerOf2(double** y, int z) {
+void SubMatrix::PowerOf2(double **y, int z) {
     if (z == 1) {
         return;
     }

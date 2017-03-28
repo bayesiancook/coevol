@@ -4,7 +4,6 @@
 #include <sys/time.h>
 #include <ctime>
 
-
 class Chrono {
   public:
     void Reset();
@@ -28,6 +27,5 @@ class Chrono {
     double TotalTime;
     int N;
 };
-
 
 #endif  // CHRONO_H

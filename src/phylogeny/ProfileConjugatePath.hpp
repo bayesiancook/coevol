@@ -8,10 +8,9 @@
 #include "phylogeny/AllocationTree.hpp"
 #include "phylogeny/PhyloProcess.hpp"
 
-
 class ProfilePathConjugate : public DSemiConjugatePrior<void> {
   public:
-    ProfilePathConjugate(RandomSubMatrix* inmatrix) {
+    ProfilePathConjugate(RandomSubMatrix *inmatrix) {
         matrix = inmatrix;
         Register(matrix);
         CreateSuffStat();
@@ -21,10 +20,10 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
 
     void specialUpdate() override {}
 
-    RandomSubMatrix* GetRandomSubMatrix() { return matrix; }
+    RandomSubMatrix *GetRandomSubMatrix() { return matrix; }
 
-    virtual SubMatrix* GetMatrix() { return matrix; }
-    virtual const double* GetStationary() { return matrix->GetStationary(); }
+    virtual SubMatrix *GetMatrix() { return matrix; }
+    virtual const double *GetStationary() { return matrix->GetStationary(); }
 
     int GetNstate() { return matrix->GetNstate(); }
     // StateSpace* GetStateSpace() {return matrix->GetStateSpace();}
@@ -69,7 +68,8 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
       // int totnsub = 0;
 
       const double* rootstat = GetStationary();
-      for (std::map<int,int>::iterator i = rootcount.begin(); i!= rootcount.end(); i++)	{
+      for (std::map<int,int>::iterator i = rootcount.begin(); i!= rootcount.end();
+      i++)	{
       double tmp = rootstat[i->first];
       for (int k=0; k<i->second; k++)	{
       exptot *= tmp;
@@ -78,10 +78,12 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
       }
 
       SubMatrix& mat = *GetMatrix();
-      for (std::map<int,double>::iterator i = waitingtime.begin(); i!= waitingtime.end(); i++)	{
+      for (std::map<int,double>::iterator i = waitingtime.begin(); i!=
+      waitingtime.end(); i++)	{
       total += i->second * mat(i->first,i->first);
       }
-      for (std::map<std::pair<int,int>, int>::iterator i = paircount.begin(); i!= paircount.end();
+      for (std::map<std::pair<int,int>, int>::iterator i = paircount.begin(); i!=
+      paircount.end();
       i++)	{
       // total += i->second * log(mat(i->first.first, i->first.second));
       double tmp = mat(i->first.first, i->first.second);
@@ -100,17 +102,17 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
         double total = 0;
         int totnsub = 0;
 
-        const double* rootstat = GetStationary();
-        for (auto& i : rootcount) {
+        const double *rootstat = GetStationary();
+        for (auto &i : rootcount) {
             total += i.second * log(rootstat[i.first]);
         }
 
         double totscalestat = 0;
-        SubMatrix& mat = *GetMatrix();
-        for (auto& i : waitingtime) {
+        SubMatrix &mat = *GetMatrix();
+        for (auto &i : waitingtime) {
             totscalestat += i.second * mat(i.first, i.first);
         }
-        for (auto& i : paircount) {
+        for (auto &i : paircount) {
             total += i.second * log(mat(i.first.first, i.first.second));
             totnsub += i.second;
         }
@@ -131,15 +133,14 @@ class ProfilePathConjugate : public DSemiConjugatePrior<void> {
     std::map<std::pair<int, int>, int> paircount;
     std::map<int, double> waitingtime;
 
-    RandomSubMatrix* matrix;
+    RandomSubMatrix *matrix;
 };
-
 
 class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<void>,
                                              public virtual RandomBranchSitePath {
   public:
-    ProfileConjugateRandomBranchSitePath(PhyloProcess* inprocess, ProfilePathConjugate* inpathconj,
-                                         Var<PosReal>* inrate, Var<PosReal>* inlength)
+    ProfileConjugateRandomBranchSitePath(PhyloProcess *inprocess, ProfilePathConjugate *inpathconj,
+                                         Var<PosReal> *inrate, Var<PosReal> *inlength)
         : RandomBranchSitePath(inprocess) {
         pathconj = inpathconj;
 
@@ -165,16 +166,18 @@ class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<vo
     }
 
   protected:
-    void AddSufficientStatistic(SemiConjPrior* parent) override {
+    void AddSufficientStatistic(SemiConjPrior *parent) override {
         if (parent != pathconj) {
-            std::cerr << "error in ProfileConjugateRandomBranchSitePath::AddSufficientStatistic\n";
+            std::cerr << "error in "
+                         "ProfileConjugateRandomBranchSitePath::"
+                         "AddSufficientStatistic\n";
             exit(1);
         }
 
         if (isRoot()) {
             pathconj->IncrementRootCount(Init()->GetState());
         } else {
-            Plink* link = Init();
+            Plink *link = Init();
             while (link != nullptr) {
                 int state = link->GetState();
                 pathconj->AddWaitingTime(state, GetAbsoluteTime(link));
@@ -188,12 +191,12 @@ class ProfileConjugateRandomBranchSitePath : public virtual ConjugateSampling<vo
     }
 
   private:
-    ProfilePathConjugate* pathconj;
+    ProfilePathConjugate *pathconj;
 };
 
 class ProfilePathConjugateArray {
   public:
-    ProfilePathConjugateArray(int inNsite, int inK, RandomSubMatrix*** inmatrix) {
+    ProfilePathConjugateArray(int inNsite, int inK, RandomSubMatrix ***inmatrix) {
         Nsite = inNsite;
         K = inK;
         matrix = inmatrix;
@@ -203,9 +206,9 @@ class ProfilePathConjugateArray {
     ~ProfilePathConjugateArray() { DeleteArray(); }
 
     void CreateArray() {
-        pathconjarray = new ProfilePathConjugate**[K];
+        pathconjarray = new ProfilePathConjugate **[K];
         for (int k = 0; k < K; k++) {
-            pathconjarray[k] = new ProfilePathConjugate*[Nsite];
+            pathconjarray[k] = new ProfilePathConjugate *[Nsite];
             for (int i = 0; i < Nsite; i++) {
                 pathconjarray[k][i] = new ProfilePathConjugate(matrix[k][i]);
             }
@@ -246,31 +249,30 @@ class ProfilePathConjugateArray {
         }
     }
 
-    ProfilePathConjugate* GetProfilePathConjugate(int k, int site) {
+    ProfilePathConjugate *GetProfilePathConjugate(int k, int site) {
         return pathconjarray[k][site];
     }
 
   protected:
     int Nsite;
     int K;
-    ProfilePathConjugate*** pathconjarray;
-    RandomSubMatrix*** matrix;
+    ProfilePathConjugate ***pathconjarray;
+    RandomSubMatrix ***matrix;
 };
-
 
 class ProfileConjugateSelectionPhyloProcess : public PhyloProcess {
   protected:
   public:
-    ProfileConjugateSelectionPhyloProcess(AllocationTree* inalloctree, LengthTree* intree,
-                                          SequenceAlignment* indata,
-                                          ProfilePathConjugateArray* inpatharray)
+    ProfileConjugateSelectionPhyloProcess(AllocationTree *inalloctree, LengthTree *intree,
+                                          SequenceAlignment *indata,
+                                          ProfilePathConjugateArray *inpatharray)
         : PhyloProcess(intree, indata) {
         tree = intree;
         alloctree = inalloctree;
         patharray = inpatharray;
     }
 
-    RandomBranchSitePath* CreateRandomBranchSitePath(const Link* link, int site) override {
+    RandomBranchSitePath *CreateRandomBranchSitePath(const Link *link, int site) override {
         return new ProfileConjugateRandomBranchSitePath(
             this, patharray->GetProfilePathConjugate(
                       alloctree->GetBranchAllocation(link->GetBranch()), site),
@@ -278,15 +280,14 @@ class ProfileConjugateSelectionPhyloProcess : public PhyloProcess {
     }
 
   protected:
-    ProfilePathConjugateArray* patharray;
-    LengthTree* tree;
-    AllocationTree* alloctree;
+    ProfilePathConjugateArray *patharray;
+    LengthTree *tree;
+    AllocationTree *alloctree;
 };
-
 
 class ProfileConjugateMappingMove : public MCUpdate {
   public:
-    ProfileConjugateMappingMove(PhyloProcess* inprocess, ProfilePathConjugateArray* inpathconjarray)
+    ProfileConjugateMappingMove(PhyloProcess *inprocess, ProfilePathConjugateArray *inpathconjarray)
         : process(inprocess), pathconjarray(inpathconjarray) {}
 
     double Move(double /*tuning_modulator*/) override {
@@ -297,13 +298,13 @@ class ProfileConjugateMappingMove : public MCUpdate {
     }
 
   protected:
-    PhyloProcess* process;
-    ProfilePathConjugateArray* pathconjarray;
+    PhyloProcess *process;
+    ProfilePathConjugateArray *pathconjarray;
 };
 
 class ProfileConjugateMove : public MCUpdate {
   public:
-    ProfileConjugateMove(ProfilePathConjugateArray* inpathconjarray, bool intoggle)
+    ProfileConjugateMove(ProfilePathConjugateArray *inpathconjarray, bool intoggle)
         : pathconjarray(inpathconjarray), toggle(intoggle) {}
 
     double Move(double /*tuning_modulator*/) override {
@@ -316,7 +317,7 @@ class ProfileConjugateMove : public MCUpdate {
     }
 
   protected:
-    ProfilePathConjugateArray* pathconjarray;
+    ProfilePathConjugateArray *pathconjarray;
     bool toggle;
 };
 

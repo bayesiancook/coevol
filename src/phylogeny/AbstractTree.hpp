@@ -9,14 +9,14 @@ class AbstractTree {
   public:
     virtual ~AbstractTree() = default;
 
-    virtual Tree* GetTree() = 0;
-    Link* GetRoot() { return GetTree()->GetRoot(); }
+    virtual Tree *GetTree() = 0;
+    Link *GetRoot() { return GetTree()->GetRoot(); }
 };
 
 template <class V>
 class BranchVarTree : public virtual AbstractTree {
   public:
-    virtual Var<V>* GetBranchVal(const Branch* branch) = 0;
+    virtual Var<V> *GetBranchVal(const Branch *branch) = 0;
 
     void SetName(std::string inname) { RecursiveSetName(this->GetRoot(), inname); }
 
@@ -68,22 +68,22 @@ class BranchVarTree : public virtual AbstractTree {
       }
     */
 
-    void RecursiveSetName(Link* from, std::string inname) {
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    void RecursiveSetName(Link *from, std::string inname) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             GetBranchVal(link->GetBranch())->SetName(inname);
             RecursiveSetName(link->Out(), inname);
         }
     }
 
-    void RegisterBranchTree(Link* from, DAGnode* in) {
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    void RegisterBranchTree(Link *from, DAGnode *in) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             GetBranchVal(link->GetBranch())->Register(in);
             RegisterBranchTree(link->Out(), in);
         }
     }
 
-    void RecursivePrintLengths(Link* from) {
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    void RecursivePrintLengths(Link *from) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             std::ostringstream s;
             s << GetBranchVal(link->GetBranch())->val();
             link->GetBranch()->SetName(s.str());
@@ -95,11 +95,11 @@ class BranchVarTree : public virtual AbstractTree {
 template <class V>
 class NodeVarTree : public virtual AbstractTree {
   public:
-    virtual Var<V>* GetNodeVal(const Node* node) = 0;
+    virtual Var<V> *GetNodeVal(const Node *node) = 0;
 
-    Var<V>* GetRootVal() { return GetNodeVal(GetRoot()->GetNode()); }
+    Var<V> *GetRootVal() { return GetNodeVal(GetRoot()->GetNode()); }
 
-    virtual void RegisterNodeTree(DAGnode* in) { RegisterNodeTree(GetRoot(), in); }
+    virtual void RegisterNodeTree(DAGnode *in) { RegisterNodeTree(GetRoot(), in); }
 
     /*
       int GetNNodeVals()	{
@@ -141,9 +141,9 @@ class NodeVarTree : public virtual AbstractTree {
       }
     */
 
-    void RegisterNodeTree(Link* from, DAGnode* in) {
+    void RegisterNodeTree(Link *from, DAGnode *in) {
         GetNodeVal(from->GetNode())->Register(in);
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             RegisterNodeTree(link->Out(), in);
         }
     }
@@ -156,24 +156,24 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
   public:
     ~LengthTree() override = default;
 
-    virtual Var<PosReal>* GetBranchLength(const Branch* branch) { return GetBranchVal(branch); };
+    virtual Var<PosReal> *GetBranchLength(const Branch *branch) { return GetBranchVal(branch); };
 
     void SetBranchLengths() { SetBranchLengths(GetRoot()); }
 
     double GetTotalLength() { return GetTotalLength(GetRoot()); }
 
   protected:
-    double GetTotalLength(const Link* from) {
+    double GetTotalLength(const Link *from) {
         double tot = 0;
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             tot += GetBranchLength(link->GetBranch())->val();
             tot += GetTotalLength(link->Out());
         }
         return tot;
     }
 
-    void SetBranchLengths(Link* from) {
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    void SetBranchLengths(Link *from) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             GetBranchLength(link->GetBranch())
                 ->setval(atof((link->GetBranch()->GetName()).c_str()));
             SetBranchLengths(link->Out());
@@ -181,7 +181,7 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
     }
 
   public:
-    void GetMeanAndVar(double& mean, double& var) {
+    void GetMeanAndVar(double &mean, double &var) {
         mean = 0;
         var = 0;
         int count = 0;
@@ -195,7 +195,7 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
 
     double GetMax() { return RecursiveGetMax(GetRoot()); }
 
-    void GetFractionAbove(double cutoff, int& n, int& totjoint) {
+    void GetFractionAbove(double cutoff, int &n, int &totjoint) {
         double mean = 0;
         double var = 0;
         GetMeanAndVar(mean, var);
@@ -205,12 +205,12 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
     }
 
   protected:
-    double RecursiveGetMin(const Link* from) {
+    double RecursiveGetMin(const Link *from) {
         double min = -1;
         if (!from->isRoot()) {
             min = GetBranchVal(from->GetBranch())->val();
         }
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             double tmp = RecursiveGetMin(link->Out());
             if ((min == -1) || (min > tmp)) {
                 min = tmp;
@@ -219,12 +219,12 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
         return min;
     }
 
-    double RecursiveGetMax(const Link* from) {
+    double RecursiveGetMax(const Link *from) {
         double max = 0;
         if (!from->isRoot()) {
             max = GetBranchVal(from->GetBranch())->val();
         }
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             double tmp = RecursiveGetMax(link->Out());
             if (max < tmp) {
                 max = tmp;
@@ -233,20 +233,20 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
         return max;
     }
 
-    void RecursiveGetMeanAndVar(const Link* from, double& mean, double& var, int& count) {
+    void RecursiveGetMeanAndVar(const Link *from, double &mean, double &var, int &count) {
         if (!from->isRoot()) {
             double tmp = GetBranchVal(from->GetBranch())->val();
             mean += tmp;
             var += tmp * tmp;
             count++;
         }
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveGetMeanAndVar(link->Out(), mean, var, count);
         }
     }
 
-    void RecursiveGetFractionAbove(const Link* fromup, const Link* from, double value, int& n,
-                                   int& totjoint) {
+    void RecursiveGetFractionAbove(const Link *fromup, const Link *from, double value, int &n,
+                                   int &totjoint) {
         if (!from->isRoot()) {
             double tmp = GetBranchVal(from->GetBranch())->val();
             if (tmp > value) {
@@ -259,17 +259,17 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
                 }
             }
         }
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveGetFractionAbove(from, link->Out(), value, n, totjoint);
         }
     }
 
   public:
-    void CheckRootToTip(const Link* from, double p = 0) {
+    void CheckRootToTip(const Link *from, double p = 0) {
         if (from->isLeaf()) {
             std::cerr << p << '\t';
         } else {
-            for (const Link* link = from->Next(); link != from; link = link->Next()) {
+            for (const Link *link = from->Next(); link != from; link = link->Next()) {
                 CheckRootToTip(link->Out(), p + GetBranchLength(link->GetBranch())->val());
             }
         }
@@ -278,21 +278,20 @@ class LengthTree : public virtual BranchVarTree<PosReal> {
 
 class RandomLengthTree : public virtual LengthTree, public virtual Multiplicative {
   public:
-    void Register(DAGnode* in) override { RegisterBranchTree(GetRoot(), in); }
+    void Register(DAGnode *in) override { RegisterBranchTree(GetRoot(), in); }
 
     int ScalarMultiplication(double d) override { return ScalarMultiplication(GetRoot(), d); }
 
   protected:
-    int ScalarMultiplication(const Link* from, double d) {
+    int ScalarMultiplication(const Link *from, double d) {
         int tot = 0;
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             tot += GetBranchLength(link->GetBranch())->ScalarMultiplication(d);
             tot += ScalarMultiplication(link->Out(), d);
         }
         return tot;
     }
 };
-
 
 template <class U, class V>
 class NodeBranchVarTree : public virtual NodeVarTree<U>, public virtual BranchVarTree<V> {};

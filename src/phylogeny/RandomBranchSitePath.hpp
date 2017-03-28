@@ -8,15 +8,19 @@
 #include "core/Var.hpp"
 
 // RandomBranchSitePath
-// - represents a branch- and site-specific substitution process (the BranchSiteSubstitutionProcess
+// - represents a branch- and site-specific substitution process (the
+// BranchSiteSubstitutionProcess
 // superclass)
-// - maintains a realisation of the substitution history along a branch/site (a path) conditional on
+// - maintains a realisation of the substitution history along a branch/site (a
+// path) conditional on
 // the data (the BranchSitePath super class)
 //
-// - it is an abstract class (BranchSiteSubstitutionProcess has many pure virtual methods that need
+// - it is an abstract class (BranchSiteSubstitutionProcess has many pure
+// virtual methods that need
 // to be implemented in subclasses)
 // - it is a random node of the model's graph (the Rnode superclass)
-// - subclasses will be responsible for making the required connections between this Rnode and the
+// - subclasses will be responsible for making the required connections between
+// this Rnode and the
 // relevant parameters of the process
 //   on a model-specific basis
 
@@ -26,7 +30,7 @@ class RandomBranchSitePath : public virtual Rnode,
                              public BranchSitePath,
                              public BranchSiteSubstitutionProcess {
   public:
-    RandomBranchSitePath(PhyloProcess* inprocess)
+    RandomBranchSitePath(PhyloProcess *inprocess)
         : rate(nullptr),
           length(nullptr),
           matrix(nullptr),
@@ -37,8 +41,8 @@ class RandomBranchSitePath : public virtual Rnode,
         SetName("path");
     }
 
-    RandomBranchSitePath(PhyloProcess* inprocess, Var<PosReal>* inlength, Var<PosReal>* inrate,
-                         RandomSubMatrix* inmatrix, Var<Profile>* instationary)
+    RandomBranchSitePath(PhyloProcess *inprocess, Var<PosReal> *inlength, Var<PosReal> *inrate,
+                         RandomSubMatrix *inmatrix, Var<Profile> *instationary)
         : myprocess(inprocess), propmatrix(nullptr), matswap(false) {
         SetName("path");
         length = inlength;
@@ -52,7 +56,8 @@ class RandomBranchSitePath : public virtual Rnode,
         }
 
         if ((matrix == nullptr) && (stationary == nullptr)) {
-            std::cerr << "error in RandomBranchSitePath: should specify a matrix or a stationary\n";
+            std::cerr << "error in RandomBranchSitePath: should specify a matrix or "
+                         "a stationary\n";
             exit(1);
         }
 
@@ -63,8 +68,8 @@ class RandomBranchSitePath : public virtual Rnode,
         // Sample();
     }
 
-    RandomBranchSitePath(PhyloProcess* inprocess, RandomTransitionMatrix* inmatrix,
-                         Var<Profile>* instationary, Var<PosReal>* inlength)
+    RandomBranchSitePath(PhyloProcess *inprocess, RandomTransitionMatrix *inmatrix,
+                         Var<Profile> *instationary, Var<PosReal> *inlength)
         : myprocess(inprocess) {
         SetName("path");
         propmatrix = nullptr;
@@ -83,13 +88,13 @@ class RandomBranchSitePath : public virtual Rnode,
         // Register(length);
     }
 
-    PhyloProcess* GetPhyloProcess() { return myprocess; }
+    PhyloProcess *GetPhyloProcess() { return myprocess; }
 
     bool SampleBranchMapping();
 
-    virtual AbstractTransitionMatrix* GetTransitionMatrix() { return transitionmatrix; }
+    virtual AbstractTransitionMatrix *GetTransitionMatrix() { return transitionmatrix; }
 
-    SubMatrix* GetSubMatrix() override {
+    SubMatrix *GetSubMatrix() override {
         if (matswap) {
             if (propmatrix == nullptr) {
                 std::cerr << "error in random branch site path: null prop matrix\n";
@@ -118,9 +123,9 @@ class RandomBranchSitePath : public virtual Rnode,
     }
 
     // void SetProposalMatrix(EmpiricalSubMatrix* inmatrix) {
-    void SetProposalMatrix(SubMatrix* inmatrix) { propmatrix = inmatrix; }
+    void SetProposalMatrix(SubMatrix *inmatrix) { propmatrix = inmatrix; }
 
-    void BackwardPropagate(const double* down, double* up) {
+    void BackwardPropagate(const double *down, double *up) {
         if (SampleBranchMapping()) {
             BranchSiteSubstitutionProcess::BackwardPropagate(down, up);
         } else {
@@ -128,7 +133,7 @@ class RandomBranchSitePath : public virtual Rnode,
         }
     }
 
-    void ForwardPropagate(const double* up, double* down) {
+    void ForwardPropagate(const double *up, double *down) {
         if (SampleBranchMapping()) {
             BranchSiteSubstitutionProcess::ForwardPropagate(up, down);
         } else {
@@ -136,7 +141,7 @@ class RandomBranchSitePath : public virtual Rnode,
         }
     }
 
-    void GetFiniteTimeTransitionProb(int state, double* aux) {
+    void GetFiniteTimeTransitionProb(int state, double *aux) {
         if (SampleBranchMapping()) {
             BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(state, aux);
         } else {
@@ -158,21 +163,21 @@ class RandomBranchSitePath : public virtual Rnode,
         return TransitionDrawFiniteTime(state);
     }
 
-    void TransitionGetFiniteTimeTransitionProb(int state, double* aux) {
-        const double* p = transitionmatrix->GetRow(state);
+    void TransitionGetFiniteTimeTransitionProb(int state, double *aux) {
+        const double *p = transitionmatrix->GetRow(state);
         for (int i = 0; i < GetNstate(); i++) {
             aux[i] = p[i];
         }
     }
 
     int TransitionDrawStationary() {
-        const double* p = transitionmatrix->GetStationary();
+        const double *p = transitionmatrix->GetStationary();
         int newstate = Random::DrawFromDiscreteDistribution(p, GetNstate());
         return newstate;
     }
 
     int TransitionDrawFiniteTime(int state) {
-        const double* p = transitionmatrix->GetRow(state);
+        const double *p = transitionmatrix->GetRow(state);
         int newstate = Random::DrawFromDiscreteDistribution(p, GetNstate());
         return newstate;
     }
@@ -191,7 +196,7 @@ class RandomBranchSitePath : public virtual Rnode,
 
     double GetRate() override { return rate != nullptr ? ((double)rate->val()) : 1; }
 
-    const double* GetStationary() override {
+    const double *GetStationary() override {
         if (stationary != nullptr) {
             std::cerr << "error : non null stationary in log prob path\n";
             exit(1);
@@ -215,16 +220,15 @@ class RandomBranchSitePath : public virtual Rnode,
         return 0;
     }
 
-
     bool isRoot() { return (length == nullptr); }
 
     bool isActivated() { return active_flag; }
 
     void SetActivated(bool inflag) { active_flag = inflag; }
 
-    StateSpace* GetStateSpace();
+    StateSpace *GetStateSpace();
 
-    void SetUp(RandomBranchSitePath* inup);
+    void SetUp(RandomBranchSitePath *inup);
 
     double GetTotalTime() override { return GetTime(); }
     void SetTotalTime(double intime) override {
@@ -343,7 +347,7 @@ class RandomBranchSitePath : public virtual Rnode,
         localUpdate();
     }
 
-    void SetMatrix(RandomSubMatrix* inmatrix) { matrix = inmatrix; }
+    void SetMatrix(RandomSubMatrix *inmatrix) { matrix = inmatrix; }
 
     double ProposeMove(double /*tuning*/) override {
         std::cerr << "error : in random branch site path propose move(tuning)\n";
@@ -373,21 +377,21 @@ class RandomBranchSitePath : public virtual Rnode,
     // double   RecordResampleUniformizedLogProb();
 
     // RandomBranchSitePath* pathup;
-    Var<PosReal>* rate;
-    Var<PosReal>* length;
+    Var<PosReal> *rate;
+    Var<PosReal> *length;
 
-    RandomSubMatrix* matrix;
-    RandomTransitionMatrix* transitionmatrix;
+    RandomSubMatrix *matrix;
+    RandomTransitionMatrix *transitionmatrix;
 
   protected:
-    Var<Profile>* stationary;
+    Var<Profile> *stationary;
 
     int stateup;
     int statedown;
     int bkstateup;
     int bkstatedown;
-    PhyloProcess* myprocess;
-    SubMatrix* propmatrix;
+    PhyloProcess *myprocess;
+    SubMatrix *propmatrix;
     // EmpiricalSubMatrix* propmatrix;
     bool active_flag;
 
@@ -398,6 +402,5 @@ class RandomBranchSitePath : public virtual Rnode,
       vector<double> unitime;
     */
 };
-
 
 #endif  // RANDOMSITEPATH_H

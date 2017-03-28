@@ -53,7 +53,8 @@ void Chain::Move() {
     /*
     double delta = model->Update();
     if (fabs(delta) > 1e-4)	{
-            cerr << "error : model corrupted: " << delta << ". Are you sure about the updates during
+            cerr << "error : model corrupted: " << delta << ". Are you sure about
+    the updates during
     Monte Carlo?\n";
             exit(1);
     }

@@ -11,7 +11,8 @@ class DAGnode;  // forward declaration
 // e.g. Real, PosReal, Int, Profile
 // base types:
 // - know their domain of definition (which they should check in Check())
-// - propose default kernels (in ProposeMove()) for Metropolis Hastings resampling
+// - propose default kernels (in ProposeMove()) for Metropolis Hastings
+// resampling
 class BaseType {
   public:
     virtual ~BaseType() = default;
@@ -24,7 +25,6 @@ class BaseType {
     virtual int check() = 0;
 };
 
-
 class Additive {
   public:
     virtual ~Additive() = default;
@@ -32,9 +32,8 @@ class Additive {
     // returns the number of components that have been added d
     virtual int ScalarAddition(double d) = 0;
 
-    virtual void Register(DAGnode*);
+    virtual void Register(DAGnode *);
 };
-
 
 class Multiplicative {
   public:
@@ -43,32 +42,31 @@ class Multiplicative {
     // returns the number of components that have been multiplied
     virtual int ScalarMultiplication(double d) = 0;
 
-    virtual void Register(DAGnode*);
+    virtual void Register(DAGnode *);
 };
-
 
 /// A wrap-up class for real numbers
 // implements a simple random translational (additive) move
 class Real : public BaseType, public Additive {
   public:
     Real(double d = 0) : value(d) {}
-    Real(const Real& from) : value(from.value) {}
+    Real(const Real &from) : value(from.value) {}
     ~Real() override = default;
 
     /* (VL) Operators */
-    inline Real& operator=(const Real& from) {
+    inline Real &operator=(const Real &from) {
         value = from.value;
         return *this;
     }
-    inline Real& operator=(double from) {
+    inline Real &operator=(double from) {
         value = from;
         return *this;
     }
-    inline Real& operator+=(const Real& from) {
+    inline Real &operator+=(const Real &from) {
         value += from.value;
         return *this;
     }
-    inline Real& operator/=(double from) {
+    inline Real &operator/=(double from) {
         value /= from;
         return *this;
     }
@@ -76,7 +74,7 @@ class Real : public BaseType, public Additive {
     inline operator double() const { return value; }
 
     /* (VL) Stream operator friend function */
-    friend std::istream& operator>>(std::istream& is, Real& r);
+    friend std::istream &operator>>(std::istream &is, Real &r);
 
     /* (VL) Overriding virtual methods from parents */
     int ScalarAddition(double d) final;
@@ -87,23 +85,22 @@ class Real : public BaseType, public Additive {
     double value;
 };
 
-
 class UnitReal : public BaseType {
   public:
     UnitReal(double d = 0) : value(d) {}
-    UnitReal(const UnitReal& from) : value(from.value) {}
+    UnitReal(const UnitReal &from) : value(from.value) {}
     ~UnitReal() override = default;
 
     /* (VL) Operators */
-    inline UnitReal& operator=(const UnitReal& from) {
+    inline UnitReal &operator=(const UnitReal &from) {
         value = from.value;
         return *this;
     }
-    inline UnitReal& operator=(double from) {
+    inline UnitReal &operator=(double from) {
         value = from;
         return *this;
     }
-    inline UnitReal& operator+=(const UnitReal from) {
+    inline UnitReal &operator+=(const UnitReal from) {
         value += from.value;
         return *this;
     }
@@ -111,7 +108,7 @@ class UnitReal : public BaseType {
     inline operator double() const { return value; }
 
     /* (VL) Stream operator friend function */
-    friend std::istream& operator>>(std::istream& is, UnitReal& r);
+    friend std::istream &operator>>(std::istream &is, UnitReal &r);
 
     /* (VL) Overriding virtual methods from BaseType class */
     double ProposeMove(double tuning) override;
@@ -121,29 +118,28 @@ class UnitReal : public BaseType {
     double value;
 };
 
-
 /// A wrap-up class for positive real numbers
 // implements a simple random multiplicative move
 class PosReal : public BaseType, public Multiplicative {
   public:
     PosReal(double d = 0) : value(d) {}
-    PosReal(const PosReal& from) : value(from.value) {}
+    PosReal(const PosReal &from) : value(from.value) {}
     ~PosReal() override = default;
 
     /* (VL) Operators */
-    inline PosReal& operator=(const PosReal& from) {
+    inline PosReal &operator=(const PosReal &from) {
         value = from.value;
         return *this;
     }
-    inline PosReal& operator=(const double& from) {
+    inline PosReal &operator=(const double &from) {
         value = from;
         return *this;
     }
-    inline PosReal& operator+=(const PosReal from) {
+    inline PosReal &operator+=(const PosReal from) {
         value += from.value;
         return *this;
     }
-    inline PosReal& operator/=(double from) {
+    inline PosReal &operator/=(double from) {
         value /= from;
         return *this;
     }
@@ -153,7 +149,7 @@ class PosReal : public BaseType, public Multiplicative {
     operator Real() const { return Real(value); }
 
     /* (VL) Stream operator friend function */
-    friend std::istream& operator>>(std::istream& is, PosReal& r);
+    friend std::istream &operator>>(std::istream &is, PosReal &r);
 
     /* (VL) Overriding virtual methods from base classes */
     int ScalarMultiplication(double d) final;
@@ -164,21 +160,20 @@ class PosReal : public BaseType, public Multiplicative {
     double value;
 };
 
-
 /// A wrap-up class for integers
 // discretized additive move
 class Int : public BaseType {
   public:
     Int(int d = 0) : value(d) {}
-    Int(const Int& from) : value(from.value) {}
+    Int(const Int &from) : value(from.value) {}
     ~Int() override = default;
 
     /* (VL) Operators */
-    inline Int& operator=(const Int& from) {
+    inline Int &operator=(const Int &from) {
         value = from.value;
         return *this;
     }
-    inline Int& operator=(const int& from) {
+    inline Int &operator=(const int &from) {
         value = from;
         return *this;
     }
@@ -188,7 +183,7 @@ class Int : public BaseType {
     inline operator Real() const { return Real(double(value)); }
 
     /* (VL) Stream operator friend function */
-    friend std::istream& operator>>(std::istream& is, Int& r);
+    friend std::istream &operator>>(std::istream &is, Int &r);
 
     /* (VL) Overriding virtual methods from base classes */
     double ProposeMove(double /*tuning*/) override;
@@ -198,7 +193,6 @@ class Int : public BaseType {
     int value;
 };
 
-
 /// A probability profile
 class Profile : public BaseType {
   protected:
@@ -207,37 +201,37 @@ class Profile : public BaseType {
 
   public:
     Profile() : profile(0) {}
-    Profile(int indim, double* v = nullptr);  // TODO should be deleted when vectorification is done
-    Profile(const Profile& from) : profile(from.profile) {}
+    Profile(int indim, double *v = nullptr);  // TODO should be deleted when vectorification is done
+    Profile(const Profile &from) : profile(from.profile) {}
     ~Profile() override = default;
 
     /* (VL) Operators */
-    Profile& operator=(const Profile& from);
-    inline double& operator[](int i) { return profile[i]; }
-    inline const double& operator[](int i) const { return profile[i]; }
+    Profile &operator=(const Profile &from);
+    inline double &operator[](int i) { return profile[i]; }
+    inline const double &operator[](int i) const { return profile[i]; }
 
     // (VL) Getters FIXME (these and the setters below should probably be inlined)
-    inline const double* GetArray() const { return &profile[0]; }
-    inline double* GetArray() { return &profile[0]; }
+    inline const double *GetArray() const { return &profile[0]; }
+    inline double *GetArray() { return &profile[0]; }
     inline int GetDim() const { return profile.size(); }
     double GetEntropy() const;
 
     // (VL) Setters
     inline void setAtZero() {
-        for (auto& i : profile) {
+        for (auto &i : profile) {
             i = 0;
         }
     }
     void setuniform();
-    void setarray(double* in);
+    void setarray(double *in);
 
     /* (VL) Operations */
     inline void scalarMultiplication(double d) {
-        for (auto& i : profile) {
+        for (auto &i : profile) {
             i *= d;
         }
     }
-    inline void add(const Profile& in) {
+    inline void add(const Profile &in) {
         for (unsigned int i = 0; i < profile.size(); i++) {
             profile[i] += in[i];
         }
@@ -249,10 +243,9 @@ class Profile : public BaseType {
     double ProposeMove(double tuning) override { return ProposeMove(tuning, profile.size()); }
 
     /* (VL) Stream operator friend functions */
-    friend std::ostream& operator<<(std::ostream& os, const Profile& r);
-    friend std::istream& operator>>(std::istream& is, Profile& r);
+    friend std::ostream &operator<<(std::ostream &os, const Profile &r);
+    friend std::istream &operator>>(std::istream &is, Profile &r);
 };
-
 
 class RealVector : public BaseType, public Additive {
   protected:
@@ -260,17 +253,17 @@ class RealVector : public BaseType, public Additive {
 
   public:
     RealVector(int indim = 0) : vec(indim) {}
-    RealVector(const RealVector& from) : vec(from.vec) {}
-    RealVector(const double* from, int indim);
+    RealVector(const RealVector &from) : vec(from.vec) {}
+    RealVector(const double *from, int indim);
     ~RealVector() override = default;  // (VL) this class is not final
 
     /* (VL) Operators */
-    RealVector& operator=(const RealVector& from);
-    inline double& operator[](int i) { return vec[i]; }
-    inline const double& operator[](int i) const { return vec[i]; }
+    RealVector &operator=(const RealVector &from);
+    inline double &operator[](int i) { return vec[i]; }
+    inline const double &operator[](int i) const { return vec[i]; }
 
     /* (VL) Getters */
-    inline double* GetArray() { return &vec[0]; }
+    inline double *GetArray() { return &vec[0]; }
     inline int GetDim() const { return vec.size(); }
     double GetMean() const;
     double GetVar() const;
@@ -278,10 +271,10 @@ class RealVector : public BaseType, public Additive {
     /* (VL) Operations */
     int ScalarAddition(double d) final;
     void ScalarMultiplication(double d);
-    void add(const RealVector& in);
-    void add(const double* in, double f = 1);
+    void add(const RealVector &in);
+    void add(const double *in, double f = 1);
     inline void setAtZero() {
-        for (auto& i : vec) {
+        for (auto &i : vec) {
             i = 0;
         }
     }
@@ -292,24 +285,23 @@ class RealVector : public BaseType, public Additive {
     inline double ProposeMove(double tuning) override { return ProposeMove(tuning, GetDim()); }
 
     /* (VL) Stream operator friend functions */
-    friend std::ostream& operator<<(std::ostream& os, const RealVector& r);
-    friend std::istream& operator>>(std::istream& is, RealVector& r);
+    friend std::ostream &operator<<(std::ostream &os, const RealVector &r);
+    friend std::istream &operator>>(std::istream &is, RealVector &r);
 };
-
 
 class PosRealVector : public RealVector, public Multiplicative {
   public:
     PosRealVector() : RealVector() {}
     PosRealVector(int indim) : RealVector(indim) {}
-    PosRealVector(const PosRealVector& from) : RealVector(from){};
-    PosRealVector(const double* from, int indim);
+    PosRealVector(const PosRealVector &from) : RealVector(from){};
+    PosRealVector(const double *from, int indim);
     ~PosRealVector() override = default;
 
-    PosRealVector& operator=(const PosRealVector& from);
+    PosRealVector &operator=(const PosRealVector &from);
 
     /* (VL) Getters/Setters */
     inline void SetAtOne() {
-        for (auto& i : vec) {
+        for (auto &i : vec) {
             i = 1;
         }
     }
@@ -321,18 +313,17 @@ class PosRealVector : public RealVector, public Multiplicative {
     double ProposeMove(double tuning, int n);
     inline double ProposeMove(double tuning) override { return ProposeMove(tuning, GetDim()); }
     inline int ScalarMultiplication(double d) final {
-        for (auto& i : vec) {
+        for (auto &i : vec) {
             i *= d;
         }
         return GetDim();
     }
 };
 
-
 class IntVector : public BaseType {
   protected:
     int dim;
-    int* vec;
+    int *vec;
 
   public:
     IntVector() : dim(0), vec(nullptr) {}
@@ -340,18 +331,18 @@ class IntVector : public BaseType {
         dim = indim;
         vec = new int[dim];
     }
-    IntVector(const IntVector& from);
-    IntVector(const int* from, int indim);
+    IntVector(const IntVector &from);
+    IntVector(const int *from, int indim);
     ~IntVector() override { delete[] vec; }
 
     /* (VL) Operators */
-    IntVector& operator=(const IntVector& from);
-    IntVector& operator=(const int* from);
-    int& operator[](int i) { return vec[i]; }
-    int& operator[](int i) const { return vec[i]; }
+    IntVector &operator=(const IntVector &from);
+    IntVector &operator=(const int *from);
+    int &operator[](int i) { return vec[i]; }
+    int &operator[](int i) const { return vec[i]; }
 
     /* (VL) Getters */
-    inline const int* GetArray() const { return vec; }
+    inline const int *GetArray() const { return vec; }
     inline int GetDim() { return dim; }
     double GetMean() const;
     double GetVar() const;
@@ -362,9 +353,8 @@ class IntVector : public BaseType {
     inline double ProposeMove(double tuning) override { return ProposeMove(tuning, dim); }
 
     /* (VL) Stream operators friend functions */
-    friend std::ostream& operator<<(std::ostream& os, const IntVector& r);
-    friend std::istream& operator>>(std::istream& is, IntVector& r);
+    friend std::ostream &operator<<(std::ostream &os, const IntVector &r);
+    friend std::istream &operator>>(std::istream &is, IntVector &r);
 };
-
 
 #endif  // BASETYPE_H

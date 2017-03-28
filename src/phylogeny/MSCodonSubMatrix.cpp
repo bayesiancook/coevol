@@ -18,7 +18,6 @@ void MGFitnessCodonSubMatrix::ComputeStationary() {
     }
 }
 
-
 void MGFitnessCodonSubMatrix::ComputeArray(int i) {
     double total = 0;
     for (int j = 0; j < GetNstate(); j++) {
@@ -51,7 +50,6 @@ void MGFitnessCodonSubMatrix::ComputeArray(int i) {
     }
 }
 
-
 // when the fitness profile and codonusageselection are from Dirichlet
 void MGFitnessCodonUsageSubMatrix::ComputeStationary() {
     // compute stationary probabilities
@@ -70,7 +68,6 @@ void MGFitnessCodonUsageSubMatrix::ComputeStationary() {
         mStationary[i] /= total;
     }
 }
-
 
 void MGFitnessCodonUsageSubMatrix::ComputeArray(int i) {
     double total = 0;
@@ -105,8 +102,8 @@ void MGFitnessCodonUsageSubMatrix::ComputeArray(int i) {
     }
 }
 
-
-// when the fitness profile and codonusageselection are from Normal or gamma // phenomenological
+// when the fitness profile and codonusageselection are from Normal or gamma //
+// phenomenological
 // square root model
 void MGSRFitnessNormalCodonUsageSubMatrix::ComputeStationary() {
     // compute stationary probabilities
@@ -125,7 +122,6 @@ void MGSRFitnessNormalCodonUsageSubMatrix::ComputeStationary() {
         mStationary[i] /= total;
     }
 }
-
 
 void MGSRFitnessNormalCodonUsageSubMatrix::ComputeArray(int i) {
     double total = 0;
@@ -161,7 +157,6 @@ void MGSRFitnessNormalCodonUsageSubMatrix::ComputeArray(int i) {
     }
 }
 
-
 // mechanical mutation-selection model
 void MGMSFitnessNormalCodonUsageSubMatrix::ComputeStationary() {
     // compute stationary probabilities
@@ -180,7 +175,6 @@ void MGMSFitnessNormalCodonUsageSubMatrix::ComputeStationary() {
         mStationary[i] /= total;
     }
 }
-
 
 void MGMSFitnessNormalCodonUsageSubMatrix::ComputeArray(int i) {
     double total = 0;
@@ -255,7 +249,6 @@ void MGMSFitnessNormalCodonUsageSubMatrix::ComputeArray(int i) {
     }
 }
 
-
 void MGSRFitnessCodonUsageSubMatrix::ComputeStationary() {
     // compute stationary probabilities
     double total = 0;
@@ -273,7 +266,6 @@ void MGSRFitnessCodonUsageSubMatrix::ComputeStationary() {
         mStationary[i] /= total;
     }
 }
-
 
 void MGSRFitnessCodonUsageSubMatrix::ComputeArray(int i) {
     double total = 0;
@@ -309,7 +301,6 @@ void MGSRFitnessCodonUsageSubMatrix::ComputeArray(int i) {
     }
 }
 
-
 void MGMSFitnessCodonUsageSubMatrix::ComputeStationary() {
     // compute stationary probabilities
     double total = 0;
@@ -338,7 +329,6 @@ void MGMSFitnessCodonUsageSubMatrix::ComputeStationary() {
       }
     */
 }
-
 
 void MGMSFitnessCodonUsageSubMatrix::ComputeArray(int i) {
     double total = 0;

@@ -6,18 +6,22 @@
 // RandomSubMatrix:
 // this class derives from SubMatrix and from Dnode
 // therefore, it knows everything about substitution processes (as a SubMatrix)
-// and at the same time, it can be inserted as a deterministic node in a probabilistic model (as a
+// and at the same time, it can be inserted as a deterministic node in a
+// probabilistic model (as a
 // Dnode)
 //
 // If you need to define a new substitution process
 // - derive a new class deriving (directly or indirectly) from SubMatrix
 // in this class, implements the ComputeArray and ComputeStationary functions
-// (these are the functions that construct the instant rates and the stationary probabilities of the
+// (these are the functions that construct the instant rates and the stationary
+// probabilities of the
 // matrix)
 //
-// - derive a new class deriving both from RandomSubMatrix, and from your new class
+// - derive a new class deriving both from RandomSubMatrix, and from your new
+// class
 // in this class, implement SetParameters
-// (this function is responsible for updating the internal parameters that the SubMatrix uses in
+// (this function is responsible for updating the internal parameters that the
+// SubMatrix uses in
 // ComputeArray And ComputeStationary,
 // based on the values stored by the parent nodes)
 //
@@ -34,25 +38,26 @@ class AbstractTransitionMatrix {
   public:
     virtual ~AbstractTransitionMatrix() = default;
 
-    virtual void BackwardPropagate(const double* down, double* up, double length) = 0;
-    virtual void ForwardPropagate(const double* up, double* down, double length) = 0;
-    virtual const double* GetStationary() = 0;
+    virtual void BackwardPropagate(const double *down, double *up, double length) = 0;
+    virtual void ForwardPropagate(const double *up, double *down, double length) = 0;
+    virtual const double *GetStationary() = 0;
     virtual double Stationary(int i) = 0;
 
     /*
       virtual int		DrawStationary() = 0;
       virtual int		DrawFiniteTime(int state) = 0;
-      virtual void		GetFiniteTimeTransitionProb(int state, double* aux) = 0;
+      virtual void		GetFiniteTimeTransitionProb(int state, double* aux)
+      =
+      0;
     */
 
     virtual int GetNstate() = 0;
     virtual void CorruptMatrix() = 0;
     virtual double operator()(int, int) = 0;
-    virtual const double* GetRow(int i) = 0;
+    virtual const double *GetRow(int i) = 0;
 
     virtual bool check() { return true; }
 };
-
 
 // class TransitionMatrix : public virtual AbstractTransitionMatrix {
 //   public:
@@ -108,7 +113,8 @@ class AbstractTransitionMatrix {
 //         return R[i][j];
 //     }
 
-//     void BackwardPropagate(const double* down, double* up, double /*length*/) override {
+//     void BackwardPropagate(const double* down, double* up, double /*length*/)
+//     override {
 //         if (!matflag) {
 //             ComputeArrayAndStat();
 //         }
@@ -122,7 +128,8 @@ class AbstractTransitionMatrix {
 //         up[Nstate] = down[Nstate];
 //     }
 
-//     void ForwardPropagate(const double* up, double* down, double /*length*/) override {
+//     void ForwardPropagate(const double* up, double* down, double /*length*/)
+//     override {
 //         std::cerr << "in forward\n";
 //         exit(1);
 //         if (!matflag) {
@@ -155,7 +162,8 @@ class AbstractTransitionMatrix {
 //             double total = 0;
 //             for (int j = 0; j < Nstate; j++) {
 //                 if (R[i][j] < 0) {
-//                     // std::cerr << "Error : negative value in transition matrix : R[" << i <<
+//                     // std::cerr << "Error : negative value in transition
+//                     matrix : R[" << i <<
 //                     "][" <<
 //                     j
 //                     // << "] = " << R[i][j] << endl;
@@ -164,7 +172,8 @@ class AbstractTransitionMatrix {
 //                 total += R[i][j];
 //             }
 //             if (total - 1 > 10e-6 || total - 1 < -10e-6) {
-//                 // std::cerr << "Error : a line in transition matrix does not sum to 1 : Line "
+//                 // std::cerr << "Error : a line in transition matrix does not
+//                 sum to 1 : Line "
 //                 << i
 //                 <<
 //                 // ", sum " << total << endl;
@@ -202,18 +211,20 @@ class AbstractTransitionMatrix {
 //     bool matflag;
 // };
 
-
 class SubMatrix : public virtual AbstractTransitionMatrix {
   protected:
-    // these 2 pure virtual functions are the most essential component of the SubMatrix class
+    // these 2 pure virtual functions are the most essential component of the
+    // SubMatrix class
     // see GTRSubMatrix.cpp and CodonSubMatrix.cpp for examples
 
-    // ComputeArray(int state) is in charge of computing the row of the rate matrix
+    // ComputeArray(int state) is in charge of computing the row of the rate
+    // matrix
     // corresponding to all possible rates of substitution AWAY from state
     //
     virtual void ComputeArray(int state) = 0;
 
-    // ComputeStationary() is in charge of computing the vector of stationary probabilities
+    // ComputeStationary() is in charge of computing the vector of stationary
+    // probabilities
     // (equilibirum frequencies)
     // of the substitution process
     virtual void ComputeStationary() = 0;
@@ -232,9 +243,9 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
     void Create();
 
     double operator()(int /*i*/, int /*j*/) override;
-    const double* GetRow(int i) override;
+    const double *GetRow(int i) override;
 
-    const double* GetStationary() override;
+    const double *GetStationary() override;
     double Stationary(int i) override;
 
     int GetNstate() override { return Nstate; }
@@ -253,34 +264,31 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
     double Power(int n, int i, int j);
     double GetUniformizationMu();
 
-    double* GetEigenVal();
-    double** GetEigenVect();
-    double** GetInvEigenVect();
+    double *GetEigenVal();
+    double **GetEigenVect();
+    double **GetInvEigenVect();
 
-
-    virtual void ToStream(std::ostream& os);
+    virtual void ToStream(std::ostream &os);
     void CheckReversibility();
 
     int GetDiagStat() { return ndiagfailed; }
 
-    void BackwardPropagate(const double* up, double* down, double length) override;
-    void ForwardPropagate(const double* down, double* up, double length) override;
+    void BackwardPropagate(const double *up, double *down, double length) override;
+    void ForwardPropagate(const double *down, double *up, double length) override;
     // virtual void     FiniteTime(int i0, double* down, double length);
 
-    double** GetQ() { return Q; }
-    void ComputeExponential(double range, double** expo);
-    void ApproachExponential(double range, double** expo, int prec = 1024);
-    void PowerOf2(double** y, int z);
+    double **GetQ() { return Q; }
+    void ComputeExponential(double range, double **expo);
+    void ApproachExponential(double range, double **expo, int prec = 1024);
+    void PowerOf2(double **y, int z);
 
     static double meanz;
     static double maxz;
     static double nz;
 
-
   protected:
     void UpdateRow(int state);
     void UpdateStationary();
-
 
     void ComputePowers(int N);
     void CreatePowers(int n);
@@ -294,24 +302,24 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
     bool powflag;
     bool diagflag;
     bool statflag;
-    bool* flagarray;
+    bool *flagarray;
 
     int Nstate;
     int npow;
     double UniMu;
 
-    double*** mPow;
+    double ***mPow;
 
     // Q : the infinitesimal generator matrix
-    double** Q;
+    double **Q;
 
     // the stationary probabilities of the matrix
-    double* mStationary;
+    double *mStationary;
 
     bool normalise;
 
     // an auxiliary matrix
-    double** aux;
+    double **aux;
 
   protected:
     // v : eigenvalues
@@ -319,11 +327,10 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
     // u : the matrix of eigen vectors
     // invu : the inverse of u
 
-
-    double** u;
-    double** invu;
-    double* v;
-    double* vi;
+    double **u;
+    double **invu;
+    double *v;
+    double *vi;
 
     /*
       double ** expu;
@@ -334,7 +341,6 @@ class SubMatrix : public virtual AbstractTransitionMatrix {
 
     int ndiagfailed;
 };
-
 
 //-------------------------------------------------------------------------
 //	* Inline definitions
@@ -347,14 +353,14 @@ inline double SubMatrix::operator()(int i, int j) {
     return Q[i][j];
 }
 
-inline const double* SubMatrix::GetRow(int i) {
+inline const double *SubMatrix::GetRow(int i) {
     if (!flagarray[i]) {
         UpdateRow(i);
     }
     return Q[i];
 }
 
-inline const double* SubMatrix::GetStationary() {
+inline const double *SubMatrix::GetStationary() {
     if (!statflag) {
         UpdateStationary();
     }
@@ -367,7 +373,6 @@ inline double SubMatrix::Stationary(int i) {
     }
     return mStationary[i];
 }
-
 
 inline void SubMatrix::CorruptMatrix() {
     diagflag = false;
@@ -403,10 +408,10 @@ inline void SubMatrix::UpdateRow(int state) {
     }
 }
 
-inline void SubMatrix::BackwardPropagate(const double* up, double* down, double length) {
-    double** eigenvect = GetEigenVect();
-    double** inveigenvect = GetInvEigenVect();
-    double* eigenval = GetEigenVal();
+inline void SubMatrix::BackwardPropagate(const double *up, double *down, double length) {
+    double **eigenvect = GetEigenVect();
+    double **inveigenvect = GetInvEigenVect();
+    double *eigenval = GetEigenVal();
 
     auto aux = new double[GetNstate()];
 
@@ -432,7 +437,6 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
             down[i] += eigenvect[i][j] * aux[j];
         }
     }
-
 
     for (int i = 0; i < GetNstate(); i++) {
         if (std::isnan(down[i])) {
@@ -479,10 +483,10 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
     delete[] aux;
 }
 
-inline void SubMatrix::ForwardPropagate(const double* down, double* up, double length) {
-    double** eigenvect = GetEigenVect();
-    double** inveigenvect = GetInvEigenVect();
-    double* eigenval = GetEigenVal();
+inline void SubMatrix::ForwardPropagate(const double *down, double *up, double length) {
+    double **eigenvect = GetEigenVect();
+    double **inveigenvect = GetInvEigenVect();
+    double *eigenval = GetEigenVal();
 
     auto aux = new double[GetNstate()];
 
@@ -512,7 +516,6 @@ inline void SubMatrix::ForwardPropagate(const double* down, double* up, double l
 
     delete[] aux;
 }
-
 
 /*
   inline void SubMatrix::ComputeExponential(double length)	{
@@ -559,7 +562,8 @@ inline void SubMatrix::ForwardPropagate(const double* down, double* up, double l
   }
   }
 
-  inline void SubMatrix::BackwardPropagate(const double* up, double* down, double length)	{
+  inline void SubMatrix::BackwardPropagate(const double* up, double* down,
+  double length)	{
 
   ComputeExponential(length);
   for (int i=0; i<GetNstate(); i++)	{
@@ -622,7 +626,8 @@ inline void SubMatrix::ForwardPropagate(const double* down, double* up, double l
   }
   }
 
-  inline void SubMatrix::ForwardPropagate(const double* down, double* up, double length)	{
+  inline void SubMatrix::ForwardPropagate(const double* down, double* up, double
+  length)	{
 
   ComputeExponential(length);
   for (int i=0; i<GetNstate(); i++)	{

@@ -3,12 +3,12 @@
 
 #include <stdio.h>
 #include "core/IIDNormalIIDArray.hpp"
-#include "phylogeny/ProfileConjugatePath.hpp"
 #include "core/ProbModel.hpp"
 #include "phylogeny/BranchProcess.hpp"
 #include "phylogeny/CodonSequenceAlignment.hpp"
 #include "phylogeny/GTRSubMatrix.hpp"
 #include "phylogeny/MSCodonSubMatrix.hpp"
+#include "phylogeny/ProfileConjugatePath.hpp"
 #include "phylogeny/SelectionPhyloProcess.hpp"
 
 

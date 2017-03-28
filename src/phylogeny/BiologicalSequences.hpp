@@ -26,7 +26,6 @@ const char RNAset[] = {'A', 'C', 'G', 'U', 'a', 'c', 'g', 'u', 'B', 'D', 'H', 'K
                        'N', 'R', 'S', 'V', 'W', 'Y', 'b', 'd', 'h', 'k', 'm', 'n', 'r',
                        's', 'v', 'w', 'y', '-', '?', '$', '.', '*', 'X', 'x'};
 
-
 // amino acids
 
 const int precision = 10000;
@@ -64,7 +63,6 @@ const int codonpos[][64] = {{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 
                             {3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1,
                              0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2,
                              3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2}};
-
 
 enum GeneticCodeType { Universal = 0, MtMam = 1, MtInv = 2, MtProt = 3, MtEch = 4 };
 // universal genetic code
@@ -114,7 +112,7 @@ int const MtEchCodonCode[] =
 {4,4,9,9,15,15,15,15,19,19,-1,-1,1,1,18,18,9,9,9,9,12,12,12,12,6,6,13,13,14,14,14,14,7,7,7,10,16,16,16,16,11,11,11,8,15,15,15,15,17,17,17,17,0,0,0,0,2,2,3,3,5,5,5,5};
 */
 
-inline std::istream& operator>>(std::istream& is, GeneticCodeType& type) {
+inline std::istream &operator>>(std::istream &is, GeneticCodeType &type) {
     std::string t;
     is >> t;
     if (t == "Universal") {
@@ -135,7 +133,7 @@ inline std::istream& operator>>(std::istream& is, GeneticCodeType& type) {
     return is;
 }
 
-inline std::ostream& operator<<(std::ostream& os, GeneticCodeType type) {
+inline std::ostream &operator<<(std::ostream &os, GeneticCodeType type) {
     if (type == Universal) {
         os << "Universal\n";
     } else if (type == MtMam) {

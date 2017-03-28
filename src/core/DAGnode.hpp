@@ -6,7 +6,6 @@
 #include <string>
 #include "MCMC.hpp"
 
-
 class ProbModel;
 
 class DAGnode {
@@ -23,8 +22,8 @@ class DAGnode {
     inline bool isUpdated() { return updateFlag; }
     inline virtual bool isValueUpdated() { return updateFlag; }
 
-    virtual void Register(DAGnode* parent);
-    void RecursiveRegister(ProbModel* model);
+    virtual void Register(DAGnode *parent);
+    void RecursiveRegister(ProbModel *model);
     virtual std::set<std::string> getDotNodes();
     std::set<std::string> getDotVertices();
 
@@ -41,14 +40,14 @@ class DAGnode {
     virtual void NotifyRestore() = 0;
 
     virtual double FullUpdate(bool check = false) = 0;
-    virtual void FullCorrupt(std::map<DAGnode*, int>& m) = 0;
+    virtual void FullCorrupt(std::map<DAGnode *, int> &m) = 0;
 
   protected:
-    std::set<DAGnode*> up;
-    std::set<DAGnode*> down;
+    std::set<DAGnode *> up;
+    std::set<DAGnode *> down;
 
     void Detach();
-    void DeregisterFrom(DAGnode* parent);
+    void DeregisterFrom(DAGnode *parent);
 
     // VL refactoring
     bool parentsUpdated();
@@ -58,7 +57,6 @@ class DAGnode {
     bool dotVertexFlag;
     std::string name;
 };
-
 
 class Rnode : public virtual DAGnode, public MH {
   public:
@@ -78,7 +76,7 @@ class Rnode : public virtual DAGnode, public MH {
     void NotifyRestore() override;
 
     double FullUpdate(bool check = false) override;
-    void FullCorrupt(std::map<DAGnode*, int>& m) override;
+    void FullCorrupt(std::map<DAGnode *, int> &m) override;
     virtual double localUpdate();
 
     // Getters
@@ -99,7 +97,6 @@ class Rnode : public virtual DAGnode, public MH {
     bool value_updated;
 };
 
-
 class Dnode : public virtual DAGnode {
   public:
     void Corrupt(bool bk) override;
@@ -109,7 +106,7 @@ class Dnode : public virtual DAGnode {
     virtual double localUpdate();
     virtual void specialUpdate() = 0;
 
-    void FullCorrupt(std::map<DAGnode*, int>& m) override;
+    void FullCorrupt(std::map<DAGnode *, int> &m) override;
     double FullUpdate(bool check = false) override;
 
   protected:
@@ -120,7 +117,6 @@ class Dnode : public virtual DAGnode {
     virtual void localRestore();
     virtual void localCorrupt(bool bk);
 };
-
 
 class Mnode : public virtual DAGnode {
   public:
@@ -136,8 +132,7 @@ class Mnode : public virtual DAGnode {
     inline void NotifyRestore() override {}
 
     inline double FullUpdate(bool /*check*/) override { return 0; }
-    inline void FullCorrupt(std::map<DAGnode*, int>& /*m*/) override {}
+    inline void FullCorrupt(std::map<DAGnode *, int> & /*m*/) override {}
 };
-
 
 #endif

@@ -3,7 +3,6 @@
 #include <cmath>
 #include <iostream>
 
-
 /* =======================================================
    (VL) Magical constants, to be used only in this file.
    ======================================================= */
@@ -23,7 +22,6 @@ const double gammacoefs[] = {0.9999999999995183,  676.5203681218835,      -1259.
                              -0.1385710331296526, 0.9934937113930748e-05, 0.1659470187408462e-06};
 const double Pi = 3.1415926535897932384626;
 // const double Logroot2pi = 0.918938533204673;
-
 
 // -------------------------------------------------
 // just a trick for random number initialisation
@@ -50,7 +48,6 @@ unsigned long long Random::mt_buffer[MT_LEN];
 
 const double Random::INFPROB = 250;
 
-
 // ---------------------------------------------------------------------------------
 //		¥ Random()
 // ---------------------------------------------------------------------------------
@@ -76,11 +73,9 @@ void Random::InitRandom(int seed) {
     mt_index = 0;
 }
 
-
 Random::Random(int seed) { InitRandom(seed); }
 
 int Random::GetSeed() { return Seed; }
-
 
 // ---------------------------------------------------------------------------------
 //		¥ Uniform()
@@ -98,7 +93,7 @@ double Random::Uniform() {
     // check that number belongs to (0,1), boundaries excluded
     double ret = 0;
     while ((ret == 0) || (ret == 1)) {
-        unsigned long long* b = mt_buffer;
+        unsigned long long *b = mt_buffer;
         int idx = mt_index;
         unsigned long long s;
         int i;
@@ -119,7 +114,7 @@ double Random::Uniform() {
             b[MT_LEN - 1] = b[MT_IA - 1] ^ (s >> 1) ^ MAGIC(s);
         }
         mt_index = idx + sizeof(unsigned long long);
-        unsigned long long r = *(unsigned long long*)((unsigned char*)b + idx);
+        unsigned long long r = *(unsigned long long *)((unsigned char *)b + idx);
 
         // counfounding the bits returned to the caller is done here
         // as  in Matsumoto and Nishimura, and
@@ -133,7 +128,8 @@ double Random::Uniform() {
         ret /= 65536;
     }
     return ret;
-    // Matsumoto and Nishimura additionally confound the bits returned to the caller
+    // Matsumoto and Nishimura additionally confound the bits returned to the
+    // caller
     // but this doesn't increase the randomness, and slows down the generator by
     // as much as 25%.  So I omit these operations here.
 
@@ -142,7 +138,6 @@ double Random::Uniform() {
     // r ^= (r << 15) & 0xEFC60000;
     // r ^= (r >> 18);
 }
-
 
 // ---------------------------------------------------------------------------------
 //		¥ GPoisson()
@@ -157,23 +152,20 @@ int Random::Poisson(double mu) {
     return n;
 }
 
-
 // ---------------------------------------------------------------------------------
 //		¥ Gamma()
 // ---------------------------------------------------------------------------------
 int Random::ApproxBinomial(int N, double p) { return Poisson(N * p); }
-
 
 // ---------------------------------------------------------------------------------
 //		¥ Gamma()
 // ---------------------------------------------------------------------------------
 double Random::Gamma(double alpha, double beta) { return sGamma(alpha) / beta; }
 
-
 // ---------------------------------------------------------------------------------
 //		¥ DrawFromDiscreteDistribution()
 // ---------------------------------------------------------------------------------
-int Random::DrawFromDiscreteDistribution(const double* prob, int nstate) {
+int Random::DrawFromDiscreteDistribution(const double *prob, int nstate) {
     try {
         double total = 0;
         for (int k = 0; k < nstate; k++) {
@@ -200,11 +192,10 @@ int Random::DrawFromDiscreteDistribution(const double* prob, int nstate) {
     }
 }
 
-
 // ---------------------------------------------------------------------------------
 //		¥ DrawFromUrn()
 // ---------------------------------------------------------------------------------
-void Random::DrawFromUrn(int* tab, int n, int N) {  // draw n out of N
+void Random::DrawFromUrn(int *tab, int n, int N) {  // draw n out of N
     // assumes that tab is an Int16[n]
     for (int i = 0; i < n; i++) {
         tab[i] = 0;
@@ -236,14 +227,12 @@ void Random::DrawFromUrn(int* tab, int n, int N) {  // draw n out of N
     delete[] index;
 }
 
-
 // ---------------------------------------------------------------------------------
 //		¥ Choose()
 // ---------------------------------------------------------------------------------
 int Random::Choose(int scale) { return (int)(Random::Uniform() * scale); }
 
-
-int Random::FiniteDiscrete(int n, const double* probarray) {
+int Random::FiniteDiscrete(int n, const double *probarray) {
     double total = 0;
     auto cumul = new double[n];
     for (int k = 0; k < n; k++) {
@@ -262,7 +251,6 @@ int Random::FiniteDiscrete(int n, const double* probarray) {
     delete[] cumul;
     return k;
 }
-
 
 // ---------------------------------------------------------------------------------
 //		¥ sNormal()
@@ -308,12 +296,10 @@ double Random::sNormal() {
     return x;
 }
 
-
 // ---------------------------------------------------------------------------------
 //		¥ sExpo()
 // ---------------------------------------------------------------------------------
 double Random::sExpo() { return -log(Random::Uniform()); }
-
 
 double fsign(double num, double sign)
 /* Transfers sign of argument sign to argument num */
@@ -324,7 +310,6 @@ double fsign(double num, double sign)
         return num;
     }
 }
-
 
 // ---------------------------------------------------------------------------------
 //		¥ sGamma()
@@ -424,7 +409,6 @@ double Random::sGamma(double a) {
         return x * x;
     }
 
-
     double x, y;
     do {
         double u = Random::Uniform();
@@ -437,7 +421,6 @@ double Random::sGamma(double a) {
 
     return e * x / (x + y);
 }
-
 
 // ---------------------------------------------------------------------------------
 //		* logGamma()

@@ -44,13 +44,15 @@ class ConjSampling {
     virtual ~ConjSampling() = default;
 
     // to be implemented in non-abstract subclasses
-    virtual void AddSufficientStatistic(SemiConjPrior* parent) = 0;
+    virtual void AddSufficientStatistic(SemiConjPrior *parent) = 0;
 
     //
     // these 3 methods are called during a corrupt/update/restore cycle
-    // after the local work (i.e. localCorrupt/localUpdate/localRestore) has been done
+    // after the local work (i.e. localCorrupt/localUpdate/localRestore) has been
+    // done
     //
-    // with these methods,the conjugate sampling node notifies its conjugate prior parent
+    // with these methods,the conjugate sampling node notifies its conjugate prior
+    // parent
     // that the sufficient statistic and the associated log prob should be
     // backed-up/recomputed/restored.
     //
@@ -62,7 +64,7 @@ class ConjSampling {
         }
     }
 
-    virtual double ConjugateUpdate(bool& active) {
+    virtual double ConjugateUpdate(bool &active) {
         double ret = 0;
         for (auto i : conjugate_up) {
             if (i->isActive()) {
@@ -73,7 +75,7 @@ class ConjSampling {
         return ret;
     }
 
-    virtual void ConjugateRestore(bool& active) {
+    virtual void ConjugateRestore(bool &active) {
         for (auto i : conjugate_up) {
             if (i->isActive()) {
                 active = true;
@@ -97,7 +99,7 @@ class ConjSampling {
     // (other conjugate pairs they are involved in as the conj sampling partner)
     // are not also activated (otherwise, they shut them down)
     //
-    void NotifyActivateSufficientStatistic(SemiConjPrior* from) {
+    void NotifyActivateSufficientStatistic(SemiConjPrior *from) {
         // should also check that the type matches
         for (auto i : conjugate_up) {
             if (i != from) {
@@ -107,9 +109,8 @@ class ConjSampling {
     }
 
   protected:
-    std::set<SemiConjPrior*> conjugate_up;
+    std::set<SemiConjPrior *> conjugate_up;
 };
-
 
 template <class T>
 class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
@@ -122,11 +123,12 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
 
     //
     // the modification, compared to a non-conjugate Dvar<T> node
-    // is that the corrupt/update/restore wave should not be propagated to downstream nodes
+    // is that the corrupt/update/restore wave should not be propagated to
+    // downstream nodes
     // (all of which are already accounted for through the sufficient statistic)
     //
 
-    void FullCorrupt(std::map<DAGnode*, int>& /*unused*/) override {
+    void FullCorrupt(std::map<DAGnode *, int> & /*unused*/) override {
         if (!isActive()) {
             Dvar<T>::Corrupt(true);
         } else {
@@ -325,28 +327,32 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
     // sufficient statistics methods
     //
     // ActivateSufficientStatistic, well, activates the sufficient statistics,
-    // but also, notifies the children (so that they can inactivate other potential conjugate prior
+    // but also, notifies the children (so that they can inactivate other
+    // potential conjugate prior
     // nodes)
-    // this is useful for nodes that are involved in several conjugate pairs (each time as the
+    // this is useful for nodes that are involved in several conjugate pairs (each
+    // time as the
     // conjugate sampling pole),
-    // with several of their parents: in such cases, one should avoid potential interferences
+    // with several of their parents: in such cases, one should avoid potential
+    // interferences
     //
     // InactivateSufficientStatistics restores the plain MCMC mode
     //
-    // ComputeSufficientStatistic gathers the sufficient statistics of all its (conjugate) child
+    // ComputeSufficientStatistic gathers the sufficient statistics of all its
+    // (conjugate) child
     // nodes,
     // by requesting them one by one
     //
     virtual void ActivateSufficientStatistic() {
         if (!active_flag) {
             for (auto i = this->down.begin(); i != this->down.end(); i++) {
-                ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
+                ConjSampling *p = dynamic_cast<ConjSampling *>(*i);
                 if (p == nullptr) {
-                    Dnode* q = dynamic_cast<Dnode*>(*i);
+                    Dnode *q = dynamic_cast<Dnode *>(*i);
                     if (q == nullptr) {
-                        std::cerr
-                            << "error : non conjugate child nodes, cannot activate sufficient "
-                               "statistic\n";
+                        std::cerr << "error : non conjugate child nodes, cannot activate "
+                                     "sufficient "
+                                     "statistic\n";
                         std::cerr << (*i) << '\n';
                         exit(1);
                     }
@@ -377,7 +383,7 @@ class DSemiConjugatePrior : public virtual Dvar<T>, public SemiConjPrior {
             if (!suffstat_flag) {
                 ResetSufficientStatistic();
                 for (auto i = this->down.begin(); i != this->down.end(); i++) {
-                    ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
+                    ConjSampling *p = dynamic_cast<ConjSampling *>(*i);
                     if (p != nullptr) {
                         p->AddSufficientStatistic(this);
                     }
@@ -403,7 +409,8 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
 
     //
     // the modification, compared to a non-conjugate Rvar<T> node
-    // is that the corrupt/update/restore wave should not be propagated to downstream nodes
+    // is that the corrupt/update/restore wave should not be propagated to
+    // downstream nodes
     // (all of which are already accounted for through the sufficient statistic)
     //
 
@@ -504,15 +511,19 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
     // sufficient statistics methods
     //
     // ActivateSufficientStatistic, well, activates the sufficient statistics,
-    // but also, notifies the children (so that they can inactivate other potential conjugate prior
+    // but also, notifies the children (so that they can inactivate other
+    // potential conjugate prior
     // nodes)
-    // this is useful for nodes that are involved in several conjugate pairs (each time as the
+    // this is useful for nodes that are involved in several conjugate pairs (each
+    // time as the
     // conjugate sampling pole),
-    // with several of their parents: in such cases, one should avoid potential interferences
+    // with several of their parents: in such cases, one should avoid potential
+    // interferences
     //
     // InactivateSufficientStatistics restores the plain MCMC mode
     //
-    // ComputeSufficientStatistic gathers the sufficient statistics of all its (conjugate) child
+    // ComputeSufficientStatistic gathers the sufficient statistics of all its
+    // (conjugate) child
     // nodes,
     // by requesting them one by one
     //
@@ -520,11 +531,12 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
         if (!this->isClamped()) {
             if (!active_flag) {
                 for (auto i = this->down.begin(); i != this->down.end(); i++) {
-                    ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
+                    ConjSampling *p = dynamic_cast<ConjSampling *>(*i);
                     /*if (!p)	{
                       Dnode* q = dynamic_cast<Dnode*> (*i);
                       if (! q)	{
-                            std::cerr << "error : non conjugate child nodes, cannot activate
+                            std::cerr << "error : non conjugate child nodes, cannot
+                      activate
                       sufficient
                       statistic\n";
                             std::cerr << (*i) << '\n';
@@ -557,7 +569,7 @@ class SemiConjugatePrior : public virtual Rvar<T>, public SemiConjPrior {
             if (!suffstat_flag) {
                 ResetSufficientStatistic();
                 for (auto i = this->down.begin(); i != this->down.end(); i++) {
-                    ConjSampling* p = dynamic_cast<ConjSampling*>(*i);
+                    ConjSampling *p = dynamic_cast<ConjSampling *>(*i);
                     if (p != nullptr) {
                         p->AddSufficientStatistic(this);
                     }
@@ -611,7 +623,6 @@ class ConjugatePrior : public virtual SemiConjugatePrior<R> {
   private:
     bool integrated_flag;
 };
-
 
 template <class T>
 class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
@@ -733,6 +744,5 @@ class ConjugateSampling : public virtual Rvar<T>, public ConjSampling {
         }
     }
 };
-
 
 #endif  // CONJUGATE_H

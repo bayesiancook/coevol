@@ -15,14 +15,14 @@ int PhyloProcess::GetMaxNstate() {
 
 void PhyloProcess::SetName(string inname) { RecursiveSetName(GetRoot(), inname); }
 
-void PhyloProcess::RecursiveSetName(const Link* from, string inname) {
+void PhyloProcess::RecursiveSetName(const Link *from, string inname) {
     string name = (from->isRoot()) ? " root " : " non root ";
     for (int i = 0; i < GetNsite(); i++) {
         if (!isMissing(from, i)) {
             GetPath(nullptr, i)->SetName(inname + name);
         }
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         RecursiveSetName(link->Out(), inname);
     }
 }
@@ -35,15 +35,15 @@ void PhyloProcess::CreateMissingMap() {
     ComputeTotalMissingPerSite(GetRoot());
 }
 
-void PhyloProcess::RecursiveCreateMissingMap(const Link* from) {
+void PhyloProcess::RecursiveCreateMissingMap(const Link *from) {
     auto array = new bool[GetNsite()];
     missingmap[from->GetNode()] = array;
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         RecursiveCreateMissingMap(link->Out());
     }
 }
 
-void PhyloProcess::ComputeTotalMissingPerSite(const Link* from) {
+void PhyloProcess::ComputeTotalMissingPerSite(const Link *from) {
     int tot = 0;
     for (int i = 0; i < GetNsite(); i++) {
         if (isMissing(from, i)) {
@@ -51,18 +51,18 @@ void PhyloProcess::ComputeTotalMissingPerSite(const Link* from) {
         }
     }
     totmissingmap[from->GetNode()] = tot;
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         ComputeTotalMissingPerSite(link->Out());
     }
 }
 
-bool PhyloProcess::FillMissingMap(const Link* from, int i) {
+bool PhyloProcess::FillMissingMap(const Link *from, int i) {
     if (from->isLeaf()) {
         missingmap[from->GetNode()][i] = data->isMissing(from->GetNode()->GetIndex(), i);
         return missingmap[from->GetNode()][i];
     }
     bool allmiss = true;
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         allmiss &= static_cast<int>(FillMissingMap(link->Out(), i));
     }
     missingmap[from->GetNode()][i] = allmiss;
@@ -71,29 +71,29 @@ bool PhyloProcess::FillMissingMap(const Link* from, int i) {
 
 void PhyloProcess::SetStateSpace() { RecursiveSetStateSpace(GetRoot()); }
 
-void PhyloProcess::RecursiveSetStateSpace(const Link* from) {
+void PhyloProcess::RecursiveSetStateSpace(const Link *from) {
     for (int i = 0; i < GetNsite(); i++) {
         if (!isMissing(from, i)) {
             GetPath(from->GetBranch(), i)->SetStateSpace(GetStateSpace());
         }
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         RecursiveSetStateSpace(link->Out());
     }
 }
 
-void PhyloProcess::RecursiveCreate(const Link* from) {
+void PhyloProcess::RecursiveCreate(const Link *from) {
     auto state = new int[GetNsite()];
-    RandomBranchSitePath** path = CreateRandomBranchSitePath(from);
+    RandomBranchSitePath **path = CreateRandomBranchSitePath(from);
     pathmap[from->GetBranch()] = path;
     statemap[from->GetNode()] = state;
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         RecursiveCreate(link->Out());
     }
 }
 
-RandomBranchSitePath** PhyloProcess::CreateRandomBranchSitePath(const Link* link) {
-    auto array = new RandomBranchSitePath*[GetNsite()];
+RandomBranchSitePath **PhyloProcess::CreateRandomBranchSitePath(const Link *link) {
+    auto array = new RandomBranchSitePath *[GetNsite()];
     for (int i = 0; i < GetNsite(); i++) {
         if (!isMissing(link, i)) {
             array[i] = CreateRandomBranchSitePath(link, i);
@@ -104,23 +104,23 @@ RandomBranchSitePath** PhyloProcess::CreateRandomBranchSitePath(const Link* link
     return array;
 }
 
-void PhyloProcess::RecursiveDelete(const Link* from) {
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+void PhyloProcess::RecursiveDelete(const Link *from) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         RecursiveDelete(link->Out());
     }
     DeletePath(from);
     delete[] statemap[from->GetNode()];
 }
 
-void PhyloProcess::DeletePath(const Link* link) {
-    RandomBranchSitePath** path = pathmap[link->GetBranch()];
+void PhyloProcess::DeletePath(const Link *link) {
+    RandomBranchSitePath **path = pathmap[link->GetBranch()];
     for (int i = 0; i < GetNsite(); i++) {
         delete path[i];
     }
     delete[] path;
 }
 
-PhyloProcess::PhyloProcess(LengthTree* intree, SequenceAlignment* indata, bool inbranchmap) {
+PhyloProcess::PhyloProcess(LengthTree *intree, SequenceAlignment *indata, bool inbranchmap) {
     branchmap = inbranchmap;
     MaxNstate = 0;
     tree = intree;
@@ -128,7 +128,7 @@ PhyloProcess::PhyloProcess(LengthTree* intree, SequenceAlignment* indata, bool i
     maxtrial = DEFAULTMAXTRIAL;
 }
 
-void PhyloProcess::SetData(SequenceAlignment* indata) { data = indata; }
+void PhyloProcess::SetData(SequenceAlignment *indata) { data = indata; }
 
 void PhyloProcess::Unfold() {
     sitearray = new int[GetNsite()];
@@ -141,7 +141,7 @@ void PhyloProcess::Unfold() {
     ResetFlagMap(GetRoot(), true);
     RecursiveCreate(GetRoot());
     RecursiveCreateTBL(GetRoot(), GetMaxNstate());
-    sitemapping = new PhyloProcessSiteMapping*[GetNsite()];
+    sitemapping = new PhyloProcessSiteMapping *[GetNsite()];
     for (int i = 0; i < GetNsite(); i++) {
         sitemapping[i] = new PhyloProcessSiteMapping(this, i);
     }
@@ -156,16 +156,16 @@ void PhyloProcess::Cleanup() {
     delete[] sitelnL;
 }
 
-void PhyloProcess::RecursiveCreateTBL(const Link* from, int innstate) {
+void PhyloProcess::RecursiveCreateTBL(const Link *from, int innstate) {
     condlmap[from] = new double[innstate + 1];
-    for (Link* link = from->Next(); link != from; link = link->Next()) {
+    for (Link *link = from->Next(); link != from; link = link->Next()) {
         condlmap[link] = new double[innstate + 1];
         RecursiveCreateTBL(link->Out(), innstate);
     }
 }
 
-void PhyloProcess::RecursiveDeleteTBL(const Link* from) {
-    for (Link* link = from->Next(); link != from; link = link->Next()) {
+void PhyloProcess::RecursiveDeleteTBL(const Link *from) {
+    for (Link *link = from->Next(); link != from; link = link->Next()) {
         RecursiveDeleteTBL(link->Out());
         delete[] condlmap[link];
     }
@@ -180,9 +180,10 @@ double PhyloProcess::SiteLogLikelihood(int site) {
     }
     Pruning(GetRoot(), site);
     double ret = 0;
-    double* t = GetCondLikelihood(GetRoot());
-    const double* stat = GetPath(nullptr, site)->GetStationary();
-    // const double* stat = GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
+    double *t = GetCondLikelihood(GetRoot());
+    const double *stat = GetPath(nullptr, site)->GetStationary();
+    // const double* stat =
+    // GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
     for (int k = 0; k < GetNstate(site); k++) {
         ret += t[k] * stat[k];
     }
@@ -202,9 +203,10 @@ double PhyloProcess::FastSiteLogLikelihood(int site) {
     }
     // Pruning(GetRoot(),site);
     double ret = 0;
-    double* t = GetCondLikelihood(GetRoot());
-    const double* stat = GetPath(nullptr, site)->GetStationary();
-    // const double* stat = GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
+    double *t = GetCondLikelihood(GetRoot());
+    const double *stat = GetPath(nullptr, site)->GetStationary();
+    // const double* stat =
+    // GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
     for (int k = 0; k < GetNstate(site); k++) {
         ret += t[k] * stat[k];
     }
@@ -259,7 +261,7 @@ double PhyloProcess::GetPathLogProb() {
     return total;
 }
 
-double PhyloProcess::GetPathLogProb(const Link* from, int site) {
+double PhyloProcess::GetPathLogProb(const Link *from, int site) {
     double total = GetPath(from->GetBranch(), site)->GetFastLogProb();
     /*
       double total2 = GetPath(from->GetBranch(),site)->GetLogProb();
@@ -269,7 +271,7 @@ double PhyloProcess::GetPathLogProb(const Link* from, int site) {
       exit(1);
       }
     */
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         if (!isMissing(link->Out()->GetNode(), site)) {
             total += GetPathLogProb(link->Out(), site);
         }
@@ -277,8 +279,8 @@ double PhyloProcess::GetPathLogProb(const Link* from, int site) {
     return total;
 }
 
-void PhyloProcess::Pruning(const Link* from, int site) {
-    double* t = GetCondLikelihood(from);
+void PhyloProcess::Pruning(const Link *from, int site) {
+    double *t = GetCondLikelihood(from);
     if (!flagmap[from->GetNode()]) {
         for (int k = 0; k < GetNstate(site); k++) {
             t[k] = 0;
@@ -308,9 +310,9 @@ void PhyloProcess::Pruning(const Link* from, int site) {
                 t[k] = 1.0;
             }
             t[GetNstate(site)] = 0;
-            for (const Link* link = from->Next(); link != from; link = link->Next()) {
+            for (const Link *link = from->Next(); link != from; link = link->Next()) {
                 if (!isMissing(link->GetBranch(), site)) {
-                    double* tbl = GetCondLikelihood(link);
+                    double *tbl = GetCondLikelihood(link);
                     Pruning(link->Out(), site);
                     GetPath(link->GetBranch(), site)
                         ->BackwardPropagate(GetCondLikelihood(link->Out()),
@@ -341,9 +343,13 @@ void PhyloProcess::Pruning(const Link* from, int site) {
                     cerr << "is root\n";
                 }
                 // GetBranchSiteSubstitutionProcess(from->GetBranch(),site)->GetSubMatrix()->ToStream(cerr);
-                // cerr << GetBranchSiteSubstitutionProcess(from->GetBranch(),site)->GetTime() <<
+                // cerr <<
+                // GetBranchSiteSubstitutionProcess(from->GetBranch(),site)->GetTime()
+                // <<
                 // '\n';
-                // cerr << GetBranchSiteSubstitutionProcess(from->GetBranch(),site)->GetRate() <<
+                // cerr <<
+                // GetBranchSiteSubstitutionProcess(from->GetBranch(),site)->GetRate()
+                // <<
                 // '\n';
                 cerr << '\n';
                 /*
@@ -363,33 +369,34 @@ void PhyloProcess::Pruning(const Link* from, int site) {
     }
 }
 
-void PhyloProcess::BackupNodeStates(const Link* from, int site) {
+void PhyloProcess::BackupNodeStates(const Link *from, int site) {
     bkstatemap[from->GetNode()] = statemap[from->GetNode()][site];
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         BackupNodeStates(link->Out(), site);
     }
 }
 
-void PhyloProcess::RestoreNodeStates(const Link* from, int site) {
+void PhyloProcess::RestoreNodeStates(const Link *from, int site) {
     statemap[from->GetNode()][site] = bkstatemap[from->GetNode()];
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         RestoreNodeStates(link->Out(), site);
     }
 }
 
-void PhyloProcess::PruningAncestral(const Link* from, int site) {
+void PhyloProcess::PruningAncestral(const Link *from, int site) {
     if (!flagmap[from->GetNode()]) {
         cerr << "error in pruning ancestral: flag map not set up correctly\n";
         exit(1);
     }
-    int& state = GetState(from->GetNode(), site);
+    int &state = GetState(from->GetNode(), site);
     if (from->isRoot()) {
         auto aux = new double[GetNstate(site)];
         auto cumulaux = new double[GetNstate(site)];
         try {
-            double* tbl = GetCondLikelihood(from);
-            const double* stat = GetPath(nullptr, site)->GetStationary();
-            // const double* stat = GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
+            double *tbl = GetCondLikelihood(from);
+            const double *stat = GetPath(nullptr, site)->GetStationary();
+            // const double* stat =
+            // GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
             double tot = 0;
             for (int k = 0; k < GetNstate(site); k++) {
                 aux[k] = stat[k] * tbl[k];
@@ -417,7 +424,7 @@ void PhyloProcess::PruningAncestral(const Link* from, int site) {
         delete[] aux;
         delete[] cumulaux;
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         if ((flagmap[link->Out()->GetNode()]) && (!isMissing(link->Out()->GetNode(), site))) {
             auto aux = new double[GetNstate(site)];
             auto cumulaux = new double[GetNstate(site)];
@@ -427,7 +434,7 @@ void PhyloProcess::PruningAncestral(const Link* from, int site) {
                 }
                 GetPath(link->GetBranch(), site)->GetFiniteTimeTransitionProb(state, aux);
                 // GetBranchSiteSubstitutionProcess(link->GetBranch(),site)->GetFiniteTimeTransitionProb(state,aux);
-                double* tbl = GetCondLikelihood(link->Out());
+                double *tbl = GetCondLikelihood(link->Out());
                 for (int k = 0; k < GetNstate(site); k++) {
                     aux[k] *= tbl[k];
                 }
@@ -443,7 +450,7 @@ void PhyloProcess::PruningAncestral(const Link* from, int site) {
                     }
                 }
                 if (max == 0) {
-                    const double* stat = GetPath(nullptr, site)->GetStationary();
+                    const double *stat = GetPath(nullptr, site)->GetStationary();
                     // const double* stat =
                     // GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
                     for (int k = 0; k < GetNstate(site); k++) {
@@ -465,7 +472,7 @@ void PhyloProcess::PruningAncestral(const Link* from, int site) {
                     cerr << "error in pruning ancestral: overflow\n";
                     exit(1);
                 }
-                int& nodestate = GetState(link->Out()->GetNode(), site);
+                int &nodestate = GetState(link->Out()->GetNode(), site);
                 nodestate = s;
             } catch (...) {
                 cerr << "in internal leave::PruningAncestral\n";
@@ -482,19 +489,20 @@ void PhyloProcess::PruningAncestral(const Link* from, int site) {
     }
 }
 
-double PhyloProcess::RecordPruningAncestralLogProb(const Link* from, int site) {
+double PhyloProcess::RecordPruningAncestralLogProb(const Link *from, int site) {
     double total = 0;
     if (!flagmap[from->GetNode()]) {
         cerr << "error in pruning ancestral: flag map not set up correctly\n";
         exit(1);
     }
-    int& state = GetState(from->GetNode(), site);
+    int &state = GetState(from->GetNode(), site);
     if (from->isRoot()) {
         auto aux = new double[GetNstate(site)];
         try {
-            double* tbl = GetCondLikelihood(from);
-            const double* stat = GetPath(nullptr, site)->GetStationary();
-            // const double* stat = GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
+            double *tbl = GetCondLikelihood(from);
+            const double *stat = GetPath(nullptr, site)->GetStationary();
+            // const double* stat =
+            // GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
             double tot = 0;
             for (int k = 0; k < GetNstate(site); k++) {
                 aux[k] = stat[k] * tbl[k];
@@ -511,7 +519,7 @@ double PhyloProcess::RecordPruningAncestralLogProb(const Link* from, int site) {
         }
         delete[] aux;
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         if ((flagmap[link->Out()->GetNode()]) && (!isMissing(link->Out()->GetNode(), site))) {
             auto aux = new double[GetNstate(site)];
             try {
@@ -520,7 +528,7 @@ double PhyloProcess::RecordPruningAncestralLogProb(const Link* from, int site) {
                 }
                 GetPath(link->GetBranch(), site)->GetFiniteTimeTransitionProb(state, aux);
                 // GetBranchSiteSubstitutionProcess(link->GetBranch(),site)->GetFiniteTimeTransitionProb(state,aux);
-                double* tbl = GetCondLikelihood(link->Out());
+                double *tbl = GetCondLikelihood(link->Out());
                 for (int k = 0; k < GetNstate(site); k++) {
                     aux[k] *= tbl[k];
                 }
@@ -536,7 +544,7 @@ double PhyloProcess::RecordPruningAncestralLogProb(const Link* from, int site) {
                     }
                 }
                 if (max == 0) {
-                    const double* stat = GetPath(nullptr, site)->GetStationary();
+                    const double *stat = GetPath(nullptr, site)->GetStationary();
                     // const double* stat =
                     // GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
                     for (int k = 0; k < GetNstate(site); k++) {
@@ -548,7 +556,7 @@ double PhyloProcess::RecordPruningAncestralLogProb(const Link* from, int site) {
                 for (int k = 0; k < GetNstate(site); k++) {
                     tot += aux[k];
                 }
-                int& nodestate = GetState(link->Out()->GetNode(), site);
+                int &nodestate = GetState(link->Out()->GetNode(), site);
                 total += log(aux[nodestate] / tot);
             } catch (...) {
                 cerr << "in internal leave::PruningAncestral\n";
@@ -580,9 +588,10 @@ void PhyloProcess::drawSample() {
 
 void PhyloProcess::RootPosteriorDraw(int site) {
     auto aux = new double[GetNstate(site)];
-    double* tbl = GetCondLikelihood(GetRoot());
-    const double* stat = GetPath(nullptr, site)->GetStationary();
-    // const double* stat = GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
+    double *tbl = GetCondLikelihood(GetRoot());
+    const double *stat = GetPath(nullptr, site)->GetStationary();
+    // const double* stat =
+    // GetBranchSiteSubstitutionProcess(0,site)->GetStationary();
     for (int k = 0; k < GetNstate(site); k++) {
         aux[k] = stat[k] * tbl[k];
     }
@@ -591,8 +600,8 @@ void PhyloProcess::RootPosteriorDraw(int site) {
     delete[] aux;
 }
 
-void PhyloProcess::PriorSample(const Link* from, int site, bool rootprior) {
-    int& state = GetState(from->GetNode(), site);
+void PhyloProcess::PriorSample(const Link *from, int site, bool rootprior) {
+    int &state = GetState(from->GetNode(), site);
     if (from->isRoot()) {
         if (rootprior) {
             state = GetPath(nullptr, site)->DrawStationary();
@@ -601,7 +610,7 @@ void PhyloProcess::PriorSample(const Link* from, int site, bool rootprior) {
             RootPosteriorDraw(site);
         }
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         if (!isMissing(link->GetBranch(), site)) {
             GetState(link->Out()->GetNode(), site) =
                 GetPath(link->GetBranch(), site)->DrawFiniteTime(state);
@@ -655,11 +664,11 @@ void PhyloProcess::ResampleSub(int site) {
     }
 }
 
-void PhyloProcess::ResampleSub(const Link* from, int site) {
+void PhyloProcess::ResampleSub(const Link *from, int site) {
     if (from->isRoot()) {
         GetPath(nullptr, site)->ResampleRoot(GetState(from->GetNode(), site));
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         if (!isMissing(link->Out(), site)) {
             GetPath(link->GetBranch(), site)
                 ->Resample(GetState(link->GetNode(), site), GetState(link->Out()->GetNode(), site));
@@ -682,41 +691,41 @@ void PhyloProcess::ResampleSub(const Link* from, int site) {
 
 void PhyloProcess::SetProposalMatrices() { RecursiveSetProposalMatrices(GetRoot()); }
 
-void PhyloProcess::RecursiveSetProposalMatrices(const Link* from) {
+void PhyloProcess::RecursiveSetProposalMatrices(const Link *from) {
     for (int i = 0; i < GetNsite(); i++) {
         if (!isMissing(from, i)) {
             GetPath(from->GetBranch(), i)
                 ->SetProposalMatrix(GetProposalMatrix(from->GetBranch(), i));
         }
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         RecursiveSetProposalMatrices(link->Out());
     }
 }
 
-void PhyloProcess::RecursiveRegister(const Link* from, int site, Mnode* mnode) {
+void PhyloProcess::RecursiveRegister(const Link *from, int site, Mnode *mnode) {
     if (!isMissing(from->GetBranch(), site)) {
         GetPath(from->GetBranch(), site)->Register(mnode);
         if (flagmap[from->GetNode()]) {
-            for (const Link* link = from->Next(); link != from; link = link->Next()) {
+            for (const Link *link = from->Next(); link != from; link = link->Next()) {
                 RecursiveRegister(link->Out(), site, mnode);
             }
         }
     }
 }
 
-void PhyloProcess::SwapMatrices(const Link* from, int site) {
+void PhyloProcess::SwapMatrices(const Link *from, int site) {
     if (!isMissing(from->GetBranch(), site)) {
         GetPath(from->GetBranch(), site)->SwapMatrices();
         if (flagmap[from->GetNode()]) {
-            for (const Link* link = from->Next(); link != from; link = link->Next()) {
+            for (const Link *link = from->Next(); link != from; link = link->Next()) {
                 SwapMatrices(link->Out(), site);
             }
         }
     }
 }
 
-double PhyloProcess::ProposeResampleSub(const Link* from, int site) {
+double PhyloProcess::ProposeResampleSub(const Link *from, int site) {
     if (!isMissing(from->GetBranch(), site)) {
         double tot = 0;
         if (from->isRoot()) {
@@ -724,7 +733,7 @@ double PhyloProcess::ProposeResampleSub(const Link* from, int site) {
                 GetPath(from->GetBranch(), site)->ProposeMoveRoot(GetState(from->GetNode(), site));
         }
         if (flagmap[from->GetNode()]) {
-            for (const Link* link = from->Next(); link != from; link = link->Next()) {
+            for (const Link *link = from->Next(); link != from; link = link->Next()) {
                 if (!isMissing(link->Out(), site)) {
                     tot += GetPath(link->GetBranch(), site)
                                ->ProposeMove(GetState(link->GetNode(), site),
@@ -748,7 +757,7 @@ double PhyloProcess::MHMove(int nrep, double s01, double s10) {
             site = (int)(GetNsite() * Random::Uniform());
         }
 
-        const Link* rootlink;
+        const Link *rootlink;
         if (s01 == -1) {
             ResetFlagMap(GetRoot(), true);
             rootlink = GetRoot();
@@ -796,15 +805,15 @@ double PhyloProcess::MHMove(int nrep, double s01, double s10) {
     return ((double)nacc) / nrep;
 }
 
-void PhyloProcess::ResetFlagMap(const Link* from, bool in) {
+void PhyloProcess::ResetFlagMap(const Link *from, bool in) {
     flagmap[from->GetNode()] = in;
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         ResetFlagMap(link->Out(), in);
     }
 }
 
-const Link* PhyloProcess::ChooseNodeSet(const Link* from, double s01, double s10, int sw) {
-    const Link* ret = nullptr;
+const Link *PhyloProcess::ChooseNodeSet(const Link *from, double s01, double s10, int sw) {
+    const Link *ret = nullptr;
     if (sw == 0) {
         if (Random::Uniform() < s01) {
             sw = 1;
@@ -817,8 +826,8 @@ const Link* PhyloProcess::ChooseNodeSet(const Link* from, double s01, double s10
         }
     }
     if (sw < 2) {
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
-            const Link* tmp = ChooseNodeSet(link->Out(), s01, s10, sw);
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
+            const Link *tmp = ChooseNodeSet(link->Out(), s01, s10, sw);
             if ((ret == nullptr) && (tmp != nullptr)) {
                 ret = tmp;
             }
@@ -826,7 +835,6 @@ const Link* PhyloProcess::ChooseNodeSet(const Link* from, double s01, double s10
     }
     return ret;
 }
-
 
 void PhyloProcess::PriorSample() {
     for (int i = 0; i < GetNsite(); i++) {
@@ -858,9 +866,9 @@ double PhyloProcess::Move(double tuning) {
     return 1;
 }
 
-void PhyloProcess::GetLeafData(SequenceAlignment* data) { RecursiveGetLeafData(GetRoot(), data); }
+void PhyloProcess::GetLeafData(SequenceAlignment *data) { RecursiveGetLeafData(GetRoot(), data); }
 
-void PhyloProcess::RecursiveGetLeafData(const Link* from, SequenceAlignment* data) {
+void PhyloProcess::RecursiveGetLeafData(const Link *from, SequenceAlignment *data) {
     if (from->isLeaf()) {
         for (int site = 0; site < GetNsite(); site++) {
             int state = GetState(from->GetNode(), site);
@@ -872,13 +880,12 @@ void PhyloProcess::RecursiveGetLeafData(const Link* from, SequenceAlignment* dat
             }
         }
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         RecursiveGetLeafData(link->Out(), data);
     }
 }
 
-
-void PhyloProcess::GetLeafFreqs(const Link* from, double** taxfreq) {
+void PhyloProcess::GetLeafFreqs(const Link *from, double **taxfreq) {
     if (from->isLeaf()) {
         for (int site = 0; site < GetNsite(); site++) {
             int state = GetState(from->GetNode(), site);
@@ -888,13 +895,13 @@ void PhyloProcess::GetLeafFreqs(const Link* from, double** taxfreq) {
             }
         }
     }
-    for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    for (const Link *link = from->Next(); link != from; link = link->Next()) {
         GetLeafFreqs(link->Out(), taxfreq);
     }
 }
 
-double PhyloProcess::CompositionalHeterogeneityIndex(ostream& os) {
-    auto taxfreq = new double*[GetNtaxa()];
+double PhyloProcess::CompositionalHeterogeneityIndex(ostream &os) {
+    auto taxfreq = new double *[GetNtaxa()];
     for (int j = 0; j < GetNtaxa(); j++) {
         taxfreq[j] = new double[GetMaxNstate()];
         for (int k = 0; k < GetMaxNstate(); k++) {

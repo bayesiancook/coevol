@@ -12,10 +12,10 @@ const double omegamin = 1e-10;
 // this is still an abstract class
 class CodonSubMatrix : public virtual SubMatrix {
   public:
-    CodonSubMatrix(CodonStateSpace* instatespace, bool innormalise)
+    CodonSubMatrix(CodonStateSpace *instatespace, bool innormalise)
         : SubMatrix(instatespace->GetNstate(), innormalise), statespace(instatespace) {}
 
-    CodonStateSpace* GetCodonStateSpace() { return statespace; }
+    CodonStateSpace *GetCodonStateSpace() { return statespace; }
     // this is just to avoid repeating "GetCodonStateSpace()->" all the time...
     // int			GetNstate() {return statespace->GetNstate();}
     bool Synonymous(int codon1, int codon2) { return statespace->Synonymous(codon1, codon2); }
@@ -25,60 +25,61 @@ class CodonSubMatrix : public virtual SubMatrix {
     }
 
   protected:
-    CodonStateSpace* statespace;
+    CodonStateSpace *statespace;
 };
 
-
 // most codon matrices rely on a mutation process at the level of nucleotides
-// thus we create a NucCodonSubMatrix, which takes a substitution matrix representing the nucleotide
+// thus we create a NucCodonSubMatrix, which takes a substitution matrix
+// representing the nucleotide
 // 4x4 mutation process
 // this is still an abstract class
 class NucCodonSubMatrix : public virtual CodonSubMatrix {
   public:
-    NucCodonSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix, bool innormalise)
+    NucCodonSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix, bool innormalise)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise) {
         SetNucMatrix(inNucMatrix);
     }
 
-    SubMatrix* GetNucMatrix() { return NucMatrix; }
+    SubMatrix *GetNucMatrix() { return NucMatrix; }
 
   protected:
-    void SetNucMatrix(SubMatrix* inmatrix) {
+    void SetNucMatrix(SubMatrix *inmatrix) {
         NucMatrix = inmatrix;
         if (NucMatrix->GetNstate() != Nnuc) {
-            std::cerr
-                << "error in CodonSubMatrix: underyling mutation process should be a 4x4 matrix\n";
+            std::cerr << "error in CodonSubMatrix: underyling mutation process "
+                         "should be a 4x4 matrix\n";
             throw;
         }
     }
 
-    SubMatrix* NucMatrix;
+    SubMatrix *NucMatrix;
 };
 
 //
 // this is still an abstract class
 class RandomCodonSubMatrix : public virtual CodonSubMatrix, public virtual RandomSubMatrix {
   public:
-    RandomCodonSubMatrix(CodonStateSpace* instatespace, bool innorm = false)
+    RandomCodonSubMatrix(CodonStateSpace *instatespace, bool innorm = false)
         : SubMatrix(instatespace->GetNstate(), innorm),
           CodonSubMatrix(instatespace, innorm),
           RandomSubMatrix(instatespace->GetNstate(), innorm) {}
 };
 
-
 // The Muse and Gaut codon substitution process
-// The simplest codon model based on a pure nucleotide mutation process (with stops excluded)
-// look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+// The simplest codon model based on a pure nucleotide mutation process (with
+// stops excluded)
+// look at how ComputeArray and ComputeStationary are implemented in
+// CodonSubMatrix.cpp
 class MGCodonSubMatrix : public NucCodonSubMatrix {
   public:
-    MGCodonSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix,
+    MGCodonSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix,
                      bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
           NucCodonSubMatrix(instatespace, inNucMatrix, innormalise) {
-        synnucarray = new double*[Nnuc];
-        nonsynnucarray = new double*[Nnuc];
+        synnucarray = new double *[Nnuc];
+        nonsynnucarray = new double *[Nnuc];
         for (int i = 0; i < Nnuc; i++) {
             synnucarray[i] = new double[Nnuc];
             nonsynnucarray[i] = new double[Nnuc];
@@ -97,7 +98,7 @@ class MGCodonSubMatrix : public NucCodonSubMatrix {
         }
     }
 
-    double** GetSynNucArray() {
+    double **GetSynNucArray() {
         if (!nucflag) {
             ComputeNucArrays();
             nucflag = true;
@@ -105,7 +106,7 @@ class MGCodonSubMatrix : public NucCodonSubMatrix {
         return synnucarray;
     }
 
-    double** GetNonSynNucArray() {
+    double **GetNonSynNucArray() {
         if (!nucflag) {
             ComputeNucArrays();
             nucflag = true;
@@ -122,7 +123,8 @@ class MGCodonSubMatrix : public NucCodonSubMatrix {
     }
 
   protected:
-    // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+    // look at how ComputeArray and ComputeStationary are implemented in
+    // CodonSubMatrix.cpp
     void ComputeArray(int i) override;
     void ComputeStationary() override;
 
@@ -133,8 +135,8 @@ class MGCodonSubMatrix : public NucCodonSubMatrix {
         SubMatrix::CorruptMatrix();
     }
 
-    double** synnucarray;
-    double** nonsynnucarray;
+    double **synnucarray;
+    double **nonsynnucarray;
     double stopstat;
     bool nucflag;
 };
@@ -144,7 +146,7 @@ class MGCodonSubMatrix : public NucCodonSubMatrix {
 //
 class RandomMGCodonSubMatrix : public MGCodonSubMatrix, public RandomCodonSubMatrix {
   public:
-    RandomMGCodonSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix,
+    RandomMGCodonSubMatrix(CodonStateSpace *instatespace, RandomSubMatrix *inmatrix,
                            bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -157,36 +159,38 @@ class RandomMGCodonSubMatrix : public MGCodonSubMatrix, public RandomCodonSubMat
     }
 
     // before updating the matrix instant rates and stationary probabilities
-    // we just need to check that we are pointing on the right nucleotide mutation process
+    // we just need to check that we are pointing on the right nucleotide mutation
+    // process
     void SetParameters() override { SetNucMatrix(matrix); }
 
   protected:
-    RandomSubMatrix* matrix;
+    RandomSubMatrix *matrix;
 };
 
 // The Muse and Gaut codon substitution process
 // with an omgea = dN/dS parameter
-// look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+// look at how ComputeArray and ComputeStationary are implemented in
+// CodonSubMatrix.cpp
 class MGOmegaCodonSubMatrix : public MGCodonSubMatrix {
   public:
-    MGOmegaCodonSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix, double inomega,
+    MGOmegaCodonSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix, double inomega,
                           bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
           MGCodonSubMatrix(instatespace, inNucMatrix, innormalise),
           omega(inomega) {}
 
-
     double GetOmega() { return omega + omegamin; }
 
   protected:
-    // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+    // look at how ComputeArray and ComputeStationary are implemented in
+    // CodonSubMatrix.cpp
     void ComputeArray(int i) override;
     void SetOmega(double inomega) { omega = inomega; }
 
     void ComputeNucArrays() override;
 
-    void ToStream(std::ostream& os) override {
+    void ToStream(std::ostream &os) override {
         os << "Omega : " << omega << '\n';
         os << "nuc matrix\n";
         GetNucMatrix()->ToStream(os);
@@ -201,8 +205,8 @@ class MGOmegaCodonSubMatrix : public MGCodonSubMatrix {
 
 class RandomMGOmegaCodonSubMatrix : public MGOmegaCodonSubMatrix, public RandomCodonSubMatrix {
   public:
-    RandomMGOmegaCodonSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix,
-                                Var<PosReal>* inRandomOmega, bool innormalise = false)
+    RandomMGOmegaCodonSubMatrix(CodonStateSpace *instatespace, RandomSubMatrix *inmatrix,
+                                Var<PosReal> *inRandomOmega, bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
           RandomSubMatrix(instatespace->GetNstate(), innormalise),
@@ -216,8 +220,10 @@ class RandomMGOmegaCodonSubMatrix : public MGOmegaCodonSubMatrix, public RandomC
     }
 
     // before updating the matrix instant rates and stationary probabilities
-    // we need to check that we are pointing on the right nucleotide mutation process
-    // and we need to update the value of omega stored by the MGOmegaCodonSubMatrix object,
+    // we need to check that we are pointing on the right nucleotide mutation
+    // process
+    // and we need to update the value of omega stored by the
+    // MGOmegaCodonSubMatrix object,
     // based on the value stored by the RandomOmega parent
     void SetParameters() override {
         SetNucMatrix(matrix);
@@ -225,8 +231,8 @@ class RandomMGOmegaCodonSubMatrix : public MGOmegaCodonSubMatrix, public RandomC
     }
 
   protected:
-    RandomSubMatrix* matrix;
-    Var<PosReal>* RandomOmega;
+    RandomSubMatrix *matrix;
+    Var<PosReal> *RandomOmega;
 };
 
 // this class implements the projection of a 61x61 codon substitution process
@@ -240,38 +246,39 @@ class RandomMGOmegaCodonSubMatrix : public MGOmegaCodonSubMatrix, public RandomC
 //
 class AminoAcidReducedCodonSubMatrix : public virtual SubMatrix {
   public:
-    AminoAcidReducedCodonSubMatrix(CodonSubMatrix* incodonmatrix, bool innormalise = false)
+    AminoAcidReducedCodonSubMatrix(CodonSubMatrix *incodonmatrix, bool innormalise = false)
         : SubMatrix(Naa, innormalise), codonmatrix(incodonmatrix) {
         aastatespace = new ProteinStateSpace();
     }
 
-
-    CodonSubMatrix* GetCodonMatrix() { return codonmatrix; }
-    CodonSubMatrix* GetCodonSubMatrix() { return codonmatrix; }
-    CodonStateSpace* GetCodonStateSpace() { return GetCodonMatrix()->GetCodonStateSpace(); }
-    ProteinStateSpace* GetProteinStateSpace() { return aastatespace; }
+    CodonSubMatrix *GetCodonMatrix() { return codonmatrix; }
+    CodonSubMatrix *GetCodonSubMatrix() { return codonmatrix; }
+    CodonStateSpace *GetCodonStateSpace() { return GetCodonMatrix()->GetCodonStateSpace(); }
+    ProteinStateSpace *GetProteinStateSpace() { return aastatespace; }
 
   protected:
-    void SetCodonMatrix(CodonSubMatrix* incodonmatrix) { codonmatrix = incodonmatrix; }
+    void SetCodonMatrix(CodonSubMatrix *incodonmatrix) { codonmatrix = incodonmatrix; }
 
     void ComputeArray(int a) override;
     void ComputeStationary() override;
 
-    CodonSubMatrix* codonmatrix;
-    ProteinStateSpace* aastatespace;
+    CodonSubMatrix *codonmatrix;
+    ProteinStateSpace *aastatespace;
 };
 
 // the random class corresponding to AminoAcidReducedCodonSubMatrix
-// thus, for any codon model, you can immediately instantiate a projected aminoacid replacement
+// thus, for any codon model, you can immediately instantiate a projected
+// aminoacid replacement
 // process
-// and use it in a probabilistic model using a RandomAminoAcidReducedCodonSubMatrix
+// and use it in a probabilistic model using a
+// RandomAminoAcidReducedCodonSubMatrix
 //
 // it only takes the time to type the name...
 
 class RandomAminoAcidReducedCodonSubMatrix : public AminoAcidReducedCodonSubMatrix,
                                              public RandomSubMatrix {
   public:
-    RandomAminoAcidReducedCodonSubMatrix(RandomCodonSubMatrix* inrandomcodonmatrix,
+    RandomAminoAcidReducedCodonSubMatrix(RandomCodonSubMatrix *inrandomcodonmatrix,
                                          bool innormalise = false)
         : SubMatrix(Naa, innormalise),
           AminoAcidReducedCodonSubMatrix(inrandomcodonmatrix, innormalise),
@@ -284,8 +291,7 @@ class RandomAminoAcidReducedCodonSubMatrix : public AminoAcidReducedCodonSubMatr
     void SetParameters() override { SetCodonMatrix(randomcodonmatrix); }
 
   protected:
-    RandomCodonSubMatrix* randomcodonmatrix;
+    RandomCodonSubMatrix *randomcodonmatrix;
 };
-
 
 #endif

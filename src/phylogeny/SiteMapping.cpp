@@ -6,13 +6,12 @@ using namespace std;
 //	* SiteMapping
 //-------------------------------------------------------------------------
 
-void SiteMapping::Print(ostream& os, bool redundant) {
+void SiteMapping::Print(ostream &os, bool redundant) {
     Print(os, GetRoot(), redundant);
     os << ";\n";
 }
 
-
-void SiteMapping::Print(ostream& os, Link* from, bool redundant) {
+void SiteMapping::Print(ostream &os, Link *from, bool redundant) {
     if (from->isLeaf()) {
         os << GetTree()->GetNodeName(from);
         if (redundant) {
@@ -22,7 +21,7 @@ void SiteMapping::Print(ostream& os, Link* from, bool redundant) {
         }
     } else {
         os << '(';
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             Print(os, link->Out(), redundant);
             if (link->Next() != from) {
                 os << ',';

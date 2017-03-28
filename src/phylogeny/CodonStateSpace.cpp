@@ -5,7 +5,6 @@
 #include "utils/Exception.hpp"
 using namespace std;
 
-
 CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
     nucstatespace = new DNAStateSpace;
     protstatespace = new ProteinStateSpace;
@@ -17,7 +16,7 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
         CodonCodeWithStops = new int[Ncodon];  // stops included
         CodonCode = new int[Nstate];           // stops excluded
 
-        CodonPos = new int*[Npos];
+        CodonPos = new int *[Npos];
         for (int pos = 0; pos < Npos; pos++) {
             CodonPos[pos] = new int[Nstate];  // stops excluded
         }
@@ -52,7 +51,7 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
         CodonCodeWithStops = new int[Ncodon];  // stops included
         CodonCode = new int[Nstate];           // stops excluded
 
-        CodonPos = new int*[Npos];
+        CodonPos = new int *[Npos];
         for (int pos = 0; pos < Npos; pos++) {
             CodonPos[pos] = new int[Nstate];  // stops excluded
         }
@@ -86,7 +85,7 @@ CodonStateSpace::CodonStateSpace(GeneticCodeType type) {
         CodonCodeWithStops = new int[Ncodon];  // stops included
         CodonCode = new int[Nstate];           // stops excluded
 
-        CodonPos = new int*[Npos];
+        CodonPos = new int *[Npos];
         for (int pos = 0; pos < Npos; pos++) {
             CodonPos[pos] = new int[Nstate];  // stops excluded
         }
@@ -177,8 +176,10 @@ int CodonStateSpace::GetCodonFromDNA(int pos1, int pos2, int pos3) {
         l++;
     }
     if (l == GetNstate()) {
-        // cerr << "warning in CodonStateSpace::GetCodonFromDNA : out of bound : " <<
-        // GetDNAStateSpace()->GetState(pos1) << GetDNAStateSpace()->GetState(pos2) <<
+        // cerr << "warning in CodonStateSpace::GetCodonFromDNA : out of bound : "
+        // <<
+        // GetDNAStateSpace()->GetState(pos1) << GetDNAStateSpace()->GetState(pos2)
+        // <<
         // GetDNAStateSpace()->GetState(pos3) << '\n';
         return -1;
         cerr << "warning in CodonStateSpace::GetCodonFromDNA : out of bound : "
@@ -295,17 +296,20 @@ int CodonStateSpace::IsNonCTNearest(int a, int b) {
   GetCodonFromDNAWithStops(GetDNAStateSpace()->GetState(word.substr(0,1)),GetDNAStateSpace()->GetState(word.substr(1,1)),GetDNAStateSpace()->GetState(word.substr(2,1)));
   }
 
-  int CodonStateSpace::GetCodonFromDNAWithStops(int pos1, int pos2, int pos3)	{
+  int CodonStateSpace::GetCodonFromDNAWithStops(int pos1, int pos2, int pos3)
+  {
   if ((pos1 == unknown) || (pos2 == unknown) || (pos3 == unknown))	{
   return unknown;
   }
   int l = 0;
-  while ((l<Ncodon) && ((pos1 != codonpos[0][l]) || (pos2 != codonpos[1][l]) || (pos3 !=
+  while ((l<Ncodon) && ((pos1 != codonpos[0][l]) || (pos2 != codonpos[1][l]) ||
+  (pos3 !=
   codonpos[2][l])))	{
   l++;
   }
   if (l == Ncodon)	{
-  cerr << "error in CodonStateSpace::GetCodonFromDNAWithStops : out of bound : " << pos1 << '\t' <<
+  cerr << "error in CodonStateSpace::GetCodonFromDNAWithStops : out of bound : "
+  << pos1 << '\t' <<
   pos2 << '\t' << pos3 << '\n';
   exit(1);
   }
@@ -327,7 +331,8 @@ int CodonStateSpace::IsNonCTNearest(int a, int b) {
   string CodonStateSpace:TranslateDNASequenceWithStops(string dnaseq)	{
 
   if (dnaseq.length() % 3)	{
-  cerr << "error in CodonStateSpace::Translate: dna sequence not multiple of three\n";
+  cerr << "error in CodonStateSpace::Translate: dna sequence not multiple of
+  three\n";
   cerr << "length is : " << dnaseq.length() << '\n';
   exit(1);
   }
@@ -335,7 +340,8 @@ int CodonStateSpace::IsNonCTNearest(int a, int b) {
 
   ostringstream s;
   for (int i=0; i<N; i++)	{
-  s << GetStateWithStops(TranslationWithStops(GetStateWithStops(dnaseq.substr(3*i,3))));
+  s <<
+  GetStateWithStops(TranslationWithStops(GetStateWithStops(dnaseq.substr(3*i,3))));
   }
   return s.str();
   }

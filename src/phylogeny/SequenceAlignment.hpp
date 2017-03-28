@@ -5,20 +5,19 @@
 #include "StateSpace.hpp"
 #include "TaxonSet.hpp"
 
-
 // this class works like an interface
 // it does not do any job
 class SequenceAlignment {
   public:
     SequenceAlignment() : Data(nullptr) {}
 
-    SequenceAlignment(SequenceAlignment* from) {
+    SequenceAlignment(SequenceAlignment *from) {
         Ntaxa = from->Ntaxa;
         Nsite = from->Nsite;
         taxset = from->taxset;
         statespace = from->statespace;
 
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
             for (int j = 0; j < Nsite; j++) {
@@ -27,7 +26,7 @@ class SequenceAlignment {
         }
     }
 
-    SequenceAlignment(SequenceAlignment* from, int start, int length) {
+    SequenceAlignment(SequenceAlignment *from, int start, int length) {
         Ntaxa = from->Ntaxa;
         if ((start < 0) || (length < 0) || (start + length > from->Nsite)) {
             std::cerr << "error in sequence alignment: overflow\n";
@@ -37,7 +36,7 @@ class SequenceAlignment {
         Nsite = length;
         taxset = from->taxset;
         statespace = from->statespace;
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
             for (int j = 0; j < Nsite; j++) {
@@ -47,7 +46,7 @@ class SequenceAlignment {
     }
 
     void SubSelect(int sitemin, int sitemax) {
-        auto Data2 = new int*[Ntaxa];
+        auto Data2 = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data2[i] = new int[sitemax - sitemin];
             for (int j = sitemin; j < sitemax; j++) {
@@ -62,12 +61,12 @@ class SequenceAlignment {
         Nsite = sitemax - sitemin;
     }
 
-    SequenceAlignment(SequenceAlignment* from, TaxonSet* subset) {
+    SequenceAlignment(SequenceAlignment *from, TaxonSet *subset) {
         Ntaxa = subset->GetNtaxa();
         Nsite = from->GetNsite();
         statespace = from->statespace;
         taxset = subset;
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int k = 0; k < Ntaxa; k++) {
             Data[k] = new int[Nsite];
         }
@@ -86,7 +85,7 @@ class SequenceAlignment {
         }
     }
 
-    SequenceAlignment(SequenceAlignment* from, std::map<std::string, int>& group, int ngroup) {
+    SequenceAlignment(SequenceAlignment *from, std::map<std::string, int> &group, int ngroup) {
         int n = 0;
         for (int i = 0; i < from->GetNsite(); i++) {
             if (from->GroupCompatible(i, group, ngroup)) {
@@ -97,7 +96,7 @@ class SequenceAlignment {
         taxset = from->taxset;
         Ntaxa = from->GetNtaxa();
         Nsite = n;
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int k = 0; k < Ntaxa; k++) {
             Data[k] = new int[Nsite];
         }
@@ -112,7 +111,7 @@ class SequenceAlignment {
         }
     }
 
-    void MaskOutgroup(std::string* group1, std::string* group2, int n1, int n2) {
+    void MaskOutgroup(std::string *group1, std::string *group2, int n1, int n2) {
         int nrem = 0;
         int npos = 0;
         for (int i = 0; i < GetNsite(); i++) {
@@ -136,7 +135,7 @@ class SequenceAlignment {
         std::cerr << "total number of cells masked : " << nrem << '\n';
     }
 
-    void MaskDiversity(std::string* group, int n) {
+    void MaskDiversity(std::string *group, int n) {
         int nrem = 0;
         int npos = 0;
         std::vector<int> present(GetStateSpace()->GetNstate());
@@ -176,7 +175,7 @@ class SequenceAlignment {
         std::cerr << "total number of cells masked : " << nrem << '\n';
     }
 
-    SequenceAlignment(SequenceAlignment* from, double missingfrac) {
+    SequenceAlignment(SequenceAlignment *from, double missingfrac) {
         int n = 0;
         for (int i = 0; i < from->GetNsite(); i++) {
             if (from->MissingFrac(i) < missingfrac) {
@@ -187,7 +186,7 @@ class SequenceAlignment {
         taxset = from->taxset;
         Ntaxa = from->GetNtaxa();
         Nsite = n;
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int k = 0; k < Ntaxa; k++) {
             Data[k] = new int[Nsite];
         }
@@ -202,7 +201,7 @@ class SequenceAlignment {
         }
     }
 
-    void Mask(SequenceAlignment* from) {
+    void Mask(SequenceAlignment *from) {
         for (int i = 0; i < from->GetNsite(); i++) {
             for (int j = 0; j < Ntaxa; j++) {
                 if (from->Data[j][i] == unknown) {
@@ -212,7 +211,7 @@ class SequenceAlignment {
         }
     }
 
-    bool GroupCompatible(int i, std::map<std::string, int>& group, int ngroup) {
+    bool GroupCompatible(int i, std::map<std::string, int> &group, int ngroup) {
         std::vector<int> presence(ngroup);
         for (int n = 0; n < ngroup; n++) {
             presence[n] = 0;
@@ -242,14 +241,14 @@ class SequenceAlignment {
         return n / GetNtaxa();
     }
 
-    SequenceAlignment(int** inData, std::string* names, int inNsite, StateSpace* instatespace,
-                      TaxonSet* intaxset) {
+    SequenceAlignment(int **inData, std::string *names, int inNsite, StateSpace *instatespace,
+                      TaxonSet *intaxset) {
         Nsite = inNsite;
         taxset = intaxset;
         Ntaxa = taxset->GetNtaxa();
         statespace = instatespace;
 
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
         }
@@ -264,15 +263,15 @@ class SequenceAlignment {
     virtual ~SequenceAlignment() = default;
 
     // the set of characters (A,C,G,T for nucleotides, etc..)
-    StateSpace* GetStateSpace() { return statespace; }
+    StateSpace *GetStateSpace() { return statespace; }
 
-    void RegisterWith(TaxonSet* intaxset) {
+    void RegisterWith(TaxonSet *intaxset) {
         std::cerr << "register\n";
         if (taxset->GetNtaxa() != intaxset->GetNtaxa()) {
             std::cerr << "error in register seq\n";
             exit(1);
         }
-        auto tmp = new int*[GetNtaxa()];
+        auto tmp = new int *[GetNtaxa()];
         for (int i = 0; i < GetNtaxa(); i++) {
             int k = 0;
             while ((k < GetNtaxa()) && (taxset->GetTaxon(k) != intaxset->GetTaxon(i))) {
@@ -304,7 +303,7 @@ class SequenceAlignment {
     int GetNstate() { return statespace->GetNstate(); }
 
     // the list of taxa
-    TaxonSet* GetTaxonSet() { return taxset; }
+    TaxonSet *GetTaxonSet() { return taxset; }
 
     int GetNsite() { return Nsite; }
 
@@ -375,14 +374,14 @@ class SequenceAlignment {
 
     int GetState(int taxon, int site) { return Data[taxon][site]; }
 
-    void GetEmpiricalFreq(double* in);
+    void GetEmpiricalFreq(double *in);
 
-    void GetSiteEmpiricalFreq(double** in, double pseudocount = 0);
+    void GetSiteEmpiricalFreq(double **in, double pseudocount = 0);
 
-    void ToStream(std::ostream& os);
-    void ToStreamTriplet(std::ostream& os);
+    void ToStream(std::ostream &os);
+    void ToStreamTriplet(std::ostream &os);
     int GetNonMissingTriplet();
-    void ToFasta(std::ostream& os);
+    void ToFasta(std::ostream &os);
 
     void DeleteConstantSites() {
         int i = 0;
@@ -414,7 +413,7 @@ class SequenceAlignment {
         std::cout << "number of positions eliminated : " << Eliminated << '\n';
     }
 
-    void GetMissingCellsFromTemplate(SequenceAlignment* from) {
+    void GetMissingCellsFromTemplate(SequenceAlignment *from) {
         int fromnsite = from->GetNsite();
 
         for (int i = 0; i < Nsite; i++) {
@@ -453,7 +452,7 @@ class SequenceAlignment {
         return mean;
     }
 
-    void GetTaxEmpiricalFreq(double** taxfreq) {
+    void GetTaxEmpiricalFreq(double **taxfreq) {
         int Nstate = GetNstate();
         for (int j = 0; j < Ntaxa; j++) {
             for (int k = 0; k < Nstate; k++) {
@@ -481,9 +480,9 @@ class SequenceAlignment {
         }
     }
 
-    double CompositionalHeterogeneity(std::ostream* os) {
+    double CompositionalHeterogeneity(std::ostream *os) {
         int Nstate = GetNstate();
-        auto taxfreq = new double*[Ntaxa];
+        auto taxfreq = new double *[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq[j] = new double[Nstate];
             for (int k = 0; k < Nstate; k++) {
@@ -562,14 +561,14 @@ class SequenceAlignment {
 
     int Ntaxa;
     int Nsite;
-    TaxonSet* taxset;
-    StateSpace* statespace;
-    int** Data;
+    TaxonSet *taxset;
+    StateSpace *statespace;
+    int **Data;
 };
 
 class FileSequenceAlignment : public SequenceAlignment {
   public:
-    FileSequenceAlignment(std::istream& is);
+    FileSequenceAlignment(std::istream &is);
     FileSequenceAlignment(std::string filename, int fullline = 0);
 
   private:
@@ -581,8 +580,7 @@ class FileSequenceAlignment : public SequenceAlignment {
     int TestPhylip(std::string filespec, int repeattaxa);
     void ReadPhylip(std::string filespec, int repeattaxa);
 
-    std::string* SpeciesNames;
+    std::string *SpeciesNames;
 };
-
 
 #endif  // SEQUENCEALIGNMENT_H

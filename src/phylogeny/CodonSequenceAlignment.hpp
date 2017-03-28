@@ -8,12 +8,12 @@
 
 class CodonSequenceAlignment : public SequenceAlignment {
   public:
-    CodonSequenceAlignment(CodonSequenceAlignment* from)
-        : SequenceAlignment((SequenceAlignment*)from) {}
+    CodonSequenceAlignment(CodonSequenceAlignment *from)
+        : SequenceAlignment((SequenceAlignment *)from) {}
 
-    CodonSequenceAlignment(CodonSequenceAlignment* from, int sitemin, int sitemax)
-        : SequenceAlignment((SequenceAlignment*)from, sitemin, sitemax) {}
-    CodonSequenceAlignment(SequenceAlignment* from, bool force_stops = false,
+    CodonSequenceAlignment(CodonSequenceAlignment *from, int sitemin, int sitemax)
+        : SequenceAlignment((SequenceAlignment *)from, sitemin, sitemax) {}
+    CodonSequenceAlignment(SequenceAlignment *from, bool force_stops = false,
                            GeneticCodeType type = Universal);
 
     ~CodonSequenceAlignment() override = default;
@@ -50,8 +50,8 @@ class CodonSequenceAlignment : public SequenceAlignment {
     }
 
     double Nucleotide123CompositionalHeterogeneity() {
-        auto taxfreq12 = new double*[Ntaxa];
-        auto taxfreq3 = new double*[Ntaxa];
+        auto taxfreq12 = new double *[Ntaxa];
+        auto taxfreq3 = new double *[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq12[j] = new double[Nnuc];
             taxfreq3[j] = new double[Nnuc];
@@ -115,14 +115,14 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    double NucleotideCompositionalHeterogeneity(std::ostream* os, int pos = -1,
-                                                double** comp = nullptr,
-                                                std::ostream* os2 = nullptr) {
-        double** taxfreq = nullptr;
+    double NucleotideCompositionalHeterogeneity(std::ostream *os, int pos = -1,
+                                                double **comp = nullptr,
+                                                std::ostream *os2 = nullptr) {
+        double **taxfreq = nullptr;
         if (comp != nullptr) {
             taxfreq = comp;
         } else {
-            taxfreq = new double*[Ntaxa];
+            taxfreq = new double *[Ntaxa];
             for (int j = 0; j < Ntaxa; j++) {
                 taxfreq[j] = new double[Nnuc];
                 for (int k = 0; k < Nnuc; k++) {
@@ -147,7 +147,8 @@ class CodonSequenceAlignment : public SequenceAlignment {
                         taxfreq[j][GetCodonStateSpace()->GetCodonPosition(2, state)]++;
                     } else if (pos > 2) {
                         std::cerr << "error in "
-                                     "CodonSequenceAlignment::NucleotideCompositionHeterogeneity : "
+                                     "CodonSequenceAlignment::"
+                                     "NucleotideCompositionHeterogeneity : "
                                   << pos << '\n';
                         exit(1);
                     } else {
@@ -233,13 +234,13 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    double NucleotideCompositionalHeterogeneityOld(std::ostream* os, int pos = -1,
-                                                   double** comp = nullptr) {
-        double** taxfreq = nullptr;
+    double NucleotideCompositionalHeterogeneityOld(std::ostream *os, int pos = -1,
+                                                   double **comp = nullptr) {
+        double **taxfreq = nullptr;
         if (comp != nullptr) {
             taxfreq = comp;
         } else {
-            taxfreq = new double*[Ntaxa];
+            taxfreq = new double *[Ntaxa];
             for (int j = 0; j < Ntaxa; j++) {
                 taxfreq[j] = new double[Nnuc];
                 for (int k = 0; k < Nnuc; k++) {
@@ -264,7 +265,8 @@ class CodonSequenceAlignment : public SequenceAlignment {
                         taxfreq[j][GetCodonStateSpace()->GetCodonPosition(2, state)]++;
                     } else if (pos > 2) {
                         std::cerr << "error in "
-                                     "CodonSequenceAlignment::NucleotideCompositionHeterogeneity : "
+                                     "CodonSequenceAlignment::"
+                                     "NucleotideCompositionHeterogeneity : "
                                   << pos << '\n';
                         exit(1);
                     } else {
@@ -334,8 +336,8 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    double AminoAcidCompositionalHeterogeneity(std::ostream* os) {
-        auto taxfreq = new double*[Ntaxa];
+    double AminoAcidCompositionalHeterogeneity(std::ostream *os) {
+        auto taxfreq = new double *[Ntaxa];
         for (int j = 0; j < Ntaxa; j++) {
             taxfreq[j] = new double[Naa];
             for (int k = 0; k < Naa; k++) {
@@ -410,34 +412,33 @@ class CodonSequenceAlignment : public SequenceAlignment {
         return maxdist;
     }
 
-    CodonStateSpace* GetCodonStateSpace() {
+    CodonStateSpace *GetCodonStateSpace() {
         // return static_cast<CodonStateSpace*>(statespace);
-        return (CodonStateSpace*)(statespace);
+        return (CodonStateSpace *)(statespace);
     }
 
-    void ToStream(std::ostream& os);
-    void ToStream(std::ostream& os, int pos);
-    void ToStreamFourFoldThird(std::ostream& os);
-    void ToStreamFourFoldTriplet(std::ostream& os);
-    void ToStreamFourFoldThirdwoCpG(std::ostream& os);
+    void ToStream(std::ostream &os);
+    void ToStream(std::ostream &os, int pos);
+    void ToStreamFourFoldThird(std::ostream &os);
+    void ToStreamFourFoldTriplet(std::ostream &os);
+    void ToStreamFourFoldThirdwoCpG(std::ostream &os);
 
-    void ToStreamRandomJackknife(std::ostream& os, double p);
+    void ToStreamRandomJackknife(std::ostream &os, double p);
 
   private:
-    SequenceAlignment* DNAsource;
+    SequenceAlignment *DNAsource;
 };
-
 
 class GCContinuousData : public ContinuousData {
   public:
-    GCContinuousData(CodonSequenceAlignment* from, int pos) {
+    GCContinuousData(CodonSequenceAlignment *from, int pos) {
         taxset = from->GetTaxonSet();
-        auto freq = new double*[taxset->GetNtaxa()];
+        auto freq = new double *[taxset->GetNtaxa()];
         for (int i = 0; i < taxset->GetNtaxa(); i++) {
             freq[i] = new double[Nnuc];
         }
         from->NucleotideCompositionalHeterogeneity(nullptr, pos, freq);
-        Data = new double*[taxset->GetNtaxa()];
+        Data = new double *[taxset->GetNtaxa()];
         Nsite = 1;
         for (int i = 0; i < taxset->GetNtaxa(); i++) {
             Data[i] = new double[1];

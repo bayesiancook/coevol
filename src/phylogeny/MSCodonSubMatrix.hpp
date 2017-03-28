@@ -6,34 +6,35 @@
 
 // The Muse and Gaut codon substitution process
 // with an fitness = exp(selection profile) parameter
-// look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+// look at how ComputeArray and ComputeStationary are implemented in
+// CodonSubMatrix.cpp
 class MGFitnessCodonSubMatrix : public MGCodonSubMatrix {
   public:
-    MGFitnessCodonSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix,
-                            double* infitness, bool innormalise = false)
+    MGFitnessCodonSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix,
+                            double *infitness, bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
           MGCodonSubMatrix(instatespace, inNucMatrix, innormalise),
           fitness(infitness) {}
 
-
     double GetFitness(int aastate) { return fitness[aastate] + 1e-10; }
 
   protected:
-    // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+    // look at how ComputeArray and ComputeStationary are implemented in
+    // CodonSubMatrix.cpp
     void ComputeArray(int i) override;
     void ComputeStationary() override;
-    void SetFitnessProfile(double* infitness) { fitness = infitness; }
+    void SetFitnessProfile(double *infitness) { fitness = infitness; }
 
     // data members
 
-    double* fitness;
+    double *fitness;
 };
 
 class RandomMGFitnessCodonSubMatrix : public MGFitnessCodonSubMatrix, public RandomCodonSubMatrix {
   public:
-    RandomMGFitnessCodonSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix,
-                                  Var<Profile>* inRandomFitnessProfile, bool innormalise = false)
+    RandomMGFitnessCodonSubMatrix(CodonStateSpace *instatespace, RandomSubMatrix *inmatrix,
+                                  Var<Profile> *inRandomFitnessProfile, bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
           RandomSubMatrix(instatespace->GetNstate(), innormalise),
@@ -48,8 +49,10 @@ class RandomMGFitnessCodonSubMatrix : public MGFitnessCodonSubMatrix, public Ran
     }
 
     // before updating the matrix instant rates and stationary probabilities
-    // we need to check that we are pointing on the right nucleotide mutation process
-    // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
+    // we need to check that we are pointing on the right nucleotide mutation
+    // process
+    // and we need to update the value of fitness profile stored by the
+    // MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
     void SetParameters() override {
@@ -58,16 +61,15 @@ class RandomMGFitnessCodonSubMatrix : public MGFitnessCodonSubMatrix, public Ran
     }
 
   protected:
-    RandomSubMatrix* matrix;
-    Var<Profile>* randomFitnessProfile;
+    RandomSubMatrix *matrix;
+    Var<Profile> *randomFitnessProfile;
 };
-
 
 // if selection profiles and codonusageselection is of type Dirichlet
 class MGFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
   public:
-    MGFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix,
-                                 double* infitness, double* incodonusageselection,
+    MGFitnessCodonUsageSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix,
+                                 double *infitness, double *incodonusageselection,
                                  bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -75,34 +77,32 @@ class MGFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
           fitness(infitness),
           codonusageselection(incodonusageselection) {}
 
-
     double GetFitness(int aastate) { return fitness[aastate] + 1e-10; }
 
     double GetCodonUsageSelection(int codonstate) { return codonusageselection[codonstate]; }
 
-
   protected:
-    // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+    // look at how ComputeArray and ComputeStationary are implemented in
+    // CodonSubMatrix.cpp
     void ComputeArray(int i) override;
     void ComputeStationary() override;
 
-    void SetFitnessProfile(double* infitness) { fitness = infitness; }
-    void SetCodonUsageSelection(double* incodonusageselection) {
+    void SetFitnessProfile(double *infitness) { fitness = infitness; }
+    void SetCodonUsageSelection(double *incodonusageselection) {
         codonusageselection = incodonusageselection;
     }
 
     // data members
-    double* fitness;
-    double* codonusageselection;
+    double *fitness;
+    double *codonusageselection;
 };
-
 
 class RandomMGFitnessCodonUsageSubMatrix : public MGFitnessCodonUsageSubMatrix,
                                            public RandomCodonSubMatrix {
   public:
-    RandomMGFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix,
-                                       Var<Profile>* inRandomFitnessProfile,
-                                       Var<Profile>* inRandomCodonUsageSelection,
+    RandomMGFitnessCodonUsageSubMatrix(CodonStateSpace *instatespace, RandomSubMatrix *inmatrix,
+                                       Var<Profile> *inRandomFitnessProfile,
+                                       Var<Profile> *inRandomCodonUsageSelection,
                                        bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -120,11 +120,13 @@ class RandomMGFitnessCodonUsageSubMatrix : public MGFitnessCodonUsageSubMatrix,
         specialUpdate();
     }
 
-    CodonStateSpace* GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
+    CodonStateSpace *GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
 
     // before updating the matrix instant rates and stationary probabilities
-    // we need to check that we are pointing on the right nucleotide mutation process
-    // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
+    // we need to check that we are pointing on the right nucleotide mutation
+    // process
+    // and we need to update the value of fitness profile stored by the
+    // MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
     void SetParameters() override {
@@ -134,17 +136,16 @@ class RandomMGFitnessCodonUsageSubMatrix : public MGFitnessCodonUsageSubMatrix,
     }
 
   protected:
-    RandomSubMatrix* matrix;
-    Var<Profile>* RandomFitnessProfile;
-    Var<Profile>* RandomCodonUsageSelection;
+    RandomSubMatrix *matrix;
+    Var<Profile> *RandomFitnessProfile;
+    Var<Profile> *RandomCodonUsageSelection;
 };
-
 
 // if selection profiles and codonusageselection is of type Normal or gamma
 class MGSRFitnessNormalCodonUsageSubMatrix : public MGCodonSubMatrix {
   public:
-    MGSRFitnessNormalCodonUsageSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix,
-                                         double* infitness, double* incodonusageselection,
+    MGSRFitnessNormalCodonUsageSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix,
+                                         double *infitness, double *incodonusageselection,
                                          bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -152,34 +153,32 @@ class MGSRFitnessNormalCodonUsageSubMatrix : public MGCodonSubMatrix {
           fitness(infitness),
           codonusageselection(incodonusageselection) {}
 
-
     double GetFitness(int aastate) { return fitness[aastate] + 1e-10; }
 
     double GetCodonUsageSelection(int codonstate) { return codonusageselection[codonstate]; }
 
-
   protected:
-    // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+    // look at how ComputeArray and ComputeStationary are implemented in
+    // CodonSubMatrix.cpp
     void ComputeArray(int i) override;
     void ComputeStationary() override;
-    void SetFitnessProfile(double* infitness) { fitness = infitness; }
-    void SetCodonUsageSelection(double* incodonusageselection) {
+    void SetFitnessProfile(double *infitness) { fitness = infitness; }
+    void SetCodonUsageSelection(double *incodonusageselection) {
         codonusageselection = incodonusageselection;
     }
 
     // data members
-    double* fitness;
-    double* codonusageselection;
+    double *fitness;
+    double *codonusageselection;
 };
-
 
 class RandomMGSRFitnessNormalCodonUsageSubMatrix : public MGSRFitnessNormalCodonUsageSubMatrix,
                                                    public RandomCodonSubMatrix {
   public:
-    RandomMGSRFitnessNormalCodonUsageSubMatrix(CodonStateSpace* instatespace,
-                                               RandomSubMatrix* inmatrix,
-                                               Var<RealVector>* inRandomFitnessProfile,
-                                               Var<RealVector>* inRandomCodonUsageSelection,
+    RandomMGSRFitnessNormalCodonUsageSubMatrix(CodonStateSpace *instatespace,
+                                               RandomSubMatrix *inmatrix,
+                                               Var<RealVector> *inRandomFitnessProfile,
+                                               Var<RealVector> *inRandomCodonUsageSelection,
                                                bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -196,18 +195,21 @@ class RandomMGSRFitnessNormalCodonUsageSubMatrix : public MGSRFitnessNormalCodon
         Register(RandomCodonUsageSelection);
         specialUpdate();
 
-
         //             std::cerr << "nucmatrix= "  << *matrix << '\n';
-        //             std::cerr << "stationary= " << *(RandomFitnessProfile->GetArray()) << '\n';
-        //             std::cerr << "codonusage= " << *(RandomCodonUsageSelection->GetArray())
+        //             std::cerr << "stationary= " <<
+        //             *(RandomFitnessProfile->GetArray()) << '\n';
+        //             std::cerr << "codonusage= " <<
+        //             *(RandomCodonUsageSelection->GetArray())
         //             <<'\n';
     }
 
-    CodonStateSpace* GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
+    CodonStateSpace *GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
 
     // before updating the matrix instant rates and stationary probabilities
-    // we need to check that we are pointing on the right nucleotide mutation process
-    // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
+    // we need to check that we are pointing on the right nucleotide mutation
+    // process
+    // and we need to update the value of fitness profile stored by the
+    // MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
     void SetParameters() override {
@@ -217,17 +219,16 @@ class RandomMGSRFitnessNormalCodonUsageSubMatrix : public MGSRFitnessNormalCodon
     }
 
   protected:
-    RandomSubMatrix* matrix;
-    Var<RealVector>* RandomFitnessProfile;
-    Var<RealVector>* RandomCodonUsageSelection;
+    RandomSubMatrix *matrix;
+    Var<RealVector> *RandomFitnessProfile;
+    Var<RealVector> *RandomCodonUsageSelection;
 };
-
 
 // if selection profiles and codonusageselection is of type Normal or gamma
 class MGMSFitnessNormalCodonUsageSubMatrix : public MGCodonSubMatrix {
   public:
-    MGMSFitnessNormalCodonUsageSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix,
-                                         double* infitness, double* incodonusageselection,
+    MGMSFitnessNormalCodonUsageSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix,
+                                         double *infitness, double *incodonusageselection,
                                          bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -235,33 +236,32 @@ class MGMSFitnessNormalCodonUsageSubMatrix : public MGCodonSubMatrix {
           fitness(infitness),
           codonusageselection(incodonusageselection) {}
 
-
     double GetFitness(int aastate) { return fitness[aastate]; }
 
     double GetCodonUsageSelection(int codonstate) { return codonusageselection[codonstate]; }
 
   protected:
-    // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+    // look at how ComputeArray and ComputeStationary are implemented in
+    // CodonSubMatrix.cpp
     void ComputeArray(int i) override;
     void ComputeStationary() override;
-    void SetFitnessProfile(double* infitness) { fitness = infitness; }
-    void SetCodonUsageSelection(double* incodonusageselection) {
+    void SetFitnessProfile(double *infitness) { fitness = infitness; }
+    void SetCodonUsageSelection(double *incodonusageselection) {
         codonusageselection = incodonusageselection;
     }
 
     // data members
-    double* fitness;
-    double* codonusageselection;
+    double *fitness;
+    double *codonusageselection;
 };
-
 
 class RandomMGMSFitnessNormalCodonUsageSubMatrix : public MGMSFitnessNormalCodonUsageSubMatrix,
                                                    public RandomCodonSubMatrix {
   public:
-    RandomMGMSFitnessNormalCodonUsageSubMatrix(CodonStateSpace* instatespace,
-                                               RandomSubMatrix* inmatrix,
-                                               Var<RealVector>* inRandomFitnessProfile,
-                                               Var<RealVector>* inRandomCodonUsageSelection,
+    RandomMGMSFitnessNormalCodonUsageSubMatrix(CodonStateSpace *instatespace,
+                                               RandomSubMatrix *inmatrix,
+                                               Var<RealVector> *inRandomFitnessProfile,
+                                               Var<RealVector> *inRandomCodonUsageSelection,
                                                bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -278,18 +278,21 @@ class RandomMGMSFitnessNormalCodonUsageSubMatrix : public MGMSFitnessNormalCodon
         Register(RandomCodonUsageSelection);
         specialUpdate();
 
-
         //             std::cerr << "nucmatrix= "  << *matrix << '\n';
-        //             std::cerr << "stationary= " << *(RandomFitnessProfile->GetArray()) << '\n';
-        //             std::cerr << "codonusage= " << *(RandomCodonUsageSelection->GetArray())
+        //             std::cerr << "stationary= " <<
+        //             *(RandomFitnessProfile->GetArray()) << '\n';
+        //             std::cerr << "codonusage= " <<
+        //             *(RandomCodonUsageSelection->GetArray())
         //             <<'\n';
     }
 
-    CodonStateSpace* GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
+    CodonStateSpace *GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
 
     // before updating the matrix instant rates and stationary probabilities
-    // we need to check that we are pointing on the right nucleotide mutation process
-    // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
+    // we need to check that we are pointing on the right nucleotide mutation
+    // process
+    // and we need to update the value of fitness profile stored by the
+    // MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
     void SetParameters() override {
@@ -299,17 +302,16 @@ class RandomMGMSFitnessNormalCodonUsageSubMatrix : public MGMSFitnessNormalCodon
     }
 
   protected:
-    RandomSubMatrix* matrix;
-    Var<RealVector>* RandomFitnessProfile;
-    Var<RealVector>* RandomCodonUsageSelection;
+    RandomSubMatrix *matrix;
+    Var<RealVector> *RandomFitnessProfile;
+    Var<RealVector> *RandomCodonUsageSelection;
 };
-
 
 // square root
 class MGSRFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
   public:
-    MGSRFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix,
-                                   double* infitness, double* incodonusageselection,
+    MGSRFitnessCodonUsageSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix,
+                                   double *infitness, double *incodonusageselection,
                                    bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -317,35 +319,33 @@ class MGSRFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
           fitness(infitness),
           codonusageselection(incodonusageselection) {}
 
-
     double GetFitness(int aastate) { return fitness[aastate] + 1e-6; }
 
     double GetCodonUsageSelection(int codonstate) { return codonusageselection[codonstate]; }
 
-
   protected:
-    // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+    // look at how ComputeArray and ComputeStationary are implemented in
+    // CodonSubMatrix.cpp
 
     void ComputeArray(int i) override;
     void ComputeStationary() override;
-    void SetFitnessProfile(double* infitness) { fitness = infitness; }
-    void SetCodonUsageSelection(double* incodonusageselection) {
+    void SetFitnessProfile(double *infitness) { fitness = infitness; }
+    void SetCodonUsageSelection(double *incodonusageselection) {
         codonusageselection = incodonusageselection;
     }
 
     // data members
-    double* fitness;
-    double* codonusageselection;
+    double *fitness;
+    double *codonusageselection;
 };
-
 
 // if selection profiles and codonusageselection is of type Dirichlet
 class RandomMGSRFitnessCodonUsageSubMatrix : public MGSRFitnessCodonUsageSubMatrix,
                                              public RandomCodonSubMatrix {
   public:
-    RandomMGSRFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix,
-                                         Var<Profile>* inRandomFitnessProfile,
-                                         Var<Profile>* inRandomCodonUsageSelection,
+    RandomMGSRFitnessCodonUsageSubMatrix(CodonStateSpace *instatespace, RandomSubMatrix *inmatrix,
+                                         Var<Profile> *inRandomFitnessProfile,
+                                         Var<Profile> *inRandomCodonUsageSelection,
                                          bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -363,11 +363,13 @@ class RandomMGSRFitnessCodonUsageSubMatrix : public MGSRFitnessCodonUsageSubMatr
         specialUpdate();
     }
 
-    CodonStateSpace* GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
+    CodonStateSpace *GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
 
     // before updating the matrix instant rates and stationary probabilities
-    // we need to check that we are pointing on the right nucleotide mutation process
-    // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
+    // we need to check that we are pointing on the right nucleotide mutation
+    // process
+    // and we need to update the value of fitness profile stored by the
+    // MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
     void SetParameters() override {
@@ -377,17 +379,16 @@ class RandomMGSRFitnessCodonUsageSubMatrix : public MGSRFitnessCodonUsageSubMatr
     }
 
   protected:
-    RandomSubMatrix* matrix;
-    Var<Profile>* RandomFitnessProfile;
-    Var<Profile>* RandomCodonUsageSelection;
+    RandomSubMatrix *matrix;
+    Var<Profile> *RandomFitnessProfile;
+    Var<Profile> *RandomCodonUsageSelection;
 };
-
 
 // mutation selection
 class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
   public:
-    MGMSFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, SubMatrix* inNucMatrix,
-                                   double* infitness, double* incodonusageselection,
+    MGMSFitnessCodonUsageSubMatrix(CodonStateSpace *instatespace, SubMatrix *inNucMatrix,
+                                   double *infitness, double *incodonusageselection,
                                    bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -395,23 +396,22 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
           fitness(infitness),
           codonusageselection(incodonusageselection) {}
 
-
     double GetFitness(int aastate) { return fitness[aastate] + 1e-6; }
 
     double GetCodonUsageSelection(int codonstate) { return codonusageselection[codonstate]; }
 
-
   protected:
-    // look at how ComputeArray and ComputeStationary are implemented in CodonSubMatrix.cpp
+    // look at how ComputeArray and ComputeStationary are implemented in
+    // CodonSubMatrix.cpp
 
     void ComputeArray(int i) override;
     void ComputeStationary() override;
-    void SetFitnessProfile(double* infitness) { fitness = infitness; }
-    void SetCodonUsageSelection(double* incodonusageselection) {
+    void SetFitnessProfile(double *infitness) { fitness = infitness; }
+    void SetCodonUsageSelection(double *incodonusageselection) {
         codonusageselection = incodonusageselection;
     }
 
-    void ToStream(std::ostream& /*os*/) override {  // FIXME unused parameter
+    void ToStream(std::ostream & /*os*/) override {  // FIXME unused parameter
         std::cerr << "nucmatrix : \n";
         NucMatrix->CheckReversibility();
         std::cerr << '\n';
@@ -482,18 +482,17 @@ class MGMSFitnessCodonUsageSubMatrix : public MGCodonSubMatrix {
     }
 
     // data members
-    double* fitness;
-    double* codonusageselection;
+    double *fitness;
+    double *codonusageselection;
 };
-
 
 // if selection profiles and codonusageselection is of type Dirichlet
 class RandomMGMSFitnessCodonUsageSubMatrix : public MGMSFitnessCodonUsageSubMatrix,
                                              public RandomCodonSubMatrix {
   public:
-    RandomMGMSFitnessCodonUsageSubMatrix(CodonStateSpace* instatespace, RandomSubMatrix* inmatrix,
-                                         Var<Profile>* inRandomFitnessProfile,
-                                         Var<Profile>* inRandomCodonUsageSelection,
+    RandomMGMSFitnessCodonUsageSubMatrix(CodonStateSpace *instatespace, RandomSubMatrix *inmatrix,
+                                         Var<Profile> *inRandomFitnessProfile,
+                                         Var<Profile> *inRandomCodonUsageSelection,
                                          bool innormalise = false)
         : SubMatrix(instatespace->GetNstate(), innormalise),
           CodonSubMatrix(instatespace, innormalise),
@@ -511,11 +510,13 @@ class RandomMGMSFitnessCodonUsageSubMatrix : public MGMSFitnessCodonUsageSubMatr
         specialUpdate();
     }
 
-    CodonStateSpace* GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
+    CodonStateSpace *GetCodonStateSpace() { return RandomCodonSubMatrix::GetCodonStateSpace(); }
 
     // before updating the matrix instant rates and stationary probabilities
-    // we need to check that we are pointing on the right nucleotide mutation process
-    // and we need to update the value of fitness profile stored by the MGFitnessCodonSubMatrix
+    // we need to check that we are pointing on the right nucleotide mutation
+    // process
+    // and we need to update the value of fitness profile stored by the
+    // MGFitnessCodonSubMatrix
     // object,
     // based on the value stored by the RandomFitnessprofile parent
     void SetParameters() override {
@@ -525,10 +526,9 @@ class RandomMGMSFitnessCodonUsageSubMatrix : public MGMSFitnessCodonUsageSubMatr
     }
 
   protected:
-    RandomSubMatrix* matrix;
-    Var<Profile>* RandomFitnessProfile;
-    Var<Profile>* RandomCodonUsageSelection;
+    RandomSubMatrix *matrix;
+    Var<Profile> *RandomFitnessProfile;
+    Var<Profile> *RandomCodonUsageSelection;
 };
-
 
 #endif

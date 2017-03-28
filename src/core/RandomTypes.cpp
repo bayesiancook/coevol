@@ -3,13 +3,12 @@
 #include "utils/Random.hpp"
 using namespace std;
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Normal
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-Normal::Normal(Var<Real>* inmean, Var<PosReal>* invariance) {
+Normal::Normal(Var<Real> *inmean, Var<PosReal> *invariance) {
     SetName("normal");
     meanvec = nullptr;
     mean = inmean;
@@ -19,7 +18,7 @@ Normal::Normal(Var<Real>* inmean, Var<PosReal>* invariance) {
     Sample();
 }
 
-Normal::Normal(Var<RealVector>* inmeanvec, Var<PosReal>* invariance, int inindex) {
+Normal::Normal(Var<RealVector> *inmeanvec, Var<PosReal> *invariance, int inindex) {
     mean = nullptr;
     meanvec = inmeanvec;
     variance = invariance;
@@ -60,7 +59,6 @@ void Normal::drawSample() {
     }
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Gamma
@@ -68,7 +66,7 @@ void Normal::drawSample() {
 //-------------------------------------------------------------------------
 const double Gamma::GAMMAMIN = 1e-20;
 
-Gamma::Gamma(Var<PosReal>* inshape, Var<PosReal>* inscale, bool inmeanvar) {
+Gamma::Gamma(Var<PosReal> *inshape, Var<PosReal> *inscale, bool inmeanvar) {
     SetName("gamma");
     meanvar = inmeanvar;
     scale = inscale;
@@ -78,7 +76,7 @@ Gamma::Gamma(Var<PosReal>* inshape, Var<PosReal>* inscale, bool inmeanvar) {
     Sample();
 }
 
-Gamma::Gamma(const Gamma& from) : Rvar<PosReal>() {
+Gamma::Gamma(const Gamma &from) : Rvar<PosReal>() {
     SetName("gamma");
     meanvar = from.meanvar;
     scale = from.scale;
@@ -118,13 +116,12 @@ double Gamma::logProb() {
            *this * (scale->val()) - (1 - (shape->val())) * log(*this);
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Beta
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-Beta::Beta(Var<PosReal>* inalpha, Var<PosReal>* inbeta) {
+Beta::Beta(Var<PosReal> *inalpha, Var<PosReal> *inbeta) {
     SetName("beta");
     alpha = inalpha;
     beta = inbeta;
@@ -133,7 +130,7 @@ Beta::Beta(Var<PosReal>* inalpha, Var<PosReal>* inbeta) {
     Sample();
 }
 
-Beta::Beta(const Beta& from) : Rvar<UnitReal>() {
+Beta::Beta(const Beta &from) : Rvar<UnitReal>() {
     alpha = from.alpha;
     beta = from.beta;
     Register(alpha);
@@ -163,13 +160,12 @@ double Beta::logProb() {
            (beta->val() - 1) * log(1 - *this);
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Exponential
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-Exponential::Exponential(Var<PosReal>* inscale, ParentType intype) {
+Exponential::Exponential(Var<PosReal> *inscale, ParentType intype) {
     SetName("exponential");
     scale = inscale;
     type = intype;
@@ -177,7 +173,7 @@ Exponential::Exponential(Var<PosReal>* inscale, ParentType intype) {
     Sample();
 }
 
-Exponential::Exponential(const Exponential& from) : Rvar<PosReal>() {
+Exponential::Exponential(const Exponential &from) : Rvar<PosReal>() {
     SetName("exponential");
     scale = from.scale;
     Register(scale);
@@ -199,20 +195,19 @@ double Exponential::logProb() {
     return -(scale->val()) * val() + log(scale->val());
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* PosUniform
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-PosUniform::PosUniform(Var<PosReal>* inroot, double inmax) {
+PosUniform::PosUniform(Var<PosReal> *inroot, double inmax) {
     root = inroot;
     max = inmax;
     Register(root);
     Sample();
 }
 
-PosUniform::PosUniform(const PosUniform& from) : Rvar<PosReal>() {
+PosUniform::PosUniform(const PosUniform &from) : Rvar<PosReal>() {
     root = from.root;
     max = from.max;
     Register(root);
@@ -234,14 +229,13 @@ double PosUniform::logProb() {
     return 0;
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Binomial
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
-Binomial::Binomial(int inN, Var<UnitReal>* intheta) {
+Binomial::Binomial(int inN, Var<UnitReal> *intheta) {
     SetName("binomial");
     N = inN;
     theta = intheta;
@@ -275,13 +269,12 @@ double Binomial::ProposeMove(double /*tuning*/) {
     return 0;
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Poisson
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-Poisson::Poisson(Var<PosReal>* inmu) {
+Poisson::Poisson(Var<PosReal> *inmu) {
     SetName("poisson");
     mu = inmu;
     Register(mu);
@@ -318,7 +311,6 @@ double Poisson::logProb() {
         return 0;
 }*/
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Dirichlet
@@ -336,7 +328,7 @@ Dirichlet::Dirichlet(int dimension) {
     Sample();
 }
 
-Dirichlet::Dirichlet(Var<Profile>* incenter, Var<PosReal>* inconcentration) {
+Dirichlet::Dirichlet(Var<Profile> *incenter, Var<PosReal> *inconcentration) {
     setval(Profile(incenter->val()));
     bkvalue = Profile(incenter->val());
     center = incenter;
@@ -347,7 +339,7 @@ Dirichlet::Dirichlet(Var<Profile>* incenter, Var<PosReal>* inconcentration) {
 }
 
 void Dirichlet::drawSample() {
-    Profile& profile = *this;
+    Profile &profile = *this;
     double total = 0;
     for (int k = 0; k < GetDim(); k++) {
         if (concentration != nullptr) {
@@ -400,7 +392,7 @@ double Dirichlet::logProb() {
     return total;
 }
 
-Multinomial::Multinomial(Var<Profile>* inprobarray, int inN) {
+Multinomial::Multinomial(Var<Profile> *inprobarray, int inN) {
     probarray = inprobarray;
     N = inN;
     setval(IntVector(inprobarray->val().GetDim()));
@@ -427,13 +419,12 @@ void Multinomial::drawSample() {
     }
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* FiniteDiscrete
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-FiniteDiscrete::FiniteDiscrete(Var<Profile>* inprobarray) {
+FiniteDiscrete::FiniteDiscrete(Var<Profile> *inprobarray) {
     probarray = inprobarray;
     Register(probarray);
     Sample();
@@ -444,7 +435,6 @@ double FiniteDiscrete::logProb() { return log((*probarray)[*this]); }
 void FiniteDiscrete::drawSample() {
     setval(Random::FiniteDiscrete(probarray->GetDim(), probarray->val().GetArray()));
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -459,7 +449,7 @@ IIDExp::IIDExp(int dimension) {
     Sample();
 }
 
-IIDExp::IIDExp(int dimension, Var<PosReal>* inmean) {
+IIDExp::IIDExp(int dimension, Var<PosReal> *inmean) {
     dim = dimension;
     setval(PosRealVector(dimension));
     bkvalue = PosRealVector(dimension);
@@ -494,7 +484,6 @@ double IIDExp::logProb() {
     return total;
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* IIDGamma
@@ -509,7 +498,7 @@ IIDGamma::IIDGamma(int dimension) {
     Sample();
 }
 
-IIDGamma::IIDGamma(int dimension, Var<PosReal>* inalpha, Var<PosReal>* inbeta) {
+IIDGamma::IIDGamma(int dimension, Var<PosReal> *inalpha, Var<PosReal> *inbeta) {
     dim = dimension;
     setval(PosRealVector(dimension));
     bkvalue = PosRealVector(dimension);

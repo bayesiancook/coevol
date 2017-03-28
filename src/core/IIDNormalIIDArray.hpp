@@ -4,10 +4,9 @@
 #include "IID.hpp"
 #include "Normal.hpp"
 
-
 class IIDNormalIIDArray : public IIDArray<RealVector> {
   public:
-    IIDNormalIIDArray(int insize, int indim, Var<Real>* inmean, Var<PosReal>* invariance)
+    IIDNormalIIDArray(int insize, int indim, Var<Real> *inmean, Var<PosReal> *invariance)
         : IIDArray<RealVector>(insize) {
         mean = inmean;
         variance = invariance;
@@ -47,9 +46,7 @@ class IIDNormalIIDArray : public IIDArray<RealVector> {
         return tot / GetSize();
     }
 
-
-    IIDNormal* GetNormalVal(int site) { return dynamic_cast<IIDNormal*>(GetVal(site)); }
-
+    IIDNormal *GetNormalVal(int site) { return dynamic_cast<IIDNormal *>(GetVal(site)); }
 
     double GetMeanVar() {
         double mean = 0;
@@ -60,21 +57,19 @@ class IIDNormalIIDArray : public IIDArray<RealVector> {
         return mean;
     }
 
-
   protected:
-    Rvar<RealVector>* CreateVal(int /*site*/) override {
+    Rvar<RealVector> *CreateVal(int /*site*/) override {
         return new IIDNormal(dim, mean, variance);
     }
 
-    Var<Real>* mean;
-    Var<PosReal>* variance;
+    Var<Real> *mean;
+    Var<PosReal> *variance;
     int dim;
 };
 
-
 class IIDNormalIIDArrayMove : public MCUpdate {
   public:
-    IIDNormalIIDArrayMove(IIDNormalIIDArray* inselectarray, double intuning, int inm) {
+    IIDNormalIIDArrayMove(IIDNormalIIDArray *inselectarray, double intuning, int inm) {
         selectarray = inselectarray;
         tuning = intuning;
         m = inm;
@@ -85,7 +80,7 @@ class IIDNormalIIDArrayMove : public MCUpdate {
     }
 
   private:
-    IIDNormalIIDArray* selectarray;
+    IIDNormalIIDArray *selectarray;
     double tuning;
     int m;
 };

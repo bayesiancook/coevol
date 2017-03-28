@@ -6,7 +6,6 @@ using namespace std;
 
 #include "core/ProbModel.hpp"
 
-
 ProbModel::ProbModel() : scheduler(this) {}
 
 ProbModel::~ProbModel() = default;
@@ -19,12 +18,12 @@ bool ProbModel::CheckUpdateFlags() {
     return ret;
 }
 
-void ProbModel::Register(DAGnode* var) { state.insert(var); }
+void ProbModel::Register(DAGnode *var) { state.insert(var); }
 
-void ProbModel::RootRegister(DAGnode* var) { root.insert(var); }
+void ProbModel::RootRegister(DAGnode *var) { root.insert(var); }
 
 void ProbModel::Corrupt() {
-    map<DAGnode*, int> m;
+    map<DAGnode *, int> m;
     for (auto i : root) {
         i->FullCorrupt(m);
     }
@@ -74,7 +73,7 @@ double ProbModel::Move(double tuning_modulator, int ncycle, bool verbose, bool c
     return 1;
 }
 
-void ProbModel::Monitor(ostream& os, ostream& osdetail) {
+void ProbModel::Monitor(ostream &os, ostream &osdetail) {
     scheduler.ToStream(os, osdetail);
     Details(osdetail);
 }

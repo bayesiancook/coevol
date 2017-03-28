@@ -5,8 +5,7 @@
 #include "utils/Random.hpp"
 using namespace std;
 
-
-CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool force_stops,
+CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment *from, bool force_stops,
                                                GeneticCodeType type) {
     try {
         DNAsource = from;
@@ -25,7 +24,7 @@ CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool for
 
         // make my own arrays
         // make translation
-        Data = new int*[Ntaxa];
+        Data = new int *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             Data[i] = new int[Nsite];
             for (int j = 0; j < Nsite; j++) {
@@ -37,7 +36,8 @@ CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool for
                         if ((DNAsource->GetState(i, 3 * j) != -1) &&
                             (DNAsource->GetState(i, 3 * j + 1) != -1) &&
                             (DNAsource->GetState(i, 3 * j + 2) != -1)) {
-                            // cerr << "in CodonSequenceAlignment: taxon " << taxset->GetTaxon(i) <<
+                            // cerr << "in CodonSequenceAlignment: taxon " <<
+                            // taxset->GetTaxon(i) <<
                             // " and codon " << j+1 << " (site " << 3*j+1 << ") :";
                             // cerr << nucspace->GetState(DNAsource->GetState(i, 3*j)) <<
                             // nucspace->GetState(DNAsource->GetState(i, 3*j+1)) <<
@@ -46,7 +46,8 @@ CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool for
                     }
                 } catch (...) {
                     // catch(Exception e)	{
-                    // cerr << "in CodonSequenceAlignment: taxon " << i << " and codon " << j << "
+                    // cerr << "in CodonSequenceAlignment: taxon " << i << " and codon "
+                    // << j << "
                     // (site " << 3*j << ")\n";
                     // cerr << "taxon : " << taxset->GetTaxon(i) << '\n';
                     if (force_stops) {
@@ -65,8 +66,7 @@ CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool for
     }
 }
 
-
-void CodonSequenceAlignment::ToStreamRandomJackknife(ostream& os, double p) {
+void CodonSequenceAlignment::ToStreamRandomJackknife(ostream &os, double p) {
     auto included = new int[Nsite];
     int ninc = 0;
     for (int i = 0; i < Nsite; i++) {
@@ -100,7 +100,7 @@ void CodonSequenceAlignment::ToStreamRandomJackknife(ostream& os, double p) {
     delete[] included;
 }
 
-void CodonSequenceAlignment::ToStream(ostream& os) {
+void CodonSequenceAlignment::ToStream(ostream &os) {
     os << Ntaxa << '\t' << 3 * Nsite << '\n';
     int max = 0;
     for (int i = 0; i < Ntaxa; i++) {
@@ -123,7 +123,7 @@ void CodonSequenceAlignment::ToStream(ostream& os) {
     os << '\n';
 }
 
-void CodonSequenceAlignment::ToStream(ostream& os, int pos) {
+void CodonSequenceAlignment::ToStream(ostream &os, int pos) {
     int included = 0;
     for (int i = 0; i < Nsite; i++) {
         if (!AllMissingColumn(i)) {
@@ -156,7 +156,7 @@ void CodonSequenceAlignment::ToStream(ostream& os, int pos) {
     os << '\n';
 }
 
-void CodonSequenceAlignment::ToStreamFourFoldThird(ostream& os) {
+void CodonSequenceAlignment::ToStreamFourFoldThird(ostream &os) {
     int nsite = 0;
     auto included = new int[Nsite];
     for (int j = 0; j < Nsite; j++) {
@@ -199,7 +199,7 @@ void CodonSequenceAlignment::ToStreamFourFoldThird(ostream& os) {
     os << '\n';
 }
 
-void CodonSequenceAlignment::ToStreamFourFoldTriplet(ostream& os) {
+void CodonSequenceAlignment::ToStreamFourFoldTriplet(ostream &os) {
     int nsite = 0;
     auto included = new int[Nsite];
     for (int j = 0; j < Nsite; j++) {
@@ -241,7 +241,7 @@ void CodonSequenceAlignment::ToStreamFourFoldTriplet(ostream& os) {
     os << '\n';
 }
 
-void CodonSequenceAlignment::ToStreamFourFoldThirdwoCpG(ostream& os) {
+void CodonSequenceAlignment::ToStreamFourFoldThirdwoCpG(ostream &os) {
     int nsite = 0;
     auto included = new int[Nsite];
     for (int j = 0; j < Nsite - 1; j++) {
@@ -254,11 +254,13 @@ void CodonSequenceAlignment::ToStreamFourFoldThirdwoCpG(ostream& os) {
                     // if ( (GetState(i,j-1) != -2) && (GetState(i,j-1) != -1) &&
                     // (GetCodonStateSpace()->GetCodonPosition(2,GetState(i,j-1)) != 1)
                     //  && (GetState(i,j+1) != -2) && (GetState(i,j+1) != -1) &&
-                    //  (GetCodonStateSpace()->GetCodonPosition(0,GetState(i,j+1)) != 2) )  {
+                    //  (GetCodonStateSpace()->GetCodonPosition(0,GetState(i,j+1)) != 2) )
+                    //  {
                     // if (((GetState(i,j-1) == -1) ||
                     // (GetCodonStateSpace()->GetCodonPosition(2,GetState(i,j-1)) != 1))
                     //  && ((GetState(i,j+1) == -1) ||
-                    //  (GetCodonStateSpace()->GetCodonPosition(0,GetState(i,j+1)) != 2) ) ) {
+                    //  (GetCodonStateSpace()->GetCodonPosition(0,GetState(i,j+1)) != 2) )
+                    //  ) {
                     if ((GetCodonStateSpace()->GetCodonPosition(1, GetState(i, j)) == 1) ||
                         (GetCodonStateSpace()->GetCodonPosition(0, GetState(i, j + 1)) == 2)) {
                         keep = false;
@@ -277,7 +279,8 @@ void CodonSequenceAlignment::ToStreamFourFoldThirdwoCpG(ostream& os) {
         /*
           while (((i<Ntaxa) && (GetState(i,j) != -2) && ((GetState(i,j) == -1) ||
           (GetCodonStateSpace()->GetDegeneracy(GetState(i,j)) == 4)))	&&
-          // testing for absence of C in 3d position of previous codon and absence of G in 1st
+          // testing for absence of C in 3d position of previous codon and absence
+          of G in 1st
           position of next codon
           ( (GetState(i,j-1) != -2) && (GetState(i,j-1) != -1) &&
           (GetCodonStateSpace()->GetCodonPosition(2,GetState(i,j-1)) != 1)
@@ -321,7 +324,8 @@ void CodonSequenceAlignment::ToStreamFourFoldThirdwoCpG(ostream& os) {
     os << '\n';
 }
 /*
-  void CodonSequenceAlignment::GetPairwiseDiff(int tax1, int tax2, double& tss, double& tsn, double&
+  void CodonSequenceAlignment::GetPairwiseDiff(int tax1, int tax2, double& tss,
+  double& tsn, double&
   tvs, double& tvn)	{
 
   tss = 0;

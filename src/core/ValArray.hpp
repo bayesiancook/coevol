@@ -17,7 +17,7 @@ class VarArray : public virtual AbstractArray {
   public:
     ~VarArray() override = default;
 
-    virtual Var<V>* GetVal(int site) = 0;
+    virtual Var<V> *GetVal(int site) = 0;
 
     void SetName(std::string inname) {
         for (int i = 0; i < GetSize(); i++) {
@@ -25,36 +25,36 @@ class VarArray : public virtual AbstractArray {
         }
     }
 
-    void ToStream(std::ostream& os) {
+    void ToStream(std::ostream &os) {
         for (int i = 0; i < GetSize(); i++) {
             os << *(GetVal(i)) << '\t';
         }
         os << '\n';
     }
 
-    void FromStream(std::istream& is) {
+    void FromStream(std::istream &is) {
         for (int i = 0; i < GetSize(); i++) {
             is >> *(GetVal(i));
         }
     }
 
-    friend std::ostream& operator<<(std::ostream& os, VarArray<V>& a) {
+    friend std::ostream &operator<<(std::ostream &os, VarArray<V> &a) {
         a.ToStream(os);
         return os;
     }
 
-    friend std::istream& operator>>(std::istream& is, VarArray<V>& a) {
+    friend std::istream &operator>>(std::istream &is, VarArray<V> &a) {
         a.FromStream(is);
         return is;
     }
 
-    void RegisterChild(DAGnode* node) {
+    void RegisterChild(DAGnode *node) {
         for (int i = 0; i < this->GetSize(); i++) {
             node->Register(this->GetVal(i));
         }
     }
 
-    virtual void RegisterArray(DAGnode* in) {
+    virtual void RegisterArray(DAGnode *in) {
         for (int i = 0; i < GetSize(); i++) {
             GetVal(i)->Register(in);
         }
@@ -69,7 +69,7 @@ class RandomVarArray : public VarArray<V>, public MCMC {
 template <>
 class RandomVarArray<PosReal> : public VarArray<PosReal>, public MCMC, public Multiplicative {
   public:
-    void Register(DAGnode* in) override { RegisterArray(in); }
+    void Register(DAGnode *in) override { RegisterArray(in); }
 
     int ScalarMultiplication(double d) override {
         for (int i = 0; i < GetSize(); i++) {
@@ -79,13 +79,12 @@ class RandomVarArray<PosReal> : public VarArray<PosReal>, public MCMC, public Mu
     }
 };
 
-
 template <class T>
 class _ValPtrArray : public virtual AbstractArray {
   public:
     _ValPtrArray(int insize) {
         size = insize;
-        array = new T*[size];
+        array = new T *[size];
         for (int i = 0; i < GetSize(); i++) {
             array[i] = 0;
         }
@@ -101,10 +100,10 @@ class _ValPtrArray : public virtual AbstractArray {
 
     int GetSize() override { return size; }
 
-    T* GetVal(int site) { return array[site]; }
+    T *GetVal(int site) { return array[site]; }
 
-    T* operator[](int site) { return GetVal(site); }
-    void SetVal(int site, T* in) { array[site] = in; }
+    T *operator[](int site) { return GetVal(site); }
+    void SetVal(int site, T *in) { array[site] = in; }
 
     void Create() {
         for (int i = 0; i < GetSize(); i++) {
@@ -133,7 +132,8 @@ class _ValPtrArray : public virtual AbstractArray {
       }
       }
 
-      friend std::ostream& operator<<(std::ostream& os, _ValPtrArray<T>& a)	{
+      friend std::ostream& operator<<(std::ostream& os, _ValPtrArray<T>& a)
+      {
       a.ToStream(os);
       return os;
       }
@@ -145,12 +145,11 @@ class _ValPtrArray : public virtual AbstractArray {
     */
 
   protected:
-    virtual T* CreateVal(int site) = 0;
+    virtual T *CreateVal(int site) = 0;
 
     int size;
-    T** array;
+    T **array;
 };
-
 
 template <class T>
 class ValPtrArray : public _ValPtrArray<T> {
@@ -158,21 +157,19 @@ class ValPtrArray : public _ValPtrArray<T> {
 };
 
 template <class V>
-class ValPtrArray<Rvar<V> > : public _ValPtrArray<Rvar<V> >, public virtual RandomVarArray<V> {
+class ValPtrArray<Rvar<V>> : public _ValPtrArray<Rvar<V>>, public virtual RandomVarArray<V> {
   public:
-    ValPtrArray<Rvar<V> >(int insize) : _ValPtrArray<Rvar<V> >(insize) {}
+    ValPtrArray<Rvar<V>>(int insize) : _ValPtrArray<Rvar<V>>(insize) {}
 
-    virtual Rvar<V>* GetVal(int site) { return _ValPtrArray<Rvar<V> >::GetVal(site); }
+    virtual Rvar<V> *GetVal(int site) { return _ValPtrArray<Rvar<V>>::GetVal(site); }
 };
-
 
 template <class V>
-class ValPtrArray<Dvar<V> > : public _ValPtrArray<Dvar<V> >, public virtual VarArray<V> {
+class ValPtrArray<Dvar<V>> : public _ValPtrArray<Dvar<V>>, public virtual VarArray<V> {
   public:
-    ValPtrArray<Dvar<V> >(int insize) : _ValPtrArray<Dvar<V> >(insize) {}
+    ValPtrArray<Dvar<V>>(int insize) : _ValPtrArray<Dvar<V>>(insize) {}
 
-    virtual Dvar<V>* GetVal(int site) { return _ValPtrArray<Dvar<V> >::GetVal(site); }
+    virtual Dvar<V> *GetVal(int site) { return _ValPtrArray<Dvar<V>>::GetVal(site); }
 };
-
 
 #endif

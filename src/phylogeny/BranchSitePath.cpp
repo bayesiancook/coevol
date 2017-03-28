@@ -15,7 +15,7 @@ BranchSitePath::BranchSitePath() {
     nsub = 0;
 }
 
-BranchSitePath::BranchSitePath(StateSpace* instatespace) {
+BranchSitePath::BranchSitePath(StateSpace *instatespace) {
     statespace = instatespace;
     init = last = new Plink;
     nsub = 0;
@@ -27,9 +27,9 @@ BranchSitePath::~BranchSitePath() {
 }
 
 void BranchSitePath::Reset(int state) {
-    Plink* link = last;
+    Plink *link = last;
     while (link != init) {
-        Plink* prev = link->Prev();
+        Plink *prev = link->Prev();
         delete link;
         link = prev;
     }
@@ -40,9 +40,9 @@ void BranchSitePath::Reset(int state) {
 }
 
 void BranchSitePath::BKReset(int state) {
-    Plink* link = bklast;
+    Plink *link = bklast;
     while (link != bkinit) {
-        Plink* prev = link->Prev();
+        Plink *prev = link->Prev();
         delete link;
         link = prev;
     }
@@ -54,7 +54,7 @@ void BranchSitePath::BKReset(int state) {
 
 void BranchSitePath::BackupPath() {
     BKReset(init->GetState());
-    Plink* link = init;
+    Plink *link = init;
     while (link != last) {
         BKAppend(link->Next()->GetState(), link->GetRelativeTime());
         link = link->Next();
@@ -65,7 +65,7 @@ void BranchSitePath::BackupPath() {
 
 void BranchSitePath::RestorePath() {
     Reset(bkinit->GetState());
-    Plink* link = bkinit;
+    Plink *link = bkinit;
     while (link != bklast) {
         Append(link->Next()->GetState(), link->GetRelativeTime());
         link = link->Next();
@@ -79,7 +79,7 @@ string BranchSitePath::ToString(bool redundant) {
     if (redundant) {
         s << GetCharFinalState() << ':';
     }
-    Plink* link = last;
+    Plink *link = last;
     while (link != nullptr) {
         if (link != last) {
             s << ':' << GetState(link->Next()) << ':' << GetAbsoluteTime(link);
@@ -100,9 +100,9 @@ string BranchSitePath::ToString(bool redundant) {
     return s.str();
 }
 
-void BranchSitePath::AddCounts(int** paircounts, int* statecounts) {
+void BranchSitePath::AddCounts(int **paircounts, int *statecounts) {
     if (last->GetRelativeTime() != 0.0) {
-        Plink* link = init;
+        Plink *link = init;
         while (link != last) {
             paircounts[link->GetState(), link->Next()->GetState()]++;
             statecounts[link->Next()->GetState()]++;
@@ -113,8 +113,7 @@ void BranchSitePath::AddCounts(int** paircounts, int* statecounts) {
     }
 }
 
-
-void BranchSitePath::Prefix(BranchSitePath* p, BranchSitePath* root, double abstime) {
+void BranchSitePath::Prefix(BranchSitePath *p, BranchSitePath *root, double abstime) {
     if ((init->GetState() != root->init->GetState()) ||
         (p->init->GetState() != root->init->GetState())) {
         cerr << "error in prefix: no matching states at root\n";
@@ -146,7 +145,7 @@ void BranchSitePath::Prefix(BranchSitePath* p, BranchSitePath* root, double abst
             init->SetRelativeTime(init->GetRelativeTime() + dt);
 
             // splice first link of p
-            Plink* tmp = p->init->next;
+            Plink *tmp = p->init->next;
             if (tmp == nullptr) {
                 cerr << "error : next is 0\n";
                 exit(1);
@@ -182,7 +181,7 @@ void BranchSitePath::SetTimesRelativeToAbsolute() {
         cerr << GetTotalTime() << '\n';
         exit(1);
     }
-    Plink* link = init;
+    Plink *link = init;
     double totaltime = GetTotalTime();
     while (link != last) {
         link->SetRelativeTime(link->GetRelativeTime() * totaltime);
@@ -191,16 +190,16 @@ void BranchSitePath::SetTimesRelativeToAbsolute() {
     link->SetRelativeTime(link->GetRelativeTime() * totaltime);
 }
 
-
 void BranchSitePath::SetTimesAbsoluteToRelative() {
     /*
       if (fabs(CheckTotalTime() - GetTotalTime()) > 1e-6)	{
-      cerr << "error in BranchSitePath: relative time does not sum to what it should : " <<
+      cerr << "error in BranchSitePath: relative time does not sum to what it
+      should : " <<
       CheckTotalTime() << '\t' << GetTotalTime() << '\n';
       exit(1);
       }
     */
-    Plink* link = init;
+    Plink *link = init;
     double totaltime = CheckTotalTime();
     while (link != last) {
         link->SetRelativeTime(link->GetRelativeTime() / totaltime);
@@ -211,7 +210,7 @@ void BranchSitePath::SetTimesAbsoluteToRelative() {
 
 double BranchSitePath::CheckTotalTime() {
     double tot = 0;
-    Plink* link = init;
+    Plink *link = init;
     while (link != last) {
         if (link == nullptr) {
             cerr << "error : null link\n";

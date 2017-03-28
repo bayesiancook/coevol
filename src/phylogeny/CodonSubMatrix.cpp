@@ -46,10 +46,10 @@ void MGCodonSubMatrix::ComputeNucArrays() {
             }
         }
     }
-    const double* stat = NucMatrix->GetStationary();
-    const int* stoppos1 = GetCodonStateSpace()->GetStopPos1();
-    const int* stoppos2 = GetCodonStateSpace()->GetStopPos2();
-    const int* stoppos3 = GetCodonStateSpace()->GetStopPos3();
+    const double *stat = NucMatrix->GetStationary();
+    const int *stoppos1 = GetCodonStateSpace()->GetStopPos1();
+    const int *stoppos2 = GetCodonStateSpace()->GetStopPos2();
+    const int *stoppos3 = GetCodonStateSpace()->GetStopPos3();
     stopstat = 0;
     for (int i = 0; i < GetCodonStateSpace()->GetNstop(); i++) {
         stopstat += stat[stoppos1[i]] * stat[stoppos2[i]] * stat[stoppos3[i]];
@@ -87,7 +87,6 @@ void MGOmegaCodonSubMatrix::ComputeArray(int i) {
     }
 }
 
-
 void MGOmegaCodonSubMatrix::ComputeNucArrays() {
     for (int i = 0; i < Nnuc; i++) {
         for (int j = 0; j < Nnuc; j++) {
@@ -97,16 +96,15 @@ void MGOmegaCodonSubMatrix::ComputeNucArrays() {
             }
         }
     }
-    const double* stat = NucMatrix->GetStationary();
-    const int* stoppos1 = GetCodonStateSpace()->GetStopPos1();
-    const int* stoppos2 = GetCodonStateSpace()->GetStopPos2();
-    const int* stoppos3 = GetCodonStateSpace()->GetStopPos3();
+    const double *stat = NucMatrix->GetStationary();
+    const int *stoppos1 = GetCodonStateSpace()->GetStopPos1();
+    const int *stoppos2 = GetCodonStateSpace()->GetStopPos2();
+    const int *stoppos3 = GetCodonStateSpace()->GetStopPos3();
     stopstat = 0;
     for (int i = 0; i < GetCodonStateSpace()->GetNstop(); i++) {
         stopstat += stat[stoppos1[i]] * stat[stoppos2[i]] * stat[stoppos3[i]];
     }
 }
-
 
 void AminoAcidReducedCodonSubMatrix::ComputeStationary() {
     // Stat[a] = \sum_{i|a} CodonStat[i]

@@ -13,14 +13,14 @@ class SiteMapping {
   public:
     virtual ~SiteMapping() = default;
 
-    virtual BranchSitePath* GetPath(const Branch* branch) = 0;
-    virtual Tree* GetTree() = 0;
-    Link* GetRoot();
+    virtual BranchSitePath *GetPath(const Branch *branch) = 0;
+    virtual Tree *GetTree() = 0;
+    Link *GetRoot();
 
-    virtual void Print(std::ostream& os, bool redundant);
-    void Print(std::ostream& os, Link* from, bool redundant);
+    virtual void Print(std::ostream &os, bool redundant);
+    void Print(std::ostream &os, Link *from, bool redundant);
 };
 
-inline Link* SiteMapping::GetRoot() { return GetTree()->GetRoot(); }
+inline Link *SiteMapping::GetRoot() { return GetTree()->GetRoot(); }
 
 #endif  // SITEMAPPING_H

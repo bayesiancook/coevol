@@ -3,28 +3,25 @@
 #include "utils/Random.hpp"
 using namespace std;
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Additive
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-void Additive::Register(DAGnode* /*unused*/) {
+void Additive::Register(DAGnode * /*unused*/) {
     cerr << "error in Additive::Register\n";
     throw;
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Multiplicative
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-void Multiplicative::Register(DAGnode* /*unused*/) {
+void Multiplicative::Register(DAGnode * /*unused*/) {
     cerr << "error in Multiplicative::Register\n";
     throw;
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -45,11 +42,10 @@ double Real::ProposeMove(double tuning) {
 
 int Real::check() { return 1; }
 
-istream& operator>>(istream& is, Real& r) {
+istream &operator>>(istream &is, Real &r) {
     is >> r.value;
     return is;
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -73,11 +69,10 @@ double UnitReal::ProposeMove(double tuning) {
 
 int UnitReal::check() { return 1; }
 
-istream& operator>>(istream& is, UnitReal& r) {
+istream &operator>>(istream &is, UnitReal &r) {
     is >> r.value;
     return is;
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -104,11 +99,10 @@ int PosReal::check() {
     return 1;
 }
 
-istream& operator>>(istream& is, PosReal& r) {
+istream &operator>>(istream &is, PosReal &r) {
     is >> r.value;
     return is;
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -124,11 +118,10 @@ double Int::ProposeMove(double /*tuning*/) {
     return 0;
 }
 
-istream& operator>>(istream& is, Int& r) {
+istream &operator>>(istream &is, Int &r) {
     is >> r.value;
     return is;
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
@@ -137,7 +130,7 @@ istream& operator>>(istream& is, Int& r) {
 //-------------------------------------------------------------------------
 const double Profile::MIN = 1e-20;
 
-Profile::Profile(int indim, double* v) {
+Profile::Profile(int indim, double *v) {
     profile.assign(indim, 0);
     if (v != nullptr) {
         double total = 0;
@@ -215,19 +208,19 @@ double Profile::ProposeMove(double tuning,
     return ret;
 }
 
-Profile& Profile::operator=(const Profile& from) {
+Profile &Profile::operator=(const Profile &from) {
     profile = from.profile;
     return *this;
 }
 
 void Profile::setuniform() {
     double value = 1.0 / profile.size();
-    for (auto& i : profile) {
+    for (auto &i : profile) {
         i = value;
     }
 }
 
-void Profile::setarray(double* in) {
+void Profile::setarray(double *in) {
     for (unsigned int i = 0; i < profile.size(); i++) {
         profile[i] = in[i];
     }
@@ -241,7 +234,7 @@ double Profile::GetEntropy() const {
     return total;
 }
 
-ostream& operator<<(ostream& os, const Profile& r) {
+ostream &operator<<(ostream &os, const Profile &r) {
     os << r.GetDim();
     for (int i = 0; i < r.GetDim(); i++) {
         os << '\t' << r.profile[i];
@@ -249,30 +242,29 @@ ostream& operator<<(ostream& os, const Profile& r) {
     return os;
 }
 
-istream& operator>>(istream& is, Profile& r) {
+istream &operator>>(istream &is, Profile &r) {
     int indim;
     is >> indim;
     r.profile.assign(indim, 0);
-    for (auto& i : r.profile) {
+    for (auto &i : r.profile) {
         is >> i;
     }
     return is;
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* RealVector
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-RealVector::RealVector(const double* from, int indim) {
+RealVector::RealVector(const double *from, int indim) {
     vec.assign(indim, 0);
     for (int i = 0; i < indim; i++) {
         vec[i] = from[i];
     }
 }
 
-RealVector& RealVector::operator=(const RealVector& from) {
+RealVector &RealVector::operator=(const RealVector &from) {
     vec = from.vec;
     return *this;
 }
@@ -299,25 +291,25 @@ double RealVector::GetVar() const {
 }
 
 int RealVector::ScalarAddition(double d) {
-    for (auto& i : vec) {
+    for (auto &i : vec) {
         i += d;
     }
     return GetDim();
 }
 
 void RealVector::ScalarMultiplication(double d) {
-    for (auto& i : vec) {
+    for (auto &i : vec) {
         i *= d;
     }
 }
 
-void RealVector::add(const RealVector& in) {
+void RealVector::add(const RealVector &in) {
     for (int i = 0; i < GetDim(); i++) {
         vec[i] += in[i];
     }
 }
 
-void RealVector::add(const double* in, double f) {
+void RealVector::add(const double *in, double f) {
     for (int i = 0; i < GetDim(); i++) {
         vec[i] += f * in[i];
     }
@@ -337,7 +329,7 @@ double RealVector::ProposeMove(double tuning, int n) {
     return 0;  // (VL) does this function do anything ?
 }
 
-ostream& operator<<(ostream& os, const RealVector& r) {
+ostream &operator<<(ostream &os, const RealVector &r) {
     int rdim = r.GetDim();
     os << rdim;
     for (int i = 0; i < rdim; i++) {
@@ -346,30 +338,29 @@ ostream& operator<<(ostream& os, const RealVector& r) {
     return os;
 }
 
-istream& operator>>(istream& is, RealVector& r) {
+istream &operator>>(istream &is, RealVector &r) {
     int indim;
     is >> indim;
     r.vec.assign(indim, 0);
-    for (auto& i : r.vec) {
+    for (auto &i : r.vec) {
         is >> i;
     }
     return is;
 }
-
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* PosRealVector
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-PosRealVector::PosRealVector(const double* from, int indim) {
+PosRealVector::PosRealVector(const double *from, int indim) {
     vec.assign(indim, 0);
     for (int i = 0; i < indim; i++) {
         vec[i] = from[i];
     }
 }
 
-PosRealVector& PosRealVector::operator=(const PosRealVector& from) {
+PosRealVector &PosRealVector::operator=(const PosRealVector &from) {
     vec = from.vec;
     return *this;
 }
@@ -425,13 +416,12 @@ double PosRealVector::GetEntropy() const {
     return ent;
 }
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* IntVector
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-IntVector::IntVector(const IntVector& from) {
+IntVector::IntVector(const IntVector &from) {
     dim = from.dim;
     vec = new int[dim];
     for (int i = 0; i < dim; i++) {
@@ -439,7 +429,7 @@ IntVector::IntVector(const IntVector& from) {
     }
 }
 
-IntVector::IntVector(const int* from, int indim) {
+IntVector::IntVector(const int *from, int indim) {
     dim = indim;
     vec = new int[dim];
     for (int i = 0; i < dim; i++) {
@@ -447,7 +437,7 @@ IntVector::IntVector(const int* from, int indim) {
     }
 }
 
-IntVector& IntVector::operator=(const IntVector& from) {
+IntVector &IntVector::operator=(const IntVector &from) {
     if (dim == 0) {
         dim = from.dim;
         vec = new int[dim];
@@ -466,7 +456,7 @@ IntVector& IntVector::operator=(const IntVector& from) {
     return *this;
 }
 
-IntVector& IntVector::operator=(const int* from) {
+IntVector &IntVector::operator=(const int *from) {
     if (dim == 0) {
         cerr << "error in IntVector::operator=(const int*)\n";
         exit(1);
@@ -511,7 +501,7 @@ int IntVector::ProposeMove(double tuning, int n) {
     return 0;
 }
 
-ostream& operator<<(ostream& os, const IntVector& r) {
+ostream &operator<<(ostream &os, const IntVector &r) {
     os << r.dim;
     for (int i = 0; i < r.dim; i++) {
         os << '\t' << r.vec[i];
@@ -519,7 +509,7 @@ ostream& operator<<(ostream& os, const IntVector& r) {
     return os;
 }
 
-istream& operator>>(istream& is, IntVector& r) {
+istream &operator>>(istream &is, IntVector &r) {
     int indim;
     is >> indim;
     if (r.dim != indim) {

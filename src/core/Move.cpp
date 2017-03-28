@@ -8,7 +8,6 @@
 #include "utils/Random.hpp"
 using namespace std;
 
-
 double MCScheduler::Move(double tuning_modulator) {
     if (random) {
         RandomCycle(tuning_modulator, 1, false, false);
@@ -35,9 +34,10 @@ void MCScheduler::Reset() {
     closed = true;
 }
 
-void MCScheduler::Register(MCUpdate* inupdate, int inweight, string inname) {
+void MCScheduler::Register(MCUpdate *inupdate, int inweight, string inname) {
     if (closed) {
-        cerr << "error in MCScheduler::Register: registration of new updates is closed\n";
+        cerr << "error in MCScheduler::Register: registration of new updates is "
+                "closed\n";
         throw;
     }
     update.push_back(inupdate);
@@ -73,7 +73,7 @@ void MCScheduler::Cycle(double tuning_modulator, int nrep, bool verbose, bool ch
     ncycle += nrep;
 }
 
-vector<int> MCScheduler::ReadCommand(unsigned int& n) {
+vector<int> MCScheduler::ReadCommand(unsigned int &n) {
     vector<int> v;
     while (n < command.size() && command[n] != ')') {
         if (command[n] == '(') {
@@ -93,7 +93,7 @@ vector<int> MCScheduler::ReadCommand(unsigned int& n) {
             }
 
             for (int i = 0; i < x; i++) {
-                for (int& j : vv) {
+                for (int &j : vv) {
                     v.push_back(j);
                 }
             }
@@ -113,7 +113,6 @@ vector<int> MCScheduler::ReadCommand(unsigned int& n) {
     }
     return v;
 }
-
 
 void MCScheduler::Move(double tuning_modulator, int i, bool verbose, bool check, int nrep) {
     Chrono chrono;
@@ -188,7 +187,7 @@ void MCScheduler::RandomCycle(double tuning_modulator, int nrep, bool verbose, b
     ncycle += nrep;
 }
 
-void MCScheduler::ToStream(ostream& os, ostream& osdetail) {
+void MCScheduler::ToStream(ostream &os, ostream &osdetail) {
     os << '\n';
     os << "total number of cycles : " << ncycle << '\n';
     os << "total time (s)    : " << totaltime << '\n';
@@ -197,7 +196,8 @@ void MCScheduler::ToStream(ostream& os, ostream& osdetail) {
     os << "#\t%time\tsuccess\tname\n";
     os << '\n';
     for (int i = 0; i < size; i++) {
-        // os << i+1 << '\t' << (int) (time[i]/ totaltime * 100)  << '\t' << ((int) (100 *
+        // os << i+1 << '\t' << (int) (time[i]/ totaltime * 100)  << '\t' << ((int)
+        // (100 *
         // success[i]/ncall[i])) << '\t' << name[i]  << '\n';
         os << i + 1 << '\t' << ((double)(int)(time[i] / totaltime * 1000)) / 10 << '\t'
            << ((int)(100 * success[i] / ncall[i])) << '\t' << name[i] << '\n';
@@ -210,7 +210,7 @@ void MCScheduler::ToStream(ostream& os, ostream& osdetail) {
 }
 
 RealVectorComponentwiseCompensatoryMove::RealVectorComponentwiseCompensatoryMove(
-    Rvar<RealVector>* ina1, Rvar<RealVector>* ina2, double intuning)
+    Rvar<RealVector> *ina1, Rvar<RealVector> *ina2, double intuning)
     : a1(ina1), a2(ina2), tuning(intuning) {
     cerr << "error in comp move\n";
     cerr << "register should be the other way around\n";
@@ -241,7 +241,7 @@ double RealVectorComponentwiseCompensatoryMove::Move(double tuning_modulator) {
     return (double)accepted;
 }
 
-RealVectorMove::RealVectorMove(Rvar<RealVector>* invar, double intuning, int inm)
+RealVectorMove::RealVectorMove(Rvar<RealVector> *invar, double intuning, int inm)
     : var(invar), tuning(intuning), m(inm) {}
 
 double RealVectorMove::Move(double tuning_modulator) {
@@ -260,7 +260,7 @@ double RealVectorMove::Move(double tuning_modulator) {
     return 1;
 }
 
-RealVectorTranslationMove::RealVectorTranslationMove(Rvar<RealVector>* invar, double intuning)
+RealVectorTranslationMove::RealVectorTranslationMove(Rvar<RealVector> *invar, double intuning)
     : var(invar), tuning(intuning) {}
 
 double RealVectorTranslationMove::Move(double tuning_modulator) {
@@ -279,8 +279,7 @@ double RealVectorTranslationMove::Move(double tuning_modulator) {
     return 1;
 }
 
-
-ProfileMove::ProfileMove(Rvar<Profile>* invar, double intuning, int inn)
+ProfileMove::ProfileMove(Rvar<Profile> *invar, double intuning, int inn)
     : var(invar), tuning(intuning), n(inn) {}
 
 double ProfileMove::Move(double tuning_modulator) {
@@ -299,8 +298,8 @@ double ProfileMove::Move(double tuning_modulator) {
     return 1;
 }
 
-MultiplicativeCompensatoryMove::MultiplicativeCompensatoryMove(Multiplicative* inm1,
-                                                               Multiplicative* inm2,
+MultiplicativeCompensatoryMove::MultiplicativeCompensatoryMove(Multiplicative *inm1,
+                                                               Multiplicative *inm2,
                                                                double intuning)
     : m1(inm1), m2(inm2), tuning(intuning) {
     if (m1 != nullptr) {
@@ -336,7 +335,7 @@ double MultiplicativeCompensatoryMove::Move(double tuning_modulator) {
     // return 1;
 }
 
-JointSimpleMove::JointSimpleMove(Rnode* ina1, Rnode* ina2, double intuning)
+JointSimpleMove::JointSimpleMove(Rnode *ina1, Rnode *ina2, double intuning)
     : a1(ina1), a2(ina2), tuning(intuning) {
     a1->Register(this);
     a2->Register(this);
@@ -363,7 +362,7 @@ double JointSimpleMove::Move(double tuning_modulator) {
     return 1;
 }
 
-AdditiveCompensatoryMove::AdditiveCompensatoryMove(Additive* ina1, Additive* ina2, double intuning)
+AdditiveCompensatoryMove::AdditiveCompensatoryMove(Additive *ina1, Additive *ina2, double intuning)
     : a1(ina1), a2(ina2), tuning(intuning) {
     a1->Register(this);
     a2->Register(this);
@@ -390,7 +389,7 @@ double AdditiveCompensatoryMove::Move(double tuning_modulator) {
     // return 1;
 }
 
-AdditiveAntiCompensatoryMove::AdditiveAntiCompensatoryMove(Additive* ina1, Additive* ina2,
+AdditiveAntiCompensatoryMove::AdditiveAntiCompensatoryMove(Additive *ina1, Additive *ina2,
                                                            double intuning)
     : a1(ina1), a2(ina2), tuning(intuning) {
     a1->Register(this);

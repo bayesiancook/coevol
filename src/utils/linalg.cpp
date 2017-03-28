@@ -7,11 +7,11 @@
 
 using namespace std;
 
-void LinAlg::QR(double** u, int dim, double** ql, double** r) {
+void LinAlg::QR(double **u, int dim, double **ql, double **r) {
     auto v = new double[dim];
     auto c = new double[dim];
 
-    double** a = r;
+    double **a = r;
     for (int i = 0; i < dim; i++) {
         for (int j = 0; j < dim; j++) {
             a[i][j] = u[i][j];
@@ -88,8 +88,7 @@ void LinAlg::QR(double** u, int dim, double** ql, double** r) {
     delete[] c;
 }
 
-
-void LinAlg::HouseHolder(double** u, int dim, double** a, double** ql) {
+void LinAlg::HouseHolder(double **u, int dim, double **a, double **ql) {
     auto v = new double[dim];
     auto c = new double[dim];
 
@@ -168,8 +167,8 @@ void LinAlg::HouseHolder(double** u, int dim, double** a, double** ql) {
     delete[] c;
 }
 
-int LinAlg::DiagonalizeSymmetricMatrix(double** u, int dim, int nmax, double epsilon,
-                                       double* eigenval, double** eigenvect) {
+int LinAlg::DiagonalizeSymmetricMatrix(double **u, int dim, int nmax, double epsilon,
+                                       double *eigenval, double **eigenvect) {
     for (int i = 0; i < dim; i++) {
         for (int j = 0; j < dim; j++) {
             eigenvect[i][j] = 0;
@@ -197,9 +196,9 @@ int LinAlg::DiagonalizeSymmetricMatrix(double** u, int dim, int nmax, double eps
         return 0;
     }
 
-    auto a = new double*[dim];
-    auto q = new double*[dim];
-    auto r = new double*[dim];
+    auto a = new double *[dim];
+    auto q = new double *[dim];
+    auto r = new double *[dim];
     for (int i = 0; i < dim; i++) {
         a[i] = new double[dim];
         q[i] = new double[dim];
@@ -298,14 +297,13 @@ int LinAlg::DiagonalizeSymmetricMatrix(double** u, int dim, int nmax, double eps
     return n;
 }
 
-
 // diagonalize a reversible rate matrix
 // first transforms reversible matrix into a symmetric matrix
 // then use Householder's algorithm, com
-int LinAlg::DiagonalizeRateMatrix(double** u, double* pi, int dim, double* eigenval,
-                                  double** eigenvect, double** inveigenvect, int nmax,
+int LinAlg::DiagonalizeRateMatrix(double **u, double *pi, int dim, double *eigenval,
+                                  double **eigenvect, double **inveigenvect, int nmax,
                                   double epsilon) {
-    auto a = new double*[dim];
+    auto a = new double *[dim];
     for (int i = 0; i < dim; i++) {
         a[i] = new double[dim];
         for (int j = 0; j < dim; j++) {
@@ -346,17 +344,17 @@ int LinAlg::DiagonalizeRateMatrix(double** u, double* pi, int dim, double* eigen
 // computes inverse of matrix given as an input (a)
 // store inverse in invu
 // does not corrupt matrix a
-double LinAlg::Gauss(double** a, int dim, double** invu) {
+double LinAlg::Gauss(double **a, int dim, double **invu) {
     // returns log |determinant|
     bool deleteinvu = false;
     if (invu == nullptr) {
         deleteinvu = true;
-        invu = new double*[dim];
+        invu = new double *[dim];
         for (int i = 0; i < dim; i++) {
             invu[i] = new double[dim];
         }
     }
-    auto u = new double*[dim];
+    auto u = new double *[dim];
     for (int i = 0; i < dim; i++) {
         u[i] = new double[dim];
         for (int j = 0; j < dim; j++) {

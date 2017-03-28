@@ -18,7 +18,8 @@ template <class U>
 class NodeValPtTree;
 
 template <class U, class V>
-class NodeBranchValPtrTree;  // : public NodeValPtrTree<U>, public BranchValPtrTree<V>;
+class NodeBranchValPtrTree;  // : public NodeValPtrTree<U>, public
+                             // BranchValPtrTree<V>;
 
 template <class V>
 class _BranchValPtrTree : public virtual AbstractTree {
@@ -27,9 +28,9 @@ class _BranchValPtrTree : public virtual AbstractTree {
 
     void SetWithRoot(bool in) { withRoot = in; }
 
-    V* GetBranchVal(const Branch* branch) { return branchval[branch]; }
+    V *GetBranchVal(const Branch *branch) { return branchval[branch]; }
 
-    void SetBranchVal(const Branch* branch, V* in) {
+    void SetBranchVal(const Branch *branch, V *in) {
         if ((!WithRoot()) && (branch == nullptr)) {
             std::cerr << "error in _BranchValPtrTree: null branch pointer\n";
             throw;
@@ -37,13 +38,13 @@ class _BranchValPtrTree : public virtual AbstractTree {
         branchval[branch] = in;
     }
 
-    virtual void RecursiveCreate(const Link* from) {
+    virtual void RecursiveCreate(const Link *from) {
         if (WithRoot() && from->isRoot()) {
-            V* v = CreateBranchVal(from);
+            V *v = CreateBranchVal(from);
             branchval[0] = v;
         }
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
-            V* v = CreateBranchVal(link);
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
+            V *v = CreateBranchVal(link);
             branchval[link->GetBranch()] = v;
             RecursiveCreate(link->Out());
         }
@@ -51,8 +52,8 @@ class _BranchValPtrTree : public virtual AbstractTree {
 
     ~_BranchValPtrTree() override = default;
 
-    virtual void RecursiveDelete(const Link* from) {
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+    virtual void RecursiveDelete(const Link *from) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveDelete(link->Out());
             delete this->GetBranchVal(link->GetBranch());
             this->SetBranchVal(link->GetBranch(), 0);
@@ -62,41 +63,41 @@ class _BranchValPtrTree : public virtual AbstractTree {
         }
     }
 
-    friend std::ostream& operator<<(std::ostream& os, _BranchValPtrTree<V>& b) {
+    friend std::ostream &operator<<(std::ostream &os, _BranchValPtrTree<V> &b) {
         b.ToStream(os, b.GetRoot());
         os << '\n';
         return os;
     }
 
-    friend std::istream& operator>>(std::istream& is, _BranchValPtrTree<V>& b) {
+    friend std::istream &operator>>(std::istream &is, _BranchValPtrTree<V> &b) {
         b.FromStream(is, b.GetRoot());
         return is;
     }
 
-    void ToStream(std::ostream& os, const Link* from) {
+    void ToStream(std::ostream &os, const Link *from) {
         if (WithRoot() && from->isRoot()) {
             os << *(this->GetBranchVal(0)) << '\t';
         }
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             os << *(this->GetBranchVal(link->GetBranch())) << '\t';
             ToStream(os, link->Out());
         }
     }
 
-    void FromStream(std::istream& is, Link* from) {
+    void FromStream(std::istream &is, Link *from) {
         if (WithRoot() && from->isRoot()) {
             is >> *(this->GetBranchVal(0));
         }
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             is >> *(this->GetBranchVal(link->GetBranch()));
             FromStream(is, link->Out());
         }
     }
 
   protected:
-    virtual V* CreateBranchVal(const Link* link) = 0;
+    virtual V *CreateBranchVal(const Link *link) = 0;
 
-    std::map<const Branch*, V*> branchval;
+    std::map<const Branch *, V *> branchval;
 
     bool withRoot;
 };
@@ -105,115 +106,114 @@ template <class T>
 class BranchValPtrTree : public virtual _BranchValPtrTree<T> {};
 
 template <class V>
-class BranchValPtrTree<Rvar<V> > : public virtual _BranchValPtrTree<Rvar<V> >,
-                                   public virtual BranchVarTree<V> {
+class BranchValPtrTree<Rvar<V>> : public virtual _BranchValPtrTree<Rvar<V>>,
+                                  public virtual BranchVarTree<V> {
   public:
-    virtual Rvar<V>* GetBranchVal(const Branch* branch) {
-        return _BranchValPtrTree<Rvar<V> >::GetBranchVal(branch);
+    virtual Rvar<V> *GetBranchVal(const Branch *branch) {
+        return _BranchValPtrTree<Rvar<V>>::GetBranchVal(branch);
     }
 };
 
 template <class V>
-class BranchValPtrTree<Dvar<V> > : public virtual _BranchValPtrTree<Dvar<V> >,
-                                   public virtual BranchVarTree<V> {
+class BranchValPtrTree<Dvar<V>> : public virtual _BranchValPtrTree<Dvar<V>>,
+                                  public virtual BranchVarTree<V> {
   public:
-    virtual Dvar<V>* GetBranchVal(const Branch* branch) {
-        return _BranchValPtrTree<Dvar<V> >::GetBranchVal(branch);
+    virtual Dvar<V> *GetBranchVal(const Branch *branch) {
+        return _BranchValPtrTree<Dvar<V>>::GetBranchVal(branch);
     }
 };
 
 template <>
-class BranchValPtrTree<Rvar<PosReal> > : public virtual _BranchValPtrTree<Rvar<PosReal> >,
-                                         public virtual RandomLengthTree {
+class BranchValPtrTree<Rvar<PosReal>> : public virtual _BranchValPtrTree<Rvar<PosReal>>,
+                                        public virtual RandomLengthTree {
   public:
-    Rvar<PosReal>* GetBranchVal(const Branch* branch) override {
-        return _BranchValPtrTree<Rvar<PosReal> >::GetBranchVal(branch);
+    Rvar<PosReal> *GetBranchVal(const Branch *branch) override {
+        return _BranchValPtrTree<Rvar<PosReal>>::GetBranchVal(branch);
     }
 };
 
 template <>
-class BranchValPtrTree<Dvar<PosReal> > : public virtual _BranchValPtrTree<Dvar<PosReal> >,
-                                         public virtual LengthTree {
+class BranchValPtrTree<Dvar<PosReal>> : public virtual _BranchValPtrTree<Dvar<PosReal>>,
+                                        public virtual LengthTree {
   public:
-    Dvar<PosReal>* GetBranchVal(const Branch* branch) override {
-        return _BranchValPtrTree<Dvar<PosReal> >::GetBranchVal(branch);
+    Dvar<PosReal> *GetBranchVal(const Branch *branch) override {
+        return _BranchValPtrTree<Dvar<PosReal>>::GetBranchVal(branch);
     }
 };
 
 template <class U>
 class _NodeValPtrTree : public virtual AbstractTree {
   public:
-    U* GetNodeVal(const Node* node) { return nodeval[node]; }
+    U *GetNodeVal(const Node *node) { return nodeval[node]; }
 
-    void SetNodeVal(const Node* node, U* in) { nodeval[node] = in; }
+    void SetNodeVal(const Node *node, U *in) { nodeval[node] = in; }
 
     ~_NodeValPtrTree() override = default;
 
-    virtual void RecursiveCreate(const Link* from) {
-        U* u = CreateNodeVal(from);
+    virtual void RecursiveCreate(const Link *from) {
+        U *u = CreateNodeVal(from);
         nodeval[from->GetNode()] = u;
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveCreate(link->Out());
         }
     }
 
-    virtual void RecursiveDelete(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+    virtual void RecursiveDelete(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveDelete(link->Out());
         }
         delete this->GetNodeVal(from->GetNode());
         this->SetNodeVal(from->GetNode(), 0);
     }
 
-    friend std::ostream& operator<<(std::ostream& os, _NodeValPtrTree<U>& b) {
+    friend std::ostream &operator<<(std::ostream &os, _NodeValPtrTree<U> &b) {
         b.ToStream(os, b.GetRoot());
         return os;
     }
 
-    friend std::istream& operator>>(std::istream& is, _NodeValPtrTree<U>& b) {
+    friend std::istream &operator>>(std::istream &is, _NodeValPtrTree<U> &b) {
         b.FromStream(is, b.GetRoot());
         return is;
     }
 
-    void ToStream(std::ostream& os, const Link* from) {
+    void ToStream(std::ostream &os, const Link *from) {
         os << *(this->GetNodeVal(from->GetNode())) << '\n';
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             ToStream(os, link->Out());
         }
     }
 
-    void FromStream(std::istream& is, Link* from) {
+    void FromStream(std::istream &is, Link *from) {
         is >> *(this->GetNodeVal(from->GetNode()));
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             FromStream(is, link->Out());
         }
     }
 
-
   protected:
-    virtual U* CreateNodeVal(const Link* link) = 0;
+    virtual U *CreateNodeVal(const Link *link) = 0;
 
-    std::map<const Node*, U*> nodeval;
+    std::map<const Node *, U *> nodeval;
 };
 
 template <class U>
 class NodeValPtrTree : public virtual _NodeValPtrTree<U> {};
 
 template <class V>
-class NodeValPtrTree<Rvar<V> > : public virtual _NodeValPtrTree<Rvar<V> >,
-                                 public virtual NodeVarTree<V> {
+class NodeValPtrTree<Rvar<V>> : public virtual _NodeValPtrTree<Rvar<V>>,
+                                public virtual NodeVarTree<V> {
   public:
-    virtual Rvar<V>* GetNodeVal(const Node* node) {
-        return _NodeValPtrTree<Rvar<V> >::GetNodeVal(node);
+    virtual Rvar<V> *GetNodeVal(const Node *node) {
+        return _NodeValPtrTree<Rvar<V>>::GetNodeVal(node);
     }
 };
 
 template <class V>
-class NodeValPtrTree<Dvar<V> > : public virtual _NodeValPtrTree<Dvar<V> >,
-                                 public virtual NodeVarTree<V> {
+class NodeValPtrTree<Dvar<V>> : public virtual _NodeValPtrTree<Dvar<V>>,
+                                public virtual NodeVarTree<V> {
   public:
-    virtual Dvar<V>* GetNodeVal(const Node* node) {
-        return _NodeValPtrTree<Dvar<V> >::GetNodeVal(node);
+    virtual Dvar<V> *GetNodeVal(const Node *node) {
+        return _NodeValPtrTree<Dvar<V>>::GetNodeVal(node);
     }
 };
 
@@ -223,240 +223,236 @@ class NodeBranchValPtrTree : public virtual NodeValPtrTree<U>, public virtual Br
     virtual ~NodeBranchValPtrTree() = default;
 
     // by default: makes 2 sweeps, for creating nodes, and then branches
-    virtual void RecursiveCreate(Link* from) {
+    virtual void RecursiveCreate(Link *from) {
         if (!from->isRoot()) {
-            std::cerr
-                << "error in NodeBranchValPtrTree::RecursiveCreate: should not be called on root\n";
+            std::cerr << "error in NodeBranchValPtrTree::RecursiveCreate: should not "
+                         "be called on root\n";
             exit(1);
         }
         RecursiveCreateNode(from);
         RecursiveCreateBranch(from);
     }
 
-    virtual void RecursiveCreateNode(Link* from) {
-        U* u = this->CreateNodeVal(from);
+    virtual void RecursiveCreateNode(Link *from) {
+        U *u = this->CreateNodeVal(from);
         this->nodeval[from->GetNode()] = u;
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveCreateNode(link->Out());
         }
     }
 
-    virtual void RecursiveCreateBranch(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
-            V* v = this->CreateBranchVal(link);
+    virtual void RecursiveCreateBranch(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
+            V *v = this->CreateBranchVal(link);
             this->branchval[link->GetBranch()] = v;
             RecursiveCreateBranch(link->Out());
         }
     }
 
-    virtual void RecursiveDeleteNode(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+    virtual void RecursiveDeleteNode(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveDeleteNode(link->Out());
         }
         delete this->nodeval[from->GetNode()];
     }
 
-    virtual void RecursiveDeleteBranch(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+    virtual void RecursiveDeleteBranch(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveDeleteBranch(link->Out());
             delete this->branchval[link->GetBranch()];
         }
     }
 
-    virtual void RecursiveDelete(Link* from) {
+    virtual void RecursiveDelete(Link *from) {
         if (!from->isRoot()) {
-            std::cerr
-                << "error in NodeBranchValPtrTree::RecursiveDelete: should not be called on root\n";
+            std::cerr << "error in NodeBranchValPtrTree::RecursiveDelete: should not "
+                         "be called on root\n";
             exit(1);
         }
         RecursiveDeleteBranch(from);
         RecursiveDeleteNode(from);
     }
 
-
-    void ToStream(std::ostream& os) {
+    void ToStream(std::ostream &os) {
         NodeValPtrTree<U>::ToStream(os, this->GetRoot());
         os << '\n';
         BranchValPtrTree<V>::ToStream(os, this->GetRoot());
     }
 
-    friend std::ostream& operator<<(std::ostream& os, NodeBranchValPtrTree<U, V>& b) {
+    friend std::ostream &operator<<(std::ostream &os, NodeBranchValPtrTree<U, V> &b) {
         b.ToStream(os);
         return os;
     }
 
-    void FromStream(std::istream& is) {
+    void FromStream(std::istream &is) {
         NodeValPtrTree<U>::FromStream(is, this->GetRoot());
         BranchValPtrTree<V>::FromStream(is, this->GetRoot());
     }
 
-    friend std::istream& operator>>(std::istream& is, NodeBranchValPtrTree<U, V>& b) {
+    friend std::istream &operator>>(std::istream &is, NodeBranchValPtrTree<U, V> &b) {
         b.FromStream(is);
         return is;
     }
 };
 
 template <class U, class V>
-class NodeBranchValPtrTree<Rvar<U>, Dvar<V> > : public virtual NodeValPtrTree<Rvar<U> >,
-                                                public virtual BranchValPtrTree<Dvar<V> >,
-                                                public NodeBranchVarTree<U, V> {
+class NodeBranchValPtrTree<Rvar<U>, Dvar<V>> : public virtual NodeValPtrTree<Rvar<U>>,
+                                               public virtual BranchValPtrTree<Dvar<V>>,
+                                               public NodeBranchVarTree<U, V> {
   public:
     virtual ~NodeBranchValPtrTree() = default;
 
     // by default: makes 2 sweeps, for creating nodes, and then branches
-    virtual void RecursiveCreate(Link* from) {
+    virtual void RecursiveCreate(Link *from) {
         if (!from->isRoot()) {
-            std::cerr
-                << "error in NodeBranchValPtrTree::RecursiveCreate: should not be called on root\n";
+            std::cerr << "error in NodeBranchValPtrTree::RecursiveCreate: should not "
+                         "be called on root\n";
             exit(1);
         }
         RecursiveCreateNode(from);
         RecursiveCreateBranch(from);
     }
 
-    virtual void RecursiveCreateNode(Link* from) {
-        Rvar<U>* u = this->CreateNodeVal(from);
+    virtual void RecursiveCreateNode(Link *from) {
+        Rvar<U> *u = this->CreateNodeVal(from);
         this->nodeval[from->GetNode()] = u;
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveCreateNode(link->Out());
         }
     }
 
-    virtual void RecursiveCreateBranch(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
-            Dvar<V>* v = this->CreateBranchVal(link);
+    virtual void RecursiveCreateBranch(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
+            Dvar<V> *v = this->CreateBranchVal(link);
             this->branchval[link->GetBranch()] = v;
             RecursiveCreateBranch(link->Out());
         }
     }
 
-    virtual void RecursiveDeleteNode(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+    virtual void RecursiveDeleteNode(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveDeleteNode(link->Out());
         }
         delete this->nodeval[from->GetNode()];
     }
 
-    virtual void RecursiveDeleteBranch(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+    virtual void RecursiveDeleteBranch(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveDeleteBranch(link->Out());
             delete this->branchval[link->GetBranch()];
         }
     }
 
-    virtual void RecursiveDelete(Link* from) {
+    virtual void RecursiveDelete(Link *from) {
         if (!from->isRoot()) {
-            std::cerr
-                << "error in NodeBranchValPtrTree::RecursiveDelete: should not be called on root\n";
+            std::cerr << "error in NodeBranchValPtrTree::RecursiveDelete: should not "
+                         "be called on root\n";
             exit(1);
         }
         RecursiveDeleteBranch(from);
         RecursiveDeleteNode(from);
     }
 
-
-    void ToStream(std::ostream& os) {
-        NodeValPtrTree<Rvar<U> >::ToStream(os, this->GetRoot());
+    void ToStream(std::ostream &os) {
+        NodeValPtrTree<Rvar<U>>::ToStream(os, this->GetRoot());
         os << '\n';
-        BranchValPtrTree<Dvar<V> >::ToStream(os, this->GetRoot());
+        BranchValPtrTree<Dvar<V>>::ToStream(os, this->GetRoot());
     }
 
-    friend std::ostream& operator<<(std::ostream& os, NodeBranchValPtrTree<Rvar<U>, Dvar<V> >& b) {
+    friend std::ostream &operator<<(std::ostream &os, NodeBranchValPtrTree<Rvar<U>, Dvar<V>> &b) {
         b.ToStream(os);
         return os;
     }
 
-    void FromStream(std::istream& is) {
-        NodeValPtrTree<Rvar<U> >::FromStream(is, this->GetRoot());
-        BranchValPtrTree<Dvar<V> >::FromStream(is, this->GetRoot());
+    void FromStream(std::istream &is) {
+        NodeValPtrTree<Rvar<U>>::FromStream(is, this->GetRoot());
+        BranchValPtrTree<Dvar<V>>::FromStream(is, this->GetRoot());
     }
 
-    friend std::istream& operator>>(std::istream& is, NodeBranchValPtrTree<Rvar<U>, Dvar<V> >& b) {
+    friend std::istream &operator>>(std::istream &is, NodeBranchValPtrTree<Rvar<U>, Dvar<V>> &b) {
         b.FromStream(is);
         return is;
     }
 };
 
 template <class U, class V>
-class NodeBranchValPtrTree<Dvar<U>, Dvar<V> > : public virtual NodeValPtrTree<Dvar<U> >,
-                                                public virtual BranchValPtrTree<Dvar<V> >,
-                                                public NodeBranchVarTree<U, V> {
+class NodeBranchValPtrTree<Dvar<U>, Dvar<V>> : public virtual NodeValPtrTree<Dvar<U>>,
+                                               public virtual BranchValPtrTree<Dvar<V>>,
+                                               public NodeBranchVarTree<U, V> {
   public:
     virtual ~NodeBranchValPtrTree() = default;
 
     // by default: makes 2 sweeps, for creating nodes, and then branches
-    virtual void RecursiveCreate(Link* from) {
+    virtual void RecursiveCreate(Link *from) {
         if (!from->isRoot()) {
-            std::cerr
-                << "error in NodeBranchValPtrTree::RecursiveCreate: should not be called on root\n";
+            std::cerr << "error in NodeBranchValPtrTree::RecursiveCreate: should not "
+                         "be called on root\n";
             exit(1);
         }
         RecursiveCreateNode(from);
         RecursiveCreateBranch(from);
     }
 
-    virtual void RecursiveCreateNode(Link* from) {
-        Dvar<U>* u = this->CreateNodeVal(from);
+    virtual void RecursiveCreateNode(Link *from) {
+        Dvar<U> *u = this->CreateNodeVal(from);
         this->nodeval[from->GetNode()] = u;
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveCreateNode(link->Out());
         }
     }
 
-    virtual void RecursiveCreateBranch(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
-            Dvar<V>* v = this->CreateBranchVal(link);
+    virtual void RecursiveCreateBranch(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
+            Dvar<V> *v = this->CreateBranchVal(link);
             this->branchval[link->GetBranch()] = v;
             RecursiveCreateBranch(link->Out());
         }
     }
 
-    virtual void RecursiveDeleteNode(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+    virtual void RecursiveDeleteNode(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveDeleteNode(link->Out());
         }
         delete this->nodeval[from->GetNode()];
     }
 
-    virtual void RecursiveDeleteBranch(Link* from) {
-        for (Link* link = from->Next(); link != from; link = link->Next()) {
+    virtual void RecursiveDeleteBranch(Link *from) {
+        for (Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveDeleteBranch(link->Out());
             delete this->branchval[link->GetBranch()];
         }
     }
 
-    virtual void RecursiveDelete(Link* from) {
+    virtual void RecursiveDelete(Link *from) {
         if (!from->isRoot()) {
-            std::cerr
-                << "error in NodeBranchValPtrTree::RecursiveDelete: should not be called on root\n";
+            std::cerr << "error in NodeBranchValPtrTree::RecursiveDelete: should not "
+                         "be called on root\n";
             exit(1);
         }
         RecursiveDeleteBranch(from);
         RecursiveDeleteNode(from);
     }
 
-
-    void ToStream(std::ostream& os) {
-        NodeValPtrTree<Dvar<U> >::ToStream(os, this->GetRoot());
+    void ToStream(std::ostream &os) {
+        NodeValPtrTree<Dvar<U>>::ToStream(os, this->GetRoot());
         os << '\n';
-        BranchValPtrTree<Dvar<V> >::ToStream(os, this->GetRoot());
+        BranchValPtrTree<Dvar<V>>::ToStream(os, this->GetRoot());
     }
 
-    friend std::ostream& operator<<(std::ostream& os, NodeBranchValPtrTree<Dvar<U>, Dvar<V> >& b) {
+    friend std::ostream &operator<<(std::ostream &os, NodeBranchValPtrTree<Dvar<U>, Dvar<V>> &b) {
         b.ToStream(os);
         return os;
     }
 
-    void FromStream(std::istream& is) {
-        NodeValPtrTree<Dvar<U> >::FromStream(is, this->GetRoot());
-        BranchValPtrTree<Dvar<V> >::FromStream(is, this->GetRoot());
+    void FromStream(std::istream &is) {
+        NodeValPtrTree<Dvar<U>>::FromStream(is, this->GetRoot());
+        BranchValPtrTree<Dvar<V>>::FromStream(is, this->GetRoot());
     }
 
-    friend std::istream& operator>>(std::istream& is, NodeBranchValPtrTree<Dvar<U>, Dvar<V> >& b) {
+    friend std::istream &operator>>(std::istream &is, NodeBranchValPtrTree<Dvar<U>, Dvar<V>> &b) {
         b.FromStream(is);
         return is;
     }
 };
-
 
 #endif

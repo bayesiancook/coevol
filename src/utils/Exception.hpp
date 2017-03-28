@@ -1,7 +1,6 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
-
 class Exception {};
 
 class CheckSumException : public Exception {
@@ -13,6 +12,5 @@ class CheckSumException : public Exception {
   private:
     double checksum;
 };
-
 
 #endif  // EXCEPTION_H

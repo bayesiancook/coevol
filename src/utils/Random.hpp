@@ -3,7 +3,6 @@
 
 #define MT_LEN 624  // (VL) required for magic
 
-
 class Random {
   public:
     static const double INFPROB;
@@ -24,9 +23,9 @@ class Random {
     static double sGammanew(double);
 
     static int Choose(int);
-    static int FiniteDiscrete(int n, const double* probarray);
-    static void DrawFromUrn(int*, int n, int N);
-    static int DrawFromDiscreteDistribution(const double* prob, int nstate);
+    static int FiniteDiscrete(int n, const double *probarray);
+    static void DrawFromUrn(int *, int n, int N);
+    static int DrawFromDiscreteDistribution(const double *prob, int nstate);
 
     static double logGamma(double alpha);
 
@@ -37,6 +36,5 @@ class Random {
     static int mt_index;
     static unsigned long long mt_buffer[MT_LEN];
 };
-
 
 #endif  // RANDOM_H

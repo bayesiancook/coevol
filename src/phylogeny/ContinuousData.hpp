@@ -12,10 +12,10 @@ class ContinuousData {
   public:
     ContinuousData() = default;
 
-    ContinuousData(const TaxonSet* intaxset, int inNsite) {
+    ContinuousData(const TaxonSet *intaxset, int inNsite) {
         taxset = intaxset;
         Nsite = inNsite;
-        Data = new double*[GetNtaxa()];
+        Data = new double *[GetNtaxa()];
         for (int i = 0; i < GetNtaxa(); i++) {
             Data[i] = new double[Nsite];
             for (int j = 0; j < Nsite; j++) {
@@ -28,10 +28,10 @@ class ContinuousData {
         }
     }
 
-    ContinuousData(ContinuousData* from) {
+    ContinuousData(ContinuousData *from) {
         taxset = from->GetTaxonSet();
         Nsite = from->GetNsite();
-        Data = new double*[GetNtaxa()];
+        Data = new double *[GetNtaxa()];
         for (int i = 0; i < GetNtaxa(); i++) {
             Data[i] = new double[Nsite];
             for (int j = 0; j < Nsite; j++) {
@@ -44,7 +44,7 @@ class ContinuousData {
         }
     }
 
-    void ToStream(std::ostream& os, TaxonSet* taxset = nullptr) {
+    void ToStream(std::ostream &os, TaxonSet *taxset = nullptr) {
         if (taxset == nullptr) {
             //             std::cerr << "??? in taxon set\n";
             os << GetNtaxa() << '\t' << GetNsite() << '\n';
@@ -98,7 +98,7 @@ class ContinuousData {
         }
     }
 
-    void ToStreamLog(std::ostream& os) {
+    void ToStreamLog(std::ostream &os) {
         os << GetNtaxa() << '\t' << GetNsite() << '\n';
         for (int i = 0; i < GetNtaxa(); i++) {
             os << GetTaxonSet()->GetTaxon(i);
@@ -126,7 +126,7 @@ class ContinuousData {
     }
 
     // the list of taxa
-    const TaxonSet* GetTaxonSet() { return taxset; }
+    const TaxonSet *GetTaxonSet() { return taxset; }
 
     int GetNtaxa() { return GetTaxonSet()->GetNtaxa(); }
 
@@ -179,14 +179,14 @@ class ContinuousData {
     // char       GetCharState(int taxon, int state);
 
     int Nsite;
-    const TaxonSet* taxset;
-    double** Data;
-    std::string* charname;
+    const TaxonSet *taxset;
+    double **Data;
+    std::string *charname;
 };
 
 class FileContinuousData : public ContinuousData {
   public:
-    FileContinuousData(std::istream& is) { ReadDataFromFile(is); }
+    FileContinuousData(std::istream &is) { ReadDataFromFile(is); }
 
     FileContinuousData(std::string filename) {
         std::ifstream is(filename.c_str());
@@ -198,7 +198,7 @@ class FileContinuousData : public ContinuousData {
     }
 
   private:
-    int ReadDataFromFile(std::istream& is) {
+    int ReadDataFromFile(std::istream &is) {
         std::string temp;
         is >> temp;
         int Ntaxa;
@@ -220,9 +220,8 @@ class FileContinuousData : public ContinuousData {
             }
         }
 
-
         auto name = new std::string[Ntaxa];
-        Data = new double*[Ntaxa];
+        Data = new double *[Ntaxa];
         for (int i = 0; i < Ntaxa; i++) {
             is >> name[i];
             Data[i] = new double[Nsite];

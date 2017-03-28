@@ -12,7 +12,7 @@ using namespace std;
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
-TaxonSet::TaxonSet(const string* names, int ntaxa) {
+TaxonSet::TaxonSet(const string *names, int ntaxa) {
     Ntaxa = ntaxa;
     taxlist = new string[ntaxa];
     for (int i = 0; i < ntaxa; i++) {
@@ -27,7 +27,7 @@ TaxonSet::TaxonSet(const string* names, int ntaxa) {
 
 TaxonSet::~TaxonSet() { delete[] taxlist; }
 
-TaxonSet::TaxonSet(const Tree* tree, const Link* subgroup) {
+TaxonSet::TaxonSet(const Tree *tree, const Link *subgroup) {
     Ntaxa = tree->GetSize(subgroup);
     taxlist = new string[Ntaxa];
     if (subgroup == nullptr) {
@@ -37,19 +37,19 @@ TaxonSet::TaxonSet(const Tree* tree, const Link* subgroup) {
     RecursiveGetSubSet(subgroup, i);
 }
 
-void TaxonSet::RecursiveGetSubSet(const Link* from, int& i) {
+void TaxonSet::RecursiveGetSubSet(const Link *from, int &i) {
     if (from->isLeaf()) {
         taxlist[i] = from->GetNode()->GetName();
         taxmap[from->GetNode()->GetName()] = i + 1;
         i++;
     } else {
-        for (const Link* link = from->Next(); link != from; link = link->Next()) {
+        for (const Link *link = from->Next(); link != from; link = link->Next()) {
             RecursiveGetSubSet(link->Out(), i);
         }
     }
 }
 
-void TaxonSet::ToStream(ostream& os) const {
+void TaxonSet::ToStream(ostream &os) const {
     os << Ntaxa << '\n';
     for (int i = 0; i < Ntaxa; i++) {
         os << taxlist[i] << '\n';

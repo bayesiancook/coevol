@@ -8,9 +8,9 @@
 #include "core/RandomTypes.hpp"
 
 template <class V>
-class IIDArray : public ValPtrArray<Rvar<V> > {
+class IIDArray : public ValPtrArray<Rvar<V>> {
   public:
-    IIDArray(int insize) : ValPtrArray<Rvar<V> >(insize) {}
+    IIDArray(int insize) : ValPtrArray<Rvar<V>>(insize) {}
 
     double Move(double tuning) override {
         double total = 0;
@@ -40,26 +40,24 @@ class IIDArray : public ValPtrArray<Rvar<V> > {
         return total;
     }
 
-    void Register(DAGnode* in) {
+    void Register(DAGnode *in) {
         for (int i = 0; i < this->GetSize(); i++) {
             this->GetVal(i)->Register(in);
         }
     }
 };
 
-
 template <>
-class IIDArray<PosReal> : public ValPtrArray<Rvar<PosReal> > {
+class IIDArray<PosReal> : public ValPtrArray<Rvar<PosReal>> {
   public:
     IIDArray(int intsize);
-    void Register(DAGnode* in) override;  // (VL) in the specific case of PosReal,
+    void Register(DAGnode *in) override;  // (VL) in the specific case of PosReal,
                                           // this overrides a virtual member
 };
 
-
 class BetaIIDArray : public IIDArray<UnitReal> {
   public:
-    BetaIIDArray(int insize, Var<PosReal>* inalpha, Var<PosReal>* inbeta)
+    BetaIIDArray(int insize, Var<PosReal> *inalpha, Var<PosReal> *inbeta)
         : IIDArray<UnitReal>(insize) {
         alpha = inalpha;
         beta = inbeta;
@@ -90,53 +88,53 @@ class BetaIIDArray : public IIDArray<UnitReal> {
     }
 
   protected:
-    Rvar<UnitReal>* CreateVal(int /*site*/) override { return new Beta(alpha, beta); }
+    Rvar<UnitReal> *CreateVal(int /*site*/) override { return new Beta(alpha, beta); }
 
-    Var<PosReal>* alpha;
-    Var<PosReal>* beta;
+    Var<PosReal> *alpha;
+    Var<PosReal> *beta;
 };
 
 class PosUniIIDArray : public IIDArray<PosReal> {
   public:
-    PosUniIIDArray(int insize, Var<PosReal>* inroot, double inmax) : IIDArray<PosReal>(insize) {
+    PosUniIIDArray(int insize, Var<PosReal> *inroot, double inmax) : IIDArray<PosReal>(insize) {
         root = inroot;
         max = inmax;
         Create();
     }
 
   protected:
-    Rvar<PosReal>* CreateVal(int /*site*/) override { return new PosUniform(root, max); }
+    Rvar<PosReal> *CreateVal(int /*site*/) override { return new PosUniform(root, max); }
 
-    Var<PosReal>* root;
+    Var<PosReal> *root;
     double max;
 };
 
 class GammaIIDArray : public IIDArray<PosReal> {
   public:
-    GammaIIDArray(int insize, Var<PosReal>* inalpha, Var<PosReal>* inbeta)
+    GammaIIDArray(int insize, Var<PosReal> *inalpha, Var<PosReal> *inbeta)
         : IIDArray<PosReal>(insize) {
         alpha = inalpha;
         beta = inbeta;
         Create();
     }
 
-    double* SetVals(double* ptr) {
+    double *SetVals(double *ptr) {
         for (int i = 0; i < GetSize(); i++) {
             GetVal(i)->setval(*ptr++);
         }
         return ptr;
     }
 
-    double* GetVals(double* ptr) {
+    double *GetVals(double *ptr) {
         for (int i = 0; i < GetSize(); i++) {
             (*ptr++) = GetVal(i)->val();
         }
         return ptr;
     }
 
-    Var<PosReal>* GetAlpha() { return alpha; }
+    Var<PosReal> *GetAlpha() { return alpha; }
 
-    Var<PosReal>* GetBeta() { return beta; }
+    Var<PosReal> *GetBeta() { return beta; }
 
     double GetMean() {
         double mean = 0;
@@ -162,22 +160,22 @@ class GammaIIDArray : public IIDArray<PosReal> {
     }
 
   protected:
-    Rvar<PosReal>* CreateVal(int /*site*/) override { return new Gamma(alpha, beta); }
+    Rvar<PosReal> *CreateVal(int /*site*/) override { return new Gamma(alpha, beta); }
 
-    Var<PosReal>* alpha;
-    Var<PosReal>* beta;
+    Var<PosReal> *alpha;
+    Var<PosReal> *beta;
 };
 
 class DirichletIIDArray : public IIDArray<Profile> {
   public:
-    DirichletIIDArray(int insize, Var<Profile>* incenter, Var<PosReal>* inconcentration)
+    DirichletIIDArray(int insize, Var<Profile> *incenter, Var<PosReal> *inconcentration)
         : IIDArray<Profile>(insize) {
         center = incenter;
         concentration = inconcentration;
         Create();
     }
 
-    double* SetVals(double* ptr) {
+    double *SetVals(double *ptr) {
         for (int i = 0; i < GetSize(); i++) {
             for (int k = 0; k < GetDim(); k++) {
                 (*GetVal(i))[k] = (*ptr++);
@@ -186,7 +184,7 @@ class DirichletIIDArray : public IIDArray<Profile> {
         return ptr;
     }
 
-    double* GetVals(double* ptr) {
+    double *GetVals(double *ptr) {
         for (int i = 0; i < GetSize(); i++) {
             for (int k = 0; k < GetDim(); k++) {
                 (*ptr++) = (*GetVal(i))[k];
@@ -195,7 +193,7 @@ class DirichletIIDArray : public IIDArray<Profile> {
         return ptr;
     }
 
-    Dirichlet* GetDirichletVal(int site) { return dynamic_cast<Dirichlet*>(GetVal(site)); }
+    Dirichlet *GetDirichletVal(int site) { return dynamic_cast<Dirichlet *>(GetVal(site)); }
 
     double GetMeanEntropy() {
         double mean = 0;
@@ -220,19 +218,18 @@ class DirichletIIDArray : public IIDArray<Profile> {
       }
     */
 
-
     int GetDim() { return GetVal(0)->GetDim(); }
 
   protected:
-    Rvar<Profile>* CreateVal(int /*site*/) override { return new Dirichlet(center, concentration); }
+    Rvar<Profile> *CreateVal(int /*site*/) override { return new Dirichlet(center, concentration); }
 
-    Var<Profile>* center;
-    Var<PosReal>* concentration;
+    Var<Profile> *center;
+    Var<PosReal> *concentration;
 };
 
 class DirichletIIDArrayMove : public MCUpdate {
   public:
-    DirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int inm)
+    DirichletIIDArrayMove(DirichletIIDArray *inselectarray, double intuning, int inm)
         : selectarray(inselectarray), tuning(intuning), m(inm) {}
 
     double Move(double tuning_modulator) override {
@@ -246,32 +243,31 @@ class DirichletIIDArrayMove : public MCUpdate {
             total += selectarray->GetDirichletVal(i)->Move(tuning_modulator * tuning, m);
         }
 
-
         return total / selectarray->GetSize();
     }
 
   private:
-    DirichletIIDArray* selectarray;
+    DirichletIIDArray *selectarray;
     double tuning;
     int m;
 };
 
 class NormalIIDArray : public IIDArray<Real> {
   public:
-    NormalIIDArray(int insize, Var<Real>* inmean, Var<PosReal>* invar) : IIDArray<Real>(insize) {
+    NormalIIDArray(int insize, Var<Real> *inmean, Var<PosReal> *invar) : IIDArray<Real>(insize) {
         mean = inmean;
         var = invar;
         Create();
     }
 
-    double* SetVals(double* ptr) {
+    double *SetVals(double *ptr) {
         for (int i = 0; i < GetSize(); i++) {
             GetVal(i)->setval(*ptr++);
         }
         return ptr;
     }
 
-    double* GetVals(double* ptr) {
+    double *GetVals(double *ptr) {
         for (int i = 0; i < GetSize(); i++) {
             (*ptr++) = GetVal(i)->val();
         }
@@ -284,8 +280,8 @@ class NormalIIDArray : public IIDArray<Real> {
         }
     }
 
-    Normal* GetNormal(int site) {
-        Normal* n = dynamic_cast<Normal*>(GetVal(site));
+    Normal *GetNormal(int site) {
+        Normal *n = dynamic_cast<Normal *>(GetVal(site));
         if (n == nullptr) {
             std::cerr << "error in NormalIIDArray::GetNormal\n";
             exit(1);
@@ -294,11 +290,10 @@ class NormalIIDArray : public IIDArray<Real> {
     }
 
   protected:
-    Rvar<Real>* CreateVal(int /*site*/) override { return new Normal(mean, var); }
+    Rvar<Real> *CreateVal(int /*site*/) override { return new Normal(mean, var); }
 
-    Var<Real>* mean;
-    Var<PosReal>* var;
+    Var<Real> *mean;
+    Var<PosReal> *var;
 };
-
 
 #endif  // IID_H

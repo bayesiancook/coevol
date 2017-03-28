@@ -6,11 +6,10 @@
 #include "core/Var.hpp"
 #include "utils/Random.hpp"
 
-
 // iid normal with same mean and variance
 class IIDUniform : public virtual Rvar<RealVector> {
   public:
-    IIDUniform(Var<Real>* inroot, int dim, double inmax = 100) {
+    IIDUniform(Var<Real> *inroot, int dim, double inmax = 100) {
         root = inroot;
         Register(root);
         max = inmax;
@@ -54,7 +53,7 @@ class IIDUniform : public virtual Rvar<RealVector> {
             Random::DrawFromUrn(indices, n, dim);
             for (int i = 0; i < n; i++) {
                 if (!ClampVector[indices[i]]) {
-                    double& d = vec[indices[i]];
+                    double &d = vec[indices[i]];
                     d += tuning * (Random::Uniform() - 0.5);
                     while (fabs(d) > max) {
                         if (d > max) {
@@ -96,7 +95,8 @@ class IIDUniform : public virtual Rvar<RealVector> {
       return 1;
       }
 
-      double ProposePiecewiseTranslationMove(double tuning, int index, int n)	{
+      double ProposePiecewiseTranslationMove(double tuning, int index, int n)
+      {
       double u = tuning * (Random::Uniform() - 0.5);
       return PiecewiseTranslation(u,index,n);
       }
@@ -108,7 +108,6 @@ class IIDUniform : public virtual Rvar<RealVector> {
       return 0;
       }
     */
-
 
     double GetMean() {
         double total = 0;
@@ -143,9 +142,9 @@ class IIDUniform : public virtual Rvar<RealVector> {
     }
 
   private:
-    bool* ClampVector;
+    bool *ClampVector;
     double max;
-    Var<Real>* root;
+    Var<Real> *root;
 };
 
 class IIDNormal : public virtual Rvar<RealVector> {
@@ -159,7 +158,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
         }
     }
 
-    IIDNormal(int dim, Var<Real>* inmean, Var<PosReal>* invariance) {
+    IIDNormal(int dim, Var<Real> *inmean, Var<PosReal> *invariance) {
         setval(RealVector(dim));
         bkvalue = RealVector(dim);
         mean = inmean;
@@ -174,7 +173,7 @@ class IIDNormal : public virtual Rvar<RealVector> {
         Sample();
     }
 
-    IIDNormal(Var<RealVector>* inmeanvector, Var<PosReal>* invariance) {
+    IIDNormal(Var<RealVector> *inmeanvector, Var<PosReal> *invariance) {
         setval(RealVector(inmeanvector->GetDim()));
         bkvalue = RealVector(inmeanvector->GetDim());
         meanvector = inmeanvector;
@@ -299,7 +298,6 @@ class IIDNormal : public virtual Rvar<RealVector> {
         return 1;
     }
 
-
     double GetMean() {
         double total = 0;
         for (int i = 0; i < GetDim(); i++) {
@@ -340,16 +338,15 @@ class IIDNormal : public virtual Rvar<RealVector> {
         }
     }
 
-    bool* ClampVector;
-    Var<Real>* mean;
-    Var<RealVector>* meanvector;
-    Var<PosReal>* variance;
+    bool *ClampVector;
+    Var<Real> *mean;
+    Var<RealVector> *meanvector;
+    Var<PosReal> *variance;
 };
-
 
 class IIDAddition : public Dvar<RealVector> {
   public:
-    IIDAddition(Var<RealVector>* ina, Var<RealVector>* inb) {
+    IIDAddition(Var<RealVector> *ina, Var<RealVector> *inb) {
         a = ina;
         b = inb;
         Register(a);
@@ -364,13 +361,13 @@ class IIDAddition : public Dvar<RealVector> {
     }
 
   private:
-    Var<RealVector>* a;
-    Var<RealVector>* b;
+    Var<RealVector> *a;
+    Var<RealVector> *b;
 };
 
 class Addition : public Dvar<Real> {
   public:
-    Addition(Var<Real>* ina, Var<Real>* inb) {
+    Addition(Var<Real> *ina, Var<Real> *inb) {
         a = ina;
         b = inb;
         Register(a);
@@ -381,8 +378,8 @@ class Addition : public Dvar<Real> {
     void specialUpdate() override { setval(a->val() + b->val()); }
 
   private:
-    Var<Real>* a;
-    Var<Real>* b;
+    Var<Real> *a;
+    Var<Real> *b;
 };
 
 #endif

@@ -92,7 +92,6 @@ class MyDoubleMove : public MCUpdate {
             // actual value of the node and returns the log of the Hastings ratio (proposal ratio)
 
 
-
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             // UPDATE VALUE OF NODES
             if (t < 100 or !adaptive) {

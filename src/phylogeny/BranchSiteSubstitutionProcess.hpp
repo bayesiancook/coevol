@@ -15,22 +15,22 @@ class BranchSiteSubstitutionProcess {
 
     virtual double GetTime() = 0;
     virtual double GetRate() = 0;
-    virtual const double* GetStationary() = 0;
-    virtual SubMatrix* GetSubMatrix() = 0;
+    virtual const double *GetStationary() = 0;
+    virtual SubMatrix *GetSubMatrix() = 0;
 
     virtual int GetNstate() { return GetSubMatrix()->GetNstate(); }
 
-    void BackwardPropagate(const double* down, double* up) {
+    void BackwardPropagate(const double *down, double *up) {
         GetSubMatrix()->BackwardPropagate(down, up, GetTime() * GetRate());
     }
-    void ForwardPropagate(const double* up, double* down) {
+    void ForwardPropagate(const double *up, double *down) {
         GetSubMatrix()->ForwardPropagate(up, down, GetTime() * GetRate());
     }
 
     int DrawFiniteTime(int state);
     int DrawStationary();
 
-    void GetFiniteTimeTransitionProb(int state, double* p);
+    void GetFiniteTimeTransitionProb(int state, double *p);
 
     double GetFiniteTimeTransitionProb(int stateup, int statedown);
 
@@ -49,13 +49,11 @@ class BranchSiteSubstitutionProcess {
     bool CheckUniformizedSubstitutionNumber(int stateup, int statedown);
 };
 
-
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //	* Inline definitions
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-
 
 inline double BranchSiteSubstitutionProcess::WaitingTimeLogProb(int state, double time) {
     double q = -(*GetSubMatrix())(state, state) * GetRate();
@@ -68,14 +66,14 @@ inline double BranchSiteSubstitutionProcess::ReducedWaitingTimeLogProb(int state
 }
 
 inline double BranchSiteSubstitutionProcess::OneStepLogProb(int stateup, int statedown) {
-    const double* row = GetSubMatrix()->GetRow(stateup);
+    const double *row = GetSubMatrix()->GetRow(stateup);
     std::cerr << "in BranchSiteSubstitutionProcess::OneStepLogProb : check code\n";
     exit(1);
     return log(row[statedown]) - log(row[stateup]);
 }
 
 inline double BranchSiteSubstitutionProcess::ReducedOneStepLogProb(int stateup, int statedown) {
-    const double* row = GetSubMatrix()->GetRow(stateup);
+    const double *row = GetSubMatrix()->GetRow(stateup);
     return log(row[statedown]);
 }
 
@@ -91,7 +89,7 @@ inline double BranchSiteSubstitutionProcess::DrawWaitingTimeGivenAtLeastOne(int 
 }
 
 inline int BranchSiteSubstitutionProcess::DrawOneStep(int state) {
-    const double* row = GetSubMatrix()->GetRow(state);
+    const double *row = GetSubMatrix()->GetRow(state);
     double p = -row[state] * Random::Uniform();
     int k = -1;
     double tot = 0;
@@ -108,7 +106,7 @@ inline int BranchSiteSubstitutionProcess::DrawOneStep(int state) {
     return k;
 }
 
-inline void BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int state, double* p) {
+inline void BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int state, double *p) {
     auto p1 = new double[GetNstate()];
     for (int k = 0; k < GetNstate(); k++) {
         p1[k] = 0;
@@ -162,7 +160,7 @@ inline double BranchSiteSubstitutionProcess::StationaryLogProb(int state) {
 }
 
 inline int BranchSiteSubstitutionProcess::DrawStationary() {
-    const double* stat = GetStationary();
+    const double *stat = GetStationary();
     double p = Random::Uniform();
     int k = -1;
     double tot = 0;
@@ -177,7 +175,6 @@ inline int BranchSiteSubstitutionProcess::DrawStationary() {
     return k;
 }
 
-
 inline int BranchSiteSubstitutionProcess::DrawFiniteTime(int state) {
     auto p = new double[GetNstate()];
     GetFiniteTimeTransitionProb(state, p);
@@ -185,7 +182,6 @@ inline int BranchSiteSubstitutionProcess::DrawFiniteTime(int state) {
     delete[] p;
     return newstate;
 }
-
 
 inline bool BranchSiteSubstitutionProcess::CheckUniformizedSubstitutionNumber(int stateup,
                                                                               int statedown) {
@@ -201,7 +197,9 @@ inline bool BranchSiteSubstitutionProcess::CheckUniformizedSubstitutionNumber(in
         total += GetSubMatrix()->Power(m, stateup, statedown) * fact;
     }
     if (fabs(total - Z) > 1e-12) {
-        std::cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber: "
+        std::cerr << "error in "
+                     "BranchSiteSubstitutionProcess::"
+                     "DrawUniformizedSubstitutionNumber: "
                      "normalising constant\n";
         std::cerr << total << '\t' << Z << '\n';
         std::cerr << mu << '\n';
@@ -227,9 +225,10 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber(int 
         fact *= mu * efflength / m;
         total += GetSubMatrix()->Power(m, stateup, statedown) * fact;
         if ((total - Z) > 1e-12) {
-            std::cerr
-                << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber: "
-                   "normalising constant\n";
+            std::cerr << "error in "
+                         "BranchSiteSubstitutionProcess::"
+                         "DrawUniformizedSubstitutionNumber: "
+                         "normalising constant\n";
             std::cerr << total << '\t' << Z << '\t' << total - Z << '\n';
             /*
               std::cerr << mu << '\n';
@@ -245,7 +244,8 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber(int 
 
     /*
       if (m >= SubMatrix::UniSubNmax)	{
-      std::cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber:
+      std::cerr << "error in
+      BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber:
       overflow\n";
       throw;
       }
@@ -255,7 +255,6 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber(int 
     */
     return m;
 }
-
 
 inline int BranchSiteSubstitutionProcess::DrawUniformizedTransition(int state, int statedown,
                                                                     int n) {
@@ -272,8 +271,9 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedTransition(int state, i
         k++;
     }
     if (k == GetNstate()) {
-        std::cerr
-            << "error in BranchSiteSubstitutionProcess::DrawUniformizedTransition: overflow\n";
+        std::cerr << "error in "
+                     "BranchSiteSubstitutionProcess::DrawUniformizedTransition: "
+                     "overflow\n";
         throw;
     }
     delete[] p;

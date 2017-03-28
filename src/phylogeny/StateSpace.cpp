@@ -12,7 +12,6 @@ using namespace std;
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
-
 // static inline int EquivalentStrings(string a, string b) {
 //     if (a.length() != b.length()) {
 //         return 0;
@@ -91,7 +90,6 @@ DNAStateSpace::~DNAStateSpace() {
     delete[] Alphabet;
     delete[] AlphabetSet;
 }
-
 
 RYStateSpace::RYStateSpace() {
     Nstate = 2;
