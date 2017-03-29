@@ -4,7 +4,7 @@
 
 SRC_FILES = $(shell find src -name "*.hpp") $(shell find src -name "*.cpp") $(shell find test -name "*.hpp") $(shell find test -name "*.cpp") $(shell find app -name "*.hpp") $(shell find app -name "*.cpp")
 TMP_FILES = $(shell find . -name "tmp*")
-.PHONY: cmake clean doc fix check format dot testmove testmove2 testgamma testdiffsel
+.PHONY: cmake clean doc check format dot testdiffsel log
 
 
 # ====================================
@@ -44,18 +44,11 @@ src/Eigen:
 test: all
 	@cd _build ; make --no-print-directory test
 
-testmove: all
-	@_build/CustomSimpleMove
-
-testmove2: all
-	@_build/CustomDoubleMove
-
-testgamma: all
-	@_build/PoissonGamma data/test.data _build/test.out
-	@less _build/test.out.trace
-
 testdiffsel: all
 	@_build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 1 tmp_diffsel_result clamp_MCMC 1 MS
+
+log:
+	@less _build/Testing/Temporary/LastTest.log
 
 dot: tmp.dot
 	@dot -Tps $< -o tmp.ps
