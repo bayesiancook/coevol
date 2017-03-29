@@ -4,7 +4,7 @@
 
 SRC_FILES = $(shell find src -name "*.hpp") $(shell find src -name "*.cpp") $(shell find test -name "*.hpp") $(shell find test -name "*.cpp") $(shell find app -name "*.hpp") $(shell find app -name "*.cpp")
 TMP_FILES = $(shell find . -name "tmp*")
-.PHONY: cmake clean doc check format dot testdiffsel log
+.PHONY: cmake clean doc check format dot testdiffsel log perf report
 
 
 # ====================================
@@ -49,6 +49,13 @@ testmove: all
 
 testdiffsel: all
 	@_build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 1 tmp_diffsel_result clamp_MCMC 1 MS
+
+perf: all
+	@sudo bash -c 'echo "0" > /proc/sys/kernel/perf_event_paranoid' # nothing to see here
+	@perf record make --no-print-directory testdiffsel
+
+report: all
+	@perf report | c++filt | less
 
 log:
 	@less _build/Testing/Temporary/LastTest.log
