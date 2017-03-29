@@ -44,6 +44,9 @@ src/Eigen:
 test: all
 	@cd _build ; make --no-print-directory test
 
+testmove: all
+	@_build/CustomDoubleMove
+
 testdiffsel: all
 	@_build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 1 tmp_diffsel_result clamp_MCMC 1 MS
 

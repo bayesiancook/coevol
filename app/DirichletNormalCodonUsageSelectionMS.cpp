@@ -117,8 +117,11 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
 
 
     void Move() override {
+        MeasureTime myTimer;
         for (int i = 0; i < every; i++) {
+            myTimer.start();
             model->Move(1);
+            myTimer.print();
         }
 
         SavePoint();

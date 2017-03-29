@@ -7,6 +7,7 @@
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
 #include "utils/Random.hpp"
+#include "utils/Chrono.hpp"
 using namespace std;
 using namespace Eigen;
 using namespace TestUtils;
@@ -259,11 +260,13 @@ void printCaracs(vector<double> data, string name) {
 int main() {
     MyModel model;
     vector<double> resultsA, resultsB;
-    for (int i = 0; i < 100000; i++) {
+    MeasureTime myTimer;
+    for (int i = 0; i < 1000000; i++) {
         model.Move(1.0);
         resultsA.push_back(model.a->val());
         resultsB.push_back(model.b->val());
     }
+    myTimer.print();
     printCaracs(resultsA, "a");  // expected 2.27
     printCaracs(resultsB, "b");  // expected 2.18
 #ifndef REFERENCE_TEST2
