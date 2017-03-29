@@ -1,0 +1,115 @@
+######################################
+# YOUR COMMENTS HERE:
+
+Roughly 15 iterations.
+Unmodified diffsel.
+
+######################################
+
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 3K of event 'cycles:ppp'
+# Event count (approx.): 1953495999927399
+#
+# Overhead  Command  Shared Object        Symbol                                                                                         
+# ........  .......  ...................  ....................................................................................................................................
+#
+    33.10%  diffsel  diffsel              [.] LinAlg::DiagonalizeSymmetricMatrix(double**, int, int, double, double*, double**)
+    25.91%  diffsel  diffsel              [.] LinAlg::QR(double**, int, double**, double**)
+     6.50%  diffsel  libm-2.24.so         [.] __ieee754_log_avx
+     3.84%  diffsel  diffsel              [.] MGMSFitnessCodonUsageSubMatrix::ComputeArray(int)
+     3.31%  diffsel  diffsel              [.] SubMatrix::BackwardPropagate(double const*, double*, double)
+     2.91%  diffsel  libm-2.24.so         [.] __ieee754_exp_avx
+     2.86%  diffsel  diffsel              [.] MGMSFitnessCodonUsageSubMatrix::ComputeStationary()
+     2.81%  diffsel  diffsel              [.] virtual thunk to RandomSubMatrix::GetNstate()
+     2.41%  diffsel  diffsel              [.] std::map<Node const*, bool*, std::less<Node const*>, std::allocator<std::pair<Node const* const, bool*> > >::operator[](Node const*&&)
+     2.27%  diffsel  diffsel              [.] CodonStateSpace::GetDifferingPosition(int, int)
+     2.02%  diffsel  diffsel              [.] SubMatrix::ForwardPropagate(double const*, double*, double)
+     1.97%  diffsel  diffsel              [.] std::map<Branch const*, RandomBranchSitePath**, std::less<Branch const*>, std::allocator<std::pair<Branch const* const, RandomBranchSitePath**> > >::operator[](Branch const* const&)
+     1.35%  diffsel  diffsel              [.] PhyloProcess::isMissing(Link const*, int)
+     0.99%  diffsel  diffsel              [.] std::map<Branch const*, RandomBranchSitePath**, std::less<Branch const*>, std::allocator<std::pair<Branch const* const, RandomBranchSitePath**> > >::operator[](Branch const*&&)
+     0.79%  diffsel  diffsel              [.] Random::DrawFromUrn(int*, int, int)
+     0.74%  diffsel  diffsel              [.] SubMatrix::Stationary(int)
+     0.56%  diffsel  [kernel]             [k] 0xffffffff9e0f47c5
+     0.51%  diffsel  ld-2.24.so           [.] _dl_lookup_symbol_x
+     0.44%  diffsel  libc-2.24.so         [.] __memset_avx2_unaligned_erms
+     0.34%  diffsel  diffsel              [.] LinAlg::HouseHolder(double**, int, double**, double**)
+     0.34%  diffsel  diffsel              [.] CodonStateSpace::GetCodonPosition(int, int)
+     0.30%  diffsel  diffsel              [.] PhyloProcess::GetBranchSiteSubstitutionProcess(Branch const*, int)
+     0.30%  diffsel  libm-2.24.so         [.] __GI___exp
+     0.25%  diffsel  diffsel              [.] Random::Uniform()
+     0.25%  diffsel  diffsel              [.] SubMatrix::operator()(int, int)
+     0.25%  diffsel  diffsel              [.] Dnode::Update()
+     0.20%  diffsel  diffsel              [.] RenormalizedIIDStat::specialUpdate()
+     0.20%  diffsel  libm-2.24.so         [.] __log
+     0.15%  diffsel  diffsel              [.] PhyloProcess::Pruning(Link const*, int)
+     0.15%  diffsel  diffsel              [.] Dnode::Corrupt(bool)
+     0.15%  diffsel  diffsel              [.] non-virtual thunk to RandomBranchSitePath::GetNstate()
+     0.15%  diffsel  libm-2.24.so         [.] @plt
+     0.15%  diffsel  diffsel              [.] Dirichlet::logProb()
+     0.10%  diffsel  libstdc++.so.6.0.22  [.] std::_Rb_tree_increment(std::_Rb_tree_node_base const*)
+     0.10%  diffsel  diffsel              [.] PhyloProcess::PruningAncestral(Link const*, int)
+     0.10%  diffsel  diffsel              [.] RandomBranchSitePath::GetSubMatrix()
+     0.10%  diffsel  diffsel              [.] std::map<Link const*, double*, std::less<Link const*>, std::allocator<std::pair<Link const* const, double*> > >::operator[](Link const* const&)
+     0.10%  diffsel  diffsel              [.] Random::logGamma(double)
+     0.10%  diffsel  diffsel              [.] ConjSampling::ConjugateCorrupt(bool)
+     0.05%  diffsel  diffsel              [.] virtual thunk to DSemiConjugatePrior<void>::NotifyUpdate()
+     0.05%  diffsel  libm-2.24.so         [.] @plt
+     0.05%  diffsel  diffsel              [.] SubMatrix::ComputePowers(int)
+     0.05%  diffsel  diffsel              [.] virtual thunk to IIDNormal::logProb()
+     0.05%  diffsel  diffsel              [.] log@plt
+     0.05%  diffsel  diffsel              [.] non-virtual thunk to RandomBranchSitePath::GetTime()
+     0.05%  diffsel  diffsel              [.] ProfileConjugateRandomBranchSitePath::AddSufficientStatistic(SemiConjPrior*)
+     0.05%  diffsel  diffsel              [.] memset@plt
+     0.05%  diffsel  diffsel              [.] BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int, double*)
+     0.05%  diffsel  diffsel              [.] MGCodonSubMatrix::CorruptMatrix()
+     0.05%  diffsel  libstdc++.so.6.0.22  [.] __cxxabiv1::__vmi_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+     0.05%  diffsel  libc-2.24.so         [.] malloc
+     0.05%  diffsel  diffsel              [.] RandomBranchSitePath::PathLogProb()
+     0.05%  diffsel  libc-2.24.so         [.] _int_free
+     0.05%  diffsel  diffsel              [.] LinAlg::DiagonalizeRateMatrix(double**, double*, int, double*, double**, double**, int, double)
+     0.05%  diffsel  diffsel              [.] virtual thunk to RandomTransitionMatrix::localCorrupt(bool)
+     0.05%  diffsel  libc-2.24.so         [.] __memmove_avx_unaligned_erms
+     0.05%  diffsel  diffsel              [.] Rnode::localUpdate()
+     0.05%  diffsel  [kernel]             [k] 0xffffffffc06448e0
+     0.05%  diffsel  libstdc++.so.6.0.22  [.] __cxxabiv1::__si_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+     0.00%  diffsel  diffsel              [.] ProfilePathConjugate::SuffStatLogProb()
+     0.00%  diffsel  diffsel              [.] std::vector<double, std::allocator<double> >::operator=(std::vector<double, std::allocator<double> > const&)
+     0.00%  diffsel  diffsel              [.] virtual thunk to MGMSFitnessCodonUsageSubMatrix::ComputeStationary()
+     0.00%  diffsel  diffsel              [.] virtual thunk to BranchProcess<PosReal>::GetTree()
+     0.00%  diffsel  diffsel              [.] Rnode::Corrupt(bool)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc03a8460
+     0.00%  diffsel  libm-2.24.so         [.] __sqr
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] __cxxabiv1::__vmi_class_type_info::__do_find_public_src(long, void const*, __cxxabiv1::__class_type_info const*, void const*) const
+     0.00%  diffsel  diffsel              [.] Rnode::Update()
+     0.00%  diffsel  diffsel              [.] Rnode::localCorrupt(bool)
+     0.00%  diffsel  diffsel              [.] ConjugateSampling<void>::NotifyUpdate()
+     0.00%  diffsel  diffsel              [.] std::map<Node const*, bool, std::less<Node const*>, std::allocator<std::pair<Node const* const, bool> > >::operator[](Node const*&&)
+     0.00%  diffsel  diffsel              [.] virtual thunk to RandomTransitionMatrix::specialUpdate()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] __dynamic_cast
+     0.00%  diffsel  diffsel              [.] virtual thunk to Rnode::NotifyUpdate()
+     0.00%  diffsel  diffsel              [.] std::map<Branch const*, Rvar<PosReal>*, std::less<Branch const*>, std::allocator<std::pair<Branch const* const, Rvar<PosReal>*> > >::operator[](Branch const* const&)
+     0.00%  diffsel  libc-2.24.so         [.] free
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05b06f6
+     0.00%  diffsel  diffsel              [.] non-virtual thunk to RandomBranchSitePath::GetSubMatrix()
+     0.00%  diffsel  ld-2.24.so           [.] do_lookup_x
+     0.00%  diffsel  [kernel]             [k] 0xffffffff9e1d352a
+     0.00%  diffsel  [kernel]             [k] 0xffffffff9e1db57d
+     0.00%  perf     [kernel]             [k] 0xffffffff9e18d2cd
+     0.00%  diffsel  [kernel]             [k] 0xffffffff9e036fd1
+     0.00%  diffsel  [kernel]             [k] 0xffffffff9e036fdd
+     0.00%  diffsel  [kernel]             [k] 0xffffffff9e191bbb
+     0.00%  perf     [kernel]             [k] 0xffffffff9e0370e9
+     0.00%  diffsel  [kernel]             [k] 0xffffffff9e0648d6
+     0.00%  perf     [kernel]             [k] 0xffffffff9e0648d6
+     0.00%  diffsel  [kernel]             [k] 0xffffffff9e0648d4
+     0.00%  perf     [kernel]             [k] 0xffffffff9e0648d4
+     0.00%  diffsel  [kernel]             [k] 0000000000000000
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

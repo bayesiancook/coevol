@@ -71,10 +71,7 @@ report: all
 	@perf report | c++filt | less
 
 report-save:
-	@file=perf/report_`date +"%s"`
-	@echo "######################################\n# YOUR COMMENTS HERE:\n\n\n\n\n######################################\n" > $file
-	@perf report | c++filt >> $file
-	@nano $file
+	@file=perf/report_`date +"%s"` ; echo "######################################\n# YOUR COMMENTS HERE:\n\n\n\n######################################\n" > "$$file" ; perf report | c++filt >> "$$file" ; nano "$$file"
 
 
 # ====================================
