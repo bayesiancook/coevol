@@ -64,16 +64,17 @@ dot: tmp.dot
 # Requires: perf
 
 perf: all
-	@sudo bash -c 'echo "0" > /proc/sys/kernel/perf_event_paranoid' # nothing to see here
-	@perf record make --no-print-directory testdiffsel
+	@sudo bash -c 'echo "0" > /proc/sys/kernel/perf_event_paranoid' # nothing to see here :)
+	@perf record _build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 1 tmp_diffsel_result clamp_MCMC 1 MS
 
 report: all
 	@perf report | c++filt | less
 
 report-save:
-	@echo "######################################\n# YOUR COMMENTS HERE:\n\n\n\n\n######################################\n" > perf/report_`date +"%s"`
-	@perf report | c++filt >> perf/report_`date +"%s"`
-	@nano perf/report_`date +"%s"`
+	@file=perf/report_`date +"%s"`
+	@echo "######################################\n# YOUR COMMENTS HERE:\n\n\n\n\n######################################\n" > $file
+	@perf report | c++filt >> $file
+	@nano $file
 
 
 # ====================================
