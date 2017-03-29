@@ -1,12 +1,13 @@
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <cmath>
 #include <cstdio>
 #include <list>
-#include "TestUtils.hpp"
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
+#include "doctest.h"
 #include "utils/Random.hpp"
 using namespace std;
-using namespace TestUtils;
+using namespace doctest;
 
 double lambda = 4;
 bool adaptive = true;
@@ -86,8 +87,8 @@ class MySimpleMove : public MCUpdate {
     void debug() {
         printf("New value %f, mean=%f, variance=%f, acceptance=%f%%\n", double(managedNode), mean,
                M2 / nbVal, (accept * 100.0) / nbVal);
-        cassert(mean, 0.575, 0.05);
-        cassert(M2 / nbVal, 0.03, 0.05);
+        CHECK(mean == Approx(0.575).epsilon(0.05));
+        CHECK(M2 / nbVal == Approx(0.03).epsilon(0.05));
     }
 };
 
@@ -124,7 +125,9 @@ class MyModel : public ProbModel {
     void FromStream(istream&) override {}
 };
 
-int main() {
+TEST_CASE(
+    "Testing a custom single move against values obtained through tests with regular coevol "
+    "moves.") {
     MyModel model;
     vector<double> results;
     for (int i = 0; i < 100000; i++) {
@@ -143,6 +146,6 @@ int main() {
     double finalVariance = (variance - (mean * mean / results.size())) / results.size();
     cout << "Mean: " << finalMean << " ; variance: " << finalVariance << endl;
     model.mymove->debug();
-    cassert(finalMean, 0.575, 0.05);
-    cassert(finalVariance, 0.03, 0.05);
+    CHECK(finalMean == Approx(0.575).epsilon(0.05));
+    CHECK(finalVariance == Approx(0.03).epsilon(0.05));
 }
