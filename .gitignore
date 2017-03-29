@@ -6,3 +6,4 @@ doc/html
 doc/latex
 perf.*
 src/Eigen
+doctest.h

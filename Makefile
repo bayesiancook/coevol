@@ -12,7 +12,7 @@ TMP_FILES = $(shell find . -name "tmp*")
 # ====================================
 # Requires: cmake
 
-all: cmake src/Eigen
+all: cmake src/Eigen test/doctest.h
 	@cd _build ; make --no-print-directory -j8
 
 seq: cmake src/Eigen
@@ -34,6 +34,10 @@ src/Eigen:
 	@tar -xvf 3.3.3.tar.gz
 	@cp -r eigen-eigen-67e894c6cd8f/Eigen src
 	@rm -rf 3.3.3.tar.gz eigen-eigen-67e894c6cd8f
+
+test/doctest.h:
+	@wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
+	@cp doctest.h test/
 
 
 # ====================================
