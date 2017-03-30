@@ -223,6 +223,7 @@ double PhyloProcess::FastSiteLogLikelihood(int site) {
 
 double PhyloProcess::GetFastLogProb() {
     double total = 0;
+    MeasureTime timer;
     for (int i = 0; i < GetNsite(); i++) {
         /*
           if (sitelnL[i] == -1)	{
@@ -232,11 +233,13 @@ double PhyloProcess::GetFastLogProb() {
         */
         total += sitelnL[i];
     }
+    timer.print("GetFastLogProb. ");
     return total;
 }
 
 double PhyloProcess::GetLogProb() {
     // return GetPathLogProb();
+    MeasureTime timer;
     double total = 0;
     for (int i = 0; i < GetNsite(); i++) {
         /*
@@ -247,7 +250,8 @@ double PhyloProcess::GetLogProb() {
           total += sitelnL[i];
         */
         total += SiteLogLikelihood(i);
-    }
+   }
+    timer.print("GetLogProb. ");
     return total;
 }
 
@@ -637,6 +641,7 @@ void PhyloProcess::ResampleState(int site) {
 
 void PhyloProcess::ResampleSub() {
     pruningchrono.Start();
+    MeasureTime timer;
     for (int i = 0; i < GetNsite(); i++) {
         if (sitearray[i] != 0) {
             if (!isMissing(GetRoot()->GetNode(), i)) {
@@ -644,6 +649,7 @@ void PhyloProcess::ResampleSub() {
             }
         }
     }
+    timer.print("ResampleSub - state. ");
     pruningchrono.Stop();
 
     resamplechrono.Start();
