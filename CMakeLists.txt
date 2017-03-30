@@ -54,8 +54,7 @@ target_link_libraries(coevol_phylogeny coevol_core)
 ########################
 
 # Diffsel
-file (GLOB DIFFSEL "src/diffsel/*.cpp")
-add_executable(diffsel "app/DirichletNormalCodonUsageSelectionMS.cpp" ${DIFFSEL})
+add_executable(diffsel "app/DirichletNormalCodonUsageSelectionMS.cpp")
 target_link_libraries(diffsel coevol_phylogeny)
 target_compile_features(diffsel PRIVATE ${CXX_FEATURES})
 
