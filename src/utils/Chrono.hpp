@@ -50,10 +50,8 @@ class MeasureTime : public std::stringstream {
         if (!stopped) {
             stop();
         }
-        std::string left;
-        if (indent == 0) left = "* ";
-        else left = "  - ";
-        std::cout << left << message << str() << "Time: " << duration.count() << "ms." << std::endl;
+        std::string left(2*indent,' ');
+        std::cout << left << "* " << message << str() << "Time: " << duration.count() << "ms." << std::endl;
         str("");
         start();
     }
