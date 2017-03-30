@@ -5,6 +5,7 @@
 #include <chrono>
 #include <ctime>
 #include <iostream>
+#include <sstream>
 
 class Chrono {
   public:
@@ -30,7 +31,7 @@ class Chrono {
     int N;
 };
 
-class MeasureTime {
+class MeasureTime : public std::stringstream {
   public:
     MeasureTime() : stopped(false) { start(); }
 
@@ -45,17 +46,20 @@ class MeasureTime {
             std::chrono::high_resolution_clock::now() - counter);
     }
 
-    void print(std::string message="") {
+    void print(std::string message = "") {
         if (!stopped) {
             stop();
         }
-        std::cout << "* " << message << "Time: " << duration.count() << "ms." << std::endl;
+        std::cout << "* " << message << str() << "Time: " << duration.count() << "ms." << std::endl;
+        str("");
+        start();
     }
 
   private:
     std::chrono::time_point<std::chrono::high_resolution_clock> counter;
     std::chrono::milliseconds duration;
     bool stopped;
+    std::stringstream ss;
 };
 
 #endif  // CHRONO_H

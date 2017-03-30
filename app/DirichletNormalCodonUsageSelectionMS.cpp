@@ -118,22 +118,18 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
 
     void Move() override {
         MeasureTime myTimer;
-        stringstream ss;
         for (int i = 0; i < every; i++) {
             myTimer.start();
             model->Move(1);
-            ss << "Iteration core (" << i+1 << '/' << every << "). ";
-            myTimer.print(ss.str());
-            ss.str("");
+            myTimer << "Iteration core (" << i+1 << '/' << every << "). ";
+            myTimer.print();
         }
 
         myTimer.start();
         SavePoint();
         myTimer.print("SavePoint. ");
-        myTimer.start();
         Save();
         myTimer.print("Save. ");
-        myTimer.start();
         Monitor();
         myTimer.print("Monitor. ");
     }
