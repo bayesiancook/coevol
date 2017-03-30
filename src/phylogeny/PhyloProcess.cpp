@@ -233,7 +233,7 @@ double PhyloProcess::GetFastLogProb() {
         */
         total += sitelnL[i];
     }
-    timer.print("GetFastLogProb. ");
+    timer.print("GetFastLogProb. ", 1);
     return total;
 }
 
@@ -251,7 +251,7 @@ double PhyloProcess::GetLogProb() {
         */
         total += SiteLogLikelihood(i);
    }
-    timer.print("GetLogProb. ");
+    timer.print("GetLogProb. ", 1);
     return total;
 }
 
@@ -649,7 +649,7 @@ void PhyloProcess::ResampleSub() {
             }
         }
     }
-    timer.print("ResampleSub - state. ");
+    timer.print("ResampleSub - state. ", 1);
     pruningchrono.Stop();
 
     resamplechrono.Start();

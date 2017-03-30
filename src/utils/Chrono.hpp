@@ -46,13 +46,20 @@ class MeasureTime : public std::stringstream {
             std::chrono::high_resolution_clock::now() - counter);
     }
 
-    void print(std::string message = "") {
+    void print(std::string message = "", int indent=0) {
         if (!stopped) {
             stop();
         }
-        std::cout << "* " << message << str() << "Time: " << duration.count() << "ms." << std::endl;
+        std::string left;
+        if (indent == 0) left = "* ";
+        else left = "  - ";
+        std::cout << left << message << str() << "Time: " << duration.count() << "ms." << std::endl;
         str("");
         start();
+    }
+
+    void print(int indent) {
+        print("", indent);
     }
 
   private:
