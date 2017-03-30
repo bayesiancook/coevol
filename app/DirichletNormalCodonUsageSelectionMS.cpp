@@ -74,7 +74,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
             cerr << "error, does not recognise model type : " << modeltype << '\n';
             exit(1);
         }
-        cerr << "RESET\n";
+        cerr << "-- Reset" << endl;
         Reset(force);
     }
 
@@ -133,14 +133,11 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
 
 int main(int argc, char* argv[]) {
     // this is an already existing chain on the disk; reopen and restart
+    DirichletNormalCodonUsageSelectionChainMS* chain;
     if (argc == 2) {
         string name = argv[1];
 
-        DirichletNormalCodonUsageSelectionChainMS* chain =
-            new DirichletNormalCodonUsageSelectionChainMS(name);
-
-        cerr << "START\n";
-        chain->Start();
+        chain = new DirichletNormalCodonUsageSelectionChainMS(name);
     }
 
     // this is a new chain
@@ -154,14 +151,10 @@ int main(int argc, char* argv[]) {
         int conjugate = atoi(argv[7]);
         string mechanism = argv[8];
 
-        cerr << "chain name : " << name << '\n';
+        cerr << "-- Chain name: " << name << endl;
 
-        DirichletNormalCodonUsageSelectionChainMS* chain =
-            new DirichletNormalCodonUsageSelectionChainMS(datafile, treefile, category, every, name,
-                                                          type, conjugate, mechanism, 1);
-
-        cerr << "START\n";
-        chain->Start();
+        chain = new DirichletNormalCodonUsageSelectionChainMS(datafile, treefile, category, every,
+                                                              name, type, conjugate, mechanism, 1);
     }
 
     else if (argc == 10) {
@@ -175,13 +168,14 @@ int main(int argc, char* argv[]) {
         int conjugate = atoi(argv[8]);
         string mechanism = argv[9];
 
-        cerr << "chain name : " << name << '\n';
+        cerr << "-- Chain name: " << name << endl;
 
-        DirichletNormalCodonUsageSelectionChainMS* chain =
-            new DirichletNormalCodonUsageSelectionChainMS(
-                datafile, treefile, category, burnin, every, name, type, conjugate, mechanism, 1);
-
-        cerr << "START\n";
-        chain->Start();
+        chain = new DirichletNormalCodonUsageSelectionChainMS(
+            datafile, treefile, category, burnin, every, name, type, conjugate, mechanism, 1);
+    } else {
+        cerr << "-- Error: inccorect number of command line parameters!" << endl;
+        exit(1);
     }
+    cerr << "-- Starting the chain!" << endl;
+    chain->Start();
 }

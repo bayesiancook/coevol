@@ -1,0 +1,944 @@
+######################################
+# YOUR COMMENTS HERE:
+
+15 iterations
+basic diffsel (after output overhaul
+c3c4
+
+######################################
+
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 1M of event 'cycles:ppp'
+# Event count (approx.): 1419810375276612
+#
+# Overhead  Command  Shared Object        Symbol                                                                                         
+# ........  .......  ...................  .....................................................................................................................................................
+#
+    29.50%  diffsel  diffsel              [.] LinAlg::DiagonalizeSymmetricMatrix(double**, int, int, double, double*, double**)
+    21.29%  diffsel  diffsel              [.] LinAlg::QR(double**, int, double**, double**)
+     8.27%  diffsel  libm-2.24.so         [.] __ieee754_log_avx
+     4.68%  diffsel  diffsel              [.] MGMSFitnessCodonUsageSubMatrix::ComputeStationary()
+     4.34%  diffsel  diffsel              [.] SubMatrix::BackwardPropagate(double const*, double*, double)
+     3.92%  diffsel  diffsel              [.] virtual thunk to RandomSubMatrix::GetNstate()
+     3.59%  diffsel  libm-2.24.so         [.] __ieee754_exp_avx
+     3.46%  diffsel  diffsel              [.] CodonStateSpace::GetDifferingPosition(int, int)
+     3.19%  diffsel  diffsel              [.] MGMSFitnessCodonUsageSubMatrix::ComputeArray(int)
+     2.98%  diffsel  diffsel              [.] std::map<Node const*, bool*, std::less<Node const*>, std::allocator<std::pair<Node const* const, bool*> > >::operator[](Node const*&&)
+     2.24%  diffsel  diffsel              [.] std::map<Branch const*, RandomBranchSitePath**, std::less<Branch const*>, std::allocator<std::pair<Branch const* const, RandomBranchSitePath**> > >::operator[](Branch const* const&)
+     1.83%  diffsel  diffsel              [.] std::map<Branch const*, RandomBranchSitePath**, std::less<Branch const*>, std::allocator<std::pair<Branch const* const, RandomBranchSitePath**> > >::operator[](Branch const*&&)
+     1.83%  diffsel  diffsel              [.] SubMatrix::ForwardPropagate(double const*, double*, double)
+     0.96%  diffsel  diffsel              [.] PhyloProcess::isMissing(Link const*, int)
+     0.95%  diffsel  diffsel              [.] Random::DrawFromUrn(int*, int, int)
+     0.88%  diffsel  diffsel              [.] SubMatrix::Stationary(int)
+     0.41%  diffsel  diffsel              [.] PhyloProcess::GetBranchSiteSubstitutionProcess(Branch const*, int)
+     0.41%  diffsel  libstdc++.so.6.0.22  [.] std::_Rb_tree_increment(std::_Rb_tree_node_base const*)
+     0.41%  diffsel  diffsel              [.] RenormalizedIIDStat::specialUpdate()
+     0.27%  diffsel  diffsel              [.] LinAlg::HouseHolder(double**, int, double**, double**)
+     0.27%  diffsel  diffsel              [.] PhyloProcess::Pruning(Link const*, int)
+     0.27%  diffsel  diffsel              [.] SubMatrix::operator()(int, int)
+     0.27%  diffsel  diffsel              [.] RandomBranchSitePath::GetSubMatrix()
+     0.20%  diffsel  diffsel              [.] PhyloProcess::PruningAncestral(Link const*, int)
+     0.20%  diffsel  diffsel              [.] CodonStateSpace::GetCodonPosition(int, int)
+     0.20%  diffsel  libm-2.24.so         [.] __GI___exp
+     0.20%  diffsel  libm-2.24.so         [.] @plt
+     0.20%  diffsel  diffsel              [.] Dirichlet::logProb()
+     0.20%  diffsel  diffsel              [.] virtual thunk to Rnode::isValueUpdated()
+     0.14%  diffsel  libc-2.24.so         [.] __memset_avx2_unaligned_erms
+     0.14%  diffsel  diffsel              [.] Random::Uniform()
+     0.14%  diffsel  diffsel              [.] Dnode::Update()
+     0.14%  diffsel  libm-2.24.so         [.] __log
+     0.14%  diffsel  diffsel              [.] virtual thunk to RandomBranchSitePath::localCorrupt(bool)
+     0.14%  diffsel  diffsel              [.] RandomBranchSitePath::PathLogProb()
+     0.07%  diffsel  diffsel              [.] non-virtual thunk to RandomBranchSitePath::GetNstate()
+     0.07%  diffsel  diffsel              [.] std::map<Link const*, double*, std::less<Link const*>, std::allocator<std::pair<Link const* const, double*> > >::operator[](Link const* const&)
+     0.07%  diffsel  diffsel              [.] log@plt
+     0.07%  diffsel  libc-2.24.so         [.] __memmove_avx_unaligned_erms
+     0.07%  diffsel  libstdc++.so.6.0.22  [.] __cxxabiv1::__vmi_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+     0.07%  diffsel  diffsel              [.] ConjugateSampling<void>::NotifyUpdate()
+     0.07%  diffsel  diffsel              [.] Random::logGamma(double)
+     0.07%  diffsel  diffsel              [.] Rnode::Corrupt(bool)
+     0.07%  diffsel  libc-2.24.so         [.] _int_free
+     0.07%  diffsel  libm-2.24.so         [.] @plt
+     0.07%  diffsel  diffsel              [.] virtual thunk to DSemiConjugatePrior<void>::NotifyUpdate()
+     0.07%  diffsel  diffsel              [.] RandomBranchSitePath::SampleBranchMapping()
+     0.07%  diffsel  diffsel              [.] virtual thunk to IIDNormal::logProb()
+     0.07%  diffsel  diffsel              [.] exp@plt
+     0.07%  diffsel  diffsel              [.] Tree::GetRoot() const
+     0.07%  diffsel  diffsel              [.] std::_Rb_tree_increment(std::_Rb_tree_node_base const*)@plt
+     0.07%  diffsel  libstdc++.so.6.0.22  [.] __dynamic_cast
+     0.07%  diffsel  diffsel              [.] Dnode::Restore()
+     0.07%  diffsel  diffsel              [.] ConjSampling::ConjugateCorrupt(bool)
+     0.07%  diffsel  diffsel              [.] non-virtual thunk to RandomBranchSitePath::GetTime()
+     0.07%  diffsel  diffsel              [.] Dnode::localCorrupt(bool)
+     0.07%  diffsel  diffsel              [.] Rnode::localCorrupt(bool)
+     0.07%  diffsel  diffsel              [.] DSemiConjugatePrior<void>::ActivateSufficientStatistic()
+     0.07%  diffsel  diffsel              [.] ProfileConjugateRandomBranchSitePath::AddSufficientStatistic(SemiConjPrior*)
+     0.07%  diffsel  diffsel              [.] ConjugateSampling<void>::NotifyRestore()
+     0.07%  diffsel  diffsel              [.] virtual thunk to RandomBranchSitePath::localRestore()
+     0.00%  diffsel  diffsel              [.] Dnode::Corrupt(bool)
+     0.00%  diffsel  diffsel              [.] ProfilePathConjugate::SuffStatLogProb()
+     0.00%  diffsel  libc-2.24.so         [.] _int_malloc
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b18e0
+     0.00%  diffsel  diffsel              [.] virtual thunk to RandomTransitionMatrix::localCorrupt(bool)
+     0.00%  diffsel  diffsel              [.] Rnode::Update()
+     0.00%  diffsel  diffsel              [.] std::map<Node const*, int*, std::less<Node const*>, std::allocator<std::pair<Node const* const, int*> > >::operator[](Node const* const&)
+     0.00%  diffsel  diffsel              [.] LinAlg::DiagonalizeRateMatrix(double**, double*, int, double*, double**, double**, int, double)
+     0.00%  diffsel  libc-2.24.so         [.] malloc
+     0.00%  diffsel  diffsel              [.] virtual thunk to BranchProcess<PosReal>::GetTree()
+     0.00%  diffsel  diffsel              [.] std::map<Node const*, bool, std::less<Node const*>, std::allocator<std::pair<Node const* const, bool> > >::operator[](Node const*&&)
+     0.00%  diffsel  diffsel              [.] virtual thunk to Dnode::NotifyCorrupt(bool)
+     0.00%  diffsel  diffsel              [.] std::vector<double, std::allocator<double> >::operator=(std::vector<double, std::allocator<double> > const&)
+     0.00%  diffsel  diffsel              [.] virtual thunk to ConjugateSampling<void>::NotifyCorrupt(bool)
+     0.00%  diffsel  diffsel              [.] MGCodonSubMatrix::CorruptMatrix()
+     0.00%  diffsel  diffsel              [.] virtual thunk to DSemiConjugatePrior<void>::NotifyCorrupt(bool)
+     0.00%  diffsel  diffsel              [.] BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int, double*)
+     0.00%  diffsel  diffsel              [.] RealVector::ProposeMove(double, int)
+     0.00%  diffsel  diffsel              [.] IIDNormal::Move(double, int)
+     0.00%  diffsel  libc-2.24.so         [.] free
+     0.00%  diffsel  diffsel              [.] non-virtual thunk to RandomBranchSitePath::GetSubMatrix()
+     0.00%  diffsel  diffsel              [.] DAGnode::isValueUpdated()
+     0.00%  diffsel  diffsel              [.] memset@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] __cxxabiv1::__vmi_class_type_info::__do_find_public_src(long, void const*, __cxxabiv1::__class_type_info const*, void const*) const
+     0.00%  diffsel  diffsel              [.] Profile::ProposeMove(double, int)
+     0.00%  diffsel  diffsel              [.] std::map<Node const*, bool*, std::less<Node const*>, std::allocator<std::pair<Node const* const, bool*> > >::operator[](Node const* const&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] __cxxabiv1::__class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+     0.00%  diffsel  diffsel              [.] Rnode::NotifyCorrupt(bool)
+     0.00%  diffsel  diffsel              [.] Rnode::localUpdate()
+     0.00%  diffsel  diffsel              [.] Rnode::Restore()
+     0.00%  diffsel  diffsel              [.] virtual thunk to RandomMGMSFitnessCodonUsageSubMatrix::SetParameters()
+     0.00%  diffsel  diffsel              [.] virtual thunk to Dnode::NotifyUpdate()
+     0.00%  diffsel  diffsel              [.] RandomBranchSitePath::GetTime()
+     0.00%  diffsel  diffsel              [.] SubMatrix::GetStationary()
+     0.00%  diffsel  libc-2.24.so         [.] __strcmp_sse2_unaligned
+     0.00%  diffsel  diffsel              [.] SubMatrix::ComputePowers(int)
+     0.00%  diffsel  diffsel              [.] Dnode::localUpdate()
+     0.00%  diffsel  diffsel              [.] DAGnode::Register(DAGnode*)
+     0.00%  diffsel  diffsel              [.] Dirichlet::Move(double, int)
+     0.00%  diffsel  diffsel              [.] StateSpace::isCompatible(int, int)
+     0.00%  diffsel  [kernel]             [.] 0xffffffffbcea0ed7
+     0.00%  diffsel  diffsel              [.] RandomBranchSitePath::GetRate()
+     0.00%  diffsel  diffsel              [.] virtual thunk to DSemiConjugatePrior<void>::NotifyRestore()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] operator delete[](void*)
+     0.00%  diffsel  diffsel              [.] std::map<Branch const*, Rvar<PosReal>*, std::less<Branch const*>, std::allocator<std::pair<Branch const* const, Rvar<PosReal>*> > >::operator[](Branch const* const&)
+     0.00%  diffsel  diffsel              [.] Rnode::NotifyRestore()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] operator new[](unsigned long)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcd5bcc0
+     0.00%  diffsel  diffsel              [.] non-virtual thunk to RenormalizedIIDStat::specialUpdate()
+     0.00%  diffsel  diffsel              [.] virtual thunk to Rnode::NotifyUpdate()
+     0.00%  diffsel  diffsel              [.] RandomBranchSitePath::ResampleAcceptReject(int)
+     0.00%  diffsel  diffsel              [.] non-virtual thunk to Dvar<Profile>::localCorrupt(bool)
+     0.00%  diffsel  diffsel              [.] ConjSampling::ConjugateUpdate(bool&)
+     0.00%  diffsel  diffsel              [.] PhyloProcess::ResampleSub(Link const*, int)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] __cxxabiv1::__si_class_type_info::__do_dyncast(long, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+     0.00%  diffsel  diffsel              [.] Rnode::FullCorrupt(std::map<DAGnode*, int, std::less<DAGnode*>, std::allocator<std::pair<DAGnode* const, int> > >&)
+     0.00%  diffsel  diffsel              [.] ProfilePathConjugate::GetStationary()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] operator new(unsigned long)
+     0.00%  diffsel  diffsel              [.] virtual thunk to MGMSFitnessCodonUsageSubMatrix::ComputeStationary()
+     0.00%  diffsel  diffsel              [.] IIDNormalIIDArray::MoveN(double, int)
+     0.00%  diffsel  libc-2.24.so         [.] __GI___printf_fp_l
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] operator new(unsigned long)@plt
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea03ac
+     0.00%  diffsel  diffsel              [.] operator new[](unsigned long)@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] free@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] operator delete(void*)@plt
+     0.00%  diffsel  diffsel              [.] ProfilePathConjugate::GetMatrix()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6648d4
+     0.00%  diffsel  diffsel              [.] operator delete[](void*)@plt
+     0.00%  diffsel  diffsel              [.] Profile::operator=(Profile const&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0462
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292d53
+     0.00%  diffsel  diffsel              [.] DAGnode::RecursiveRegister(ProbModel*)
+     0.00%  diffsel  diffsel              [.] std::_Rb_tree_increment(std::_Rb_tree_node_base*)@plt
+     0.00%  diffsel  diffsel              [.] virtual thunk to MGMSFitnessCodonUsageSubMatrix::ComputeArray(int)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::_Rb_tree_increment(std::_Rb_tree_node_base*)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::_Rb_tree_insert_and_rebalance(bool, std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::_Rb_tree_node_base&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] operator delete(void*)
+     0.00%  diffsel  diffsel              [.] virtual thunk to RandomBranchSitePath::logProb()
+     0.00%  diffsel  diffsel              [.] std::map<DAGnode*, int, std::less<DAGnode*>, std::allocator<std::pair<DAGnode* const, int> > >::operator[](DAGnode*&&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] malloc@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] strcmp@plt
+     0.00%  diffsel  diffsel              [.] SubMatrix::InactivatePowers()
+     0.00%  diffsel  diffsel              [.] virtual thunk to Dnode::NotifyRestore()
+     0.00%  diffsel  diffsel              [.] non-virtual thunk to RandomBranchSitePath::GetRate()
+     0.00%  diffsel  diffsel              [.] memmove@plt
+     0.00%  diffsel  [kernel]             [k] 0x00007f1fe0a8b84b
+     0.00%  diffsel  diffsel              [.] Rnode::FullUpdate(bool)
+     0.00%  diffsel  diffsel              [.] virtual thunk to Rnode::NotifyCorrupt(bool)
+     0.00%  diffsel  diffsel              [.] Rvar<RealVector>::Corrupt(bool)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b812a
+     0.00%  diffsel  diffsel              [.] ComplexDirichletIIDArrayMove::Move(double)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3e1b7
+     0.00%  diffsel  diffsel              [.] RealVector::operator=(RealVector const&)
+     0.00%  diffsel  diffsel              [.] virtual thunk to RandomTransitionMatrix::specialUpdate()
+     0.00%  diffsel  libc-2.24.so         [.] vfprintf
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9729
+     0.00%  diffsel  diffsel              [.] CodonStateSpace::GetCodonFromDNA(int, int, int)
+     0.00%  diffsel  diffsel              [.] std::_Rb_tree<DAGnode*, std::pair<DAGnode* const, int>, std::_Select1st<std::pair<DAGnode* const, int> >, std::less<DAGnode*>, std::allocator<std::pair<DAGnode* const, int> > >::_M_erase(std::_Rb_tree_node<std::pair<DAGnode* const, int> >*)
+     0.00%  diffsel  diffsel              [.] Dnode::localRestore()
+     0.00%  diffsel  diffsel              [.] ConjSampling::ConjugateRestore(bool&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6369e7
+     0.00%  diffsel  libm-2.24.so         [.] __sqr
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514dbd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bef03
+     0.00%  diffsel  diffsel              [.] BranchProcess<PosReal>::Move(Link const*, double, int&)
+     0.00%  diffsel  diffsel              [.] RandomBranchSitePath::GetTotalTime()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_ostream<char, std::char_traits<char> >& std::basic_ostream<char, std::char_traits<char> >::_M_insert<double>(double)
+     0.00%  diffsel  libc-2.24.so         [.] systrim.isra.2
+     0.00%  diffsel  diffsel              [.] virtual thunk to ConjugateSampling<void>::NotifyUpdate()
+     0.00%  diffsel  diffsel              [.] Rnode::localRestore()
+     0.00%  diffsel  libc-2.24.so         [.] malloc_consolidate
+     0.00%  diffsel  [kernel]             [k] 0x0000000000481637
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f656c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b7fa0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4744
+     0.00%  diffsel  diffsel              [.] virtual thunk to RandomTransitionMatrix::localRestore()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc791f7d
+     0.00%  diffsel  diffsel              [.] ProfilePathConjugate::logProb()
+     0.00%  diffsel  diffsel              [.] DSemiConjugatePrior<void>::ComputeSufficientStatistic()
+     0.00%  diffsel  diffsel              [.] std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > >::operator[](int const&)
+     0.00%  diffsel  diffsel              [.] PhyloProcess::FillMissingMap(Link const*, int)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea03e7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fdb60
+     0.00%  diffsel  diffsel              [.] Rvar<Profile>::Corrupt(bool)
+     0.00%  diffsel  libm-2.24.so         [.] __mul_avx
+     0.00%  diffsel  diffsel              [.] virtual thunk to ProfilePathConjugate::specialUpdate()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4725
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee58a
+     0.00%  diffsel  diffsel              [.] MCScheduler::Move(double, int, bool, bool, int)
+     0.00%  diffsel  libc-2.24.so         [.] __mpn_mul_1
+     0.00%  diffsel  diffsel              [.] Gamma::logProb()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9737
+     0.00%  diffsel  [kernel]             [k] 0x000000000048162a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee4cc
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee4c5
+     0.00%  diffsel  diffsel              [.] __dynamic_cast@plt
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ce415
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea009a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6a4fa7
+     0.00%  diffsel  diffsel              [.] SubMatrix::ActivatePowers()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_istream<char, std::char_traits<char> >::get()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::locale::id::_M_id() const
+     0.00%  diffsel  diffsel              [.] FileSequenceAlignment::ReadPhylipSequential(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_ios<char, std::char_traits<char> >::init(std::basic_streambuf<char, std::char_traits<char> >*)
+     0.00%  diffsel  diffsel              [.] SimpleStateSpace::GetState(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ce467
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b7f8a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ed805
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6369e0
+     0.00%  diffsel  diffsel              [.] SubMatrix::GetInvEigenVect()
+     0.00%  diffsel  diffsel              [.] SubMatrix::Diagonalise()
+     0.00%  diffsel  libm-2.24.so         [.] @plt
+     0.00%  diffsel  libm-2.24.so         [.] __dbl_mp_avx
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5e1c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688fa0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc071d6f6
+     0.00%  diffsel  diffsel              [.] SubMatrix::GetEigenVect()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b8123
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc791f22
+     0.00%  diffsel  diffsel              [.] ProfileConjugateRandomBranchSitePath::ProfileConjugateRandomBranchSitePath(PhyloProcess*, ProfilePathConjugate*, Var<PosReal>*, Var<PosReal>*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292cfc
+     0.00%  diffsel  diffsel              [.] ProbModel::Register(DAGnode*)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_istream<char, std::char_traits<char> >::sentry::sentry(std::basic_istream<char, std::char_traits<char> >&, bool)
+     0.00%  diffsel  diffsel              [.] FileSequenceAlignment::TestPhylipSequential(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc636fdd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc653236
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beb0a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea2e04
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b72d9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f46ab
+     0.00%  diffsel  [kernel]             [k] 0x000000000048161c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4a6b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6648d6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b021d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc747d65
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b8173
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc792129
+     0.00%  diffsel  diffsel              [.] SubMatrix::GetEigenVal()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514dd0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0094
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ed99e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc791f3b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ec9c0
+     0.00%  diffsel  diffsel              [.] non-virtual thunk to Dvar<Profile>::localRestore()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292d3f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0576b62
+     0.00%  diffsel  diffsel              [.] ValPtrArray<Rvar<RealVector> >::GetVal(int)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca380e9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ce402
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee8b0
+     0.00%  diffsel  diffsel              [.] _ValPtrArray<Rvar<RealVector> >::GetSize()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0399d40
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee4ae
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b7f86
+     0.00%  diffsel  diffsel              [.] operator<<(std::basic_ostream<char, std::char_traits<char> >&, RealVector const&)
+     0.00%  diffsel  diffsel              [.] std::_Rb_tree<DAGnode*, std::pair<DAGnode* const, int>, std::_Select1st<std::pair<DAGnode* const, int> >, std::less<DAGnode*>, std::allocator<std::pair<DAGnode* const, int> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<DAGnode* const, int> >, DAGnode* const&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc02497a0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6be955
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6043ff
+     0.00%  diffsel  libc-2.24.so         [.] strlen
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f45de
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc820857
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b72dd
+     0.00%  diffsel  diffsel              [.] _BranchValPtrTree<Rvar<PosReal> >::ToStream(std::basic_ostream<char, std::char_traits<char> >&, Link const*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7a90e8
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::ostreambuf_iterator<char, std::char_traits<char> > std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > >::_M_insert_int<long>(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, long) const
+     0.00%  diffsel  ld-2.24.so           [.] do_lookup_x
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::locale::operator=(std::locale const&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::locale::~locale()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::__cxx11::basic_ostringstream<char, std::char_traits<char>, std::allocator<char> >::basic_ostringstream(std::_Ios_Openmode)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::locale::locale()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc638593
+     0.00%  diffsel  [kernel]             [k] 0x0000000000481605
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6557
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc791f00
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc1c0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b814d
+     0.00%  diffsel  [kernel]             [k] 0x0000000000481436
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688dcf
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9c2f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5e80
+     0.00%  diffsel  [kernel]             [k] 0x000000000047f635
+     0.00%  diffsel  [kernel]             [k] 0x000000000047f74d
+     0.00%  diffsel  [kernel]             [k] 0x000000000047f626
+     0.00%  diffsel  libm-2.24.so         [.] __mpexp_avx
+     0.00%  diffsel  [kernel]             [k] 0x0000000000481613
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5ab5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b8166
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee6be
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4a60
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc65322e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc17f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3fd39
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6501
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc0e6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688dae
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705ac0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07081d3
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beafe
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6be8e0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514db8
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c20a6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc023e4fc
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0454
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b7998
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bed82
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6505
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04e22bd
+     0.00%  diffsel  [kernel]             [k] 0x000000000047f647
+     0.00%  diffsel  diffsel              [.] PhyloProcess::ComputeTotalMissingPerSite(Link const*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4730
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee8ea
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0515460
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f1ed
+     0.00%  diffsel  diffsel              [.] PhyloProcess::RecursiveSetStateSpace(Link const*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fd799
+     0.00%  diffsel  diffsel              [.] SubMatrix::UpdateMatrix()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6e3bba
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc024a5c2
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f14e
+     0.00%  diffsel  diffsel              [.] RandomBranchSitePath::Resample()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc28f6acc
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_ostream<char, std::char_traits<char> >::sentry::sentry(std::basic_ostream<char, std::char_traits<char> >&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea046a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc77f143
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ceaf5
+     0.00%  diffsel  diffsel              [.] std::_Rb_tree<std::pair<int, int>, std::pair<std::pair<int, int> const, int>, std::_Select1st<std::pair<std::pair<int, int> const, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<std::pair<int, int> const, int> > >::_M_erase(std::_Rb_tree_node<std::pair<std::pair<int, int> const, int> >*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c1fd5
+     0.00%  diffsel  libc-2.24.so         [.] _IO_old_init
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05afa30
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292cb9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7db65e
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000000d7f98
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fdc0f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bea03
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc81f2b0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6eb152
+     0.00%  diffsel  libc-2.24.so         [.] __uselocale
+     0.00%  diffsel  diffsel              [.] Dnode::FullCorrupt(std::map<DAGnode*, int, std::less<DAGnode*>, std::allocator<std::pair<DAGnode* const, int> > >&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea20b0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc630287
+     0.00%  diffsel  libc-2.24.so         [.] _IO_str_init_static_internal
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7b375b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6043f9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075f1a1
+     0.00%  diffsel  diffsel              [.] RandomBranchSitePath::RandomBranchSitePath(PhyloProcess*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6be96b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4a65
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072f699
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > > const& std::use_facet<std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::__cxx11::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >::overflow(int)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::ctype<char> const& std::use_facet<std::ctype<char> >(std::locale const&)
+     0.00%  diffsel  diffsel              [.] operator new(unsigned long)@plt
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0248139
+     0.00%  diffsel  diffsel              [.] virtual thunk to Rnode::FullCorrupt(std::map<DAGnode*, int, std::less<DAGnode*>, std::allocator<std::pair<DAGnode* const, int> > >&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::locale::id::_M_id() const@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] bool std::has_facet<std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)
+     0.00%  diffsel  diffsel              [.] std::basic_ostream<char, std::char_traits<char> >::operator<<(int)@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000000a32ff
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] bool std::has_facet<std::ctype<char> >(std::locale const&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::ios_base::~ios_base()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_ios<char, std::char_traits<char> >::_M_cache_locale(std::locale const&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::swap(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > > const& std::use_facet<std::num_get<char, std::istreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] __dynamic_cast@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] bool std::has_facet<std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6512
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bec88
+     0.00%  diffsel  [kernel]             [k] 0x0000000000483d73
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fdf16
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4705
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc108
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6e22
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bebac
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc024a394
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fdf60
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f1a00
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b5eda
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9bf8
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3a427
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b0238
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca46e88
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b7235
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5f17
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6eb135
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b81e6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fdbbd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beed3
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6c95
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b790a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bedf5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee23c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f4476
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc60af53
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c1f35
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea2e12
+     0.00%  diffsel  diffsel              [.] non-virtual thunk to Rvar<PosReal>::Corrupt(bool)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bea41
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705b5e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f45e3
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9838
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea2d47
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6596
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beae2
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6aaa9d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3a4f0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06ce1b5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b0b25
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f45fb
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fd7ff
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc63857e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688e1b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fe2a0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0515462
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06cd280
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688ea3
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bed3e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292cb5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0515482
+     0.00%  diffsel  diffsel              [.] virtual thunk to Dirichlet::logProb()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6a4fba
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c1f92
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3a4f7
+     0.00%  diffsel  diffsel              [.] SimpleMove::Move(double)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05aae44
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea3035
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6ce9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc747d88
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4e45
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beaee
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b727f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ed7ef
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705b42
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc791f52
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fd8eb
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc80ca14
+     0.00%  diffsel  [kernel]             [k] 0x000000000048160f
+     0.00%  diffsel  [kernel]             [k] 0x0000000000481413
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc637009
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b01fb
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b0263
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6a5161
+     0.00%  diffsel  [kernel]             [k] 0x000000000047f64a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f106
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcd5bc6a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072cfe2
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ad915
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bec25
+     0.00%  diffsel  [kernel]             [k] 0x000000000047f71c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6044ce
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc606fab
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ed8f5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688f45
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514b9f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7a9a28
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f048
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc703617
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc638575
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b8137
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fdf42
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06cc2f2
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c1f8a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9a4f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688363
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075e030
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fd706
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705ad7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b5bf5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc010
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc051e67c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3788c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea20bd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c207a
+     0.00%  diffsel  [kernel]             [k] 0x000000000047f763
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca37a84
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6be93c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fdf4c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bee3e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5fbb
+     0.00%  diffsel  [kernel]             [k] 0x0000000000444cc5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bd294
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5ab9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072c74d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b7fe5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bee41
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee7ca
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5abb
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f65b6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b8190
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9c32
+     0.00%  diffsel  libm-2.24.so         [.] __slowexp_avx
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bc97a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06ccf80
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca46ea4
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc057
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b42b1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072d000
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee4b5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc042de24
+     0.00%  diffsel  [kernel]             [k] 0x000000000048141c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcd5f8b0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05ab355
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f1f3
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075f3a3
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688fac
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5aa1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca5f9ff
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04d4380
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6cb5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b1814
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc153
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514dc1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b804f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6584
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c0bfe
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fda43
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc792635
+     0.00%  diffsel  diffsel              [.] CodonStateSpace::GetNstate()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688db7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f6e1b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5e99
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc058ca42
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b0231
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bebcf
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca379c9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705a2f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beebb
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05a7840
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072f6a5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca30c9b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcd1cf18
+     0.00%  diffsel  [kernel]             [k] 0x00007f1fe1049b89
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06cd1d0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9809
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc083
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc023ebb7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0755b50
+     0.00%  diffsel  [kernel]             [k] 0x00000000004579f8
+     0.00%  diffsel  [kernel]             [k] 0x000000000043ca67
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fd841
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07715db
+     0.00%  diffsel  [kernel]             [k] 0x0000000000483d6e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6faff4
+     0.00%  diffsel  [kernel]             [k] 0x00000000004509bf
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0708516
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6369e4
+     0.00%  diffsel  diffsel              [.] ProfileMove::Move(double)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0249b10
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc051e740
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b72f5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c01cf
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea2fff
+     0.00%  diffsel  diffsel              [.] PhyloProcess::SiteLogLikelihood(int)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6add2c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beb1c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0a68
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292d05
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc69b8a2
+     0.00%  diffsel  diffsel              [.] DirichletNormalCodonUsageSelectionModelMS::Trace(std::basic_ostream<char, std::char_traits<char> >&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc747d34
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc023e5c7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b4452
+     0.00%  diffsel  libm-2.24.so         [.] __sub_avx
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc603ab0
+     0.00%  diffsel  diffsel              [.] PosReal::ProposeMove(double)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b3f57
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6cf3d7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc80b6c4
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bee7d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fd7f7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beb37
+     0.00%  diffsel  [kernel]             [k] 0x000000000043c580
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5e85
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705bce
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0229
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bed51
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6eb19e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04d4415
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bea19
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b01f0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050e8b1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688e00
+     0.00%  diffsel  [kernel]             [k] 0x0000000000457258
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0095
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca37a5b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca37ce0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcd1cf40
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514d74
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fce2e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705a9f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050e890
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ce3d5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcdf7bba
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea2dea
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_assign(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f64ba
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514de0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05a77f5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705597
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04da310
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05b03e5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee6d8
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0755bc4
+     0.00%  diffsel  [kernel]             [k] 0x000000000043c3a5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc706140
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6a4fc7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5ae5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9a5e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6eb188
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc655395
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0576d32
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bc3cf
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc87ed05
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3a471
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcb6ad80
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcd1cf10
+     0.00%  diffsel  diffsel              [.] Profile::GetEntropy() const
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3a474
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0515577
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc791f71
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0482a90
+     0.00%  diffsel  [kernel]             [k] 0x000000000043ca6b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcd1cfe9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6faff8
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688fa6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fd714
+     0.00%  diffsel  [kernel]             [k] 0x000000000048160a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc061f640
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b4403
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292ce0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcd84d7c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050ea5c
+     0.00%  diffsel  diffsel              [.] virtual thunk to Rnode::NotifyRestore()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05ab353
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075fda0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514be4
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b3f52
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9919
+     0.00%  diffsel  libm-2.24.so         [.] __add_avx
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc058f940
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_istream<char, std::char_traits<char> >::sentry::sentry(std::basic_istream<char, std::char_traits<char> >&, bool)@plt
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f128
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072bde0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705b5b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04da328
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc058f460
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04e22ad
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0e94
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b97a2
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6beaf6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc051548e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c00fb
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0577980
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc024a5cd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07084ed
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6e3c2c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b973e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f860
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05afb07
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea009b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075f399
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bc532
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b7fea
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04d137f
+     0.00%  diffsel  diffsel              [.] std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, double> >*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc070822d
+     0.00%  diffsel  [kernel]             [k] 0x000000000047f4b0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc056c925
+     0.00%  diffsel  diffsel              [.] ValPtrArray<Rvar<Profile> >::GetVal(int)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050ea40
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc058ca40
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075e0ae
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b72d1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc747db1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcb6ace5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705a28
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f0c8
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b65ee
+     0.00%  diffsel  diffsel              [.] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long)@plt
+     0.00%  diffsel  [kernel]             [k] 0x00007f1fe1049b85
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050f5b0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075fe06
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0238
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc02493a0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea2f4c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c6e2b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc042dcc0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c1c00
+     0.00%  diffsel  libc-2.24.so         [.] __GI_____strtoll_l_internal
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc77ef54
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc8c5a45
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06cdd3e
+     0.00%  diffsel  diffsel              [.] AllocationTree::GetBranchAllocation(Branch const*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b0293
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea0093
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc705bfe
+     0.00%  diffsel  diffsel              [.] BranchSitePath::Reset(int)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050e864
+     0.00%  diffsel  diffsel              [.] Branch::GetName[abi:cxx11]() const
+     0.00%  diffsel  diffsel              [.] std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, double> >, int const&)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_ostream<char, std::char_traits<char> >& std::basic_ostream<char, std::char_traits<char> >::_M_insert<unsigned long>(unsigned long)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04de8a2
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514b15
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6be930
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0515470
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f45f6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04cf499
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6369e1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc024a5eb
+     0.00%  diffsel  libm-2.24.so         [.] __cpy
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcb6ac69
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc66b686
+     0.00%  diffsel  [kernel]             [k] 0x000000000043ca7a
+     0.00%  diffsel  diffsel              [.] PhyloProcess::ResampleState(int)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292d62
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292d77
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0515514
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6a5005
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b84d9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04dea21
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04e70ba
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6e364e
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::_Rb_tree_decrement(std::_Rb_tree_node_base*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea30e2
+     0.00%  diffsel  diffsel              [.] BranchProcess<PosReal>::GetLogProb(Link const*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc688f40
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05ac20c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7aa2ac
+     0.00%  diffsel  diffsel              [.] Chrono::Stop()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7db581
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05a5075
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc024a5bd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc058cab8
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7b2c6c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b4460
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b8ea6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0717b96
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b97fd
+     0.00%  diffsel  [kernel]             [k] 0x0000000000441cd1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7db603
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc824d6c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f43fb
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc053e859
+     0.00%  diffsel  diffsel              [.] LengthTree::GetTotalLength(Link const*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05154f0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7c7709
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc02b8dda
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc81f2b8
+     0.00%  diffsel  [kernel]             [k] 0x0000000000481621
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] __uselocale@plt
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06abe72
+     0.00%  diffsel  diffsel              [.] Tree::ParseGroup(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, Link*)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7b3a2c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6e324d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fbb50
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc04d44c8
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f4659
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0292d50
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc01d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7d32af
+     0.00%  diffsel  libm-2.24.so         [.] sub_magnitudes
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::locale::facet::_S_get_c_locale()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0717b70
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072d760
+     0.00%  diffsel  diffsel              [.] Tree::RegisterWith(TaxonSet const*, Link*, int&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc82184b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7db58a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5afd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ee602
+     0.00%  diffsel  diffsel              [.] Rvar<RealVector>::Restore()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514db5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc78bfe4
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b78d0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc05afa7a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0e6c278
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f5df9
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_streambuf<char, std::char_traits<char> >::xsputn(char const*, long)@plt
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc820b26
+     0.00%  diffsel  libc-2.24.so         [.] __mpn_extract_double
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514d87
+     0.00%  diffsel  [kernel]             [k] 0x0000000000457a1a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07070f5
+     0.00%  diffsel  diffsel              [.] Rnode::Move(double)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc824d4b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc747da5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075db96
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0424a60
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc9164d4
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072f680
+     0.00%  diffsel  diffsel              [.] BranchSiteSubstitutionProcess::GetFiniteTimeTransitionProb(int, int)
+     0.00%  diffsel  diffsel              [.] non-virtual thunk to RandomBranchSitePath::GetStationary()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6be8e9
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::basic_filebuf<char, std::char_traits<char> >::xsputn(char const*, long)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc820c27
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc68835c
+     0.00%  diffsel  [kernel]             [k] 0x000000000045727f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f66aa
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::ostreambuf_iterator<char, std::char_traits<char> > std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > >::_M_insert_float<double>(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, char, double) const
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc82556a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fcacf
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc050e9bc
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c1f5f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc07b0f5a
+     0.00%  diffsel  diffsel              [.] DSemiConjugatePrior<void>::Corrupt(bool)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bee4b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075fa93
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06cdef0
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6dfffd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7dc7a5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7aa484
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000000df603
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7d331a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0515502
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514b3c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7ff656
+     0.00%  diffsel  diffsel              [.] RandomMGMSFitnessCodonUsageSubMatrix::RandomMGMSFitnessCodonUsageSubMatrix(CodonStateSpace*, RandomSubMatrix*, Var<Profile>*, Var<Profile>*, bool)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7aa2db
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7db9ab
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0519693
+     0.00%  diffsel  [kernel]             [k] 0x0000000000450e0a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc06479b7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7c61b5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc072d7a2
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea044a
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b731b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b4b3f
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000000df5f4
+     0.00%  diffsel  diffsel              [.] operator<<(std::basic_ostream<char, std::char_traits<char> >&, Profile const&)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc13d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6ebb53
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc0ff
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc8018ce
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b416c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fc077
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc604500
+     0.00%  diffsel  libc-2.24.so         [.] __mpn_mul
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bedef
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea2de5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514c11
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea1a01
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7abc9b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0515466
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc075db44
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc603ab7
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7dc6f7
+     0.00%  diffsel  libc-2.24.so         [.] _IO_file_xsputn@@GLIBC_2.2.5
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc747d73
+     0.00%  diffsel  [kernel]             [k] 0x0000000000481633
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7aa4fd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fdb8e
+     0.00%  diffsel  diffsel              [.] virtual thunk to ConjugateSampling<void>::NotifyRestore()
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f64b6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b470c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6cea53
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6becdd
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fda07
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000000df5e9
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc051549c
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fda88
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6c1ff2
+     0.00%  diffsel  [kernel]             [k] 0x0000000000457a10
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc85382e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6e0250
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea2f49
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc603aca
+     0.00%  diffsel  [kernel]             [k] 0x00007f1fe0a8a436
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc058ee82
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca7c45d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc8018d1
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6bef0b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6f1a0d
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514b70
+     0.00%  diffsel  [kernel]             [k] 0xffffffffc0514bf6
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc81dd1f
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc66c767
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc8018c3
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000000a32c0
+     0.00%  diffsel  libc-2.24.so         [.] _IO_fflush
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000001169f6
+     0.00%  diffsel  diffsel              [.] virtual thunk to Dnode::FullUpdate(bool)
+     0.00%  diffsel  diffsel              [.] std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)@plt
+     0.00%  diffsel  ld-2.24.so           [.] _dl_lookup_symbol_x
+     0.00%  diffsel  ld-2.24.so           [.] _dl_relocate_object
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > > const& std::use_facet<std::num_put<char, std::ostreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&)
+     0.00%  diffsel  diffsel              [.] operator delete(void*)@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::ios_base::ios_base()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::ios_base::_M_init()
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::locale::locale()@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x0000000000116a4b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7d3530
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000001169c8
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long)
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::__cxx11::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >::_M_sync(char*, unsigned long, unsigned long)
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6b9a38
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000001169d6
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::ios_base::_M_init()@plt
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] std::__cxx11::basic_stringbuf<char, std::char_traits<char>, std::allocator<char> >::str() const
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6fd9ce
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc6a4fad
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7aa50c
+     0.00%  diffsel  libstdc++.so.6.0.22  [.] 0x00000000001169e3
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7035be
+     0.00%  diffsel  diffsel              [.] _GLOBAL__sub_I_CodonSequenceAlignment.cpp
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7a0fca
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7d331e
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc604005
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbca3702b
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc7e1bfa
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc78c027
+     0.00%  perf     [kernel]             [k] 0xffffffffbca39c76
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbcea1c59
+     0.00%  diffsel  [kernel]             [k] 0xffffffffbc63154d
+     0.00%  perf     [kernel]             [k] 0xffffffffbc637009
+     0.00%  perf     [kernel]             [k] 0xffffffffbc60bf5b
+     0.00%  perf     [kernel]             [k] 0xffffffffbc6648d6
+     0.00%  perf     [kernel]             [k] 0xffffffffbc6648d4
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#

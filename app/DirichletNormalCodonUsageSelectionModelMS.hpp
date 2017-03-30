@@ -388,7 +388,8 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         int Nnuc = 4;
         int Naa = 20;
 
-        std::cerr << Nsite << '\t' << Nstate << '\n';
+        std::cerr << "-- Number of sites: " << Nsite << std::endl;
+        std::cerr << "-- Number of states: " << Nstate << std::endl;
 
         taxonset = codondata->GetTaxonSet();
 
@@ -398,7 +399,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         // check whether tree and data fits together
         tree->RegisterWith(taxonset);
 
-        std::cerr << "tree and data ok\n";
+        std::cerr << "-- Tree and data fit together\n";
 
         // ----------
         // construction of the graph
@@ -479,10 +480,11 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         statarray = new RenormalizedIIDStat**[K];
 
 
-        std::cerr << "selection profiles\n";
+        std::cerr << "-- Selection profiles";
         for (int k = 1; k < K; k++) {
             selectionnormal[k] = new IIDNormalIIDArray(Nsite, Naa, Zero, var[k]);
         }
+        std::cerr << " - done" << std::endl;
 
         /*
                       std::cerr << "stat arrays\n";
@@ -527,7 +529,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             }
         }
 
-        std::cerr << "submatrices\n";
+        std::cerr << "-- Substitution matrix";
 
         // Square Root //phenimenological
         if (mechanism == "SR") {
@@ -543,7 +545,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         }
 
         // Mutation Selection // mechanistic
-        if (mechanism == "MS") {
+        else if (mechanism == "MS") {
             submatrix = new RandomSubMatrix**[K];
             for (int k = 0; k < K; k++) {
                 submatrix[k] = new RandomSubMatrix*[Nsite];
@@ -555,9 +557,11 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             }
         }
 
+        std::cerr << " - done" << std::endl;
+
 
         if (conjugate != 0) {
-            std::cerr << "conjugate\n";
+            std::cerr << "-- Conjugate" << std::endl;
             matrixtree = nullptr;
             patharray = new ProfilePathConjugateArray(Nsite, K, submatrix);
             patharray->InactivateSufficientStatistic();
@@ -569,10 +573,11 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             phyloprocess = new SelectionPhyloProcess(gamtree, nullptr, matrixtree, codondata);
         }
 
-        std::cerr << "unfold\n";
+        std::cerr << "-- Unfolding";
         phyloprocess->Unfold();
+        std::cerr << " - done" << std::endl;
 
-        std::cerr << "register\n";
+        std::cerr << "-- Registering model nodes - ";
         RootRegister(Zero);
         RootRegister(One);
         RootRegister(Ten);
@@ -583,27 +588,30 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         RootRegister(codonusageselection);
         RootRegister(PriorConcentration);
         RootRegister(center);
-
         Register();
 
         if (sample) {
-            std::cerr << "initialise\n";
+            std::cerr << "-- Sampling";
             // Sample();
-            std::cerr << "sample completed\n";
+            std::cerr << " - done" << std::endl;
+            std::cerr << "-- (no sample was actually completed because the line is commented)"
+                      << std::endl;
+            std::cerr << "-- Updating" << std::endl;
             Update();
-            std::cerr << "update completed\n";
-            std::cerr << "ln L " << GetLogLikelihood() << '\n';
+            std::cerr << "-- Update done" << std::endl;
+            std::cerr << "-- Log likelihood: " << GetLogLikelihood() << std::endl;
             //             std::cerr << "random calls " << Random::GetCount() << '\n';
             // Trace(            std::cerr);
+            std::cerr << "-- Trace: ";
             Trace(std::cerr);
         }
+        std::cerr << "-- Trace completed" << std::endl;
 
-        std::cerr << "trace completed\n";
-
-        std::cerr << "scheduler\n";
+        std::cerr << "-- Launching scheduler";
         MakeScheduler();
+        std::cerr << " - done" << std::endl;
 
-        std::cerr << "model created\n";
+        std::cerr << "-- Model created!" << std::endl;
     }
 
     // destructor
@@ -616,7 +624,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     Tree* GetTree() { return tree; }
 
     double Update(bool /*check*/ = false) override {
-        std::cerr << "update with phyloprocess\n";
+        std::cerr << "-- Update with phyloprocess" << std::endl;
         double ret = ProbModel::Update();
         phyloprocess->Move(1);
         ret = ProbModel::Update();

@@ -45,11 +45,11 @@ class MeasureTime {
             std::chrono::high_resolution_clock::now() - counter);
     }
 
-    void print() {
+    void print(std::string message="") {
         if (!stopped) {
             stop();
         }
-        std::cout << "Time: " << duration.count() << "ms." << std::endl;
+        std::cout << "* " << message << "Time: " << duration.count() << "ms." << std::endl;
     }
 
   private:
