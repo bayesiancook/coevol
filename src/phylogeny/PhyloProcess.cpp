@@ -250,7 +250,7 @@ double PhyloProcess::GetLogProb() {
           total += sitelnL[i];
         */
         total += SiteLogLikelihood(i);
-   }
+    }
     timer.print("GetLogProb. ", 1);
     return total;
 }

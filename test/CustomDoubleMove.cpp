@@ -6,8 +6,8 @@
 #include "TestUtils.hpp"
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
-#include "utils/Random.hpp"
 #include "utils/Chrono.hpp"
+#include "utils/Random.hpp"
 using namespace std;
 using namespace Eigen;
 using namespace TestUtils;
@@ -169,8 +169,8 @@ class MyDoubleMove : public MCUpdate {
         cout << covar << endl;
         cassert(mean(0), 2.27, 0.1);
         cassert(mean(1), 2.18, 0.1);
-        cassert(covar(0,0), 0.32, 0.1);
-        cassert(covar(1,1), 1.0, 0.1);
+        cassert(covar(0, 0), 0.32, 0.1);
+        cassert(covar(1, 1), 1.0, 0.1);
     }
 };
 
@@ -245,10 +245,9 @@ void printCaracs(vector<double> data, string name) {
     }
     double finalMean = mean / data.size();
     double finalVariance = (variance - (mean * mean / data.size())) / data.size();
-    cout << "<" << name << "> Mean: " << finalMean
-         << " ; variance: " << finalVariance << endl;
+    cout << "<" << name << "> Mean: " << finalMean << " ; variance: " << finalVariance << endl;
     double expectedMean = (name == "a") ? 2.27 : 2.18;
-    double expectedVariance = name == "a" ? 0.32 : 1.0 ;
+    double expectedVariance = name == "a" ? 0.32 : 1.0;
     cassert(expectedMean, finalMean, 0.1);
     cassert(expectedVariance, finalVariance, 0.1);
 }

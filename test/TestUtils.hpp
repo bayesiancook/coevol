@@ -15,7 +15,8 @@ namespace TestUtils {
 
     void cassert(double x, double y, double relativeError = 0.01) {
         if (!compare(x, y, relativeError)) {
-            printf("-- Expected valued %f (+/- %.2f%%) but got %f instead!\n", x, relativeError*100, y);
+            printf("-- Expected valued %f (+/- %.2f%%) but got %f instead!\n", x,
+                   relativeError * 100, y);
             fail();
         }
     }

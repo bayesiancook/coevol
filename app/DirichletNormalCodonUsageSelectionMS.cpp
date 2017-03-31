@@ -121,7 +121,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
         for (int i = 0; i < every; i++) {
             myTimer.start();
             model->Move(1);
-            myTimer << "Iteration core (" << i+1 << '/' << every << "). ";
+            myTimer << "Iteration core (" << i + 1 << '/' << every << "). ";
             myTimer.print();
         }
 
