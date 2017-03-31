@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 project(mini-coevol CXX)
 
 # Compilation options
-set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic -g -fno-omit-frame-pointer -fno-inline-functions -fno-optimize-sibling-calls")
+# set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic")
 set(CXX_FEATURES cxx_auto_type cxx_nullptr cxx_final cxx_override cxx_range_for)
 include_directories("src")
 
