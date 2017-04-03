@@ -16,29 +16,6 @@ double SubMatrix::maxz = 0;
 // ---------------------------------------------------------------------------
 //     SubMatrix()
 // ---------------------------------------------------------------------------
-/*
-  SubMatrix::SubMatrix() : Nstate(0), normalise(false) {}
-
-
-  SubMatrix::SubMatrix(const SubMatrix& from) : Nstate(from.inNstate),
-  normalise(from.innormalise)
-  {
-  Create();
-  }
-
-  SubMatrix& SubMatrix::operator=(const SubMatrix& from)	{
-
-  if (Nstate != from.Nstate)	{
-  cerr << "error in SubMatrix::operator= : non matching dimensions : " << Nstate
-  << " and " <<
-  from.Nstate << '\n';
-  throw;
-  }
-  // copy?
-  // Corrupt ?
-  CorruptMatrix();
-  }
-*/
 SubMatrix::SubMatrix(int inNstate, bool innormalise) : Nstate(inNstate), normalise(innormalise) {
     ndiagfailed = 0;
     // discn = 10;
@@ -60,16 +37,6 @@ void SubMatrix::Create() {
     for (int i = 0; i < Nstate; i++) {
         invu[i] = new double[Nstate];
     }
-    /*
-      expu = new double*[Nstate];
-      for (int i=0; i<Nstate; i++)	{
-      expu[i] = new double[Nstate];
-      }
-      expu2 = new double*[Nstate];
-      for (int i=0; i<Nstate; i++)	{
-      expu2[i] = new double[Nstate];
-      }
-    */
 
     v = new double[Nstate];
     vi = new double[Nstate];
@@ -80,12 +47,6 @@ void SubMatrix::Create() {
     mPow = new double **[UniSubNmax];
     for (int n = 0; n < UniSubNmax; n++) {
         mPow[n] = nullptr;
-        /*
-          mPow[n] = new double*[Nstate];
-          for (int i=0; i<Nstate; i++)	{
-          mPow[n][i] = new double[Nstate];
-          }
-        */
     }
 
     flagarray = new bool[Nstate];
@@ -107,15 +68,6 @@ void SubMatrix::Create() {
 // ---------------------------------------------------------------------------
 
 SubMatrix::~SubMatrix() {
-    /*
-      for (int i=0; i<GetNstate(); i++)	{
-      delete[] expu[i];
-      delete[] expu2[i];
-      }
-      delete[] expu;
-      delete[] expu2;
-    */
-
     for (int i = 0; i < Nstate; i++) {
         delete[] Q[i];
         delete[] u[i];
@@ -177,47 +129,7 @@ int SubMatrix::Diagonalise() {
         ToStream(os);
         exit(1);
     }
-
-    /*
-      double * w = new double[Nstate];
-      int* iw = new int[Nstate];
-      double** a = new double*[Nstate];
-      for (int i=0; i<Nstate; i++)	{
-      a[i] = new double[Nstate];
-      }
-
-      // copy Q into a :
-      for (int i=0; i<Nstate; i++)	{
-      for (int j=0; j<Nstate; j++)	{
-      a[i][j] = Q[i][j];
-      }
-      }
-
-      // diagonalise a into v and u
-      int failed = EigenRealGeneral(Nstate, a, v, vi, u, iw, w);
-      if (failed)	{
-      ndiagfailed ++;
-      }
-
-      // copy u into a :
-      for (int i=0; i<Nstate; i++)	{
-      for (int j=0; j<Nstate; j++)	{
-      a[i][j] = u[i][j];
-      }
-      }
-      // invert a into invu
-      InvertMatrix(a, Nstate, w, iw, invu);
-
-      for (int i=0; i<Nstate; i++)	{
-      delete[] a[i];
-      }
-      delete[] a;
-      delete[] w;
-      delete[] iw;
-    */
-
     diagflag = true;
-
     return static_cast<int>(failed);
 }
 
