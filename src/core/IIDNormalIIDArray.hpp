@@ -3,6 +3,7 @@
 
 #include "IID.hpp"
 #include "Normal.hpp"
+#include "utils/Chrono.hpp"
 
 class IIDNormalIIDArray : public IIDArray<RealVector> {
   public:
@@ -23,24 +24,8 @@ class IIDNormalIIDArray : public IIDArray<RealVector> {
     // make a MoveN(double tuning, int m)  calls over all sites
     virtual double MoveN(double tuning, int m) {
         double tot = 0;
-//		int total, rank;
-
-#ifdef _OPENMP
-//		cerr << "compiled by an openmp-compliant" << '\n';
-//		cerr << omp_in_parallel() << '\n';;
-
-//		cerr << "total = " << omp_get_num_threads() << '\n';;
-
-#pragma omp parallel for
-#endif
-
         for (int i = 0; i < GetSize(); i++) {
             tot += this->GetNormalVal(i)->Move(tuning, m);
-#ifdef _OPENMP
-//		cerr << omp_in_parallel() << '\n';
-//		cerr << "rank = " << omp_get_thread_num() << '\n';;
-
-#endif
         }
 
         return tot / GetSize();

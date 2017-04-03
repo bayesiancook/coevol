@@ -178,10 +178,10 @@ int main(int argc, char* argv[]) {
         chain = new DirichletNormalCodonUsageSelectionChainMS(
             datafile, treefile, category, burnin, every, name, type, conjugate, mechanism, 1);
     } else {
-        cerr << "-- Error: inccorect number of command line parameters!" << endl;
+        cerr << "-- Error: incorect number of command line parameters!" << endl;
         exit(1);
     }
     cerr << "-- Starting the chain!" << endl;
-    chain->SetUntil(3);
+    chain->SetUntil(20);
     chain->Start();
 }

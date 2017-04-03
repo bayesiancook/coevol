@@ -5,6 +5,7 @@
 #include "core/ProbModel.hpp"
 #include "utils/Exception.hpp"
 #include "utils/Random.hpp"
+#include "utils/Chrono.hpp"
 using namespace std;
 
 //-------------------------------------------------------------------------

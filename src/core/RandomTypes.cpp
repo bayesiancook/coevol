@@ -1,6 +1,7 @@
 #include "core/RandomTypes.hpp"
 #include <cmath>
 #include "utils/Random.hpp"
+#include "utils/Chrono.hpp"
 using namespace std;
 
 //-------------------------------------------------------------------------
