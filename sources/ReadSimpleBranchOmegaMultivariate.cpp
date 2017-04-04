@@ -129,25 +129,16 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meanmutrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meanu_Ne = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);	
-		MeanExpNormTree* meanadaptative_omega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-		MeanExpNormTree* meanoppositealpha = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-		
-		// double alpha[dim];
-		// definir alpha
-
+	
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
 			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		}
 
 		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
-		// MeanCovMatrix*  maty = new MeanCovMatrix(dim);
 
-		// cycle over the sample
 		for (int i=0; i<size; i++)	{
 			cerr << '.';
-
-			// get next point -> will be stored into "model", and thus, will be accessible through GetModel()
 
 			GetNextPoint();
 
@@ -161,14 +152,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetChronogram());
 			meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetChronogram());
 			meanu_Ne->Add(GetModel()->GetNeNodeTree(), GetModel()->GetChronogram());
-			meanadaptative_omega->Add(GetModel()->GetAdaptative_omegaNodeTree(), GetModel()->GetChronogram());
-			meanoppositealpha->Add(GetModel()->GetOppositeAlphaNodeTree(), GetModel()->GetChronogram());
-
-			// double t0 = GetModel()->GetRootAge();
-			// recalculer beta
-			// double beta = ...
-			// meanNe->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(),adaptative_omega,beta);
-
+			
+				
 			for (int k=0; k<Ncont; k++)	{
 				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), GetModel()->GetL()+k);
 			}
@@ -176,9 +161,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			CovMatrix& m = *(GetModel()->GetCovMatrix());
 			mat->Add(&m);
 
-			// double my[dim][dim];
-			// for loop ... 
-			// maty->Add(my,dim);
 		}
 		cerr << '\n';
 		cerr << "normalise\n";
@@ -229,18 +211,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "reconstructed variations of Ks in " << name << ".postmeansynrate.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meansynrate->GetPPLeafRoot() << '\n';
 
-		meanadaptative_omega->Normalise();
-		ofstream aos((GetName() + ".postmeanadaptative_omega.tre").c_str());
-		meanadaptative_omega->ToStream(aos);
-		cerr << "reconstructed variations of adaptative_omega in " << name << ".postmeanadaptative_omega.tre\n";
-		cerr << "pp of mean leaf values > root value : " << meanadaptative_omega->GetPPLeafRoot() << '\n';
 
-
-		meanoppositealpha->Normalise();
-		ofstream alos((GetName() + ".postmeanoppositealpha.tre").c_str());
-		meanoppositealpha->ToStream(alos);
-		cerr << "reconstructed variations of alpha opposite in " << name << ".postmeanoppositealpha.tre\n";
-		cerr << "pp of mean leaf values > root value : " << meanoppositealpha->GetPPLeafRoot() << '\n';
 
 		meanu_Ne->Normalise();
 		if (!withNe) {
@@ -286,15 +257,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meanNe->Tabulate(Neoos);
 			Neoos.close();
 		}	
-
-		ofstream aaos((GetName() + ".postmeanadaptative_omega.tab").c_str());
-		meanadaptative_omega->Tabulate(aaos);
-		aaos.close();
-		
-		
-		ofstream alalos((GetName() + ".postmeanoppositealpha.tab").c_str());
-		meanoppositealpha->Tabulate(alalos);
-		alalos.close();
 		
 		if (!withNe) {
 			ofstream mnoos((GetName() + ".postmeanNe.tab").c_str());
