@@ -216,7 +216,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// L : number of substitution parameters coevolving with traits (typically, 2: dS and dN/dS).
 		// create an array of positive variables kappa_i, i=1..Ncont + L
 		double mindiag = 0.001;
-		double maxdiag = 1000;
+		double maxdiag = 5000;
 		DiagArray = new JeffreysIIDArray(Ncont+L,mindiag,maxdiag,Zero);
 		if (priorsigma == -1)	{
 			DiagArray->setval(1.0);
