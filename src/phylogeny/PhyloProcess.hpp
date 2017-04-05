@@ -83,6 +83,7 @@ class PhyloProcess : public MCMC {
     int GetNtaxa();
     int GetNstate(int site);
     int GetMaxNstate();
+    void initNstate(); // (VL) added to test getnstate perf
 
     int GetMaxTrial() { return maxtrial; }
     void SetMaxTrial(int i) { maxtrial = i; }
@@ -119,7 +120,6 @@ class PhyloProcess : public MCMC {
         return (BranchSiteSubstitutionProcess *)GetPath(branch, site);
     }
 
-  public:
     // bool			NonMissingPath(const Branch* branch, int site);
     int &GetState(const Node *node, int site);
     int GetData(int taxon, int site);
@@ -273,6 +273,8 @@ class PhyloProcess : public MCMC {
     Chrono resamplechrono;
 
     bool branchmap;
+
+    std::vector<int> nstateVector;
 };
 
 //-------------------------------------------------------------------------
@@ -303,12 +305,22 @@ inline BranchSitePath *PhyloProcess::PhyloProcessSiteMapping::GetPath(const Bran
 
 inline int PhyloProcess::GetNsite() { return data->GetNsite(); }
 inline int PhyloProcess::GetNtaxa() { return data->GetNtaxa(); }
-inline int PhyloProcess::GetNstate(int site) {
-    if (isMissing(GetRoot(), site)) {
-        return 0;
+
+
+inline void PhyloProcess::initNstate() {
+    for (int i = 0; i < GetNsite(); i++) {
+        if (isMissing(GetRoot(), i)) {
+            nstateVector.push_back(0);
+        } else {
+            nstateVector.push_back(GetBranchSiteSubstitutionProcess(nullptr, i)->GetNstate());
+        }
     }
-    return GetBranchSiteSubstitutionProcess(nullptr, site)->GetNstate();
 }
+
+inline int PhyloProcess::GetNstate(int site) {
+    return nstateVector[site];
+}
+
 
 inline RandomBranchSitePath *PhyloProcess::GetPath(const Branch *branch, int site) {
     if (pathmap[branch][site] == nullptr) {

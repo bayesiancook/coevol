@@ -140,6 +140,7 @@ void PhyloProcess::Unfold() {
     CreateMissingMap();
     ResetFlagMap(GetRoot(), true);
     RecursiveCreate(GetRoot());
+    initNstate();
     RecursiveCreateTBL(GetRoot(), GetMaxNstate());
     sitemapping = new PhyloProcessSiteMapping *[GetNsite()];
     for (int i = 0; i < GetNsite(); i++) {

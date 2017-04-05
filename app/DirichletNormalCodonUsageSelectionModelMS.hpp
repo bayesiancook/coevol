@@ -577,6 +577,8 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         phyloprocess->Unfold();
         std::cerr << " - done" << std::endl;
 
+        phyloprocess->initNstate();
+
         std::cerr << "-- Registering model nodes - ";
         RootRegister(Zero);
         RootRegister(One);
