@@ -21,7 +21,6 @@ target_compile_features(coevol_utils PUBLIC ${CXX_FEATURES})
 set(CORE
   src/core/BaseType.cpp
   src/core/Chain.cpp
-  src/core/Correl.cpp
   src/core/Correlation.cpp
   src/core/DAGnode.cpp
   src/core/Move.cpp
