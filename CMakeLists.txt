@@ -21,6 +21,8 @@ target_compile_features(coevol_utils PUBLIC ${CXX_FEATURES})
 set(CORE
   src/core/BaseType.cpp
   src/core/Chain.cpp
+  src/core/Correl.cpp
+  src/core/Correlation.cpp
   src/core/DAGnode.cpp
   src/core/Move.cpp
   src/core/ProbModel.cpp
@@ -58,6 +60,11 @@ target_link_libraries(coevol_phylogeny coevol_core)
 add_executable(diffsel "app/DirichletNormalCodonUsageSelectionMS.cpp")
 target_link_libraries(diffsel coevol_phylogeny)
 target_compile_features(diffsel PRIVATE ${CXX_FEATURES})
+
+# Tracecomp
+add_executable(tracecomp "app/TraceComp.cpp")
+target_link_libraries(tracecomp coevol_phylogeny)
+target_compile_features(tracecomp PRIVATE ${CXX_FEATURES})
 
 
 ########################
