@@ -43,12 +43,12 @@ void compareChainsConvergence(string outname, Correlation** corr, int nchain, do
 
     // int nbyes=0;
     // double tmp;
-    double meaneffsize[nbp];
-    double absDiff[nbp];
-    double meanse[nbp];
-    double discrepancy[nbp];
+    double* meaneffsize = new double[nbp];
+    double* absDiff = new double[nbp];
+    double* meanse = new double[nbp];
+    double* discrepancy = new double[nbp];
 
-    double maxCIoverlap[nbp];
+    double* maxCIoverlap = new double[nbp];
 
     //  int nbsesd[10];
     int nbrecci[20];
@@ -56,7 +56,8 @@ void compareChainsConvergence(string outname, Correlation** corr, int nchain, do
     for (int j = 0; j < 20; j++) nbrecci[j] = 0;
     // for(int i=0;i<10;i++)
     // nbsesd[i]=0;
-    double mean[nchain], se[nchain];
+    double* mean = new double[nchain];
+    double* se = new double[nchain];
 
     ofstream os_conv((outname + ".contdiff").c_str());
     os_conv << "name                effsize\trel_diff\n";
@@ -107,7 +108,8 @@ void compareChainsConvergence(string outname, Correlation** corr, int nchain, do
         }
         meaneffsize[i] /= nchain;
 
-        double ciinf[nchain], cisup[nchain];
+        double* ciinf = new double[nchain];
+        double* cisup = new double[nchain];
         for (int chain = 0; chain < nchain; chain++) {
             ciinf[chain] = corr[chain]->getInfCI(i);
             cisup[chain] = corr[chain]->getSupCI(i);
