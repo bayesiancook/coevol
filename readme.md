@@ -10,6 +10,9 @@ To build __coevol__/__diffsel__, simply run:
 from the root of the __coevol__ folder.
 If you get errors, check the requirements section below.
 
+To run a series of simple tests to check that __coevol__ is compiled correctly, run `make test`.
+You can also run `make testdiffsel`
+
 
 ### Requirements ###
 
@@ -28,14 +31,18 @@ then it is possible that the default __cmake__ on your machine is too old. Pleas
 and include the output of `cmake --version` and the output of `make clean; make`.
 
 
+### Running diffsel ###
+After compilation, there should be a `diffsel` executable in the `_build/` folder (itself located at the root folder of __coevol__).
+
+
 ## Makefile commands ##
 
 ### Compilation ###
 `make`
-: Builds __`mini-coevol`__ in parallel (requires `cmake`); builds in the `_build` folder.
+: Builds __coevol__ in parallel (requires `cmake`); builds in the `_build` folder.
 
 `make seq`
-: Builds __`mini-coevol`__ sequentially. Can be useful to catch errors one by one or to avoid occupying too many resources.
+: Builds __coevol__ sequentially. Can be useful to catch errors one by one or to avoid occupying too many resources.
 
 `make clean`
 : Cleans the coevol directory; removes the `_build` folder among other things.
@@ -63,7 +70,7 @@ This code is formatted according to a specific style described in the `.clang-fo
 
 
 ### Documentation ###
-__`mini-coevol`__ provides a basic Doxygen documentation.
+__coevol__ provides a basic Doxygen documentation.
 
 `make doc`
 : Generates the Doxygen documentation (requires `doxygen`) in `doc/html`.
