@@ -131,6 +131,7 @@ PhyloProcess::PhyloProcess(LengthTree *intree, SequenceAlignment *indata, bool i
 void PhyloProcess::SetData(SequenceAlignment *indata) { data = indata; }
 
 void PhyloProcess::Unfold() {
+    printf("Unfolding!\n");
     sitearray = new int[GetNsite()];
     sitelnL = new double[GetNsite()];
     for (int i = 0; i < GetNsite(); i++) {
@@ -140,7 +141,9 @@ void PhyloProcess::Unfold() {
     CreateMissingMap();
     ResetFlagMap(GetRoot(), true);
     RecursiveCreate(GetRoot());
-    initNstate();
+
+    initNstate(); // added by (VL) getnstate optim
+
     RecursiveCreateTBL(GetRoot(), GetMaxNstate());
     sitemapping = new PhyloProcessSiteMapping *[GetNsite()];
     for (int i = 0; i < GetNsite(); i++) {

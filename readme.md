@@ -7,15 +7,15 @@ To build __coevol__/__diffsel__, simply run:
 
 `make`
 
-from the root of the __coevol__ folder.
+from the root of the __coevol__ folder (ie, the folder that contains this readme).
 If you get errors, check the requirements section below.
 
 To run a series of simple tests to check that __coevol__ is compiled correctly, run `make test`.
-You can also run `make testdiffsel`
+You can also run `make testdiffsel` to run the diffsel application on the c3c4 data in order to
+check everything seems to run fine (you'll probably want to interrupt it after a few iterations).
 
 
 ### Requirements ###
-
 This version of __coevol__ requires a decently recent version of __cmake__ and an internet connection (the ability to run `wget` commands).
 
 If you get a message saying something resembling `cmake command not found`, please install __cmake__ (`sudo apt-get install cmake` on debian/ubuntu).
@@ -33,6 +33,21 @@ and include the output of `cmake --version` and the output of `make clean; make`
 
 ### Running diffsel ###
 After compilation, there should be a `diffsel` executable in the `_build/` folder (itself located at the root folder of __coevol__).
+This __diffsel__ executable expects the following arguments (in that order):
+* an alignment file (supports the phylip format);
+* a tree file (supports the newick format);
+* the number of categories;
+* how many iterations to perform before writing to disk (eg, value 5 will save to disk every 5 iterations);
+* the name of the run (used to name the output files);
+* either clamp_MCMC or clamp_MCMC_var;
+* value of the conjugate parameter;
+* either SR (square root) of MS (mutation selection).
+
+For example, this is the command run by `make testdiffsel`:
+
+```bash
+_build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 5 tmp_diffsel_result clamp_MCMC 1 MS
+```
 
 
 ## Makefile commands ##
