@@ -200,8 +200,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == indice1) {
+						mas1_1[i][j]=0;
 						for (int k=0; k<dim; k++) {
-							mas1_1[i][j] = synrateslope[k] * m[k][j];
+							mas1_1[i][j] += synrateslope[k] * m[k][j];
 						}
 					}		
 					else {	
@@ -213,8 +214,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (j == indice1) {
+						mas1_2[i][j]=0;
 						for (int k=0; k<dim; k++) {
-							mas1_2[i][j] = synrateslope[k] * mas1_1[i][k];
+							mas1_2[i][j] += synrateslope[k] * mas1_1[i][k];
 						}
 					}	
 					else {	
@@ -226,8 +228,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == indice2) {
+						mas1_3[i][j]=0;
 						for (int k=0; k<dim; k++) {
-							mas1_3[i][j] = omegaslope[k] * mas1_2[k][j];
+							mas1_3[i][j] += omegaslope[k] * mas1_2[k][j];
 						}
 					}		
 					else {	
@@ -239,8 +242,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (j == indice2) {
+						mas1_4[i][j]=0;
 						for (int k=0; k<dim; k++) {
-							mas1_4[i][j] = omegaslope[k] * mas1_3[i][k];
+							mas1_4[i][j] += omegaslope[k] * mas1_3[i][k];
 						}
 					}	
 					else {	
@@ -252,8 +256,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == indice3) {
+						mas1_5[i][j]=0;
 						for (int k=0; k<dim; k++) {
-							mas1_5[i][j] = u_Neslope[k] * mas1_4[k][j];
+							mas1_5[i][j] += u_Neslope[k] * mas1_4[k][j];
 						}
 					}		
 					else {	
@@ -264,9 +269,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 			
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
+					my1[i][j]=0;
 					if (j == indice3) {
 						for (int k=0; k<dim; k++) {
-							my1[i][j] = u_Neslope[k] * mas1_5[i][k];
+							my1[i][j] += u_Neslope[k] * mas1_5[i][k];
 						}
 					}	
 					else {	
@@ -285,8 +291,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == indice4) {
+						mas2[i][j] = 0;
 						for (int k=0; k<dim; k++) {
-							mas2[i][j] = synrateslope[k] * m[k][j];
+							mas2[i][j] += synrateslope[k] * m[k][j];
 						}
 					}		
 					else {	
@@ -298,8 +305,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (j == indice4) {
+						my2[i][j] = 0;
 						for (int k=0; k<dim; k++) {
-							my2[i][j] = synrateslope[k] * mas2[i][k];
+							my2[i][j] += synrateslope[k] * mas2[i][k];
 						}
 					}	
 					else {	
@@ -317,8 +325,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == indice4) {
+						mas3[i][j] = 0;
 						for (int k=0; k<dim; k++) {
-							mas3[i][j] = omegaslope[k] * m[k][j];
+							mas3[i][j] += omegaslope[k] * m[k][j];
 						}
 					}		
 					else {	
@@ -330,8 +339,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (j == indice4) {
+						my3[i][j] = 0;
 						for (int k=0; k<dim; k++) {
-							my3[i][j] = omegaslope[k] * mas3[i][k];
+							my3[i][j] += omegaslope[k] * mas3[i][k];
 						}
 					}	
 					else {	
@@ -349,8 +359,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == indice4) {
+						mas4[i][j] = 0;
 						for (int k=0; k<dim; k++) {
-							mas4[i][j] = u_Neslope[k] * m[k][j];
+							mas4[i][j] += u_Neslope[k] * m[k][j];
 						}
 					}		
 					else {	
@@ -362,8 +373,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (j == indice4) {
+						my4[i][j] = 0;
 						for (int k=0; k<dim; k++) {
-							my4[i][j] = u_Neslope[k] * mas4[i][k];
+							my4[i][j] += u_Neslope[k] * mas4[i][k];
 						}
 					}	
 					else {	
