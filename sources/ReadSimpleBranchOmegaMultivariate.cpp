@@ -58,12 +58,12 @@ class BranchOmegaMultivariateSample : public Sample	{
 		is >> datafile >> treefile >> contdatafile;
 		is >> calibfile >> rootage >> rootstdev;
 		is >> contdatatype;
+		is >> withNe;
 		is >> meanexp;
 		is >> nrep;
 		is >> df;
 		is >> priorsigma;
 		is >> clamptree;
-		is >> withNe;
 
 		int check;
 		is >> check;
@@ -134,7 +134,36 @@ class BranchOmegaMultivariateSample : public Sample	{
 		for (int k=0; k<Ncont; k++)	{
 			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		}
-
+		
+		double* synrateslope(GetModel()->GetSynrateSlope());
+		double* omegaslope(GetModel()->GetOmegaSlope());
+		double* u_Neslope(GetModel()->GetU_NeSlope());
+		
+		
+		int indice1(0);
+		int indice2(0);
+		int indice3(0);
+		int indice4(0);
+		
+		for (int k=0; k<Ncont; k++)	{
+			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity") {
+				indice1 = k+dim-Ncont;
+			}	
+			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "mass") {
+				indice2 = k+dim-Ncont;
+			}
+			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "longevity") {
+				indice3 = k+dim-Ncont;
+			}
+			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piNpiS") {
+				indice4 = k+dim-Ncont;
+			}	
+		}
+		
+		MeanCovMatrix*  maty1 = new MeanCovMatrix(dim);
+		MeanCovMatrix*  maty2 = new MeanCovMatrix(dim);
+		MeanCovMatrix*  maty3 = new MeanCovMatrix(dim);
+		MeanCovMatrix*  maty4 = new MeanCovMatrix(dim);
 		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
 
 		for (int i=0; i<size; i++)	{
@@ -160,7 +189,197 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			CovMatrix& m = *(GetModel()->GetCovMatrix());
 			mat->Add(&m);
+			
+			double mas1_1[dim][dim];
+			double mas1_2[dim][dim];
+			double mas1_3[dim][dim];
+			double mas1_4[dim][dim];
+			double mas1_5[dim][dim];
+			CovMatrix my1(dim);
 
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == indice1) {
+						for (int k=0; k<dim; k++) {
+							mas1_1[i][j] = synrateslope[k] * m[k][j];
+						}
+					}		
+					else {	
+					mas1_1[i][j] = m[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == indice1) {
+						for (int k=0; k<dim; k++) {
+							mas1_2[i][j] = synrateslope[k] * mas1_1[i][k];
+						}
+					}	
+					else {	
+					mas1_2[i][j] = mas1_1[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == indice2) {
+						for (int k=0; k<dim; k++) {
+							mas1_3[i][j] = omegaslope[k] * mas1_2[k][j];
+						}
+					}		
+					else {	
+					mas1_3[i][j] = mas1_2[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == indice2) {
+						for (int k=0; k<dim; k++) {
+							mas1_4[i][j] = omegaslope[k] * mas1_3[i][k];
+						}
+					}	
+					else {	
+					mas1_4[i][j] = mas1_3[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == indice3) {
+						for (int k=0; k<dim; k++) {
+							mas1_5[i][j] = u_Neslope[k] * mas1_4[k][j];
+						}
+					}		
+					else {	
+					mas1_5[i][j] = mas1_4[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == indice3) {
+						for (int k=0; k<dim; k++) {
+							my1[i][j] = u_Neslope[k] * mas1_5[i][k];
+						}
+					}	
+					else {	
+					my1[i][j] = mas1_5[i][j];
+					}
+				}
+			}
+			
+			
+			
+			
+			double mas2[dim][dim];
+			CovMatrix my2(dim);
+			
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == indice4) {
+						for (int k=0; k<dim; k++) {
+							mas2[i][j] = synrateslope[k] * m[k][j];
+						}
+					}		
+					else {	
+					mas2[i][j] = m[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == indice4) {
+						for (int k=0; k<dim; k++) {
+							my2[i][j] = synrateslope[k] * mas2[i][k];
+						}
+					}	
+					else {	
+					my2[i][j] = mas2[i][j];
+					}
+				}
+			}
+			
+			
+			
+			double mas3[dim][dim];
+			CovMatrix my3(dim);
+			
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == indice4) {
+						for (int k=0; k<dim; k++) {
+							mas3[i][j] = omegaslope[k] * m[k][j];
+						}
+					}		
+					else {	
+					mas3[i][j] = m[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == indice4) {
+						for (int k=0; k<dim; k++) {
+							my3[i][j] = omegaslope[k] * mas3[i][k];
+						}
+					}	
+					else {	
+					my3[i][j] = mas3[i][j];
+					}
+				}
+			}
+			
+			
+			
+			double mas4[dim][dim];
+			CovMatrix my4(dim);
+			
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == indice4) {
+						for (int k=0; k<dim; k++) {
+							mas4[i][j] = u_Neslope[k] * m[k][j];
+						}
+					}		
+					else {	
+					mas4[i][j] = m[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == indice4) {
+						for (int k=0; k<dim; k++) {
+							my4[i][j] = u_Neslope[k] * mas4[i][k];
+						}
+					}	
+					else {	
+					my4[i][j] = mas4[i][j];
+					}
+				}
+			}
+			
+			
+			
+			
+			maty1->Add(&my1);
+			maty2->Add(&my2);
+			maty3->Add(&my3);
+			maty4->Add(&my4);
+			
 		}
 		cerr << '\n';
 		cerr << "normalise\n";
@@ -172,6 +391,53 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		cerr << "covariance matrix in " << name << ".cov\n";
 		cerr << '\n';
+		
+		maty1->Normalize();
+		ofstream cout1((GetName() + ".cov_all").c_str());
+
+		cout1 << *maty1;
+
+		cerr << "covariance matrix in " << name << ".cov_all\n";
+		cerr << '\n';
+
+		
+		maty2->Normalize();
+		ofstream cout2((GetName() + ".cov_dS->piNpiS").c_str());
+
+		cout2 << *maty2;
+
+		cerr << "covariance matrix in " << name << ".cov_dS->piNpiS\n";
+		cerr << '\n';
+		
+		
+		maty3->Normalize();
+		ofstream cout3((GetName() + ".cov_omega->piNpiS").c_str());
+
+		cout3 << *maty3;
+
+		cerr << "covariance matrix in " << name << ".cov_omega->piNpiS\n";
+		cerr << '\n';
+		
+		if (!withNe) {
+			maty4->Normalize();
+			ofstream cout4((GetName() + ".cov_Ne->piNpiS").c_str());
+	
+			cout4 << *maty4;
+
+			cerr << "covariance matrix in " << name << ".cov_Ne->piNpiS\n";
+			cerr << '\n';
+		}
+
+		if (withNe) {
+			maty4->Normalize();
+			ofstream cout4((GetName() + ".cov_u->piNpiS").c_str());
+	
+			cout4 << *maty4;
+
+			cerr << "covariance matrix in " << name << ".cov_u->piNpiS\n";
+			cerr << '\n';
+		}
+
 
 		meanchrono->Normalise();
 		ofstream chos((GetName() + ".postmeandates.tre").c_str());
@@ -240,7 +506,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		if (!withNe) {
 		ofstream mmos((GetName() + ".postmeanmutrate.tab").c_str());
-		meanNe->Tabulate(mmos);
+		meanmutrate->Tabulate(mmos);
 		mmos.close();
 		}
 		

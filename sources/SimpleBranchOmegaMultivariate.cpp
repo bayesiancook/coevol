@@ -87,12 +87,12 @@ class BranchOmegaMultivariateChain : public Chain	{
 		is >> datafile >> treefile >> contdatafile;
 		is >> calibfile >> rootage >> rootstdev;
 		is >> contdatatype;
+		is >> withNe;
 		is >> meanexp;
 		is >> nrep;
 		is >> df;
 		is >> priorsigma;
 		is >> clamptree;
-		is >> withNe;
 
 		int check;
 		is >> check;

@@ -458,6 +458,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	
 
 	Chronogram* GetChronogram() {return chronogram;}
+	
+	double* GetSynrateSlope() {return synrateslope;}
+	double* GetOmegaSlope() {return omegaslope;}
+	double* GetU_NeSlope() {return u_Neslope;}
+	
 
 	bool isCalibrated()	{
 		return iscalib;
