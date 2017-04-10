@@ -1,10 +1,14 @@
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <fstream>
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
-
+#include "doctest.h"
 using namespace std;
+using namespace doctest;
+
 
 class PoissonGammaModel : public ProbModel {
+public:
     int N;
     vector<int> data;
 
@@ -17,7 +21,6 @@ class PoissonGammaModel : public ProbModel {
     Product** rate;
     Poisson** X;
 
-  public:
     PoissonGammaModel(int inN, vector<int> indata) {
         N = inN;
         data = indata;
@@ -97,25 +100,47 @@ class PoissonGammaModel : public ProbModel {
     void FromStream(istream& /*is*/) override {}
 };
 
-int main(int /*unused*/, char* /*unused*/ []) {
-    cout << "Youpi" << std::endl;
+
+// ======================
+//      AUX FUNCTIONS
+// ======================
+void printCaracs(vector<double> data, string name) {
+    double mean = 0.0;
+    for (auto i : data) {
+        mean += i;
+    }
+    double variance = 0.0;
+    for (auto i : data) {
+        variance += i * i;
+    }
+    double finalMean = mean / data.size();
+    double finalVariance = (variance - (mean * mean / data.size())) / data.size();
+    cout << "<" << name << "> Mean: " << finalMean << " ; variance: " << finalVariance << endl;
+    double expectedMean = 2.1;
+    double expectedVariance = 1.45;
+
+    CHECK(finalMean == Approx(expectedMean).epsilon(0.05));
+    CHECK(finalVariance == Approx(expectedVariance).epsilon(0.15));
+}
+
+
+TEST_CASE("Testing PoissonGamma model against fixed values.") {
     string name{"youpi"};
 
-    vector<int> data{1,2,4,3,2};
+    vector<int> indata{1, 2, 4, 3, 2};
+    vector<double> data{};
 
-    auto model = new PoissonGammaModel(5, data);
-    cout << "youpla\n";
+    auto model = new PoissonGammaModel(5, indata);
     ofstream os((name + ".trace").c_str());
-    cout << "boum\n";
     model->TraceHeader(os);
-    cout << "poin\n";
 
     int i = 0;
-    while (i < 100000) {
-        cout << "la\n";
+    while (i < 250000) {
         model->Move(1.0);
         model->Trace(os);
+        data.push_back(model->theta->val());
         i++;
     }
-    cout << "tadaaaa\n";
+
+    printCaracs(data, "theta");
 }
