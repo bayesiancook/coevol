@@ -1,16 +1,17 @@
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <Eigen/Dense>
 #include <cmath>
 #include <cstdio>
 #include <list>
 #include <random>
-#include "TestUtils.hpp"
 #include "core/ProbModel.hpp"
 #include "core/RandomTypes.hpp"
+#include "doctest.h"
 #include "utils/Chrono.hpp"
 #include "utils/Random.hpp"
 using namespace std;
 using namespace Eigen;
-using namespace TestUtils;
+using namespace doctest;
 
 
 struct normal_random_variable {
@@ -167,10 +168,11 @@ class MyDoubleMove : public MCUpdate {
         printf("New value %f/%f, first=%f, second=%f, acceptance=%f%%\n", double(managedNode1),
                double(managedNode2), mean(0), mean(1), (accept * 100.0) / t);
         cout << covar << endl;
-        cassert(mean(0), 2.27, 0.1);
-        cassert(mean(1), 2.18, 0.1);
-        cassert(covar(0, 0), 0.32, 0.1);
-        cassert(covar(1, 1), 1.0, 0.1);
+
+        CHECK(mean(0) == Approx(2.277).epsilon(0.01));
+        CHECK(mean(1) == Approx(2.18).epsilon(0.01));
+        CHECK(covar(0,0) == Approx(0.32).epsilon(0.01));
+        CHECK(covar(1,1) == Approx(1.024).epsilon(0.01));
     }
 };
 
@@ -247,16 +249,17 @@ void printCaracs(vector<double> data, string name) {
     double finalVariance = (variance - (mean * mean / data.size())) / data.size();
     cout << "<" << name << "> Mean: " << finalMean << " ; variance: " << finalVariance << endl;
     double expectedMean = (name == "a") ? 2.27 : 2.18;
-    double expectedVariance = name == "a" ? 0.32 : 1.0;
-    cassert(expectedMean, finalMean, 0.1);
-    cassert(expectedVariance, finalVariance, 0.1);
+    double expectedVariance = name == "a" ? 0.32 : 1.024;
+
+    CHECK(finalMean == Approx(expectedMean).epsilon(0.01));
+    CHECK(finalVariance == Approx(expectedVariance).epsilon(0.01));
 }
 
 
 // ======================
 //           MAIN
 // ======================
-int main() {
+TEST_CASE("Testing a double adaptive move model against fixed values.") {
     MyModel model;
     vector<double> resultsA, resultsB;
     MeasureTime myTimer;

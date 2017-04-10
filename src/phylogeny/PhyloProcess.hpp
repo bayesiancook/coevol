@@ -83,7 +83,7 @@ class PhyloProcess : public MCMC {
     int GetNtaxa();
     int GetNstate(int site);
     int GetMaxNstate();
-    void initNstate(); // (VL) added to test getnstate perf
+    void initNstate();  // (VL) added to test getnstate perf
 
     int GetMaxTrial() { return maxtrial; }
     void SetMaxTrial(int i) { maxtrial = i; }
@@ -317,9 +317,7 @@ inline void PhyloProcess::initNstate() {
     }
 }
 
-inline int PhyloProcess::GetNstate(int site) {
-    return nstateVector[site];
-}
+inline int PhyloProcess::GetNstate(int site) { return nstateVector[site]; }
 
 
 inline RandomBranchSitePath *PhyloProcess::GetPath(const Branch *branch, int site) {

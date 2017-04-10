@@ -17,12 +17,11 @@ along with Coevol. If not, see <http://www.gnu.org/licenses/>.
 **********************/
 
 
-
+#include "Correlation.hpp"
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include "Correlation.hpp"
 using namespace std;
 
 Correlation::Correlation(double ci) {
@@ -49,15 +48,15 @@ Correlation::Correlation(double ci) {
 
 void Correlation::init() {
     parameterName = new string[nbparameter];
-    parameters = new double *[nbparameter];
-    sortparameters = new double *[nbparameter];
-    covparam = new double *[nbparameter];
-    covnorm = new double *[nbparameter];
+    parameters = new double*[nbparameter];
+    sortparameters = new double*[nbparameter];
+    covparam = new double*[nbparameter];
+    covnorm = new double*[nbparameter];
     meanparam = new double[nbparameter];
     isConstant = new Switch[nbparameter];
     effectiveSize = new double[nbparameter];
     variance = new double[nbparameter];
-    CIbuffer = new double *[nbparameter];
+    CIbuffer = new double*[nbparameter];
     for (int i = 0; i < nbparameter; i++) {
         CIbuffer[i] = new double[2];
         parameters[i] = NULL;
@@ -89,7 +88,7 @@ Correlation::~Correlation() {
     delete[] parameterName;
 }
 
-void Correlation::reccurquicksort(double *to, double *buf, int deb, int fin) {
+void Correlation::reccurquicksort(double* to, double* buf, int deb, int fin) {
     if (fin - deb > 1) {
         int last = fin;
         int first = deb;
@@ -127,9 +126,9 @@ void Correlation::reccurquicksort(double *to, double *buf, int deb, int fin) {
     }
 }
 
-void Correlation::quicksort(double *from, double *to, int s) {
+void Correlation::quicksort(double* from, double* to, int s) {
     for (int i = 0; i < s; i++) to[i] = from[i];
-    double *tmp = new double[s];
+    double* tmp = new double[s];
     reccurquicksort(to, tmp, 0, s - 1);
     delete[] tmp;
 }
@@ -184,7 +183,7 @@ void Correlation::getParameters(string filename, int start, int stop) {
         }
         cerr << filename << '\t' << " burnin : " << burnin << '\t' << "sample size : " << nbsample
              << '\n';
-        ifstream *is = new ifstream;
+        ifstream* is = new ifstream;
         is->open(filename.c_str(), ifstream::in);
 
         char line[100000];
@@ -257,7 +256,7 @@ void Correlation::sortParameters() {
     isSort = Yes;
 }
 
-void Correlation::getCI(double *distrib, int s, double ci, double *inf, double *sup) {
+void Correlation::getCI(double* distrib, int s, double ci, double* inf, double* sup) {
     int iinf, isup;
     if (ci == 100) {
         iinf = 0;
@@ -581,4 +580,3 @@ int SamCompare(int nchain, int burnin, int stop, string* ChainName, double& disc
 
     return 1;
 }
-
