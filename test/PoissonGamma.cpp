@@ -6,7 +6,7 @@ using namespace std;
 
 class PoissonGammaModel : public ProbModel {
     int N;
-    int* data;
+    vector<int> data;
 
     Const<PosReal>* One;
 
@@ -18,7 +18,7 @@ class PoissonGammaModel : public ProbModel {
     Poisson** X;
 
   public:
-    PoissonGammaModel(int inN, int* indata) {
+    PoissonGammaModel(int inN, vector<int> indata) {
         N = inN;
         data = indata;
         One = new Const<PosReal>(1);
@@ -52,6 +52,8 @@ class PoissonGammaModel : public ProbModel {
 
         scheduler.Register(new SimpleMove(theta, 0.1), 1, "theta");
         scheduler.Register(new SimpleMove(theta, 0.01), 1, "theta");
+
+        cout << "SIZE = " << N << endl;
 
         for (int i = 0; i < N; i++) {
             scheduler.Register(new SimpleMove(omega[i], 1), 1, "omega");
@@ -95,25 +97,25 @@ class PoissonGammaModel : public ProbModel {
     void FromStream(istream& /*is*/) override {}
 };
 
-int main(int /*unused*/, char* argv[]) {
-    ifstream is(argv[1]);
-    string name = argv[2];
+int main(int /*unused*/, char* /*unused*/ []) {
+    cout << "Youpi" << std::endl;
+    string name{"youpi"};
 
-    int N;
-    is >> N;
-    auto data = new int[N];
-    for (int i = 0; i < N; i++) {
-        is >> data[i];
-    }
+    vector<int> data{1,2,4,3,2};
 
-    auto model = new PoissonGammaModel(N, data);
+    auto model = new PoissonGammaModel(5, data);
+    cout << "youpla\n";
     ofstream os((name + ".trace").c_str());
+    cout << "boum\n";
     model->TraceHeader(os);
+    cout << "poin\n";
 
     int i = 0;
-    while (i < 10000) {
+    while (i < 100000) {
+        cout << "la\n";
         model->Move(1.0);
         model->Trace(os);
         i++;
     }
+    cout << "tadaaaa\n";
 }

@@ -169,10 +169,10 @@ class MyDoubleMove : public MCUpdate {
                double(managedNode2), mean(0), mean(1), (accept * 100.0) / t);
         cout << covar << endl;
 
-        CHECK(mean(0) == Approx(2.277).epsilon(0.01));
-        CHECK(mean(1) == Approx(2.18).epsilon(0.01));
-        CHECK(covar(0,0) == Approx(0.32).epsilon(0.01));
-        CHECK(covar(1,1) == Approx(1.024).epsilon(0.01));
+        CHECK(mean(0) == Approx(2.277).epsilon(0.02));
+        CHECK(mean(1) == Approx(2.18).epsilon(0.02));
+        CHECK(covar(0,0) == Approx(0.32).epsilon(0.02));
+        CHECK(covar(1,1) == Approx(1.024).epsilon(0.02));
     }
 };
 
@@ -251,8 +251,8 @@ void printCaracs(vector<double> data, string name) {
     double expectedMean = (name == "a") ? 2.27 : 2.18;
     double expectedVariance = name == "a" ? 0.32 : 1.024;
 
-    CHECK(finalMean == Approx(expectedMean).epsilon(0.01));
-    CHECK(finalVariance == Approx(expectedVariance).epsilon(0.01));
+    CHECK(finalMean == Approx(expectedMean).epsilon(0.02));
+    CHECK(finalVariance == Approx(expectedVariance).epsilon(0.02));
 }
 
 
