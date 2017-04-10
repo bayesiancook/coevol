@@ -2,10 +2,21 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 project(mini-coevol CXX)
 
 # Compilation options
-# set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic -g -fno-omit-frame-pointer -fno-inline-functions -fno-optimize-sibling-calls")
-# set(CMAKE_CXX_FLAGS "-O0 -fprofile-arcs -ftest-coverage -g")
-# set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic -g -fno-omit-frame-pointer")
+
 set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic")
+if (CMAKE_BUILD_TYPE MATCHES PERF)
+  message(STATUS "Compiling in performance measurement mode")
+  set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic -g -fno-omit-frame-pointer")
+endif()
+if (CMAKE_BUILD_TYPE MATCHES PERFFULL)
+  message(STATUS "Compiling in fine-grain performance measurement mode")
+  set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic -g -fno-omit-frame-pointer -fno-inline-functions -fno-optimize-sibling-calls")
+endif()
+if (CMAKE_BUILD_TYPE MATCHES COVERAGE)
+  message(STATUS "Compiling in coverage measurement mode")
+  set(CMAKE_CXX_FLAGS "-O0 -fprofile-arcs -ftest-coverage -g")
+endif()
+
 set(CXX_FEATURES cxx_auto_type cxx_nullptr cxx_final cxx_override cxx_range_for)
 include_directories("src")
 

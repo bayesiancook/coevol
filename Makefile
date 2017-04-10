@@ -4,7 +4,7 @@
 
 SRC_FILES = $(shell find src -name "*.hpp") $(shell find src -name "*.cpp") $(shell find test -name "*.hpp") $(shell find test -name "*.cpp") $(shell find app -name "*.hpp") $(shell find app -name "*.cpp")
 TMP_FILES = $(shell find . -name "tmp*")
-.PHONY: cmake clean doc check format dot testdiffsel log perf report
+.PHONY: cmake clean doc check format dot testdiffsel log perf report build-normal build-perf build-perffull build-coverage
 
 
 # ====================================
@@ -38,6 +38,30 @@ src/Eigen:
 test/doctest.h:
 	@wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
 	@mv doctest.h test/
+
+
+# ====================================
+#              BUILD TYPES
+# ====================================
+# Requires: cmake
+
+build-normal: clean cmake
+
+build-perf:
+	@rm -rf _build
+	@mkdir _build
+	@cd _build ; cmake -DCMAKE_BUILD_TYPE=PERF ..
+
+build-perffull:
+	@rm -rf _build
+	@mkdir _build
+	@cd _build ; cmake -DCMAKE_BUILD_TYPE=PERFFULL ..
+
+
+build-coverage:
+	@rm -rf _build
+	@mkdir _build
+	@cd _build ; cmake -DCMAKE_BUILD_TYPE=COVERAGE ..
 
 
 # ====================================
