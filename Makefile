@@ -37,7 +37,7 @@ src/Eigen:
 
 test/doctest.h:
 	@wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
-	@cp doctest.h test/
+	@mv doctest.h test/
 
 
 # ====================================
