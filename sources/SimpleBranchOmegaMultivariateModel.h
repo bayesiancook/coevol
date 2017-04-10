@@ -439,6 +439,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	SequenceAlignment* GetData()	{
 		return codondata;
 	}
+	
+	Var<Real>* GetGamma() {return gamma;}
 
 	//MeanExpTree* GetAdaptative_omegaTree() {return adaptative_omegatree;}
 	//MeanExpTree* GetNeTree() {return Netree;}

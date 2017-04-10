@@ -165,14 +165,20 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanCovMatrix*  maty3 = new MeanCovMatrix(dim);
 		MeanCovMatrix*  maty4 = new MeanCovMatrix(dim);
 		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
+		
 
 		for (int i=0; i<size; i++)	{
 			cerr << '.';
-
+	
 			GetNextPoint();
 
 			GetModel()->GetSynRateTree()->specialUpdate();
 			GetModel()->GetChronogram()->specialUpdate();
+			GetModel()->GetSynrateNodeTree()->specialUpdate();
+			GetModel()->GetOmegaNodeTree()->specialUpdate();
+			GetModel()->GetNeNodeTree()->specialUpdate();
+			
+			Var<Real>* gamma(GetModel()->GetGamma());
 
 			meanchrono->Add(GetModel()->GetChronogram());
 
@@ -230,7 +236,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 					if (i == indice2) {
 						mas1_3[i][j]=0;
 						for (int k=0; k<dim; k++) {
-							mas1_3[i][j] += omegaslope[k] * mas1_2[k][j];
+							mas1_3[i][j] += omegaslope[k] * mas1_2[k][j] * *gamma;
 						}
 					}		
 					else {	
@@ -244,7 +250,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 					if (j == indice2) {
 						mas1_4[i][j]=0;
 						for (int k=0; k<dim; k++) {
-							mas1_4[i][j] += omegaslope[k] * mas1_3[i][k];
+							mas1_4[i][j] += omegaslope[k] * mas1_3[i][k] * *gamma;
 						}
 					}	
 					else {	
