@@ -149,12 +149,24 @@ class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 		RecursiveDelete(GetRoot());
 	}
 	
+	void specialUpdate()	{
+		specialUpdate(GetRoot());
+	}
 	
 	Tree* GetTree() {
 		return process->GetTree();
 	}	
 		
 	private :
+	
+	void specialUpdate(Link* from)	{
+		if ((! from->isRoot()))	{
+			GetNodeVal(from->GetNode())->specialUpdate();
+		}
+		for(Link* link=from->Next(); link!=from; link=link->Next())	{
+			specialUpdate(link->Out());
+		}
+	}
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
 		return new SynrateLinearCombination(process->GetNodeVal(link->GetNode()), rootage, synrateslope, withNe);
@@ -187,11 +199,24 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 		RecursiveDelete(GetRoot());
 	}
 	
+	void specialUpdate()	{
+		specialUpdate(GetRoot());
+	}
+	
 	Tree* GetTree() {
 		return process->GetTree();
 	}	
 		
 	private :
+	
+	void specialUpdate(Link* from)	{
+		if ((! from->isRoot()))	{
+			GetNodeVal(from->GetNode())->specialUpdate();
+		}
+		for(Link* link=from->Next(); link!=from; link=link->Next())	{
+			specialUpdate(link->Out());
+		}
+	}
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
 		return new OmegaLinearCombination(process->GetNodeVal(link->GetNode()), gamma, beta, omegaslope, withNe);
@@ -221,11 +246,24 @@ class U_NeLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 		RecursiveDelete(GetRoot());
 	}
 	
+	void specialUpdate()	{
+		specialUpdate(GetRoot());
+	}
+	
 	Tree* GetTree() {
 		return process->GetTree();
 	}	
 		
 	private :
+	
+	void specialUpdate(Link* from)	{
+		if ((! from->isRoot()))	{
+			GetNodeVal(from->GetNode())->specialUpdate();
+		}
+		for(Link* link=from->Next(); link!=from; link=link->Next())	{
+			specialUpdate(link->Out());
+		}
+	}
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
 		return new U_NeLinearCombination(process->GetNodeVal(link->GetNode()), u_Neslope);
