@@ -333,7 +333,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 					if (i == indice4) {
 						mas3[i][j] = 0;
 						for (int k=0; k<dim; k++) {
-							mas3[i][j] += omegaslope[k] * m[k][j];
+							mas3[i][j] += omegaslope[k] * m[k][j] * *gamma;
 						}
 					}		
 					else {	
@@ -347,7 +347,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 					if (j == indice4) {
 						my3[i][j] = 0;
 						for (int k=0; k<dim; k++) {
-							my3[i][j] += omegaslope[k] * mas3[i][k];
+							my3[i][j] += omegaslope[k] * mas3[i][k] * *gamma;
 						}
 					}	
 					else {	
