@@ -131,7 +131,7 @@ PhyloProcess::PhyloProcess(LengthTree *intree, SequenceAlignment *indata, bool i
 void PhyloProcess::SetData(SequenceAlignment *indata) { data = indata; }
 
 void PhyloProcess::Unfold() {
-    printf("Unfolding!\n");
+    // printf("Unfolding!\n");
     sitearray = new int[GetNsite()];
     sitelnL = new double[GetNsite()];
     for (int i = 0; i < GetNsite(); i++) {
@@ -237,13 +237,15 @@ double PhyloProcess::GetFastLogProb() {
         */
         total += sitelnL[i];
     }
-    timer.print("GetFastLogProb. ", 1);
+    timer.print<2>("GetFastLogProb. ");
     return total;
 }
 
 double PhyloProcess::GetLogProb() {
-    // return GetPathLogProb();
+// return GetPathLogProb();
+#if DEBUG > 1
     MeasureTime timer;
+#endif
     double total = 0;
     for (int i = 0; i < GetNsite(); i++) {
         /*
@@ -255,7 +257,9 @@ double PhyloProcess::GetLogProb() {
         */
         total += SiteLogLikelihood(i);
     }
-    timer.print("GetLogProb. ", 1);
+#if DEBUG > 1
+    timer.print<2>("GetLogProb. ");
+#endif
     return total;
 }
 
@@ -645,7 +649,9 @@ void PhyloProcess::ResampleState(int site) {
 
 void PhyloProcess::ResampleSub() {
     pruningchrono.Start();
+#if DEBUG > 1
     MeasureTime timer;
+#endif
     for (int i = 0; i < GetNsite(); i++) {
         if (sitearray[i] != 0) {
             if (!isMissing(GetRoot()->GetNode(), i)) {
@@ -653,7 +659,9 @@ void PhyloProcess::ResampleSub() {
             }
         }
     }
-    timer.print("ResampleSub - state. ", 1);
+#if DEBUG > 1
+    timer.print<2>("ResampleSub - state. ");
+#endif
     pruningchrono.Stop();
 
     resamplechrono.Start();

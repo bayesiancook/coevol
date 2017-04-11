@@ -171,8 +171,8 @@ class MyDoubleMove : public MCUpdate {
 
         CHECK(mean(0) == Approx(2.277).epsilon(0.02));
         CHECK(mean(1) == Approx(2.18).epsilon(0.02));
-        CHECK(covar(0,0) == Approx(0.32).epsilon(0.02));
-        CHECK(covar(1,1) == Approx(1.024).epsilon(0.02));
+        CHECK(covar(0, 0) == Approx(0.32).epsilon(0.02));
+        CHECK(covar(1, 1) == Approx(1.024).epsilon(0.02));
     }
 };
 
@@ -262,13 +262,11 @@ void printCaracs(vector<double> data, string name) {
 TEST_CASE("Testing a double adaptive move model against fixed values.") {
     MyModel model;
     vector<double> resultsA, resultsB;
-    MeasureTime myTimer;
     for (int i = 0; i < 1000000; i++) {
         model.Move(1.0);
         resultsA.push_back(model.a->val());
         resultsB.push_back(model.b->val());
     }
-    myTimer.print();
     printCaracs(resultsA, "a");  // expected 2.27
     printCaracs(resultsB, "b");  // expected 2.18
 #ifndef REFERENCE_TEST2

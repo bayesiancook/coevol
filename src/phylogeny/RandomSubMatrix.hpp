@@ -65,7 +65,9 @@ class RandomTransitionMatrix : public virtual AbstractTransitionMatrix, public v
 
 class RandomSubMatrix : public virtual RandomTransitionMatrix, public virtual SubMatrix {
   public:
-    RandomSubMatrix(int Nstate, bool innormalise = false) : SubMatrix(Nstate, innormalise) {}
+    RandomSubMatrix(int Nstate, bool innormalise = false) : SubMatrix(Nstate, innormalise) {
+        SetName("random sub matrix");
+    }
 
     ~RandomSubMatrix() override = default;
 

@@ -8,7 +8,7 @@ using namespace doctest;
 
 
 class PoissonGammaModel : public ProbModel {
-public:
+  public:
     int N;
     vector<int> data;
 

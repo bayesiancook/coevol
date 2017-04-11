@@ -223,6 +223,7 @@ class RenormalizedIIDStat : public Dvar<Profile> {
     //
     RenormalizedIIDStat(Var<Profile>* ina, Var<RealVector>* inb, Var<RealVector>* inc,
                         Var<PosReal>* inbeta) {
+        SetName("renorm IID stat");
         if (ina->GetDim() != inb->GetDim()) {
             std::cerr << "error in RenormalizedIIDStat : non matching dimension (" << ina->GetDim()
                       << " vs " << inb->GetDim() << ")\n";
@@ -592,12 +593,18 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         RootRegister(center);
         Register();
 
+        if (Nsite < 20) {
+            std::cerr << "-- Producing dot representation of model\n";
+            getDot();
+        }
+
+
         if (sample) {
-            std::cerr << "-- Sampling";
+            // std::cerr << "-- Sampling";
             // Sample();
-            std::cerr << " - done" << std::endl;
-            std::cerr << "-- (no sample was actually completed because the line is commented)"
-                      << std::endl;
+            // std::cerr << " - done" << std::endl;
+            // std::cerr << "-- (no sample was actually completed because the line is commented)"
+            // << std::endl;
             std::cerr << "-- Updating" << std::endl;
             Update();
             std::cerr << "-- Update done" << std::endl;

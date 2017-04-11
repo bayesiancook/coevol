@@ -68,7 +68,8 @@ set<string> DAGnode::getDotNodes() {
         dotNodeFlag = true;
         ostringstream stringStream;
         set<string> result;
-        stringStream << "\tNode" << this << " [label=\"" << name << "\"]" << endl;
+        stringStream << "\tNode" << this << " [label=\"" << name
+                     << "\" style=filled fillcolor=lightblue]" << endl;
         result.insert(stringStream.str());
         for (auto i : down) {
             set<string> tmp = i->getDotNodes();
@@ -130,7 +131,7 @@ set<string> Rnode::getDotNodes() {  // FIXME refactor with DAGnode version
     ostringstream stringStream;
     set<string> result;
     stringStream << "\tNode" << dynamic_cast<DAGnode *>(this) << " [label=\"" << name
-                 << "\", shape=rectangle]" << endl;
+                 << "\" shape=rectangle style=filled fillcolor=lightgray]" << endl;
     ;
     result.insert(stringStream.str());
     for (auto i : down) {

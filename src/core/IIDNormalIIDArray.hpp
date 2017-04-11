@@ -9,6 +9,7 @@ class IIDNormalIIDArray : public IIDArray<RealVector> {
   public:
     IIDNormalIIDArray(int insize, int indim, Var<Real> *inmean, Var<PosReal> *invariance)
         : IIDArray<RealVector>(insize) {
+        // SetName("IID norm IID array");
         mean = inmean;
         variance = invariance;
         dim = indim;

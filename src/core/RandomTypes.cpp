@@ -202,6 +202,7 @@ double Exponential::logProb() {
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 PosUniform::PosUniform(Var<PosReal> *inroot, double inmax) {
+    SetName("posUniform");
     root = inroot;
     max = inmax;
     Register(root);
@@ -318,6 +319,7 @@ double Poisson::logProb() {
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 Dirichlet::Dirichlet(int dimension) {
+    SetName("dirichlet");
     setval(Profile(dimension));
     bkvalue = Profile(dimension);
     center = nullptr;
@@ -330,6 +332,7 @@ Dirichlet::Dirichlet(int dimension) {
 }
 
 Dirichlet::Dirichlet(Var<Profile> *incenter, Var<PosReal> *inconcentration) {
+    SetName("dirichlet");
     setval(Profile(incenter->val()));
     bkvalue = Profile(incenter->val());
     center = incenter;
@@ -426,6 +429,7 @@ void Multinomial::drawSample() {
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 FiniteDiscrete::FiniteDiscrete(Var<Profile> *inprobarray) {
+    SetName("finite discrete");
     probarray = inprobarray;
     Register(probarray);
     Sample();
@@ -443,6 +447,7 @@ void FiniteDiscrete::drawSample() {
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 IIDExp::IIDExp(int dimension) {
+    SetName("IID exp");
     dim = dimension;
     setval(PosRealVector(dimension));
     bkvalue = PosRealVector(dimension);
@@ -451,6 +456,7 @@ IIDExp::IIDExp(int dimension) {
 }
 
 IIDExp::IIDExp(int dimension, Var<PosReal> *inmean) {
+    SetName("IID exp");
     dim = dimension;
     setval(PosRealVector(dimension));
     bkvalue = PosRealVector(dimension);
@@ -491,6 +497,7 @@ double IIDExp::logProb() {
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 IIDGamma::IIDGamma(int dimension) {
+    SetName("IID gamma");
     dim = dimension;
     setval(PosRealVector(dimension));
     bkvalue = PosRealVector(dimension);
@@ -500,6 +507,7 @@ IIDGamma::IIDGamma(int dimension) {
 }
 
 IIDGamma::IIDGamma(int dimension, Var<PosReal> *inalpha, Var<PosReal> *inbeta) {
+    SetName("IID gamma");
     dim = dimension;
     setval(PosRealVector(dimension));
     bkvalue = PosRealVector(dimension);

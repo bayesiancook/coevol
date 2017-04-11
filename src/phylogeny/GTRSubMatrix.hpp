@@ -72,6 +72,7 @@ class GTRRandomSubMatrixWithNormRates : public RandomSubMatrix, public GTRSubMat
           RandomSubMatrix(instat->GetDim(), innormalise),
           GTRSubMatrix(instat->GetDim(), inrelrate->val().GetArray(), instat->val().GetArray(),
                        innormalise) {
+        SetName("GTR SM norm");
         relrate = inrelrate;
         stat = instat;
         rescaledrelrate = new double[relrate->GetDim()];

@@ -1,3 +1,6 @@
+#define DEBUG 1
+
+
 #include <cmath>
 #include "DirichletNormalCodonUsageSelectionModelMS.hpp"
 #include "core/Chain.hpp"
@@ -117,21 +120,21 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
 
 
     void Move() override {
+#if DEBUG > 0
         MeasureTime myTimer;
+#endif
         for (int i = 0; i < every; i++) {
-            myTimer.start();
             model->Move(1);
-            myTimer << "Iteration core (" << i + 1 << '/' << every << "). ";
-            myTimer.print();
         }
 
-        myTimer.start();
         SavePoint();
-        myTimer.print("SavePoint. ");
         Save();
-        myTimer.print("Save. ");
         Monitor();
-        myTimer.print("Monitor. ");
+
+#if DEBUG > 0
+        myTimer << "Performed " << every << " iterations. ";
+        myTimer.print<0>();
+#endif
     }
 };
 

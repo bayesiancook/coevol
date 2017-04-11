@@ -4,6 +4,7 @@
 #include <iostream>  // FIXME could be removed if implementation is moved into a file
 #include <sstream>
 #include "DAGnode.hpp"
+class RealVector;
 
 template <class T>
 class Var : public virtual DAGnode, public T {
@@ -90,7 +91,10 @@ class Const : public Dvar<T> {
   public:
     Const(const T &from) : Dvar<T>(from) {
         std::ostringstream tmp;
-        tmp << "const = " << from;
+        if (std::is_same<T, RealVector>::value)
+            tmp << "const (vector)";
+        else
+            tmp << "const = " << from;
         Dvar<T>::SetName(tmp.str());
     }
 
