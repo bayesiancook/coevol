@@ -60,7 +60,7 @@ class DAGnode {
 
 class Rnode : public virtual DAGnode, public MH {
   public:
-    Rnode() : logprob(0), bklogprob(0), value_updated(false) {}
+    Rnode() : logprob(0), bklogprob(0), value_updated(false) { SetName("rnode"); }
 
     // Metropolis Hastings move
     double Move(double tuning = 1) override;
@@ -99,6 +99,8 @@ class Rnode : public virtual DAGnode, public MH {
 
 class Dnode : public virtual DAGnode {
   public:
+    Dnode() { SetName("dnode"); };
+
     void Corrupt(bool bk) override;
     double Update() override;
     void Restore() override;

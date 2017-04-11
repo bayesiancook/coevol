@@ -87,6 +87,7 @@ class _ValPtrArray : public virtual AbstractArray {
         array = new T *[size];
         for (int i = 0; i < GetSize(); i++) {
             array[i] = 0;
+            // array[i].SetName("val array");
         }
     }
 

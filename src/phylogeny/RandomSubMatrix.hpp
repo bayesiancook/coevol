@@ -41,7 +41,9 @@
 
 class RandomTransitionMatrix : public virtual AbstractTransitionMatrix, public virtual Dnode {
   public:
-    ~RandomTransitionMatrix() override { SetName("transition matrix"); }
+    RandomTransitionMatrix() { SetName("transition matrix"); }
+
+    ~RandomTransitionMatrix() override {}
 
     void specialUpdate() override { SetParameters(); }
 

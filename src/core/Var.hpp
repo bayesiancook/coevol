@@ -3,7 +3,9 @@
 
 #include <iostream>  // FIXME could be removed if implementation is moved into a file
 #include <sstream>
+#include <typeinfo>
 #include "DAGnode.hpp"
+
 class RealVector;
 
 template <class T>
@@ -37,7 +39,11 @@ class Var : public virtual DAGnode, public T {
 template <class T>
 class Rvar : public Var<T>, public Rnode {
   public:
-    Rvar() = default;
+    Rvar() {
+        std::stringstream tmp;
+        tmp << typeid(T).name();
+        SetName(tmp.str());
+    }
     Rvar(const T &from) : Var<T>(from) {}
 
     inline double ProposeMove(double tuning) override { return T::ProposeMove(tuning); }
