@@ -240,12 +240,24 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		process = new ConjugateMultiVariateTreeProcess(sigma,chronogram);
 		process->Reset();
 		
-		if (! withNe) {
-			process->PiecewiseTranslation(-21, 0, 1);
-		}
-		else {
-			process->PiecewiseTranslation(18, 0, 1);
-		}
+		
+		int indice1;
+		int indice2;
+		string char1("piS");
+		string char2("generation_time");
+		for (int i=0; i<Ncont; i++) {
+			if (GetContinuousData()->GetCharacterName(i)==char1) {
+				indice1 = i;
+			}	
+			else if (GetContinuousData()->GetCharacterName(i)==char2) {
+				indice2 = i;
+			}	
+		}	
+
+		process->PiecewiseTranslation(-17, 0, 1);		
+		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice1), indice1+1, 1);
+		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice2), indice2+1, 1);
+
 		
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
