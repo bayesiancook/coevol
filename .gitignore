@@ -4,6 +4,8 @@ tmp*
 _build/
 doc/html
 doc/latex
-perf.*
+perf*
+*.profraw
+data/ortho*
 src/Eigen
 doctest.h
