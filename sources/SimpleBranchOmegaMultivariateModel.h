@@ -254,6 +254,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			}	
 		}	
 
+
 		process->PiecewiseTranslation(-17, 0, 1);		
 		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice1), indice1+1, 1);
 		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice2), indice2+1, 1);
@@ -278,6 +279,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		gamma = new Normal(Zero, One);
 		beta = new Normal(Zero, One);
+		
+		gamma->setval(0.2);
+		beta->setval(0.9);
 
 		//create the slopes which define the linear combination
 		
