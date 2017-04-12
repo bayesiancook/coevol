@@ -12,7 +12,7 @@ If you get errors, check the requirements section below.
 
 To run a series of simple tests to check that __coevol__ is compiled correctly, run `make test`.
 You can also run `make testdiffsel` to run the diffsel application on the c3c4 data in order to
-check everything seems to run fine (you'll probably want to interrupt it after a few iterations).
+check that everything seems to run fine (you'll probably want to interrupt it after a few iterations).
 
 
 ### Requirements ###
@@ -71,7 +71,7 @@ _build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree
 : Runs all tests registered to `cmake`, ie, all tests from the `test/` folder.
 
 `make dot`
-: Displays a graph representation of the graphical model of the last application that invoked `getDot` (requires `graphviz` and `evince`). You can run `make test` and then`make dot` to get an idea of what this does.
+: Displays a graph representation of the graphical model of the last application that invoked `getDot` (requires `graphviz` and `evince`). You can run `_build/PoissonGamma` and then`make dot` to get an idea of what this does.
 
 
 ### Code quality ###
