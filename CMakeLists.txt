@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 project(mini-coevol CXX)
 
 # Compilation options
-
-set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic") # normal mode
 if (CMAKE_BUILD_TYPE MATCHES PERF)
   message(STATUS "Compiling in performance measurement mode")
   set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wpedantic -g -fno-omit-frame-pointer")
@@ -14,7 +13,7 @@ if (CMAKE_BUILD_TYPE MATCHES PERFFULL)
 endif()
 if (CMAKE_BUILD_TYPE MATCHES COVERAGE)
   message(STATUS "Compiling in coverage measurement mode")
-  set(CMAKE_CXX_FLAGS "-O0 -fprofile-arcs -ftest-coverage -g")
+  set(CMAKE_CXX_FLAGS "-O0 -fprofile-arcs -fprofile-instr-generate -fcoverage-mapping -g")
 endif()
 
 set(CXX_FEATURES cxx_auto_type cxx_nullptr cxx_final cxx_override cxx_range_for)

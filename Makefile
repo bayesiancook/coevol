@@ -96,7 +96,7 @@ dot: tmp.dot
 
 perf: all
 	@sudo bash -c 'echo "0" > /proc/sys/kernel/perf_event_paranoid' # nothing to see here :)
-	@perf record _build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 5 tmp_diffsel_result clamp_MCMC 1 MS
+	@perf record _build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 1 tmp_diffsel_result clamp_MCMC 1 MS
 
 report: all
 	@perf report | c++filt | less
@@ -111,10 +111,8 @@ report-save:
 # Requires: clang-format, clang-check, clang-tidy
 
 format:
-	@clang-format -i $(SRC_FILES)
-
-check:
-	@clang-check $(SRC_FILES) -- -I src/ -std=gnu++11
+	@clang-format-3.9 -i $(SRC_FILES)
+# @clang-format -i $(SRC_FILES)
 
 # WARNING: clang-tidy is not 100% reliable; use with caution!
 # fix:
