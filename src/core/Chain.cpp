@@ -79,12 +79,19 @@ int Chain::GetRunningStatus() {
 }
 
 void Chain::Run() {
+    auto i{0};
     while ((GetRunningStatus() != 0) && ((until == -1) || (size <= until))) {
+        MeasureTime timer;
         Chrono chrono;
         chrono.Reset();
         chrono.Start();
         Move();
         chrono.Stop();
+#if DEBUG > 0
+        timer << "Iteration " << i * every << ". ";
+        timer.print<0>();
+#endif
+        i++;
         /*
         ofstream check_os((name + ".time").c_str());
         check_os << chrono.GetTime() / 1000 << '\n';

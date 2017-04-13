@@ -57,11 +57,15 @@ build-perffull:
 	@mkdir _build
 	@cd _build ; cmake -DCMAKE_BUILD_TYPE=PERFFULL ..
 
-
 build-coverage:
 	@rm -rf _build
 	@mkdir _build
 	@cd _build ; cmake -DCMAKE_BUILD_TYPE=COVERAGE ..
+
+build-debug:
+	@rm -rf _build
+	@mkdir _build
+	@cd _build ; cmake -DCMAKE_BUILD_TYPE=DEBUG ..
 
 
 # ====================================
