@@ -35,13 +35,18 @@ and include the output of `cmake --version` and the output of `make clean; make`
 After compilation, there should be a `diffsel` executable in the `_build/` folder (itself located at the root folder of __coevol__).
 This __diffsel__ executable expects the following arguments (in that order):
 * an alignment file (supports the phylip format);
-* a tree file (supports the newick format);
-* the number of categories;
+* a tree file (supports the newick format); branch labels should be integers (between 0 and P-1), specifying a partition of the set of branches into P subsets
+* the number of conditions K (should be at most equal to number of partitions P defined by the tree; can be less than P, in which case all partitions with index greater than K will be allocated to last condition)
 * how many iterations to perform before writing to disk (eg, value 5 will save to disk every 5 iterations);
 * the name of the run (used to name the output files);
-* either clamp_MCMC or clamp_MCMC_var;
-* value of the conjugate parameter;
-* either SR (square root) of MS (mutation selection).
+* either `clamp_MCMC`, `clamp_MCMC_var`, or `unclamp`:
+	* `clamp_MCMC`: uniform distribution of amino-acid profiles across sites, variance of differential selection effects  estimated from the data (recommended by default) 
+	* `clamp_MCMC_var`: uniform distribution of amino-acid profiles across sites, variance of differential selection effects fixed to `1` (faster, but less easily justifiable);	
+	* `unclamp`: all hyperparameters estimated from data (currently not recommended)
+* value of the conjugate parameter 
+	* `1` : conjugate sampling activated (recommended by default)
+	* `0` : conjugate sampling inactivated;
+* either `SR` (square root) of `MS` (mutation selection) model for the relation between fitness parameters and substitution rates between codons (`MS` recommended by default).
 
 For example, this is the command run by `make testdiffsel`:
 
