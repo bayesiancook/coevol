@@ -1,5 +1,4 @@
 cscope*
-dependencies*
 tmp*
 _build/
 doc/html
@@ -8,4 +7,5 @@ perf*
 *.profraw
 data/ortho*
 src/Eigen
+src/tclap
 doctest.h
