@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
     cerr << "-- Parsing command line arguments\n";
 
     // this is an already existing chain on the disk; reopen and restart
-    if (argc == 2) {
+    if (argc == 2 && argv[1][0] != '-') {
         string name = argv[1];
         cerr << "-- Trying to reopen existing chain named " << name << " on disk\n";
         DirichletNormalCodonUsageSelectionChainMS chain{name};

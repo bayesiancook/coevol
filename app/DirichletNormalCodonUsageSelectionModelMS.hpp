@@ -373,18 +373,20 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     // constructor
     // this is where the entire graph structure of the model is created
 
-    DirichletNormalCodonUsageSelectionModelMS(std::string datafile, std::string treefile, int inK, int inNlevel,
-                                              int infixglob, int infixvar, int inconjugate, std::string incodonmodel, bool sample = true)	{
+    DirichletNormalCodonUsageSelectionModelMS(std::string datafile, std::string treefile, int inK,
+                                              int inNlevel, int infixglob, int infixvar,
+                                              int inconjugate, std::string incodonmodel,
+                                              bool sample = true) {
         conjugate = inconjugate;
-	fixglob = infixglob;
-	fixvar = infixvar;
-	codonmodel = incodonmodel;
+        fixglob = infixglob;
+        fixvar = infixvar;
+        codonmodel = incodonmodel;
         K = inK;
-	Nlevel = inNlevel;
-	if (Nlevel != 2)	{
-		std::cerr << "error: Nlevel should be equal to 2\n";
-		exit(1);
-	}
+        Nlevel = inNlevel;
+        if (Nlevel != 2) {
+            std::cerr << "error: Nlevel should be equal to 2\n";
+            exit(1);
+        }
 
         data = new FileSequenceAlignment(datafile);
         codondata = new CodonSequenceAlignment(data, true);
@@ -466,12 +468,12 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         }
 
 
-        if (fixglob)	{
+        if (fixglob) {
             center->Clamp();
             concentration->Clamp();
         }
 
-        if (fixvar)	{
+        if (fixvar) {
             for (int k = 1; k < K; k++) {
                 var[k]->Clamp();
             }
@@ -549,7 +551,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             }
         }
         // Mutation Selection // mechanistic
-        else	{
+        else {
             submatrix = new RandomSubMatrix**[K];
             for (int k = 0; k < K; k++) {
                 submatrix[k] = new RandomSubMatrix*[Nsite];
