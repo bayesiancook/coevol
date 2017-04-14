@@ -29,14 +29,18 @@ clean:
 	@rm -rf _build doc/html
 	@rm -f *.dot $(TMP_FILES)
 
+fullclean: clean
+	@rm -rf src/Eigen
+	@rm -f test/doctest.h
+
 src/Eigen:
-	@wget http://bitbucket.org/eigen/eigen/get/3.3.3.tar.gz
+	@wget --no-check-certificate http://bitbucket.org/eigen/eigen/get/3.3.3.tar.gz
 	@tar -xvf 3.3.3.tar.gz
 	@cp -r eigen-eigen-67e894c6cd8f/Eigen src
 	@rm -rf 3.3.3.tar.gz eigen-eigen-67e894c6cd8f
 
 test/doctest.h:
-	@wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
+	@wget --no-check-certificate https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
 	@mv doctest.h test/
 
 
