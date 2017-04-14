@@ -321,6 +321,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
 
     // number of categories
     int K;
+    int Nlevel;
 
     // ---------
     // the random variables of the model
@@ -364,21 +365,26 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     Dirichlet* codonusageselection;
 
     int conjugate;
-    std::string type;
-    std::string mechanism;
+    int fixglob;
+    int fixvar;
+    std::string codonmodel;
 
   public:
     // constructor
     // this is where the entire graph structure of the model is created
 
-    DirichletNormalCodonUsageSelectionModelMS(std::string datafile, std::string treefile, int inK,
-                                              std::string intype, int inconjugate,
-                                              std::string inmechanism, bool sample = true) {
+    DirichletNormalCodonUsageSelectionModelMS(std::string datafile, std::string treefile, int inK, int inNlevel,
+                                              int infixglob, int infixvar, int inconjugate, std::string incodonmodel, bool sample = true)	{
         conjugate = inconjugate;
-        type = intype;
-        mechanism = inmechanism;
+	fixglob = infixglob;
+	fixvar = infixvar;
+	codonmodel = incodonmodel;
         K = inK;
-
+	Nlevel = inNlevel;
+	if (Nlevel != 2)	{
+		std::cerr << "error: Nlevel should be equal to 2\n";
+		exit(1);
+	}
 
         data = new FileSequenceAlignment(datafile);
         codondata = new CodonSequenceAlignment(data, true);
@@ -460,14 +466,12 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         }
 
 
-        if (type == "clamp_MCMC") {
+        if (fixglob)	{
             center->Clamp();
             concentration->Clamp();
         }
 
-        if (type == "clamp_MCMC_var") {
-            center->Clamp();
-            concentration->Clamp();
+        if (fixvar)	{
             for (int k = 1; k < K; k++) {
                 var[k]->Clamp();
             }
@@ -533,7 +537,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         std::cerr << "-- Substitution matrix";
 
         // Square Root //phenimenological
-        if (mechanism == "SR") {
+        if (codonmodel == "SR") {
             submatrix = new RandomSubMatrix**[K];
             for (int k = 0; k < K; k++) {
                 submatrix[k] = new RandomSubMatrix*[Nsite];
@@ -544,9 +548,8 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
                 }
             }
         }
-
         // Mutation Selection // mechanistic
-        else if (mechanism == "MS") {
+        else	{
             submatrix = new RandomSubMatrix**[K];
             for (int k = 0; k < K; k++) {
                 submatrix[k] = new RandomSubMatrix*[Nsite];

@@ -9,11 +9,11 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
     string datafile;
     string treefile;
     int category;
-    int every;
-    int burnin;
-    string type;
+    int level;
+    int fixglob;
+    int fixvar;
+    string codonmodel;
     int conjugate;
-    string mechanism;
 
   public:
     DirichletNormalCodonUsageSelectionModelMS* GetModel() {
@@ -22,54 +22,37 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
 
     string GetModelType() override { return modeltype; }
 
-    DirichletNormalCodonUsageSelectionChainMS(string indata, string intree, int incategory,
-                                              int inburnin, int inevery, string filename,
-                                              string intype, int inconjugate, string inmechanism,
-                                              int force = 0) {
-        modeltype = "SELECTIONGTR";
+    DirichletNormalCodonUsageSelectionChainMS(string indata, string intree, int incategory, int inlevel,
+                                              int inevery, int inuntil,
+					      int infixglob, int infixvar, string incodonmodel, int inconjugate,
+					      string inname,
+                                              int force) {
+        modeltype = "DIFFSEL";
         datafile = indata;
         treefile = intree;
         category = incategory;
-        burnin = inburnin;
+	level = inlevel;
         every = inevery;
-        name = filename;
-        type = intype;
+	until = inuntil;
+	fixglob = infixglob;
+	fixvar = infixvar;
+	codonmodel = incodonmodel;
         conjugate = inconjugate;
-        mechanism = inmechanism;
+        name = inname;
 
         New(force);
     }
-
-
-    DirichletNormalCodonUsageSelectionChainMS(string indata, string intree, int incategory,
-                                              int inevery, string filename, string intype,
-                                              int inconjugate, string inmechanism, int force = 0) {
-        modeltype = "SELECTIONGTR";
-        datafile = indata;
-        treefile = intree;
-        category = incategory;
-        every = inevery;
-        name = filename;
-        type = intype;
-        conjugate = inconjugate;
-        mechanism = inmechanism;
-
-        New(force);
-    }
-
 
     DirichletNormalCodonUsageSelectionChainMS(string filename) {
         name = filename;
-
-        conjugate = 1;
         Open();
         Save();
     }
 
     void New(int force) override {
-        if (modeltype == "SELECTIONGTR") {
-            model = new DirichletNormalCodonUsageSelectionModelMS(datafile, treefile, category,
-                                                                  type, conjugate, mechanism);
+        if (modeltype == "DIFFSEL") {
+            model = new DirichletNormalCodonUsageSelectionModelMS(datafile, treefile, category, level,
+                                                                  fixglob, fixvar, conjugate, codonmodel);
         } else {
             cerr << "error, does not recognise model type : " << modeltype << '\n';
             exit(1);
@@ -85,14 +68,20 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
             exit(1);
         }
         is >> modeltype;
-        is >> datafile >> treefile >> category;
+        is >> datafile >> treefile >> category >> level;
+        is >> fixglob >> fixvar >> codonmodel;
         is >> conjugate;
-        is >> type >> mechanism;
+	int tmp;
+	is >> tmp;
+	if (tmp)	{
+		cerr << "error when reading model\n";
+		exit(1);
+	}
         is >> every >> until >> size;
 
-        if (modeltype == "SELECTIONGTR") {
-            model = new DirichletNormalCodonUsageSelectionModelMS(datafile, treefile, category,
-                                                                  type, conjugate, mechanism);
+        if (modeltype == "DIFFSEL") {
+            model = new DirichletNormalCodonUsageSelectionModelMS(datafile, treefile, category, level,
+                                                                  fixglob, fixvar, conjugate, codonmodel);
         } else {
             cerr << "error when opening file " << name
                  << " : does not recognise model type : " << modeltype << '\n';
@@ -107,9 +96,10 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
     void Save() override {
         ofstream param_os((name + ".param").c_str());
         param_os << GetModelType() << '\n';
-        param_os << datafile << '\t' << treefile << '\t' << category << '\n';
+        param_os << datafile << '\t' << treefile << '\t' << category << '\t' << level << '\n';
+	param_os << fixglob << '\t' << fixvar << '\t' << codonmodel << '\n';
         param_os << conjugate << '\n';
-        param_os << type << '\t' << mechanism << '\n';
+	param_os << 0 << '\n';
         param_os << every << '\t' << until << '\t' << size << '\n';
 
         model->ToStream(param_os);
@@ -139,47 +129,104 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
 int main(int argc, char* argv[]) {
     // this is an already existing chain on the disk; reopen and restart
     DirichletNormalCodonUsageSelectionChainMS* chain;
+
     if (argc == 2) {
         string name = argv[1];
-
         chain = new DirichletNormalCodonUsageSelectionChainMS(name);
     }
 
     // this is a new chain
-    else if (argc == 9) {
-        string datafile = argv[1];
-        string treefile = argv[2];
-        int category = atoi(argv[3]);
-        int every = atoi(argv[4]);
-        string name = argv[5];
-        string type = argv[6];
-        int conjugate = atoi(argv[7]);
-        string mechanism = argv[8];
+    else	{
 
+        string datafile = "";
+        string treefile = "";
+        int category = 1;
+	int level = 2;
+        int every = 1;
+	int until = -1;
+        string name = "";
+	int conjugate = 1;
+	int fixglob = 1;
+	int fixvar = 1;
+	string codonmodel = "MS";
+	int force = 0;
+
+	try	{
+
+		if (argc == 1)	{
+			throw(0);
+		}
+		int i = 1;
+		while (i < argc)	{
+			string s = argv[i];
+			if (s == "-f")	{
+				force = 1;
+			}
+			else if (s == "-d")	{
+				i++;
+				datafile = argv[i];
+			}
+			else if (s == "-t")	{
+				i++;
+				treefile = argv[i];
+			}
+			else if (s == "-ncond")	{
+				i++;
+				category = atoi(argv[i]);
+			}
+			else if (s == "-levels")	{
+				i++;
+				level = atoi(argv[i]);
+			}
+			else if (s == "-conj")	{
+				conjugate = 1;
+			}
+			else if (s == "-nonconj")	{
+				conjugate = 0;
+			}
+			else if (s == "-fixglob")	{
+				fixglob = 1;
+			}
+			else if (s == "-freeglob")	{
+				fixglob = 0;
+			}
+			else if (s == "-fixvar")	{
+				fixvar = 1;
+			}
+			else if (s == "-freevar")	{
+				fixvar = 0;
+			}
+			else if ((s == "-ms") || (s == "-mutsel"))	{
+				codonmodel = "MS";
+			}
+			else if ((s == "-sr")  || (s == "-squareroot"))	{
+				codonmodel = "SR";
+			}
+			else if (s == "-x")	{
+				i++;
+				if (i == argc) throw(0);
+				every = atoi(argv[i]);
+				i++;
+				if (i == argc) throw(0);
+				until = atoi(argv[i]);
+			}
+			else	{
+				if (i != (argc -1))	{
+					throw(0);
+				}
+				name = argv[i];
+			}
+			i++;
+		}
+	}
+	catch(...)	{
+		cerr << "-- Error: incorrect number of command line parameters!" << endl;
+		cerr << "diffsel -d datafile ...\n";
+		exit(1);
+	}
         cerr << "-- Chain name: " << name << endl;
 
-        chain = new DirichletNormalCodonUsageSelectionChainMS(datafile, treefile, category, every,
-                                                              name, type, conjugate, mechanism, 1);
-    }
-
-    else if (argc == 10) {
-        string datafile = argv[1];
-        string treefile = argv[2];
-        int category = atoi(argv[3]);
-        int burnin = atoi(argv[4]);
-        int every = atoi(argv[5]);
-        string name = argv[6];
-        string type = argv[7];
-        int conjugate = atoi(argv[8]);
-        string mechanism = argv[9];
-
-        cerr << "-- Chain name: " << name << endl;
-
-        chain = new DirichletNormalCodonUsageSelectionChainMS(
-            datafile, treefile, category, burnin, every, name, type, conjugate, mechanism, 1);
-    } else {
-        cerr << "-- Error: incorrect number of command line parameters!" << endl;
-        exit(1);
+        chain = new DirichletNormalCodonUsageSelectionChainMS(datafile, treefile, category, level, every, until, fixglob, fixvar, codonmodel, conjugate, name, force);
     }
     cerr << "-- Starting the chain!" << endl;
     // chain->SetUntil(20);

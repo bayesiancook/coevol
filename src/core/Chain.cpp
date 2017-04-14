@@ -79,7 +79,8 @@ int Chain::GetRunningStatus() {
 }
 
 void Chain::Run() {
-    auto i{0};
+    int i{0};
+    // auto i{0};
     while ((GetRunningStatus() != 0) && ((until == -1) || (size <= until))) {
         MeasureTime timer;
         Chrono chrono;
