@@ -12,10 +12,10 @@ TMP_FILES = $(shell find . -name "tmp*")
 # ====================================
 # Requires: cmake
 
-all: cmake src/Eigen test/doctest.h
+all: cmake src/Eigen src/tclap test/doctest.h
 	@cd _build ; make --no-print-directory -j8
 
-seq: cmake src/Eigen
+seq: cmake src/Eigen src/tclap test/doctest.h
 	@cd _build ; make --no-print-directory
 
 cmake: _build/Makefile
@@ -30,14 +30,20 @@ clean:
 	@rm -f *.dot $(TMP_FILES)
 
 fullclean: clean
-	@rm -rf src/Eigen
-	@rm -f test/doctest.h
+	@rm -rf src/Eigen src/tclap test/doctest.h
 
 src/Eigen:
 	@wget --no-check-certificate http://bitbucket.org/eigen/eigen/get/3.3.3.tar.gz
 	@tar -xvf 3.3.3.tar.gz
 	@cp -r eigen-eigen-67e894c6cd8f/Eigen src
 	@rm -rf 3.3.3.tar.gz eigen-eigen-67e894c6cd8f
+
+src/tclap:
+	@wget --no-check-certificate https://sourceforge.net/projects/tclap/files/tclap-1.2.1.tar.gz/download
+	@mv download tclap.tar.gz
+	@tar -xvf tclap.tar.gz
+	@cp -r tclap-1.2.1/include/tclap src
+	@rm -rf tclap.tar.gz tclap-1.2.1
 
 test/doctest.h:
 	@wget --no-check-certificate https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h
