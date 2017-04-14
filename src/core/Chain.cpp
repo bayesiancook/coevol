@@ -81,9 +81,9 @@ int Chain::GetRunningStatus() {
 void Chain::Run() {
 #if DEBUG > 0
     int i = 0;
+    MeasureTime timer;
 #endif
     while ((GetRunningStatus() != 0) && ((until == -1) || (size <= until))) {
-        MeasureTime timer;
         Chrono chrono;
         chrono.Reset();
         chrono.Start();
