@@ -172,8 +172,10 @@ int main(int argc, char* argv[]) {
                 "run before saving data to disk.",
                 false, 2, "integer", cmd);
 
+            // Performing the actual parsing
             cmd.parse(argc, argv);
 
+            // Extracting the values TODO inline some of them in constructor call
             string datafile = datafile_arg.getValue();
             string treefile = treefile_arg.getValue();
             int category = ncond_arg.getValue();
@@ -193,12 +195,12 @@ int main(int argc, char* argv[]) {
                                                             every,      until,     fixglob,  fixvar,
                                                             codonmodel, conjugate, name,     force};
             cerr << "-- Starting the chain!" << endl;
-            // chain->SetUntil(20);
             chain.Start();
 
 
         } catch (ArgException& e) {
             cerr << "-- Error: " << e.error() << " for arg " << e.argId() << endl;
+            exit(1);
         } catch (...) {
             cerr << "-- Error: incorrect number of command line parameters!" << endl;
             cerr << "diffsel -d datafile ...\n";
