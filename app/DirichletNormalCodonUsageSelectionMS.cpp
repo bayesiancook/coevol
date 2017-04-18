@@ -7,19 +7,13 @@ using namespace TCLAP;
 
 class DirichletNormalCodonUsageSelectionChainMS : public Chain {
   private:
-    string modeltype;
-    string datafile;
-    string treefile;
-    int category;
-    int level;
-    int fixglob;
-    int fixvar;
-    string codonmodel;
-    int conjugate;
+    // Chain parameters
+    string modeltype, datafile, treefile, codonmodel;
+    int category, level, fixglob, fixvar, conjugate;
 
   public:
     DirichletNormalCodonUsageSelectionModelMS* GetModel() {
-        return (DirichletNormalCodonUsageSelectionModelMS*)model;
+        return static_cast<DirichletNormalCodonUsageSelectionModelMS*>(model);
     }
 
     string GetModelType() override { return modeltype; }
@@ -27,20 +21,19 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
     DirichletNormalCodonUsageSelectionChainMS(string indata, string intree, int incategory,
                                               int inlevel, int inevery, int inuntil, int infixglob,
                                               int infixvar, string incodonmodel, int inconjugate,
-                                              string inname, int force) {
-        modeltype = "DIFFSEL";
-        datafile = indata;
-        treefile = intree;
-        category = incategory;
-        level = inlevel;
-        every = inevery;
-        until = inuntil;
-        fixglob = infixglob;
-        fixvar = infixvar;
-        codonmodel = incodonmodel;
-        conjugate = inconjugate;
-        name = inname;
-
+                                              string inname, int force)
+        : modeltype("DIFFSEL"),
+          datafile(indata),
+          treefile(intree),
+          codonmodel(incodonmodel),
+          category(incategory),
+          level(inlevel),
+          fixglob(infixglob),
+          fixvar(infixvar),
+          conjugate(inconjugate) {
+        SetEvery(inevery);
+        SetUntil(inuntil);
+        SetName(inname);
         New(force);
     }
 
@@ -51,13 +44,8 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
     }
 
     void New(int force) override {
-        if (modeltype == "DIFFSEL") {
-            model = new DirichletNormalCodonUsageSelectionModelMS(
-                datafile, treefile, category, level, fixglob, fixvar, conjugate, codonmodel);
-        } else {
-            cerr << "error, does not recognise model type : " << modeltype << '\n';
-            exit(1);
-        }
+        model = new DirichletNormalCodonUsageSelectionModelMS(
+            datafile, treefile, category, level, fixglob, fixvar, conjugate, codonmodel);
         cerr << "-- Reset" << endl;
         Reset(force);
     }
@@ -65,7 +53,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
     void Open() override {
         ifstream is((name + ".param").c_str());
         if (!is) {
-            cerr << "error : cannot find file : " << name << ".param\n";
+            cerr << "-- Error : cannot find file : " << name << ".param\n";
             exit(1);
         }
         is >> modeltype;
@@ -75,7 +63,7 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
         int tmp;
         is >> tmp;
         if (tmp) {
-            cerr << "error when reading model\n";
+            cerr << "-- Error when reading model\n";
             exit(1);
         }
         is >> every >> until >> size;
@@ -84,14 +72,14 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
             model = new DirichletNormalCodonUsageSelectionModelMS(
                 datafile, treefile, category, level, fixglob, fixvar, conjugate, codonmodel);
         } else {
-            cerr << "error when opening file " << name
+            cerr << "-- Error when opening file " << name
                  << " : does not recognise model type : " << modeltype << '\n';
             exit(1);
         }
         model->FromStream(is);
 
         model->Update();
-        cerr << size << " points saved, current ln prob = " << GetModel()->GetLogProb() << "\n";
+        cerr << size << "-- Points saved, current ln prob = " << GetModel()->GetLogProb() << "\n";
     }
 
     void Save() override {
@@ -108,9 +96,6 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
 
 
     void Move() override {
-#if DEBUG > 1
-        MeasureTime myTimer;
-#endif
         for (int i = 0; i < every; i++) {
             model->Move(1);
         }
@@ -118,11 +103,6 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain {
         SavePoint();
         Save();
         Monitor();
-
-#if DEBUG > 1
-        myTimer << "Performed " << every << " iterations. ";
-        myTimer.print<0>();
-#endif
     }
 };
 
@@ -176,12 +156,6 @@ int main(int argc, char* argv[]) {
             cmd.parse(argc, argv);
 
             // Extracting the values TODO inline some of them in constructor call
-            string datafile = datafile_arg.getValue();
-            string treefile = treefile_arg.getValue();
-            int category = ncond_arg.getValue();
-            int level = levels_arg.getValue();
-            int every = every_arg.getValue();
-            int until = until_arg.getValue();
             string name = name_arg.getValue();
             int conjugate = not static_cast<int>(conjugate_arg.getValue());
             int fixglob = not static_cast<int>(freeglob_arg.getValue());
@@ -191,19 +165,23 @@ int main(int argc, char* argv[]) {
 
             cerr << "-- Chain name: " << name << endl;
 
-            DirichletNormalCodonUsageSelectionChainMS chain{datafile,   treefile,  category, level,
-                                                            every,      until,     fixglob,  fixvar,
-                                                            codonmodel, conjugate, name,     force};
+            DirichletNormalCodonUsageSelectionChainMS chain{datafile_arg.getValue(),
+                                                            treefile_arg.getValue(),
+                                                            ncond_arg.getValue(),
+                                                            levels_arg.getValue(),
+                                                            every_arg.getValue(),
+                                                            until_arg.getValue(),
+                                                            fixglob,
+                                                            fixvar,
+                                                            codonmodel,
+                                                            conjugate,
+                                                            name,
+                                                            force};
             cerr << "-- Starting the chain!" << endl;
             chain.Start();
 
-
         } catch (ArgException& e) {
             cerr << "-- Error: " << e.error() << " for arg " << e.argId() << endl;
-            exit(1);
-        } catch (...) {
-            cerr << "-- Error: incorrect number of command line parameters!" << endl;
-            cerr << "diffsel -d datafile ...\n";
             exit(1);
         }
     }
