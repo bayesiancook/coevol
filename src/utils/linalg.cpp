@@ -194,12 +194,12 @@ int LinAlg::DiagonalizeSymmetricMatrix(double **u, int dim, int /*nmax*/, double
     // eigenval = new double[dim];
     // memcpy(eigenval, solver.eigenvalues().data(), sizeof(double)*dim);
 
-    eigenval = new double[dim];
+    // eigenval = new double[dim];
     Map<VectorXd>(eigenval, dim) = solver.eigenvalues().real();
 
-    eigenvect = new double*[dim];
+    // eigenvect = new double*[dim];
     for (int i=0; i<dim; i++) {
-        eigenvect[i] = new double[dim];
+        // eigenvect[i] = new double[dim];
         Map<VectorXd>(eigenvect[i], dim) = solver.eigenvectors().row(i).real();
 
         // eigenvect[i] = new double[dim];
