@@ -150,7 +150,7 @@ int main(int argc, char* argv[]) {
                 "e", "every",
                 "Number of iteration per iteration block, ie, number of iterations "
                 "run before saving data to disk.",
-                false, 2, "integer", cmd);
+                false, 1, "integer", cmd);
 
             // Performing the actual parsing
             cmd.parse(argc, argv);

@@ -180,15 +180,15 @@ int LinAlg::DiagonalizeSymmetricMatrix(double **u, int dim, int /*nmax*/, double
     // Diagonalize matrix
     EigenSolver<MatrixXd> solver(mat);
 
-    cout << "\n===============================\n"
-         << "|            DEBUG            |\n"
-         << "===============================\n"
-         << "Matrix is " << dim << "x" << dim << "\n"
-         << "Eigen values:\n"
-         << solver.eigenvalues()
-         // << "\nEigen vectors:\n"
-         // << solver.eigenvectors()
-         << "\n===============================\n";
+    // cout << "\n===============================\n"
+    //      << "|            DEBUG            |\n"
+    //      << "===============================\n"
+    //      << "Matrix is " << dim << "x" << dim << "\n"
+    //      << "Eigen values:\n"
+    //      << solver.eigenvalues()
+    //      // << "\nEigen vectors:\n"
+    //      // << solver.eigenvectors()
+    //      << "\n===============================\n";
 
     // Convert back to arrays (eww)
     // eigenval = new double[dim];
@@ -324,16 +324,16 @@ int LinAlg::DiagonalizeSymmetricMatrix(double **u, int dim, int /*nmax*/, double
     //     eigenval[i] = a[i][i];
     // }
 
-    cout << "Old code found:\n"
-         << Map<VectorXd>(eigenval, dim)
-         << "\n=======================\n\n";
+    // cout << "Old code found:\n"
+    //      << Map<VectorXd>(eigenval, dim)
+    //      << "\n=======================\n\n";
 
-    MatrixXd mat_debug(dim, dim);
-    for (int i = 0; i < dim; i++)
-        mat_debug.row(i) = Map<VectorXd>(eigenvect[i],dim);
-    cout << "Old code matrix:\n"
-         << mat_debug
-         << "\n=======================\n\n";
+    // MatrixXd mat_debug(dim, dim);
+    // for (int i = 0; i < dim; i++)
+    //     mat_debug.row(i) = Map<VectorXd>(eigenvect[i],dim);
+    // cout << "Old code matrix:\n"
+    //      << mat_debug
+    //      << "\n=======================\n\n";
 
     return 1;
     // for (int i = 0; i < dim; i++) {
