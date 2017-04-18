@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     // this is a new chain
     else {
         try {
-            CmdLine cmd("The diffsel application.", ' ', "mini-coevol");
+            CmdLine cmd("To reopen an existing chain, use:\t\t diffsel <name>", ' ', "mini-coevol");
 
             // Positional arguments
             UnlabeledValueArg<string> name_arg(
@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
             // Performing the actual parsing
             cmd.parse(argc, argv);
 
-            // Extracting the values TODO inline some of them in constructor call
+            // Extracting the values
             string name = name_arg.getValue();
             int conjugate = not static_cast<int>(conjugate_arg.getValue());
             int fixglob = not static_cast<int>(freeglob_arg.getValue());

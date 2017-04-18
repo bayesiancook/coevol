@@ -225,7 +225,7 @@ class RenormalizedIIDStat : public Dvar<Profile> {
                         Var<PosReal>* inbeta) {
         SetName("renorm IID stat");
         if (ina->GetDim() != inb->GetDim()) {
-            std::cerr << "error in RenormalizedIIDStat : non matching dimension (" << ina->GetDim()
+            std::cerr << "-- Error in RenormalizedIIDStat : non matching dimension (" << ina->GetDim()
                       << " vs " << inb->GetDim() << ")\n";
             throw;
         }
@@ -384,7 +384,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         K = inK;
         Nlevel = inNlevel;
         if (Nlevel != 2) {
-            std::cerr << "error: Nlevel should be equal to 2\n";
+            std::cerr << "-- Error: Nlevel should be equal to 2\n";
             exit(1);
         }
 
@@ -821,7 +821,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             int tmp;
             is >> tmp;
             if (tmp != k) {
-                std::cerr << "error when reading true selection profiles\n";
+                std::cerr << "-- Error when reading true selection profiles\n";
                 exit(1);
             }
             for (int i = 0; i < Nsite; i++) {
