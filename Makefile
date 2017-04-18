@@ -25,6 +25,9 @@ _build/Makefile: CMakeLists.txt
 	@mkdir _build
 	@cd _build ; cmake ..
 
+install: all
+	@cd _build ; make --no-print-directory install
+
 clean:
 	@rm -rf _build doc/html
 	@rm -f *.dot $(TMP_FILES)
