@@ -247,6 +247,8 @@ inline void SubMatrix::BackwardPropagate(const double *up, double *down, double 
     double **inveigenvect = GetInvEigenVect();
     double *eigenval = GetEigenVal();
 
+    int matSize = GetNstate();
+
     auto aux = new double[GetNstate()];
 
     for (int i = 0; i < GetNstate(); i++) {
@@ -282,7 +284,7 @@ inline void SubMatrix::BackwardPropagate(const double *up, double *down, double 
         }
     }
     double maxup = 0;
-    for (int k = 0; k < GetNstate(); k++) {
+    for (int k = 0; k < matSize; k++) {
         if (up[k] < 0) {
             std::cerr << "error in backward propagate: negative prob : " << up[k] << "\n";
             // down[k] = 0;
@@ -292,7 +294,7 @@ inline void SubMatrix::BackwardPropagate(const double *up, double *down, double 
         }
     }
     double max = 0;
-    for (int k = 0; k < GetNstate(); k++) {
+    for (int k = 0; k < matSize; k++) {
         if (down[k] < 0) {
             down[k] = 0;
         }
@@ -306,13 +308,13 @@ inline void SubMatrix::BackwardPropagate(const double *up, double *down, double 
     }
     if (max == 0) {
         std::cerr << "error in backward propagate: null array\n";
-        for (int k = 0; k < GetNstate(); k++) {
+        for (int k = 0; k < matSize; k++) {
             std::cerr << up[k] << '\t' << down[k] << '\n';
         }
         std::cerr << '\n';
         exit(1);
     }
-    down[GetNstate()] = up[GetNstate()];
+    down[matSize] = up[matSize];
 
     delete[] aux;
 }
