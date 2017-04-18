@@ -1,10 +1,12 @@
 #include "utils/linalg.hpp"
 
+#include <Eigen/Dense>
+#include <Eigen/Eigenvalues>
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-
+using namespace Eigen;
 using namespace std;
 
 void LinAlg::QR(double **u, int dim, double **ql, double **r) {
@@ -169,6 +171,28 @@ void LinAlg::HouseHolder(double **u, int dim, double **a, double **ql) {
 
 int LinAlg::DiagonalizeSymmetricMatrix(double **u, int dim, int nmax, double epsilon,
                                        double *eigenval, double **eigenvect) {
+
+    // Create an Eigen matrix from the input matrix
+    MatrixXd mat(dim, dim);
+    for (int i = 0; i < dim; i++)
+        mat.row(i) = Map<VectorXd>(u[i],dim);
+
+    // Diagonalize matrix
+    EigenSolver<MatrixXd> solver(mat);
+
+    cout << "\n===============================\n"
+         << "|            DEBUG            |\n"
+         << "===============================\n"
+         << "Matrix is " << dim << "x" << dim << "\n"
+         << "Eigen values:\n"
+         << solver.eigenvalues()
+         // << "\nEigen vectors:\n"
+         // << solver.eigenvectors()
+         << "\n===============================\n";
+
+    // Convert back to bidimensional array (eww)
+
+
     for (int i = 0; i < dim; i++) {
         for (int j = 0; j < dim; j++) {
             eigenvect[i][j] = 0;
