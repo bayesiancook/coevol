@@ -93,10 +93,7 @@ testmove: all
 	@_build/CustomDoubleMove
 
 testdiffsel: all
-	_build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 5 tmp_diffsel_result clamp_MCMC 1 MS
-
-testdiffsel2: all
-	_build/diffsel data/ortho1to1_382g_26sp/FAM002112_1.fas.prank_codon.best.fas-gb.b.phylip data/ortho1to1_382g_26sp/FAM002112_1.fas.prank_codon.best.fas-gb.b.phylip_phyml_tree.txt 3 5 tmp_diffsel_result clamp_MCMC 1 MS
+	_build/diffsel -d data/c3c4/C4Amaranthaceaeshort.ali -t data/c3c4/C4Amaranthaceae.tree -n 3 tmp_diffsel_result -u 0 -f
 
 log:
 	@less _build/Testing/Temporary/LastTest.log
@@ -113,7 +110,7 @@ dot: tmp.dot
 
 perf: all
 	@sudo bash -c 'echo "0" > /proc/sys/kernel/perf_event_paranoid' # nothing to see here :)
-	@perf record _build/diffsel data/c3c4/C4Amaranthaceaeshort.ali data/c3c4/C4Amaranthaceae.tree 3 1 tmp_diffsel_result clamp_MCMC 1 MS
+	@perf record _build/diffsel -d data/c3c4/C4Amaranthaceaeshort.ali -t data/c3c4/C4Amaranthaceae.tree -n 3 tmp_diffsel_result -u 10 -f
 
 report: all
 	@perf report | c++filt | less
