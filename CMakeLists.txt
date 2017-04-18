@@ -107,4 +107,5 @@ endforeach(testsourcefile ${APP_SOURCES})
 #       INSTALL        #
 ########################
 install (TARGETS diffsel DESTINATION bin)
+install (TARGETS tracecomp DESTINATION bin)
 install (FILES script/trace-analyzer PERMISSIONS WORLD_EXECUTE WORLD_WRITE WORLD_READ DESTINATION bin)
