@@ -173,6 +173,7 @@ class NormalNormalCompMove : public MCUpdate {
     int nrep;
 };
 
+
 class ComplexDirichletIIDArrayMove : public MCUpdate {
   public:
     ComplexDirichletIIDArrayMove(DirichletIIDArray* inselectarray, double intuning, int innrep)
@@ -183,10 +184,6 @@ class ComplexDirichletIIDArrayMove : public MCUpdate {
         for (int i = 0; i < selectarray->GetSize(); i++) {
             tot[i] = 0;
         }
-
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
 
         for (int i = 0; i < selectarray->GetSize(); i++) {
             for (int rep = 0; rep < nrep; rep++) {
@@ -215,18 +212,18 @@ class ComplexDirichletIIDArrayMove : public MCUpdate {
     int nrep;
 };
 
+
 class RenormalizedIIDStat : public Dvar<Profile> {
   public:
     // the constructor takes 4 arguments: pointers to the 3 variables a and b and c and the variable
     // beta
     // which we want to multiply and renormalized, all this in a componentwise fashion.
-    //
     RenormalizedIIDStat(Var<Profile>* ina, Var<RealVector>* inb, Var<RealVector>* inc,
                         Var<PosReal>* inbeta) {
         SetName("renorm IID stat");
         if (ina->GetDim() != inb->GetDim()) {
-            std::cerr << "-- Error in RenormalizedIIDStat : non matching dimension (" << ina->GetDim()
-                      << " vs " << inb->GetDim() << ")\n";
+            std::cerr << "-- Error in RenormalizedIIDStat : non matching dimension ("
+                      << ina->GetDim() << " vs " << inb->GetDim() << ")\n";
             throw;
         }
         setval(Profile(ina->GetDim()));
@@ -265,39 +262,6 @@ class RenormalizedIIDStat : public Dvar<Profile> {
     Var<PosReal>* beta;
     Var<RealVector>* c;
 };
-
-/*
-  class SumConstrainedRealVector : public Dvar<RealVector>	{
-
-  public:
-
-  SumConstrainedRealVector(Var<RealVector>* insource)	{
-  setval(RealVector(insource->GetDim()));
-  bkvalue = RealVector(insource->GetDim());
-  source = insource;
-  Register(source);
-  specialUpdate();
-  }
-
-  ~SumConstrainedRealVector()	{
-  }
-
-  protected:
-
-  void specialUpdate()	{
-  double total = 0;
-  for (int i=0; i<GetDim(); i++)	{
-  total += (*source)[i];
-  }
-  total /= GetDim();
-  for (int i=0; i<GetDim(); i++)	{
-  (*this)[i] = (*source)[i] - total;
-  }
-  }
-
-  Var<RealVector>* source;
-  };
-*/
 
 
 class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
@@ -358,9 +322,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     ProfilePathConjugateArray* patharray;
     SelectionMatrixTree* matrixtree;
     PhyloProcess* phyloprocess;
-
-    // double** selectionmean;
-    // double accrate;
 
     Dirichlet* codonusageselection;
 
@@ -456,11 +417,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         center->setuniform();
         concentration->setval(Naa);
 
-        /*
-          double min = 0.001;
-          double max = 1000;
-        */
-
         var = new Exponential*[K];
         for (int k = 1; k < K; k++) {
             var[k] = new Exponential(One, Exponential::MEAN);
@@ -479,29 +435,16 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             }
         }
 
-
         globalselectionprofile = new DirichletIIDArray(Nsite, center, concentration);
 
         selectionnormal = new IIDNormalIIDArray*[K];
-        // selectionprofile = new SumConstrainedRealVector**[K];
         statarray = new RenormalizedIIDStat**[K];
-
 
         std::cerr << "-- Selection profiles";
         for (int k = 1; k < K; k++) {
             selectionnormal[k] = new IIDNormalIIDArray(Nsite, Naa, Zero, var[k]);
         }
         std::cerr << " - done" << std::endl;
-
-        /*
-                      std::cerr << "stat arrays\n";
-          for (int k=1; k<K; k++)	{
-          selectionprofile[k] = new SumConstrainedRealVector*[Nsite];
-          for (int i=0; i<Nsite;i++){
-          selectionprofile[k][i] = new SumConstrainedRealVector(selectionnormal[k]->GetVal(i));
-          }
-          }
-        */
 
         for (int k = 0; k < K; k++) {
             statarray[k] = new RenormalizedIIDStat*[Nsite];
@@ -514,19 +457,16 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
                         statarray[k][i] = new RenormalizedIIDStat(globalselectionprofile->GetVal(i),
                                                                   zero, zero, beta);
                     }
-
                     else if (k == 1) {
                         statarray[k][i] =
                             new RenormalizedIIDStat(globalselectionprofile->GetVal(i),
                                                     selectionnormal[1]->GetVal(i), zero, beta);
                     }
-
                     else if (k == 2) {
                         statarray[k][i] = new RenormalizedIIDStat(
                             globalselectionprofile->GetVal(i), selectionnormal[1]->GetVal(i),
                             selectionnormal[2]->GetVal(i), beta);
                     }
-
                     else if (k == 3) {
                         statarray[k][i] = new RenormalizedIIDStat(
                             globalselectionprofile->GetVal(i), selectionnormal[1]->GetVal(i),
@@ -632,7 +572,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     // deallocations should normally be done here
     // but in general, the model is deleted just before the program exits, so we can dispense with
     // it for the moment
-
     ~DirichletNormalCodonUsageSelectionModelMS() override = default;
 
     Tree* GetTree() { return tree; }
@@ -646,7 +585,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
     }
 
     // log probability of the model is the sum of the log prior and the log likelihood
-
     double GetLogProb() override { return GetLogPrior() + GetLogLikelihood(); }
 
     double GetLogPrior() {
@@ -672,12 +610,10 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         return total;
     }
 
-
     double GetLogLikelihood() {
         // return 0;
         return phyloprocess->GetLogProb();
     }
-
 
     void MakeScheduler() override {
         scheduler.Register(new SimpleMove(phyloprocess, 1), 1, "mapping");
@@ -714,18 +650,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
                     new ComplexDirichletIIDArrayMove(globalselectionprofile, 0.15, 10), 1,
                     "global stat");
 
-                /*
-                  scheduler.Register(new
-                  DirichletNormalCompMove(globalselectionprofile,selectionnormal[1],0.03,1,5),1,"global
-                  diff comp");
-                  scheduler.Register(new
-                  DirichletNormalCompMove(globalselectionprofile,selectionnormal[1],0.01,3,5),1,"global
-                  diff comp");
-                  scheduler.Register(new
-                  DirichletNormalCompMove(globalselectionprofile,selectionnormal[1],0.001,10,5),1,"global
-                  diff comp");
-                */
-
                 scheduler.Register(new ProfileMove(center, 0.1, 1), 10, "center");
                 scheduler.Register(new ProfileMove(center, 0.01, 5), 10, "center");
 
@@ -750,20 +674,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
                     scheduler.Register(new IIDNormalIIDArrayMove(selectionnormal[i], 1, 20), 10,
                                        "stat" + indice);
                 }
-
-                /*
-                  for(int i=2;i<K;i++){
-                  scheduler.Register(new
-                  NormalNormalCompMove(selectionnormal[1],selectionnormal[i],1,10,5),1,"diff diff
-                  comp 1/10");
-                  scheduler.Register(new
-                  NormalNormalCompMove(selectionnormal[1],selectionnormal[i],3,10,5),1,"diff diff
-                  comp 3/10");
-                  scheduler.Register(new
-                  NormalNormalCompMove(selectionnormal[1],selectionnormal[i],5,3,5),1,"diff diff
-                  comp 5/3");
-                  }
-                */
             }
 
             if (conjugate != 0) {
@@ -827,12 +737,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
             for (int i = 0; i < Nsite; i++) {
                 int tmp;
                 is >> tmp;
-                /*
-                  if (tmp != i)	{
-                              std::cerr << "error when reading true selection profiles\n";
-                  exit(1);
-                  }
-                */
 
                 for (int j = 0; j < Naa; j++) {
                     is >> (*selectionnormal[k]->GetVal(i))[j];
@@ -861,7 +765,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         }
         return tot;
     }
-
 
     double GetMeanVar(int k) {
         double totvar = 0;
@@ -958,9 +861,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel {
         is >> *globalselectionprofile;
         for (int i = 1; i < K; i++) {
             is >> *var[i];
-            //             std::cerr << "var : " << *var[i]<< '\n';
             is >> *selectionnormal[i];
-            //             std::cerr << " selectionnormal : " << *selectionnormal[1]<< '\n';
         }
     }
 
