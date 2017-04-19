@@ -445,8 +445,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "covariance matrix in " << name << ".cov_omega->piNpiS\n";
 		cerr << '\n';
 		
-		maty3->PrintSlopes(cout2);
-		maty3->PrintSlopes2(cout2);
+		maty3->PrintSlopes(cout3);
+		maty3->PrintSlopes2(cout3);
 		
 		
 		if (!withNe) {
@@ -457,6 +457,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			cerr << "covariance matrix in " << name << ".cov_Ne->piNpiS\n";
 			cerr << '\n';
+			
+			maty4->PrintSlopes(cout4);
+			maty4->PrintSlopes2(cout4);
 		}
 
 		if (withNe) {
@@ -467,6 +470,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			cerr << "covariance matrix in " << name << ".cov_u->piNpiS\n";
 			cerr << '\n';
+			
+			maty4->PrintSlopes(cout4);
+			maty4->PrintSlopes2(cout4);
 		}
 
 
