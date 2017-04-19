@@ -410,6 +410,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "covariance matrix in " << name << ".cov\n";
 		cerr << '\n';
 		
+		mat->PrintSlopes(cout);
+		mat->PrintSlopes2(cout);
+		
 		maty1->Normalize();
 		ofstream cout1((GetName() + ".cov_all").c_str());
 
@@ -417,6 +420,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		cerr << "covariance matrix in " << name << ".cov_all\n";
 		cerr << '\n';
+		
+		maty1->PrintSlopes(cout1);
+		maty1->PrintSlopes2(cout1);
 
 		
 		maty2->Normalize();
@@ -427,6 +433,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "covariance matrix in " << name << ".cov_dS->piNpiS\n";
 		cerr << '\n';
 		
+		maty2->PrintSlopes(cout2);
+		maty2->PrintSlopes2(cout2);
+		
 		
 		maty3->Normalize();
 		ofstream cout3((GetName() + ".cov_omega->piNpiS").c_str());
@@ -435,6 +444,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		cerr << "covariance matrix in " << name << ".cov_omega->piNpiS\n";
 		cerr << '\n';
+		
+		maty3->PrintSlopes(cout2);
+		maty3->PrintSlopes2(cout2);
+		
 		
 		if (!withNe) {
 			maty4->Normalize();
