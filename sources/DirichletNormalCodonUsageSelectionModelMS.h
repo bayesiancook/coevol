@@ -903,11 +903,13 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 	// creates the header of the <model_name>.trace file 
 	void TraceHeader(ostream& os)	{
 		os << "#logprior\tlnL\tlength\t";
-		os << "globent\tcenter\tconc\t";
+		os << "globent\t";
+		// os << "globent\tcenter\tconc\t";
 		for(int i=1;i<K;i++){
-			os << "selvar" << i << '\t';
+			// os << "selvar" << i << '\t';
 			os << "var" << i << '\t';
 		}
+        os << "statent\t";
 		os << "rrent\n";
 	}
 
@@ -919,12 +921,15 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 		os << '\t' << GetLogLikelihood();
 		os << '\t' << GetLength();
 		os << '\t' << globalselectionprofile->GetMeanEntropy();
+        /*
 		os << '\t' << GetCenterEntropy();
 		os << '\t' << concentration->val();
+        */
 		for( int i=1;i<K;i++){
 			os << '\t' << GetMeanVar(i);
-			os << '\t' << var[i]->val();
+			// os << '\t' << var[i]->val();
 		}
+		os << '\t' << nucstationary->val().GetEntropy();
 		os << '\t' << relrate->val().GetEntropy();
 		os << '\n';
 		os.flush();
