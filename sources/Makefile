@@ -1,5 +1,5 @@
 #To compile with gsl, reactivate the following line (remove '#')
-USE_GSL=-DGSL
+#USE_GSL=-DGSL
 
 #To statically build the executables, uncomment the following line
 #STATIC=-static
@@ -10,8 +10,8 @@ else
 GSLLIB=
 endif
 
-#LIBS=$(GSLLIB)
-LIBS=$(GSLLIB) -lboost_regex
+LIBS=$(GSLLIB)
+#LIBS=$(GSLLIB) -lboost_regex
 
 CC=mpic++
 #OMP=-fopenmp
@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= drawtree nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
+ALL= nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
