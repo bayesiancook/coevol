@@ -1,6 +1,6 @@
 
 #include "Chain.h"
-#include "SimpleBranchOmegaMultivariateModel.h"
+#include "NearlyNeutralModel1.h"
 #include "StringStreamUtils.h"
 
 class BranchOmegaMultivariateChain : public Chain	{

@@ -150,7 +150,7 @@ class BrownianSample : public Sample	{
 
 
 			for (int k=0; k<Ncont; k++)	{
-				tree[k]->Add(GetModel()->GetBrownianProcess()->GetInstantProcess(), GetModel()->GetChronogram(), 2+k);
+				tree[k]->Add(GetModel()->GetBrownianProcess()->GetInstantProcess(), GetModel()->GetChronogram(), 1+k);
 			}
 
 			CovMatrix& m = *(GetModel()->GetSigma());
@@ -426,8 +426,250 @@ class BrownianSample : public Sample	{
 		// os << '\n';
 
 	}
+	
+	void ReadNe(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, double meanreg, double stdevreg)	{
+
+		int Ncont = GetModel()->GetNcont();
+		int dim = GetModel()->GetSigma()->GetDim();
+
+		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
+		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+
+		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		
+		double alpha[dim];
+		
+		for (int i=0; i<dim; i++) {
+			alpha[i]=0;
+		}	
+		
+		int indice1(6);
+		int indice2(4);
+		
+		//for (int k=0; k<Ncont; k++)	{
+			//if (GetModel()->GetContinuousData()->GetCharacterName(k) == "generation_time") {
+				//indice1 = k+dim-Ncont;
+			//}	
+			//else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity" && indice1 == 0)	{
+				//indice1 = k+dim-Ncont;
+			//}
+			//else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
+				//indice2 = k+dim-Ncont;
+			//}	
+		//}
+		
+		//if (indice1 == 0 || indice2 == 0) {
+			//exit(1);
+		//}
+		
+		alpha[0] = -1;
+		alpha[indice1] = -1;
+		alpha[indice2] = 1;
+
+		
+		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
+		for (int k=0; k<Ncont; k++)	{
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		}
+
+		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
+		MeanCovMatrix*  maty1 = new MeanCovMatrix(dim);
+		MeanCovMatrix*  maty2 = new MeanCovMatrix(dim);
+
+
+		// cycle over the sample
+		for (int i=0; i<size; i++)	{
+			cerr << '.';
+
+			// get next point -> will be stored into "model", and thus, will be accessible through GetModel()
+			double t0;
+
+			GetNextPoint();
+
+			//GetModel()->GetSynRateTree()->specialUpdate();
+			GetModel()->GetChronogram()->specialUpdate();
+
+			meanchrono->Add(GetModel()->GetChronogram());
+
+			meansynrate->Add(GetModel()->GetBrownianProcess()->GetInstantProcess(), GetModel()->GetChronogram(), 0);
+
+			//if (!iscalspe) {
+				//t0 = GetModel()->GetRootAge();
+			//}
+			//else {
+				//t0 = rootage;
+			//}
+				
+			double beta = log(80 * 1000000)/log(10)+log(365)/log(10)-log(4)/log(10);
+			
+			
+			meanNe->AddNe(GetModel()->GetBrownianProcess()->GetInstantProcess(), GetModel()->GetChronogram(), alpha, beta, dim, indice1, indice2);
+
+			for (int k=0; k<Ncont; k++)	{
+				tree[k]->Add(GetModel()->GetBrownianProcess()->GetInstantProcess(), GetModel()->GetChronogram(), 1+k);
+			}
+
+			CovMatrix& m = *(GetModel()->GetSigma());
+			mat->Add(&m);
+			
+			
+			double mas1[dim][dim];
+			CovMatrix my1(dim);
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == 0) {
+						mas1[i][j] = alpha[indice2] * m[indice2][j] + alpha[0] * m[0][j] + alpha[indice1] * m[indice1][j];
+					}	
+					else {	
+					mas1[i][j] = m[i][j];
+					}
+				}
+			}
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == 0) {
+						my1[i][j] = alpha[indice2] * mas1[i][indice2] + alpha[0] * mas1[i][0] + alpha[indice1] * mas1[i][indice1];
+					}	
+					else {	
+					my1[i][j] = mas1[i][j];
+					}
+				}
+			}
+			
+			
+			double mas2[dim][dim];
+			CovMatrix my2(dim);
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (i == indice2) {
+						mas2[i][j] = alpha[indice2] * m[indice2][j] + alpha[0] * m[0][j] + alpha[indice1] * m[indice1][j];
+					}	
+					else {	
+					mas2[i][j] = m[i][j];
+					}
+				}
+			}
+			
+			
+			for (int i = 0; i<dim; i++) {
+				for (int j = 0; j<dim; j++) {
+					if (j == indice2) {
+						my2[i][j] = alpha[indice2] * mas2[i][indice2] + alpha[0] * mas2[i][0] + alpha[indice1] * mas2[i][indice1];
+					}	
+					else {	
+					my2[i][j] = mas2[i][j];
+					}
+				}
+			}
+		
+			maty1->Add(&my1);
+			maty2->Add(&my2);
+			
+		}
+		cerr << '\n';
+		cerr << "normalise\n";
+
+		mat->Normalize();
+		ofstream cout((GetName() + ".cov").c_str());
+		
+		cout << "entries are in the following order:\n";
+		GetModel()->PrintEntries(cout);
+
+		cout << *mat;
+
+		cerr << "covariance matrix in " << name << ".cov\n";
+		cerr << '\n';
+		
+		
+		mat->PrintSlopes(cout);
+		mat->PrintSlopes2(cout);
+		
+
+		maty1->Normalize();
+		ofstream cout1((GetName() + ".covNe_ds").c_str());
+		
+		cout << "entries are in the following order:\n";
+		GetModel()->PrintEntries(cout);
+
+		cout1 << *maty1;
+
+		cerr << "covariance matrix in " << name << ".covNe_ds\n";
+		cerr << '\n';
+
+		maty1->PrintSlopes(cout1);
+		maty1->PrintSlopes2(cout1);
+
+		maty2->Normalize();
+		ofstream cout2((GetName() + ".covNe_pis").c_str());
+		
+		cout << "entries are in the following order:\n";
+		GetModel()->PrintEntries(cout);
+
+		cout2 << *maty2;
+
+		cerr << "covariance matrix in " << name << ".covNe_pis\n";
+		cerr << '\n';
+
+		maty2->PrintSlopes(cout2);
+		maty2->PrintSlopes2(cout2);
+
+		meanchrono->Normalise();
+		ofstream chos((GetName() + ".postmeandates.tre").c_str());
+		meanchrono->ToStream(chos);
+
+		ofstream cchos((GetName() + ".postmeandates.tab").c_str());
+		meanchrono->Tabulate(cchos);
+
+
+		
+		meanNe->Normalise();
+		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
+		meanNe->ToStream(Neos);
+		cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
+		cerr << "pp of mean leaf values > root value : " << meanNe->GetPPLeafRoot() << '\n';
+
+
+		meansynrate->Normalise();
+		ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
+		meansynrate->ToStream(sos);
+		cerr << "reconstructed variations of Ks in " << name << ".postmeansynrate.tre\n";
+		cerr << "pp of mean leaf values > root value : " << meansynrate->GetPPLeafRoot() << '\n';
+
+		for (int k=0; k<Ncont; k++)	{
+			tree[k]->Normalise();
+			ostringstream s;
+			s << GetName() << ".postmean" << k+1 << ".tre";
+			ofstream os(s.str().c_str());
+			tree[k]->ToStream(os);
+			cerr << "reconstructed variations of continuous character # " << k+1 << " in "  << name << ".postmean" << k+1 << ".tre\n";
+			cerr << "pp of mean leaf values > root value : " << tree[k]->GetPPLeafRoot() << '\n';
+		}
+
+		ofstream ssos((GetName() + ".postmeansynrate.tab").c_str());
+		meansynrate->Tabulate(ssos);
+		ssos.close();
+
+
+		ofstream NeNeos((GetName() + ".postmeanNe.tab").c_str());
+		meanNe->TabulateNe(NeNeos);
+		NeNeos.close();
+
+		for (int k=0; k<Ncont; k++)	{
+			ostringstream s;
+			s << GetName() << ".postmean" << k+1 << ".tab";
+			ofstream os(s.str().c_str());
+			tree[k]->Tabulate(os);
+		}
+
+		cerr << '\n';
+	}	 
 
 };
+
+
 
 
 int main(int argc, char* argv[])	{
@@ -462,6 +704,8 @@ int main(int argc, char* argv[])	{
 	int fontsize = 4;
 
 	bool bubbletext = false;
+	bool Ne = false;
+
 
 	double meanreg = 0;
 	double stdevreg = 0;
@@ -571,6 +815,9 @@ int main(int argc, char* argv[])	{
 			else if (s == "-internal")	{
 				withinternal = false;
 			}
+			else if (s == "-Ne") {
+				Ne = true;
+			}
 			else if (s == "-mulreg")	{
 				i++;
 				mulreg = argv[i];
@@ -669,6 +916,9 @@ int main(int argc, char* argv[])	{
 	if (pp)	{
 		sample.PostPred(nrep,ppcov,ppbrown,nsegments,ppname);
 	}
+	else if (Ne) {
+		sample.ReadNe(printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+	}	
 	else if (shortfile != "None")	{
 		sample.ReadShort(shortfile);
 	}

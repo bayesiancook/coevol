@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= drawtree simplecoevol simplereadcoevol poissongamma diffsel readdiffsel coevol readcoevol tipcoevol readtipcoevol ancov readancov
+ALL= drawtree nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -202,17 +202,25 @@ dollo$(EXEEXT): $(PROGSDIR)/dollo$(EXEEXT)
 $(PROGSDIR)/dollo$(EXEEXT): Dollo.o $(OBJS)
 	$(CC) Dollo.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-simplereadcoevol$(EXEEXT): $(PROGSDIR)/simplereadcoevol$(EXEEXT)
-$(PROGSDIR)/simplereadcoevol$(EXEEXT): ReadSimpleBranchOmegaMultivariate.o $(OBJS)
-	$(CC) ReadSimpleBranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
 biclock$(EXEEXT): $(PROGSDIR)/biclock$(EXEEXT)
 $(PROGSDIR)/biclock$(EXEEXT): SimpleBiBranchOmegaMultivariate.o $(OBJS)
 	$(CC) SimpleBiBranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-simplecoevol$(EXEEXT): $(PROGSDIR)/simplecoevol$(EXEEXT)
-$(PROGSDIR)/simplecoevol$(EXEEXT): SimpleBranchOmegaMultivariate.o $(OBJS)
-	$(CC) SimpleBranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+nearlyneutral1$(EXEEXT): $(PROGSDIR)/nearlyneutral1$(EXEEXT)
+$(PROGSDIR)/nearlyneutral1$(EXEEXT): NearlyNeutralModel1.o $(OBJS)
+	$(CC) NearlyNeutralModel1.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+nearlyneutral2$(EXEEXT): $(PROGSDIR)/nearlyneutral2$(EXEEXT)
+$(PROGSDIR)/nearlyneutral2$(EXEEXT): NearlyNeutralModel2.o $(OBJS)
+	$(CC) NearlyNeutralModel2.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readnearlyneutral1$(EXEEXT): $(PROGSDIR)/readnearlyneutral1$(EXEEXT)
+$(PROGSDIR)/readnearlyneutral1$(EXEEXT): ReadNearlyNeutralModel1.o $(OBJS)
+	$(CC) ReadNearlyNeutralModel1.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readnearlyneutral2$(EXEEXT): $(PROGSDIR)/readnearlyneutral2$(EXEEXT)
+$(PROGSDIR)/readnearlyneutral2$(EXEEXT): ReadNearlyNeutralModel2.o $(OBJS)
+	$(CC) ReadNearlyNeutralModel2.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 divbd$(EXEEXT): $(PROGSDIR)/divbd$(EXEEXT)
 $(PROGSDIR)/divbd$(EXEEXT): DivBD.o $(OBJS)

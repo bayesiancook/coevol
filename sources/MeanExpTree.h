@@ -4,8 +4,6 @@
 #define MEANEXPTREE_H
 
 #include "MultiVariateTreeProcess.h"
-#include "LinearCombinationNodeTree.h"
-
 
 class MeanExp: public Dvar<PosReal>{
 

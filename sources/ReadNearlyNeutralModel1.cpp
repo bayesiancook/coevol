@@ -1,6 +1,6 @@
 
 #include "Sample.h"
-#include "SimpleBranchOmegaMultivariateModel.h"
+#include "NearlyNeutralModel1.h"
 #include "MeanValTree.h"
 #include "MeanICTree.h"
 #include "MeanCovMatrix.h"

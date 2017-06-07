@@ -5,6 +5,9 @@
 #include <iostream>
 
 #include <string> 
+#include <cmath>
+
+#include <boost/math/special_functions/zeta.hpp>
 
 #include "MeanValTree.h"
 
@@ -24,7 +27,7 @@
 #include "MultiVariatePropagateMove.h"
 #include "Jeffreys.h"
 #include "ConjugateMultiVariateTreeProcess.h"
-#include "LinearCombinationNodeTree.h"
+#include "LinearCombinationNodeTree2.h"
 #include "MeanChronogram.h"
 #include "AuxCoevol.h"
 
@@ -60,6 +63,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	Const<Real>* Zero;
 	Const<PosReal>* One;
+	
+	Const<PosReal>* K;
 
 	Chronogram* chronogram;
 
@@ -76,26 +81,31 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	//parameter of the linear combination
 	
 	Normal* gamma;
-	Normal* beta;	
+	Normal* beta;
+	Normal* beta2;	
 	
 	Var<PosReal>* absrootage;
 	
-	double* synrateslope;
+	double* neutralomegaslope;
 	double* omegaslope;
-	double* u_Neslope;
+	double* uslope;
+	double* synrateslope;
+	double* Neslope;
+		
+
+	NeutralOmegaLinearCombinationNodeTree* nodeneutralomegatree;
+	OmegaLinearCombinationNodeTree* nodeomegatree;
+	ULinearCombinationNodeTree* nodeutree;
+	SynrateLinearCombinationNodeTree* nodesynratetree;
+	NeLinearCombinationNodeTree* nodeNetree;
 	
 
-	SynrateLinearCombinationNodeTree* nodesynratetree;
-	OmegaLinearCombinationNodeTree* nodeomegatree;
-	U_NeLinearCombinationNodeTree* nodeu_Netree;
-	
-	
-	MeanExpTreeFromMultiVariate* mutratetree;
-	MeanExpTreeFromMultiVariate* Netree;
-	MeanExpTree* synratetree;
+	MeanExpTreeFromMultiVariate* adaptativeomegatree;
+	MeanExpTree* neutralomegatree;
 	MeanExpTree* omegatree;
-	//MeanExpTree* Netree;
-	//MeanExpTree* adaptative_omegatree;
+	MeanExpTree* utree;
+	MeanExpTree* synratetree;
+	MeanExpTree* Netree;
 
 	// nucleotide mutation matrix is relrate * stationary
 	Dirichlet* relrate;
@@ -111,9 +121,12 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	// if true: covariances are all set equal to 0
 	bool clampdiag;
 
-	bool withNe;
 	bool clamptree;
 	bool meanexp;
+	
+	bool sameseq;
+	
+	bool noadapt;
 
 	// total number of substitution parameters modelled as non homogeneous
 	int L;
@@ -127,20 +140,23 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	public:
 
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, double priorsigma, int indf, int contdatatype, bool inwithNe, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
-
-		withNe = inwithNe;
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
 
 		// if we want the divergence times to be fixed
 		clamptree = inclamptree;
 
 		// arithmetic / geodesic averages (see Poujol et al)
 		meanexp = inmeanexp;
+		
+		sameseq = insameseq;
+		
+		noadapt = innoadapt;
 
 		// number of components of the Brownian process corresponding to rates
 
-		// here L = 1: u
-		L = 1;
+		// here L = 1: adaptative omega
+		if (!noadapt) {L = 1;}
+		else {L = 0;}
 
 		// get data from file
 		nucdata = new FileSequenceAlignment(datafile);
@@ -183,6 +199,23 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		Zero = new Const<Real>(0);
 		One = new Const<PosReal>(1);
+		
+		if (sameseq) {	 
+			cerr << "same seq: still to be implemented\n";
+			exit(1);
+			/*
+			int i(2);
+			double k(0);
+			double tempo(0);
+			do {
+				tempo = (boost::math::zeta (i) * factorielle(1999) * factorielle(i) * factorielle(2001)) / (factorielle(2000 + i) * factorielle(1999) * i);
+				k += tempo;
+				i++;
+			}while (tempo > pow(10, -7));
+		
+			K = new Const<PosReal>(k);
+			*/
+		}
 
 		cerr << "new chrono\n";
 		if (calibfile != "None")	{
@@ -210,13 +243,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		
 		
-		cerr << "checking rootage" << absrootage->val();	
+		cerr << "checking rootage \t" << absrootage->val() << "\n";	
 
 		// Ncont : number of quantitative traits
 		// L : number of substitution parameters coevolving with traits (typically, 2: dS and dN/dS).
 		// create an array of positive variables kappa_i, i=1..Ncont + L
-		double mindiag = 0.001;
-		double maxdiag = 5000;
+		double mindiag = 0.01;
+		double maxdiag = 100;
 		DiagArray = new JeffreysIIDArray(Ncont+L,mindiag,maxdiag,Zero);
 		if (priorsigma == -1)	{
 			DiagArray->setval(1.0);
@@ -240,11 +273,12 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		process = new ConjugateMultiVariateTreeProcess(sigma,chronogram);
 		process->Reset();
 		
-		
 		int indice1;
 		int indice2;
+		int indice3;
 		string char1("piS");
-		string char2("generation_time");
+		string char2("piNpiS");
+		string char3("generation_time");
 		for (int i=0; i<Ncont; i++) {
 			if (GetContinuousData()->GetCharacterName(i)==char1) {
 				indice1 = i;
@@ -252,13 +286,14 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			else if (GetContinuousData()->GetCharacterName(i)==char2) {
 				indice2 = i;
 			}	
+			else if (GetContinuousData()->GetCharacterName(i)==char3) {
+				indice3 = i;
+			}	
 		}	
-
-
-		process->PiecewiseTranslation(-17, 0, 1);		
-		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice1), indice1+1, 1);
-		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice2), indice2+1, 1);
-
+		
+		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice1), indice1+L, 1);
+		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice2), indice2+L, 1);
+		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice3), indice3+L, 1);
 		
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
@@ -270,51 +305,59 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			process->SetAndClamp(contdata,L+i,i,contdatatype);
 		}
 
-		// just for numerical stability of the starting point
-		//for (int l=0; l<L; l++)	{
-		//	process->CutOff(1,l);
-		//}
-
 		//create the combination factors 
 		
 		gamma = new Normal(Zero, One);
 		beta = new Normal(Zero, One);
+		if (!sameseq) {beta2 = new Normal(Zero, One);}
 		
 		gamma->setval(0.2);
 		beta->setval(0.9);
-
+		if (!sameseq) {beta2->setval(0.4);}
+		
 		//create the slopes which define the linear combination
 		
+		neutralomegaslope = new double[L + Ncont];
+		if (!noadapt) {omegaslope = new double[L + Ncont];}
+		uslope = new double[L + Ncont];
 		synrateslope = new double[L + Ncont];
-		omegaslope = new double[L + Ncont];
-		u_Neslope = new double[L + Ncont];
+		Neslope = new double[L + Ncont];
 		
+		CreateNeutralOmegaSlope();
+		if (!noadapt) {CreateOmegaSlope();}
+		CreateUSlope();
 		CreateSynrateSlope();
-		CreateOmegaSlope();
-		CreateU_NeSlope();
-		
+		CreateNeSlope();
+
 
 		// create the node tree obtained from the linear combinations
 		
-		nodesynratetree = new SynrateLinearCombinationNodeTree(process, absrootage, synrateslope, withNe);
-		nodeomegatree = new OmegaLinearCombinationNodeTree(process, gamma, beta, omegaslope, withNe);
-		nodeu_Netree = new U_NeLinearCombinationNodeTree(process, u_Neslope); 
+		if (sameseq) {nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, gamma, K, neutralomegaslope,sameseq);}
+		if (!sameseq) {nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, beta, beta2, neutralomegaslope,sameseq);}
+		if (!noadapt) {nodeomegatree = new OmegaLinearCombinationNodeTree(process, nodeneutralomegatree, omegaslope);}
+		if (sameseq) {nodeutree = new ULinearCombinationNodeTree(process, gamma, beta, K, uslope,sameseq);}
+		if (!sameseq) {nodeutree = new ULinearCombinationNodeTree(process, gamma, beta2, uslope, sameseq);}
+		nodesynratetree = new SynrateLinearCombinationNodeTree(process, nodeutree, absrootage, synrateslope);
+		nodeNetree = new NeLinearCombinationNodeTree(process, nodeutree, Neslope); 
 		
 		// create the branch lengths resulting from combining
+		
+		neutralomegatree = new MeanExpTree(nodeneutralomegatree, chronogram, INTEGRAL, false);
+		
+		Netree = new MeanExpTree(nodeNetree, chronogram, INTEGRAL, false);
+
+		utree = new MeanExpTree(nodeutree, chronogram, INTEGRAL, false);
+	
 
 		// the times given by the chronogram with the rate 
 		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL, false);
 
 		// create the dN/dS on each branch, nased on the second entry of the multivariate process
-		omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN, false);
-
-		//Netree = new MeanExpTree(nodeNetree, chronogram, MEAN, false);
-		
-		//adaptative_omegatree = new MeanExpTree(nodeadaptative_omegatree, chronogram, MEAN, false);
+		if (!noadapt) {omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN, false);}
+		if (noadapt) {omegatree = new MeanExpTree(nodeneutralomegatree, chronogram, MEAN, false);}
 		
 		// create u on each branch, nased on the third entry of the multivariate process
-		if (!withNe) {mutratetree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);}
-		if (withNe) {Netree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);}
+		if (!noadapt) {adaptativeomegatree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);}
 
 		cerr << "matrix\n";
 
@@ -351,6 +394,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		RootRegister(stationary);
 		RootRegister(gamma);
 		RootRegister(beta);
+		if (!sameseq) {RootRegister(beta2);}
 		RootRegister(absrootage);
 		Register();
 
@@ -364,16 +408,102 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	// deallocations should normally be done here
 	// but in general, the model is deleted just before the program exits, so we can dispense with it for the moment
 	~BranchOmegaMultivariateModel() {
+		DeleteNeutralOmegaSlope();
+		if (!noadapt) {DeleteOmegaSlope();}
+		DeleteUSlope();
 		DeleteSynrateSlope();
-		DeleteOmegaSlope();
-		DeleteU_NeSlope();
-	}
+		DeleteNeSlope();
+		}
+	
+	
+	double factorielle (int k) {
+		if (k<=1) {
+			return 1;
+		}
+		else {
+			return(k * factorielle(k-1));
+		}
+	}	
+	
+	
+	void CreateUSlope() {
+		if (sameseq) {
+			if (!noadapt) {
+				string cha1("piS");
+				string cha2("piNpiS");
+				uslope[0] = 0;
+				for (int i = 0; i<Ncont; i++) {
+					if (GetContinuousData()->GetCharacterName(i)==cha1) {
+						uslope[i+1] = 1;
+					}	
+					else if (GetContinuousData()->GetCharacterName(i)==cha2) {
+						uslope[i+1] = 1000;
+					}
+					else {
+						uslope[i+1] = 0;
+					}
+				}
+			}
+			else {
+				string cha1("piS");
+				string cha2("piNpiS");
+				for (int i = 0; i<Ncont; i++) {
+					if (GetContinuousData()->GetCharacterName(i)==cha1) {
+						uslope[i] = 1;
+					}	
+					else if (GetContinuousData()->GetCharacterName(i)==cha2) {
+						uslope[i] = 1000;
+					}
+					else {
+						uslope[i] = 0;
+					}
+				}
+			}
+		}	
+		if (!sameseq) {
+			if (!noadapt) {
+				string cha1("piS");
+				string cha2("piNpiS");
+				uslope[0] = 0;
+				for (int i = 0; i<Ncont; i++) {
+					if (GetContinuousData()->GetCharacterName(i)==cha1) {
+						uslope[i+1] = 1;
+					}	
+					else if (GetContinuousData()->GetCharacterName(i)==cha2) {
+						uslope[i+1] = 1000;
+					}
+					else {
+						uslope[i+1] = 0;
+					}
+				}
+			}
+			else {
+				string cha1("piS");
+				string cha2("piNpiS");
+				for (int i = 0; i<Ncont; i++) {
+					if (GetContinuousData()->GetCharacterName(i)==cha1) {
+						uslope[i] = 1;
+					}	
+					else if (GetContinuousData()->GetCharacterName(i)==cha2) {
+						uslope[i] = 1000;
+					}
+					else {
+						uslope[i] = 0;
+					}
+				}
+			}	
+		}	
+	}	
+	
+	void DeleteUSlope() {
+		delete uslope;
+	}	
+			
 	
 	void CreateSynrateSlope() {
-		string cha("generation_time");
-		string cha2("piS");
-		if (!withNe) {
-			synrateslope[0] = 1;
+		if (!noadapt) {
+			string cha("generation_time");
+			synrateslope[0] = 0;
 			for (int i=0; i<Ncont; i++) {
 				if (GetContinuousData()->GetCharacterName(i)==cha) {
 					synrateslope[i+1] = -1;
@@ -384,103 +514,137 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			}
 		}
 		else {
-			synrateslope[0] = -1;
+			string cha("generation_time");
 			for (int i=0; i<Ncont; i++) {
 				if (GetContinuousData()->GetCharacterName(i)==cha) {
-					synrateslope[i+1] = -1;
-				}	
-				else if (GetContinuousData()->GetCharacterName(i)==cha2) {
-					synrateslope[i+1] = 1;
+					synrateslope[i] = -1;
 				}	
 				else {
-					synrateslope[i+1] = 0;
+					synrateslope[i] = 0;
 				}
 			}
-		}
-	}			
+		}	
+	}	
+				
 
 		 
 	void DeleteSynrateSlope() {
 		delete synrateslope;
 	}
 	
-	void CreateOmegaSlope() {
-		string cha("piS");
-		if (!withNe) {
-			omegaslope[0] = 1;
+	
+	void CreateNeutralOmegaSlope() {
+		if (!noadapt) {
+			string cha("piNpiS");
+			neutralomegaslope[0] = 0;
 			for (int i=0; i<Ncont; i++) {
 				if (GetContinuousData()->GetCharacterName(i)==cha) {
-					omegaslope[i+1] = -1;
+					neutralomegaslope[i+1] = 1;
 				}	
 				else {
-					omegaslope[i+1] = 0;
+					neutralomegaslope[i+1] = 0;
 				}
 			}
 		}
 		else {
-			omegaslope[0] = -1;			
+			string cha("piNpiS");
 			for (int i=0; i<Ncont; i++) {
-				omegaslope[i+1] = 0;
+				if (GetContinuousData()->GetCharacterName(i)==cha) {
+					neutralomegaslope[i] = 1;
+				}	
+				else {
+					neutralomegaslope[i] = 0;
+				}
 			}
 		}
-	}		
-		 
+	}	
+	 
+	
+	void DeleteNeutralOmegaSlope() {
+		delete neutralomegaslope;
+	}
+	
+	
+	void CreateOmegaSlope() {
+		omegaslope[0] = 1;
+		for (int i=0; i<Ncont; i++) {
+			omegaslope[i+1] = 0;
+		}
+	}
 	
 	void DeleteOmegaSlope() {
 		delete omegaslope;
 	}
 	
-	void CreateU_NeSlope() {
-		string cha("piS");
-		u_Neslope[0] = -1;
-		for (int i=0; i<Ncont; i++) {
-			if (GetContinuousData()->GetCharacterName(i)==cha) {
-				u_Neslope[i+1] = 1;
-			}	
-			else {
-				u_Neslope[i+1] = 0;
+	
+	void CreateNeSlope() {
+		if (!noadapt) {
+			string cha("piS");
+			Neslope[0] = 0;
+			for (int i=0; i<Ncont; i++) {
+				if (GetContinuousData()->GetCharacterName(i)==cha) {
+					Neslope[i+1] = 1;
+				}	
+				else {
+					Neslope[i+1] = 0;
+				}
 			}
 		}
-	}				
+		else {				
+			string cha("piS");
+			for (int i=0; i<Ncont; i++) {
+				if (GetContinuousData()->GetCharacterName(i)==cha) {
+					Neslope[i] = 1;
+				}	
+				else {
+					Neslope[i] = 0;
+				}
+			}
+		}
+	}	
 		
-	void DeleteU_NeSlope() {
-		delete u_Neslope;
+	void DeleteNeSlope() {
+		delete Neslope;
 	}
 	
-	
+
 		
 	// accessors
 	Tree* GetTree() {return tree;}
+	
+	Var<Real>* GetGamma() {return gamma;}
+	
+	Const<PosReal>* GetK() {return K;}
 
 	SequenceAlignment* GetData()	{
 		return codondata;
 	}
-	
-	Var<Real>* GetGamma() {return gamma;}
 
-	//MeanExpTree* GetAdaptative_omegaTree() {return adaptative_omegatree;}
-	//MeanExpTree* GetNeTree() {return Netree;}
+
 	MeanExpTree* GetSynRateTree() {return synratetree;}
 	MeanExpTree* GetOmegaTree() {return omegatree;}
-	MeanExpTreeFromMultiVariate* GetMutTree() {return mutratetree;}
-	MeanExpTreeFromMultiVariate* GetNeTree() {return Netree;}
 
 
 	MultiVariateTreeProcess* GetMultiVariateProcess() {return process;}
 	
 	SynrateLinearCombinationNodeTree*  GetSynrateNodeTree() {return nodesynratetree;}
+
+	NeutralOmegaLinearCombinationNodeTree*  GetNeutralOmegaNodeTree() {return nodeneutralomegatree;}
 	
 	OmegaLinearCombinationNodeTree*  GetOmegaNodeTree() {return nodeomegatree;}
 	
-	U_NeLinearCombinationNodeTree* GetNeNodeTree() {return nodeu_Netree;}
+	NeLinearCombinationNodeTree* GetNeNodeTree() {return nodeNetree;}
 	
+	ULinearCombinationNodeTree* GetUNodeTree() {return nodeutree;}
+	
+	
+	double* GetNeutralOmegaSlope() {return neutralomegaslope;}
+	double* GetUSlope() {return uslope;}
+	double* GetSynrateSlope() {return synrateslope;}
+	double* GetNeSlope() {return Neslope;}
+
 
 	Chronogram* GetChronogram() {return chronogram;}
-	
-	double* GetSynrateSlope() {return synrateslope;}
-	double* GetOmegaSlope() {return omegaslope;}
-	double* GetU_NeSlope() {return u_Neslope;}
-	
 
 	bool isCalibrated()	{
 		return iscalib;
@@ -533,6 +697,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		total += stationary->GetLogProb();
 		total += gamma->GetLogProb();
 		total += beta->GetLogProb();
+		if (!sameseq) {total += beta2->GetLogProb();}
 		return total;
 	}
 
@@ -596,13 +761,19 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new ProfileMove(stationary,0.01,5),10,"stat10");
 			scheduler.Register(new SimpleMove(stationary,0.001),10,"stat");
 			
-			scheduler.Register(new SimpleMove(gamma,0.1),10,"gamma");
-			scheduler.Register(new SimpleMove(gamma,0.01),10,"gamma");
-			scheduler.Register(new SimpleMove(gamma,0.001),10,"gamma");
+			scheduler.Register(new SimpleMove(gamma,0.003),10,"gamma");
+			scheduler.Register(new SimpleMove(gamma,0.0008),10,"gamma");
+			scheduler.Register(new SimpleMove(gamma,0.0003),10,"gamma");
 			
-			scheduler.Register(new SimpleMove(beta,0.3),10,"beta");
-			scheduler.Register(new SimpleMove(beta,0.1),10,"beta");
-			scheduler.Register(new SimpleMove(beta,0.03),10,"beta");
+			scheduler.Register(new SimpleMove(beta,0.15),10,"beta");
+			scheduler.Register(new SimpleMove(beta,0.08),10,"beta");
+			scheduler.Register(new SimpleMove(beta,0.01),10,"beta");
+			
+			if (!sameseq) {
+				scheduler.Register(new SimpleMove(beta2,0.05),10,"beta2");
+				scheduler.Register(new SimpleMove(beta2,0.008),10,"beta2");
+				scheduler.Register(new SimpleMove(beta2,0.001),10,"beta2");
+			}
 			
 		}
 	}
@@ -618,6 +789,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		gamma->Sample();
 		beta->Sample();
+		if (!sameseq) {beta2->Sample();}
 		relrate->Sample();
 		stationary->Sample();
 		phyloprocess->Sample();
@@ -641,6 +813,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		os << "\tgamma";
 		os << "\tbeta";
+		if (!sameseq) {os << "\tbeta2";}
 		for (int k=0; k<Ncont+L; k++)	{
 			for (int l=k+1; l<Ncont+L; l++)	{
 				os << '\t' << "sigma_" << k << '_' << l;
@@ -665,6 +838,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		os << '\t' << gamma->val();
 		os << '\t' << beta->val();
+		if (!sameseq) {os << '\t' << beta2->val();}
 		for (int k=0; k<Ncont+L; k++)	{
 			for (int l=k+1; l<Ncont+L; l++)	{
 				os << '\t' << (*sigma)[k][l];
@@ -690,6 +864,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << *process << '\n';
 		os << *gamma << '\n';
 		os << *beta << '\n';
+		if (!sameseq) {os << *beta2 << '\n';}
 		os << *relrate << '\n';
 		os << *stationary << '\n';
 	}
@@ -704,6 +879,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		is >> *process;
 		is >> *gamma;
 		is >> *beta;
+		if (!sameseq) {is >> *beta2;}
 		is >> *relrate;
 		is >> *stationary;
 	}
