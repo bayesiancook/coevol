@@ -913,7 +913,8 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 			os << "var" << i << '\t';
 		}
         os << "statent\t";
-		os << "rrent\n";
+		os << "rrent\t";
+		os << "diag\n";
 	}
 
 
@@ -934,6 +935,8 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 		}
 		os << '\t' << nucstationary->val().GetEntropy();
 		os << '\t' << relrate->val().GetEntropy();
+		os << '\t' << SubMatrix::GetDiagCount();
+		SubMatrix::ResetDiagCount();
 		os << '\n';
 		os.flush();
 	}

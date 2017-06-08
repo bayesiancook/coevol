@@ -231,6 +231,10 @@ class SubMatrix   : public virtual AbstractTransitionMatrix {
 
 	static int		nuni;
 	static int		nunimax;
+	static int		diagcount;
+
+	static int GetDiagCount() {return diagcount;}
+	static void ResetDiagCount() {diagcount = 0;}
 
 	static double		GetMeanUni() {return ((double) nunimax) / nuni;}
 
