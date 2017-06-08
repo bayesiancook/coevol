@@ -856,6 +856,9 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 		return tot;
 	}
 
+	const double* GetDelta(int k, int i)	{
+		return selectionnormal[k]->GetVal(i)->GetArray();
+	}
 
 	double GetMeanVar(int k)	{
 

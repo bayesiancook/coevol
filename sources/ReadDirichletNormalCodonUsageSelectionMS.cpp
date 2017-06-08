@@ -442,6 +442,93 @@ class DirichletNormalCodonUsageSelectionMSSample : public Sample	{
 		*/
 	}
 
+	void NewRead(double cutoff)	{
+
+		// prepare the mean and variance
+		
+		int Nsite = GetModel()->GetSite();
+		int K = GetModel()->GetCategory();
+
+		double*** meansel = new double**[K];
+		for (int k=1; k<K; k++)	{
+			meansel[k] = new double*[Nsite];
+			for (int i=0; i<Nsite; i++)	{
+				meansel[k][i] = new double[Naa];
+				for (int a=0; a<Naa; a++)	{
+					meansel[k][i][a] = 0;
+				}
+			}
+		}
+
+		double*** ppsel = new double**[K];
+		for (int k=1; k<K; k++)	{
+			ppsel[k] = new double*[Nsite];
+			for (int i=0; i<Nsite; i++)	{
+				ppsel[k][i] = new double[Naa];
+				for (int a=0; a<Naa; a++)	{
+					ppsel[k][i][a] = 0;
+				}
+			}
+		}
+
+		// cycle over the sample
+		for (int c=0; c<size; c++)	{
+			GetNextPoint();
+			cerr << '.';
+
+			for (int k=1; k<K; k++)	{
+				for (int i=0; i<Nsite; i++)	{
+					const double* delta = GetModel()->GetDelta(k,i);
+
+					double mean = 0;
+					for (int a=0; a<Naa; a++)	{
+						mean += delta[a];
+					}
+					mean /= Naa;
+
+					for (int a=0; a<Naa; a++)	{
+						double tmp = delta[a] - mean;
+						meansel[k][i][a] += tmp;
+						if (tmp > 0)	{
+							ppsel[k][i][a] ++;
+						}
+					}
+				}
+			}
+		}
+		cerr << '\n';
+
+		for (int k=1; k<K; k++)	{
+
+			ostringstream s1,s2;
+			s1 << GetName() << "_" << k << ".meandiffsel";
+			s2 << GetName() << "_" << k << ".signdiffsel";
+			ofstream os1(s1.str().c_str());
+			ofstream os2(s2.str().c_str());
+
+			for (int i=0; i<Nsite; i++)	{
+
+				os1 << i;
+				for (int a=0; a<Naa; a++)	{
+					ppsel[k][i][a] /= size;
+					os1 << '\t' << ppsel[k][i][a];
+					
+				}
+				for (int a=0; a<Naa; a++)	{
+					meansel[k][i][a] /= size;
+					os1 << '\t' << meansel[k][i][a];
+				}
+				os1 << '\n';
+
+				for (int a=0; a<Naa; a++)	{
+					if (ppsel[k][i][a] > cutoff)	{
+						os2 << i << '\t' << a << '\t' << ppsel[k][i][a] << '\t' << meansel[k][i][a] << '\n';
+					}
+				}
+			}
+		}
+	}
+
 	void Read(double cutoff)	{
 
 		// prepare the mean and variance
@@ -853,6 +940,8 @@ int main(int argc, char* argv[])	{
 	int fp = 0;
 	int ncat = 10;
 
+	int comp = 1;
+
 	try	{
 
 		if (argc == 1)	{
@@ -870,6 +959,9 @@ int main(int argc, char* argv[])	{
 			else if (s == "-c")	{
 				i++;
 				cutoff = atof(argv[i]);
+			}
+			else if (s == "-old")	{
+				comp = 0;
 			}
 			else if (s == "-ppred")	{
 				ppred = 1;
@@ -941,6 +1033,10 @@ int main(int argc, char* argv[])	{
 		sample.ReadFalsePositives(ncat);
 	}
 
+	else if (comp)	{
+		cerr << "reading, new version\n";
+		sample.NewRead(cutoff);
+	}
 	else	{
 		cerr << "read\n";
 		sample.Read(cutoff);
