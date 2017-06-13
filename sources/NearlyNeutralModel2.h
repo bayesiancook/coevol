@@ -878,6 +878,12 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << "\tgamma";
 		os << "\tbeta";
 		if (!sameseq) {os << "\tbeta2";}
+        for (int k=0; k<Ncont+L; k++)   {
+            os << "\tmean_" << k;
+        }
+        for (int k=0; k<Ncont+L; k++)   {
+            os << "\troot_" << k;
+        }
 		for (int k=0; k<Ncont+L; k++)	{
 			for (int l=k+1; l<Ncont+L; l++)	{
 				os << '\t' << "sigma_" << k << '_' << l;
@@ -903,6 +909,14 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << '\t' << gamma->val();
 		os << '\t' << beta->val();
 		if (!sameseq) {os << '\t' << beta2->val();}
+		for (int k=0; k<Ncont+L; k++)	{
+            os << '\t' << process->GetMean(k);
+        }
+
+		for (int k=0; k<Ncont+L; k++)	{
+            os << '\t' << process->GetVal(tree->GetRoot(),k);
+        }
+
 		for (int k=0; k<Ncont+L; k++)	{
 			for (int l=k+1; l<Ncont+L; l++)	{
 				os << '\t' << (*sigma)[k][l];
