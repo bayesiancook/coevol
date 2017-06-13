@@ -31,6 +31,45 @@
 #include "MeanChronogram.h"
 #include "AuxCoevol.h"
 
+class GammaBetaMove : public MCUpdate, public Mnode	{
+
+	public:
+
+	GammaBetaMove(Rvar<Real>* ingamma, Rvar<Real>* inbeta, double intuning, double ina)	{
+		gamma = ingamma;
+		beta = inbeta;
+		tuning = intuning;
+		a = ina;
+		gamma->Register(this);
+		beta->Register(this);
+	}
+
+	double Move(double tuning_modulator = 1)	{
+
+		double acc = 1.0;
+		if ((!gamma->isClamped()) && (! beta->isClamped()))	{
+			
+			Corrupt(true);
+			double u = tuning * tuning_modulator * (Random::Uniform() - 0.5);
+			gamma->setval(gamma->val() + u);
+			beta->setval(beta->val() + a*u);
+			double logratio = Update();
+			acc = (log(Random::Uniform()) < logratio);
+			if (! acc)	{
+				Corrupt(false);
+				Restore();
+			}
+		}
+		return acc;
+
+	}
+
+	private:
+	Rvar<Real>* gamma;
+	Rvar<Real>* beta;
+	double tuning;
+	double a;
+};
 
 class BranchOmegaMultivariateModel : public ProbModel {
 
@@ -138,6 +177,27 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	bool iscalib;
 
 	public:
+
+	/*
+	double NeutralityIndexFactor(int nind, int jmax)	{
+
+		double total = 0;
+		for (int m=1; m<nind; m++)	{
+			double tot = 0;
+			int n = nind-m;
+			for (int j=2; j<=jmax; j++)	{
+				double tmp = Random::logGamma(m+j) - Random::logGamma(nind+j) - Random::logGamma(m+1) + Random::logGamma(nind+1);
+				tot += boost::math::zeta(j) * exp(tmp) / j;
+			}
+			cerr << m << '\t' << tot << '\n';
+			total += tot;
+		}
+		cerr << '\n';
+		cerr << "NI factor : " << total << '\n';
+		cerr << "NI(0.2)   : " << 1 + 0.2*total << '\n';
+		return total;
+	}
+	*/
 
 
 	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
@@ -773,6 +833,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				scheduler.Register(new SimpleMove(beta2,0.05),10,"beta2");
 				scheduler.Register(new SimpleMove(beta2,0.008),10,"beta2");
 				scheduler.Register(new SimpleMove(beta2,0.001),10,"beta2");
+
+				scheduler.Register(new GammaBetaMove(gamma,beta2,1,11),10,"gammabeta2");
+				scheduler.Register(new GammaBetaMove(gamma,beta2,0.1,11),10,"gammabeta2");
+				scheduler.Register(new GammaBetaMove(gamma,beta2,0.01,11),10,"gammabeta2");
 			}
 			
 		}

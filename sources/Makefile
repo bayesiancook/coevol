@@ -31,7 +31,7 @@ OBJS=$(patsubst %.cpp,%.o,$(SRCS))
 ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
-PROGSDIR=../data
+PROGSDIR=../
 ALL= nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 

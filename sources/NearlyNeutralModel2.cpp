@@ -147,6 +147,25 @@ class BranchOmegaMultivariateChain : public Chain	{
 	}
 };
 
+double NeutralityIndexFactor(int nind, int jmax)	{
+
+	double total = 0;
+	for (int m=1; m<nind; m++)	{
+		double tot = 0;
+		int n = nind-m;
+		for (int j=2; j<=jmax; j++)	{
+			double tmp = Random::logGamma(m+j) - Random::logGamma(nind+j) - Random::logGamma(m+1) + Random::logGamma(nind+1);
+			tot += boost::math::zeta(j) * exp(tmp) / j;
+		}
+		cerr << m << '\t' << tot << '\n';
+		total += tot;
+	}
+	cerr << '\n';
+	cerr << "NI factor : " << total << '\n';
+	cerr << "NI(0.2)   : " << 1 + 0.2*total << '\n';
+	return total;
+}
+
 int main(int argc, char* argv[])	{
 
 	if (argc == 2)	{
