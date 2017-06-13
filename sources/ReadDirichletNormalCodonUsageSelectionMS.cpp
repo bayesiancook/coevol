@@ -521,7 +521,7 @@ class DirichletNormalCodonUsageSelectionMSSample : public Sample	{
 				os1 << '\n';
 
 				for (int a=0; a<Naa; a++)	{
-					if (ppsel[k][i][a] > cutoff)	{
+                    if ((ppsel[k][i][a] > cutoff) || (ppsel[k][i][a] < 1-cutoff)) {
 						os2 << i << '\t' << a << '\t' << ppsel[k][i][a] << '\t' << meansel[k][i][a] << '\n';
 					}
 				}
