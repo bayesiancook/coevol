@@ -933,7 +933,7 @@ int main(int argc, char* argv[])	{
 	int sitemax = -1;
 
 	double alpha = 0.1;
-	double cutoff = 0.7;
+	double cutoff = 0.9;
 	string basename = "";
 
 	int fdr = 0;
