@@ -188,8 +188,15 @@ class MeanExpNormTree : public NewickTree {
 		threshold = 0;
 		withpp = false;
 		withdepth = false;
+
+        // log(scale);
+        logscale = 1.0;
 		Reset();
 	}
+
+    void SetLogScale(double inlogscale) {
+        logscale = log(inlogscale);
+    }
 
 	void ActivatePP(double inthreshold)	{
 		threshold = inthreshold;
@@ -275,7 +282,7 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit? exp(*i) / (1 + exp(*i)) : exp(*i));
+		return printlog ? *i : (logit? exp(*i * logscale) / (1 + exp(*i * logscale)) : exp(*i * logscale));
 	}
 	
 	
@@ -318,7 +325,7 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit ? exp(*i) / (1 + exp(*i)) : exp(*i));
+		return printlog ? *i : (logit ? exp(*i * logscale) / (1 + exp(*i * logscale)) : exp(*i * logscale));
 	}
 
 	double GetMax95Ne(const Node* node) const {
@@ -1027,6 +1034,8 @@ class MeanExpNormTree : public NewickTree {
 
 	double meanreg;
 	double stdevreg;
+
+    double logscale;
 
 	map<const Branch*,double> pp;
 	bool withpp;

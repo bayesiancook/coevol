@@ -1585,6 +1585,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 
 		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+        meanNe->SetLogScale(10.0);
 		
 		double alpha[dim];
 		
@@ -1659,6 +1660,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), GetModel()->GetL()+k);
 			}
 
+            if (! clampdiag)    {
 			CovMatrix& m = *(GetModel()->GetCovMatrix());
 			mat->Add(&m);
 			
@@ -1672,7 +1674,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 						mas1[i][j] = alpha[indice2] * m[indice2][j] + alpha[0] * m[0][j] + alpha[indice1] * m[indice1][j];
 					}	
 					else {	
-					mas1[i][j] = m[i][j];
+                        mas1[i][j] = m[i][j];
 					}
 				}
 			}
@@ -1683,7 +1685,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 						my1[i][j] = alpha[indice2] * mas1[i][indice2] + alpha[0] * mas1[i][0] + alpha[indice1] * mas1[i][indice1];
 					}	
 					else {	
-					my1[i][j] = mas1[i][j];
+                        my1[i][j] = mas1[i][j];
 					}
 				}
 			}
@@ -1698,7 +1700,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 						mas2[i][j] = alpha[indice2] * m[indice2][j] + alpha[0] * m[0][j] + alpha[indice1] * m[indice1][j];
 					}	
 					else {	
-					mas2[i][j] = m[i][j];
+                        mas2[i][j] = m[i][j];
 					}
 				}
 			}
@@ -1710,18 +1712,20 @@ class BranchOmegaMultivariateSample : public Sample	{
 						my2[i][j] = alpha[indice2] * mas2[i][indice2] + alpha[0] * mas2[i][0] + alpha[indice1] * mas2[i][indice1];
 					}	
 					else {	
-					my2[i][j] = mas2[i][j];
+                        my2[i][j] = mas2[i][j];
 					}
 				}
 			}
 		
 			maty1->Add(&my1);
 			maty2->Add(&my2);
+            }
 			
 		}
 		cerr << '\n';
 		cerr << "normalise\n";
 
+        if (! clampdiag)    {
 		mat->Normalize();
 		ofstream cout((GetName() + ".cov").c_str());
 
@@ -1756,6 +1760,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		maty2->PrintSlopes(cout2);
 		maty2->PrintSlopes2(cout2);
+        }
 
 		meanchrono->Normalise();
 		ofstream chos((GetName() + ".postmeandates.tre").c_str());
