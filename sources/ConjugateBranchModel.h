@@ -961,18 +961,20 @@ class BranchModel : public ProbModel {
 			scheduler.Register(new SimpleMove(logntree,0.01),10,"lognormal");
 			*/
 
-			scheduler.Register(new SimpleMove(sigmaalpha,10),100,"sigmaalpha");
-			scheduler.Register(new SimpleMove(sigmaalpha,1),100,"sigmaalpha");
-			scheduler.Register(new SimpleMove(sigmaalpha,0.1),100,"sigmaalpha");
+			if (! Unconstrained())	{
+				scheduler.Register(new SimpleMove(sigmaalpha,10),100,"sigmaalpha");
+				scheduler.Register(new SimpleMove(sigmaalpha,1),100,"sigmaalpha");
+				scheduler.Register(new SimpleMove(sigmaalpha,0.1),100,"sigmaalpha");
 
-			scheduler.Register(new SimpleMove(sigmabeta,10),100,"sigmabeta");
-			scheduler.Register(new SimpleMove(sigmabeta,1),100,"sigmabeta");
-			scheduler.Register(new SimpleMove(sigmabeta,0.1),100,"sigmabeta");
+				scheduler.Register(new SimpleMove(sigmabeta,10),100,"sigmabeta");
+				scheduler.Register(new SimpleMove(sigmabeta,1),100,"sigmabeta");
+				scheduler.Register(new SimpleMove(sigmabeta,0.1),100,"sigmabeta");
 
-			scheduler.Register(new SimpleMove(gamsynratetree,10),10,"ugam");
-			scheduler.Register(new SimpleMove(gamsynratetree,1),10,"ugam");
-			scheduler.Register(new SimpleMove(gamsynratetree,0.1),10,"ugam");
-			scheduler.Register(new SimpleMove(gamsynratetree,0.01),10,"ugam");
+				scheduler.Register(new SimpleMove(gamsynratetree,10),10,"ugam");
+				scheduler.Register(new SimpleMove(gamsynratetree,1),10,"ugam");
+				scheduler.Register(new SimpleMove(gamsynratetree,0.1),10,"ugam");
+				scheduler.Register(new SimpleMove(gamsynratetree,0.01),10,"ugam");
+			}
 
 			if (gc == 3)	{
 				scheduler.Register(new SimpleMove(gcalpha,10),100,"gcalpha");
