@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../
-ALL= nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
+ALL= branchmodel readbranchmodel readcoevol nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
