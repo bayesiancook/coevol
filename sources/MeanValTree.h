@@ -583,7 +583,7 @@ class MeanExpNormTree : public NewickTree {
 					os << GetMeanTime(from->GetBranch()) << '\t';
 				}
 				else	{
-					os << 0 << '\n';
+					os << 0 << '\t';
 				}
 			}
 			if (printmean)	{
