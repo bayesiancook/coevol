@@ -130,6 +130,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meanu_Ne = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);	
 	
+		meanu_Ne->SetLogScale(10.0);
+		meanNe->SetLogScale(10.0);
+
+		double alpha[dim];
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
 			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
@@ -160,10 +164,12 @@ class BranchOmegaMultivariateSample : public Sample	{
 			}	
 		}
 		
+		/*
 		MeanCovMatrix*  maty1 = new MeanCovMatrix(dim);
 		MeanCovMatrix*  maty2 = new MeanCovMatrix(dim);
 		MeanCovMatrix*  maty3 = new MeanCovMatrix(dim);
 		MeanCovMatrix*  maty4 = new MeanCovMatrix(dim);
+		*/
 		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
 		
 
@@ -196,6 +202,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			CovMatrix& m = *(GetModel()->GetCovMatrix());
 			mat->Add(&m);
 			
+			/*
 			double mas1_1[dim][dim];
 			double mas1_2[dim][dim];
 			double mas1_3[dim][dim];
@@ -390,13 +397,11 @@ class BranchOmegaMultivariateSample : public Sample	{
 				}
 			}
 			
-			
-			
-			
 			maty1->Add(&my1);
 			maty2->Add(&my2);
 			maty3->Add(&my3);
 			maty4->Add(&my4);
+			*/
 			
 		}
 		cerr << '\n';
@@ -413,6 +418,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		mat->PrintSlopes(cout);
 		mat->PrintSlopes2(cout);
 		
+		/*
 		maty1->Normalize();
 		ofstream cout1((GetName() + ".cov_all").c_str());
 
@@ -475,6 +481,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			maty4->PrintSlopes2(cout4);
 		}
 
+		*/
 
 		meanchrono->Normalise();
 		ofstream chos((GetName() + ".postmeandates.tre").c_str());

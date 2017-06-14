@@ -1585,8 +1585,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 
 		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-        meanNe->SetLogScale(10.0);
 		
+        meanNe->SetLogScale(10.0);
+
 		double alpha[dim];
 		
 		for (int i=0; i<dim; i++) {
@@ -1809,7 +1810,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		ooos.close();
 
 		ofstream NeNeos((GetName() + ".postmeanNe.tab").c_str());
-		meanNe->TabulateNe(NeNeos);
+		meanNe->Tabulate(NeNeos);
 		NeNeos.close();
 
 		for (int k=0; k<Ncont; k++)	{

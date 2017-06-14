@@ -189,14 +189,10 @@ class MeanExpNormTree : public NewickTree {
 		withpp = false;
 		withdepth = false;
 
-        // log(scale);
         logscale = 1.0;
+
 		Reset();
 	}
-
-    void SetLogScale(double inlogscale) {
-        logscale = log(inlogscale);
-    }
 
 	void ActivatePP(double inthreshold)	{
 		threshold = inthreshold;
@@ -205,6 +201,10 @@ class MeanExpNormTree : public NewickTree {
 	}
 
 	void SetLog() {printlog = true;}
+
+    void SetLogScale(double inscale)    {
+        logscale = log(inscale);
+    }
 
 	void SetPrintMean(bool inprintmean = true) {printmean = inprintmean;}
 
@@ -282,31 +282,9 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit? exp(*i * logscale) / (1 + exp(*i * logscale)) : exp(*i * logscale));
+		return printlog ? *i / logscale : (logit? exp(*i) / (1 + exp(*i)) : exp(*i));
 	}
 	
-	
-	double GetMin95Ne(const Node* node) const {
-		if (meanreg)	{
-			double tmp = _GetMeanLog(node) - 1.959964 * sqrt(_GetVarLog(node));
-			if (printlog)	{
-				return tmp;
-			}
-			else if (logit)	{
-				return pow(10,tmp) / (1 + pow(10,tmp));
-			}
-			return pow(10,tmp);
-		}
-		map<const Node*, list<double> >::const_iterator f = dist.find(node);
-		list<double> l = f->second;
-		list<double>::const_iterator i = l.begin();
-		int n = ((int) (((double) l.size()) / 100 * 2.5));
-		for (int j=0; j<n; j++)	{
-			i++;
-		}
-		return printlog ? *i : (logit? pow(10,*i) / (1 + pow(10,*i)) : pow(10,*i));
-	}
-
 	double GetMax95(const Node* node) const {
 		if (meanreg)	{
 			double tmp = _GetMeanLog(node) + 1.959964 * sqrt(_GetVarLog(node));
@@ -325,42 +303,15 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit ? exp(*i * logscale) / (1 + exp(*i * logscale)) : exp(*i * logscale));
+		return printlog ? *i / logscale : (logit ? exp(*i) / (1 + exp(*i)) : exp(*i));
 	}
-
-	double GetMax95Ne(const Node* node) const {
-		if (meanreg)	{
-			double tmp = _GetMeanLog(node) + 1.959964 * sqrt(_GetVarLog(node));
-			if (printlog)	{
-				return tmp;
-			}
-			else if (logit)	{
-				return pow(10,tmp) / (1 + pow(10,tmp));
-			}
-			return pow(10,tmp);
-		}
-		map<const Node*, list<double> >::const_iterator f = dist.find(node);
-		list<double> l = f->second;
-		list<double>::const_iterator i = l.begin();
-		int n = ((int) (((double) l.size()) / 100 * 97.5));
-		for (int j=0; j<n; j++)	{
-			i++;
-		}
-		return printlog ? *i : (logit ? pow(10,*i) / (1 + pow(10,*i)) : pow(10,*i));
-	}
-
 
 	double _GetMean(const Node* node) const	{
 		map<const Node*, double>::const_iterator i = mean.find(node);
 		return i->second;
 	}
 
-	double _GetMeanNe(const Node* node) const	{
-		map<const Node*, double>::const_iterator i = mean.find(node);
-		return i->second;
-	}
-
-	double _GetMeannew(const Node* node) const	{
+	double _GetMedian(const Node* node) const	{
 		map<const Node*, list<double> >::const_iterator f = dist.find(node);
 		list<double> l = f->second;
 		list<double>::const_iterator i = l.begin();
@@ -371,44 +322,17 @@ class MeanExpNormTree : public NewickTree {
 		return exp(*i);
 	}
 	
-	double _GetMeannewNe(const Node* node) const	{
-		map<const Node*, list<double> >::const_iterator f = dist.find(node);
-		list<double> l = f->second;
-		list<double>::const_iterator i = l.begin();
-		int n = ((int) (((double) l.size()) / 100 * 50));
-		for (int j=0; j<n; j++)	{
-			i++;
-		}
-		return pow(10,*i);
-	}
-
 	double _GetVar(const Node* node) const	{
 		map<const Node*, double>::const_iterator i = var.find(node);
 		return i->second;
 	}
 	
-	double _GetVarNe(const Node* node) const	{
-		map<const Node*, double>::const_iterator i = var.find(node);
-		return pow(10,log(i->second));
-	}
-
 	double _GetMeanLog(const Node* node) const	{
 		map<const Node*, double>::const_iterator i = meanlog.find(node);
 		if (meanreg)	{
 			return meanreg * i->second + stdevreg;
 		}
-		return i->second;
-	}
-
-	double _GetMeannewLog(const Node* node) const	{
-		map<const Node*, list<double> >::const_iterator f = dist.find(node);
-		list<double> l = f->second;
-		list<double>::const_iterator i = l.begin();
-		int n = ((int) (((double) l.size()) / 100 * 50));
-		for (int j=0; j<n; j++)	{
-			i++;
-		}
-		return *i;
+		return i->second / logscale;
 	}
 
 	double _GetVarLog(const Node* node) const	{
@@ -418,7 +342,7 @@ class MeanExpNormTree : public NewickTree {
 			return meanreg * meanreg * i->second;
 			// return meanreg * meanreg * i->second + j->second * j->second * stdevreg * stdevreg;
 		}
-		return i->second;
+		return i->second / logscale / logscale;
 	}
 
 	double GetMeanTime(const Branch* branch) const	{
@@ -435,26 +359,14 @@ class MeanExpNormTree : public NewickTree {
 		return printlog ? _GetMeanLog(node) : _GetMean(node);
 	}
 	
-	double GetMeanNe(const Node* node) const {
-		return printlog ? _GetMeanLog(node) : _GetMeanNe(node);
-	}
-
-	double GetMeannew(const Node* node) const {
-		return printlog ? _GetMeannewLog(node) : _GetMeannew(node);
+	double GetMedian(const Node* node) const {
+		return printlog ? log(GetMedian(node)) / logscale : _GetMedian(node);
 	}
 	
-	double GetMeannewNe(const Node* node) const {
-		return printlog ? _GetMeannewLog(node) : _GetMeannewNe(node);
-	}
-
 	double GetVar(const Node* node) const {
 		return printlog ? _GetVarLog(node) : _GetVar(node);
 	}
 	
-	double GetVarNe(const Node* node) const {
-		return printlog ? _GetVarLog(node) : _GetVarNe(node);
-	}
-
 	string GetNodeName(const Link* link) const {
 		ostringstream s;
 		bool empty = true;
@@ -605,10 +517,6 @@ class MeanExpNormTree : public NewickTree {
 		RecursiveTabulate(os,GetTree()->GetRoot());
 	}
 	
-	void TabulateNe(ostream& os)	{
-		RecursiveTabulateNe(os,GetTree()->GetRoot());
-	}
-
 	void TabulatePP(ostream& os)	{
 		RecursiveTabulatePP(os,GetTree()->GetRoot());
 	}
@@ -699,36 +607,6 @@ class MeanExpNormTree : public NewickTree {
 		}
 	}
 	
-	void RecursiveTabulateNe(ostream& os, Link* from)	{
-		if ((from->isLeaf() && withleaf) || ((! from->isLeaf()) && (withinternal)))	{
-			os << GetTree()->GetLeftMost(from) << '\t' << GetTree()->GetRightMost(from) << '\t';
-			if (withdepth)	{
-				os << GetDepth(from) << '\t';
-			}
-			else	{
-				os << GetMeanTime(from->GetBranch()) << '\t';
-			}
-			if (printmean)	{
-				os << GetMeanNe(from->GetNode()) << '\t';
-			}
-			if (printstdev)	{
-				if (! isFixed(from->GetNode()))	{
-					os << sqrt(GetVarNe(from->GetNode())) << '\t';
-				}
-				else	{
-					os << 0 << '\t';
-				}
-			}
-			if (printci)	{
-				os << GetMin95Ne(from->GetNode()) << '\t' << GetMax95Ne(from->GetNode()) << '\t';
-			}
-			os << '\n';
-		}
-		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
-			RecursiveTabulateNe(os,link->Out());
-		}
-	}
-
 	void RecursiveTabulateDistribution(ostream& os, Link* from)	{
 		/*
 		if (fabs(var[from->GetNode()]) > 1e-6)	{
@@ -820,14 +698,22 @@ class MeanExpNormTree : public NewickTree {
 		}
 	}
 	
-	
 	void RecursiveAddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, double alpha[], double beta, int dim, int indice1, int indice2, double offset)	{
 		double tmp(0);
+
+        /*
 		tmp += alpha[0] * ((* sample->GetNodeVal(from->GetNode()))[0])/log(10);
 		tmp += alpha[indice1] * ((* sample->GetNodeVal(from->GetNode()))[indice1])/log(10);
 		tmp += alpha[indice2] * ((* sample->GetNodeVal(from->GetNode()))[indice2])/log(10);
 		tmp += beta;
 		tmp += offset;
+        */
+		tmp += alpha[0] * ((* sample->GetNodeVal(from->GetNode()))[0]);
+		tmp += alpha[indice1] * ((* sample->GetNodeVal(from->GetNode()))[indice1]);
+		tmp += alpha[indice2] * ((* sample->GetNodeVal(from->GetNode()))[indice2]);
+		tmp += beta*log(10.0);
+		tmp += offset*log(10.0);
+
 		if (from->isRoot())	{
 			meanroot = tmp;
 		}
@@ -1016,6 +902,8 @@ class MeanExpNormTree : public NewickTree {
 	int size;
 	bool logit;
 
+    double logscale;
+
 	int leafsize;
 	double meanleaf;
 	double meanroot;
@@ -1034,8 +922,6 @@ class MeanExpNormTree : public NewickTree {
 
 	double meanreg;
 	double stdevreg;
-
-    double logscale;
 
 	map<const Branch*,double> pp;
 	bool withpp;
