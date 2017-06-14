@@ -330,6 +330,19 @@ class SequenceAlignment	{
 		return Data[taxon][site] == -1;
 	}
 
+    void MissingFractionPerTaxon(ostream& os)   {
+        for (int tax=0; tax<GetNtaxa(); tax++)  {
+            double frac = 0;
+            for (int i=0; i<GetNsite(); i++)    {
+                if (Data[tax][i] == unknown) {
+                    frac++;
+                }
+            }
+            frac /= GetNsite();
+            os << taxset->GetTaxon(tax) << '\t' << frac << '\n';
+        }
+    }
+
 	bool AllMissingTaxon(int tax)	{
 		bool ret = true;
 		int site = 0;
