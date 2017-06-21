@@ -692,10 +692,10 @@ int main(int argc, char* argv[])	{
 			else if (s == "-log")	{
 				printlog = false;
 			}
-			else if (s == "+mean")	{
+			else if (s == "+med")	{
 				printmean = true;
 			}
-			else if (s == "-mean")	{
+			else if (s == "-med")	{
 				printmean = false;
 			}
 			else if (s == "+stdev")	{

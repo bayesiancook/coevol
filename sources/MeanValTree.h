@@ -360,7 +360,7 @@ class MeanExpNormTree : public NewickTree {
 	}
 	
 	double GetMedian(const Node* node) const {
-		return printlog ? log(GetMedian(node)) / logscale : _GetMedian(node);
+		return printlog ? log(_GetMedian(node)) / logscale : _GetMedian(node);
 	}
 	
 	double GetVar(const Node* node) const {
@@ -378,7 +378,8 @@ class MeanExpNormTree : public NewickTree {
 			if (! empty)	{
 				s << '_';
 			}
-			s << GetMean(link->GetNode());
+			s << GetMedian(link->GetNode());
+			// s << GetMean(link->GetNode());
 			empty = false;
 		}
 		if ((! printmean) || (! isFixed(link->GetNode())))	{
@@ -587,7 +588,8 @@ class MeanExpNormTree : public NewickTree {
 				}
 			}
 			if (printmean)	{
-				os << GetMean(from->GetNode()) << '\t';
+				os << GetMedian(from->GetNode()) << '\t';
+				// os << GetMean(from->GetNode()) << '\t';
 			}
 			if (printstdev)	{
 				if (! isFixed(from->GetNode()))	{
