@@ -178,26 +178,29 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	public:
 
-	/*
+    /*
 	double NeutralityIndexFactor(int nind, int jmax)	{
 
+
+        double denom = 0;
+        for (int k=1; k<2*nind; k++)    {
+            denom += 1.0 / k;
+        }
+
 		double total = 0;
-		for (int m=1; m<nind; m++)	{
-			double tot = 0;
-			int n = nind-m;
-			for (int j=2; j<=jmax; j++)	{
-				double tmp = Random::logGamma(m+j) - Random::logGamma(nind+j) - Random::logGamma(m+1) + Random::logGamma(nind+1);
-				tot += boost::math::zeta(j) * exp(tmp) / j;
-			}
-			cerr << m << '\t' << tot << '\n';
-			total += tot;
-		}
-		cerr << '\n';
+        for (int j=2; j<=jmax; j++)	{
+            double z = boost::math::zeta(j) / j;
+            double num = 0;
+            for (int k=1; k<2*nind; k++)    {
+                num += exp(Random::logGamma(2*nind+1) - Random::logGamma(k+1) - Random::logGamma(2*nind-k+1) + Random::logGamma(k) + Random::logGamma(2*nind-k+j) - Random::logGamma(2*nind+j));
+            }
+            total += z * num / denom;
+        }
 		cerr << "NI factor : " << total << '\n';
 		cerr << "NI(0.2)   : " << 1 + 0.2*total << '\n';
 		return total;
 	}
-	*/
+    */
 
 
 	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
