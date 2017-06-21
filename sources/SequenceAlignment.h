@@ -117,6 +117,66 @@ class SequenceAlignment	{
 		}
 	}
 
+	SequenceAlignment(SequenceAlignment* from, double missingfrac)	{
+
+		int n = 0;
+		for (int i=0; i<from->GetNsite(); i++)	{
+			if (from->MissingFrac(i) < missingfrac)	{
+				n++;
+			}
+		}
+		statespace = from->statespace;
+		taxset = from->taxset;
+		Ntaxa = from->GetNtaxa();
+		Nsite = n;
+		Data = new int*[Ntaxa];
+		for (int k=0; k<Ntaxa; k++)	{
+			Data[k] = new int[Nsite];
+		}
+		int j = 0;
+		for (int i=0; i<from->GetNsite(); i++)	{
+			if (from->MissingFrac(i) < missingfrac)	{
+				for (int k=0; k<Ntaxa; k++)	{
+					Data[k][j] = from->Data[k][i];
+				}
+				j++;
+			}
+		}
+	}
+
+	SequenceAlignment(SequenceAlignment* from, string nonmissingtaxon)	{
+
+        cerr << "non missing\n";
+        cerr << nonmissingtaxon << '\n';
+        int j0 = from->GetTaxonSet()->GetTaxonIndex(nonmissingtaxon);
+
+        cerr << "taxon index: " << j0 << '\n';
+
+		int n = 0;
+		for (int i=0; i<from->GetNsite(); i++)	{
+			if (from->Data[j0][i] != unknown)   {
+				n++;
+			}
+		}
+		statespace = from->statespace;
+		taxset = from->taxset;
+		Ntaxa = from->GetNtaxa();
+		Nsite = n;
+		Data = new int*[Ntaxa];
+		for (int k=0; k<Ntaxa; k++)	{
+			Data[k] = new int[Nsite];
+		}
+		int j = 0;
+		for (int i=0; i<from->GetNsite(); i++)	{
+			if (from->Data[j0][i] != unknown)   {
+				for (int k=0; k<Ntaxa; k++)	{
+					Data[k][j] = from->Data[k][i];
+				}
+				j++;
+			}
+		}
+	}
+
 	void MaskOutgroup(string* group1, string* group2, int n1, int n2)	{
 		int nrem = 0;
 		int npos = 0;
@@ -180,33 +240,6 @@ class SequenceAlignment	{
 		}
 		cerr << "number of positions masked   : " << npos << '\n';
 		cerr << "total number of cells masked : " << nrem << '\n';
-	}
-
-	SequenceAlignment(SequenceAlignment* from, double missingfrac)	{
-
-		int n = 0;
-		for (int i=0; i<from->GetNsite(); i++)	{
-			if (from->MissingFrac(i) < missingfrac)	{
-				n++;
-			}
-		}
-		statespace = from->statespace;
-		taxset = from->taxset;
-		Ntaxa = from->GetNtaxa();
-		Nsite = n;
-		Data = new int*[Ntaxa];
-		for (int k=0; k<Ntaxa; k++)	{
-			Data[k] = new int[Nsite];
-		}
-		int j = 0;
-		for (int i=0; i<from->GetNsite(); i++)	{
-			if (from->MissingFrac(i) < missingfrac)	{
-				for (int k=0; k<Ntaxa; k++)	{
-					Data[k][j] = from->Data[k][i];
-				}
-				j++;
-			}
-		}
 	}
 
 	void Mask(SequenceAlignment* from)	{
