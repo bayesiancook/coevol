@@ -17,6 +17,8 @@
 #include "CodonSubMatrix.h"
 #include "CodonSequenceAlignment.h"
 #include "CalibratedChronogram.h"
+#include "BDChronogram.h"
+#include "BDCalibratedChronogram.h"
 #include "BranchProcess.h"
 #include "OneMatrixPhyloProcess.h"
 #include "ContinuousData.h"
@@ -105,6 +107,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	
 	Const<PosReal>* K;
 
+	double meanchi;
+	double meanchi2;
+	Const<PosReal>* MeanChi;
+	Const<PosReal>* MeanChi2;
+	Rvar<PosReal>* Chi;
+	Rvar<PosReal>* Chi2;
+
 	Chronogram* chronogram;
 
 	JeffreysIIDArray* DiagArray;
@@ -139,12 +148,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	NeLinearCombinationNodeTree* nodeNetree;
 	
 
-	MeanExpTreeFromMultiVariate* adaptativeomegatree;
-	MeanExpTree* neutralomegatree;
 	MeanExpTree* omegatree;
-	MeanExpTree* utree;
 	MeanExpTree* synratetree;
-	MeanExpTree* Netree;
 
 	// nucleotide mutation matrix is relrate * stationary
 	Dirichlet* relrate;
@@ -175,6 +180,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	int df;
 
 	bool iscalib;
+	int chronoprior;
 
 	public:
 
@@ -203,10 +209,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
     */
 
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
 
 		// if we want the divergence times to be fixed
 		clamptree = inclamptree;
+		chronoprior = inchronoprior;
 
 		// arithmetic / geodesic averages (see Poujol et al)
 		meanexp = inmeanexp;
@@ -280,13 +287,44 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			*/
 		}
 
+
+		MeanChi = 0;
+		MeanChi2 = 0;
+		Chi = 0;
+		Chi2 = 0;
+		meanchi = -1;
+		meanchi2 = -1;
+
 		cerr << "new chrono\n";
 		if (calibfile != "None")	{
 			iscalib = true;
 			double a = rootage * rootage / rootstdev / rootstdev;
 			double b = rootage / rootstdev / rootstdev;
+
+			if (rootage == -1)	{
+				a = b = -1;
+			}
+
 			CalibrationSet* calibset = new FileCalibrationSet(calibfile, tree);
-			chronogram = new CalibratedChronogram(tree,One,a,b,calibset);
+
+			if (chronoprior == 0)	{
+				chronogram = new CalibratedChronogram(tree,One,a,b,calibset);
+			}
+			else {
+				if (meanchi != -1)	{
+					MeanChi = new Const<PosReal>(meanchi);
+					MeanChi2 = new Const<PosReal>(meanchi2);
+					Chi = new Exponential(MeanChi,Exponential::MEAN);
+					Chi2 = new Exponential(MeanChi2,Exponential::MEAN);
+				}
+				else	{
+					double min = 1e-6;
+					double max = 1e6;
+					Chi = new Jeffreys(min,max,Zero);
+					Chi2 = new Jeffreys(min,max,Zero);
+				}
+				chronogram = new BDCalibratedChronogram(tree,One,Chi,Chi2,a,b,calibset,chronoprior);
+			}
 		}
 		else	{
 			iscalib = false;
@@ -364,9 +402,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// this is because the first L entries of the process correspond to the substitution variables (mut)
 
-		for (int i=0; i<Ncont; i++)	{
-			process->SetAndClamp(contdata,L+i,i,contdatatype);
-		}
+        for (int i=0; i<Ncont; i++)	{
+            process->SetAndClamp(contdata,L+i,i,contdatatype);
+        }
 
 		//create the combination factors 
 		
@@ -405,13 +443,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		// create the branch lengths resulting from combining
 		
-		neutralomegatree = new MeanExpTree(nodeneutralomegatree, chronogram, INTEGRAL, false);
-		
-		Netree = new MeanExpTree(nodeNetree, chronogram, INTEGRAL, false);
-
-		utree = new MeanExpTree(nodeutree, chronogram, INTEGRAL, false);
-	
-
 		// the times given by the chronogram with the rate 
 		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL, false);
 
@@ -420,7 +451,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (noadapt) {omegatree = new MeanExpTree(nodeneutralomegatree, chronogram, MEAN, false);}
 		
 		// create u on each branch, nased on the third entry of the multivariate process
-		if (!noadapt) {adaptativeomegatree = new MeanExpTreeFromMultiVariate(process,0,MEAN,false,meanexp);}
 
 		cerr << "matrix\n";
 
@@ -459,6 +489,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		RootRegister(beta);
 		if (!sameseq) {RootRegister(beta2);}
 		RootRegister(absrootage);
+		if (MeanChi)	{
+			RootRegister(MeanChi);
+			RootRegister(MeanChi2);
+		}
 		Register();
 
 		MakeScheduler();
@@ -477,16 +511,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		DeleteSynrateSlope();
 		DeleteNeSlope();
 		}
-	
-	
-	double factorielle (int k) {
-		if (k<=1) {
-			return 1;
-		}
-		else {
-			return(k * factorielle(k-1));
-		}
-	}	
 	
 	
 	void CreateUSlope() {
@@ -752,6 +776,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		double total = 0;
 
 		total += chronogram->GetLogProb();
+		if (chronoprior)	{
+			total += Chi->GetLogProb();
+			total += Chi2->GetLogProb();
+		}
 		total += DiagArray->GetLogProb();
 		total += sigma->GetLogProb();
 		total += process->GetLogProb();
@@ -793,6 +821,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.1),10,"root age");
 				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.01),10,"root age");
 				scheduler.Register(new SimpleMove(GetCalibratedChronogram()->GetScale(),0.001),10,"root age");
+
+				if (chronoprior)	{
+					scheduler.Register(new SimpleMove(Chi,1),10,"bd hyper");
+					scheduler.Register(new SimpleMove(Chi,0.1),10,"bd hyper");
+					scheduler.Register(new SimpleMove(Chi2,1),10,"bd hyper");
+					scheduler.Register(new SimpleMove(Chi2,0.1),10,"bd hyper");
+				}
 			}
 
 			int n = taxonset->GetNtaxa() * 100;
@@ -846,6 +881,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	}
 
 	void drawSample()	{
+		if (chronoprior)	{
+			Chi->Sample();
+			Chi2->Sample();
+		}
 		chronogram->Sample();
 		DiagArray->Sample();
 		sigma->Sample();
@@ -897,6 +936,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		os << "\tstatent";
 		os << "\trrent";
+		if (chronoprior)	{
+			os << "\tchronologprior";
+			os << "\tdelta\tkappa";
+		}
 		os << '\n';
 	}
 
@@ -930,6 +973,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		os << '\t' << stationary->val().GetEntropy();
 		os << '\t' << relrate->val().GetEntropy();
+		if (chronoprior)	{
+			os << '\t' << chronogram->GetLogProb();
+			os << '\t' << Chi->val() << '\t' << Chi2->val();
+		}
+
 		os << '\n';
 		os.flush();
 	}
@@ -939,6 +987,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << *chronogram << '\n';
 		if (isCalibrated())	{
 			os << *GetCalibratedChronogram()->GetScale() << '\n';
+			if (chronoprior)	{
+				os << *Chi << '\t' << *Chi2 << '\n';
+			}
 		}
 		os << *DiagArray << '\n';
 		os << *sigma << '\n';
@@ -954,6 +1005,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		is >> *chronogram;
 		if (isCalibrated())	{
 			is >> *GetCalibratedChronogram()->GetScale();
+			if (chronoprior)	{
+				is >> *Chi >> *Chi2;
+			}
 		}
 		is >> *DiagArray;
 		is >> *sigma;

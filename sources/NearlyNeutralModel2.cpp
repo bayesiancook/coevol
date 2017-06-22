@@ -11,6 +11,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 	string treefile;
 	string contdatafile;
 	string calibfile;
+	int chronoprior;
 
 	double rootage;
 	double rootstdev;
@@ -33,7 +34,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 
 	string GetModelType() {return modeltype;}
 
-	BranchOmegaMultivariateChain(string indata, string intree, string incontdata, string incalibfile, double inrootage, double inrootstdev, double inpriorsigma, int indf, GeneticCodeType intype, int incontdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, string filename, int force = 1)	{
+	BranchOmegaMultivariateChain(string indata, string intree, string incontdata, string incalibfile, double inrootage, double inrootstdev, int inchronoprior, double inpriorsigma, int indf, GeneticCodeType intype, int incontdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, string filename, int force = 1)	{
 		modeltype = "CONJUGATEBRANCHOMEGAMULTIVARIATE";
 
 		type = intype;
@@ -43,6 +44,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		calibfile = incalibfile;
 		rootage = inrootage;
 		rootstdev = inrootstdev;
+		chronoprior = inchronoprior;
 		priorsigma = inpriorsigma;
 		df = indf;
 		contdatatype = incontdatatype;
@@ -62,12 +64,13 @@ class BranchOmegaMultivariateChain : public Chain	{
 		df = 2;
 		clamptree = false;
 		meanexp = false;
+		chronoprior = 0;
 		Open();
 	}
 
 	void New(int force)	{
 		if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,contdatatype,sameseq,noadapt,clamptree,meanexp,nrep,true,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,contdatatype,sameseq,noadapt,clamptree,meanexp,nrep,true,type);
 		}
 		else	{
 			cerr << "error, does not recognise model type : " << modeltype << '\n';
@@ -99,14 +102,18 @@ class BranchOmegaMultivariateChain : public Chain	{
 		int check;
 		is >> check;
 		if (check)	{
-			cerr << "error when reading model\n";
-			exit(1);
+			is >> chronoprior;
+			is >> check;
+			if (check)	{
+				cerr << "error when reading model\n";
+				exit(1);
+			}
 		}
 
 		is >> every >> until >> size;
 
 		if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,contdatatype,sameseq,noadapt,clamptree,meanexp,nrep,true,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,contdatatype,sameseq,noadapt,clamptree,meanexp,nrep,true,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -132,6 +139,8 @@ class BranchOmegaMultivariateChain : public Chain	{
 		param_os << df << '\n';
 		param_os << priorsigma << '\n';
 		param_os << clamptree << '\n';
+		param_os << 1 << '\n';
+		param_os << chronoprior << '\n';
 		param_os << 0 << '\n';
 		param_os << every << '\t' << until << '\t' << size << '\n';
 		model->ToStream(param_os);
@@ -187,6 +196,8 @@ int main(int argc, char* argv[])	{
 		string calibfile = "None";
 		double rootage = 0;
 		double rootstdev = 0;
+
+		int chronoprior = 0;
 
 		string name = "";
 		bool sameseq = false;
@@ -255,6 +266,12 @@ int main(int argc, char* argv[])	{
 						exit(1);
 					}
 					rootstdev = atof(argv[i]);
+				}
+				else if (s == "-unif")	{
+					chronoprior = 0;
+				}
+				else if (s == "-bd")	{
+					chronoprior = 1;
 				}
 				else if (s == "-calspe")	{
 					i++;
@@ -339,7 +356,7 @@ int main(int argc, char* argv[])	{
 			exit(1);
 		}
 
-		BranchOmegaMultivariateChain* chain = new BranchOmegaMultivariateChain(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,priorsigma,df,type,contdatatype,sameseq,noadapt,clamptree,meanexp,nrep,name,force);
+		BranchOmegaMultivariateChain* chain = new BranchOmegaMultivariateChain(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,type,contdatatype,sameseq,noadapt,clamptree,meanexp,nrep,name,force);
 		chain->SetEvery(every);
 		chain->SetUntil(until);
 		cerr << "start\n";
