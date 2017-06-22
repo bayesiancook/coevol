@@ -250,11 +250,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (contdatafile != "None")	{
 			contdata = new FileContinuousData(contdatafile);
 			Ncont = contdata->GetNsite();
-            if (Ncont < 3) {
-                cerr << "error: should have at least pis pinpis and gen time\n";
+            if (Ncont < 4) {
+                cerr << "error: should have at least M pis pin and gentime\n";
                 exit(1);
             }
-            cerr << "assume first column of data: pis, second column pinpis, and third column gentime\n";
+            cerr << "assume first column of data: M, second pis, third pin and fourth gentime\n";
 		}
 		else	{
             cerr << "error: should give cont data file\n";
@@ -349,10 +349,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// Ncont : number of quantitative traits
 		// L : number of substitution parameters coevolving with traits (typically, 2: dS and dN/dS).
-		// create an array of positive variables kappa_i, i=1..Ncont + L
+		// create an array of positive variables kappa_i, i=1..Ncont + L - 1
 		double mindiag = 0.01;
 		double maxdiag = 100;
-		DiagArray = new JeffreysIIDArray(Ncont+L,mindiag,maxdiag,Zero);
+		DiagArray = new JeffreysIIDArray(Ncont+L-1,mindiag,maxdiag,Zero);
 		if (priorsigma == -1)	{
 			DiagArray->setval(1.0);
 		}
@@ -365,45 +365,44 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// create covariance matrix
 		// from an inverse wishart of parameter sigma0
 		// and df degrees of freedom
-		df = Ncont + L + indf;
+		df = Ncont + L - 1 + indf;
 		cerr << "sigma\n";
 		sigma = new ConjugateInverseWishart(sigmaZero, df);
 
-		// create a multivariate brownian process (of dimension Ncont + L)
+		// create a multivariate brownian process (of dimension Ncont + L - 1)
 		// along the chronogram, and with covariance matrix sigma
 		cerr << "process\n";
 		process = new ConjugateMultiVariateTreeProcess(sigma,chronogram);
 		process->Reset();
 		
-		string char1("piS");
-		string char2("piNpiS");
-		string char3("generation_time");
-        if (GetContinuousData()->GetCharacterName(0)!=char1) {
-            cerr << "error: piS should be first column of continuous data\n";
+        if (GetContinuousData()->GetCharacterName(0)!="Npos") {
+            cerr << "error: Npos should be column 1 of continuous data\n";
             exit(1);
         }	
-        if (GetContinuousData()->GetCharacterName(0)!=char1) {
-            cerr << "error: piS should be first column of continuous data\n";
+        if (GetContinuousData()->GetCharacterName(1)!="mS") {
+            cerr << "error: mS should be column 2 of continuous data\n";
             exit(1);
         }	
-        if (GetContinuousData()->GetCharacterName(0)!=char1) {
-            cerr << "error: piS should be first column of continuous data\n";
+        if (GetContinuousData()->GetCharacterName(2)!="mN") {
+            cerr << "error: mN should be column 3 of continuous data\n";
+            exit(1);
+        }	
+        if (GetContinuousData()->GetCharacterName(3)!="generation_time") {
+            cerr << "error: generation_time should be column 4 of continuous data\n";
             exit(1);
         }	
 
-        /*
-        for (int i=0; i<3; i++) {
-            process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(i), i+L, 1);
-        }
-        */
+        process->PiecewiseTranslation(log(0.00000001), L, 1);
+        process->PiecewiseTranslation(log(100000.0), L+1, 1);
 		
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
 		// note the offset here : first trait corresponds to entry L+1 of the process, etc.
         // also, we do not clamp for piS and piNpiS
 
-        for (int i=2; i<Ncont; i++)	{
-            process->SetAndClamp(contdata,L+i,i,contdatatype);
+        for (int i=3; i<Ncont; i++)	{
+            process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(i), L+i-1, 1);
+            process->SetAndClamp(contdata,L+i-1,i,contdatatype);
         }
 
 		//create the combination factors 
@@ -414,27 +413,38 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (!sameseq) {beta2 = new Normal(Zero, One);}
 		
 		gamma->setval(0.2);
-		beta->setval(0.9);
-		if (!sameseq) {beta2->setval(0.4);}
+		beta->setval(0);
+		if (!sameseq) {beta2->setval(0);}
 		
-		//create the slopes which define the linear combination
 		
+        cerr << "linear combinations\n";
         logNevar = new Gamma(One,One);
         leafvalues = new Var<RealVector>*[Ntaxa];
+        for (int i=0; i<Ntaxa; i++) {
+            leafvalues[i] = 0;
+        }
         process->GetLeafPtrArray(leafvalues,contdata);
+        for (int i=0; i<Ntaxa; i++) {
+            if (! leafvalues[i])    {
+                cerr << "error in leafvalues\n";
+                cerr << i << '\n';
+                exit(1);
+            }
+        }
 
         logNearray = new LogNe*[Ntaxa];
         synarray = new SynNumber*[Ntaxa];
         nonsynarray = new NonSynNumber*[Ntaxa];
+        int npol = 0;
         for (int i=0; i<Ntaxa; i++) {
-				int ms = (int) contdata->GetState(i, 0);
-				int mn = (int) contdata->GetState(i, 1);
-                int mtot = (int) contdata->GetState(i,3);
-                if (ms != -1)   {
-                    cerr << ms << '\t' << mn << '\t' << mtot << '\n';
+                int npos = (int) contdata->GetState(i,0);
+				int ms = (int) (npos * contdata->GetState(i, 1));
+				int mn = (int) (npos * contdata->GetState(i, 2));
+                if (npos != -1)   {
+                    npol++;
                     logNearray[i] = new LogNe(leafvalues[i],logNevar,L);
-                    synarray[i] = new SynNumber(leafvalues[i],logNearray[i],L,mtot);
-                    nonsynarray[i] = new NonSynNumber(leafvalues[i],logNearray[i],gamma,beta2,0,L,mtot);
+                    synarray[i] = new SynNumber(leafvalues[i],logNearray[i],L,npos);
+                    nonsynarray[i] = new NonSynNumber(leafvalues[i],logNearray[i],gamma,beta2,0,L,npos);
                     synarray[i]->ClampAt(ms);
                     nonsynarray[i]->ClampAt(mn);
                 }
@@ -444,12 +454,18 @@ class BranchOmegaMultivariateModel : public ProbModel {
                     nonsynarray[i] = 0;
                 }
         }
+        cerr << npol << " taxa with polymorphism data\n";
 
         nodesynratetree = new SynRateLinearCombinationNodeTree(process,absrootage,L);
         nodeomegatree = new OmegaLinearCombinationNodeTree(process,gamma,beta,L);
 		
 		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL, false);
 		omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN, false);
+        cerr << *nodesynratetree << '\n';
+        cerr << '\n';
+        cerr << *synratetree << '\n';
+        cerr << '\n';
+        cerr << *omegatree << '\n';
 
 		cerr << "matrix\n";
 
@@ -709,13 +725,14 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				scheduler.Register(new GammaBetaMove(gamma,beta2,0.01,11),10,"gammabeta2");
 			}
 			
+			scheduler.Register(new SimpleMove(logNevar,3),100,"logNe var");
 			scheduler.Register(new SimpleMove(logNevar,1),100,"logNe var");
 			scheduler.Register(new SimpleMove(logNevar,0.1),100,"logNe var");
             for (int i=0; i<Ntaxa; i++) {
                 if (logNearray[i])  {
-                    scheduler.Register(new SimpleMove(logNearray[i],1),10,"logNe");
-                    scheduler.Register(new SimpleMove(logNearray[i],0.1),10,"logNe");
-                    scheduler.Register(new SimpleMove(logNearray[i],0.01),10,"logNe");
+                    scheduler.Register(new SimpleMove(logNearray[i],1),100,"logNe");
+                    scheduler.Register(new SimpleMove(logNearray[i],0.1),100,"logNe");
+                    scheduler.Register(new SimpleMove(logNearray[i],0.01),100,"logNe");
                 }
             }
 		}
@@ -766,18 +783,18 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << "\tbeta";
 		if (!sameseq) {os << "\tbeta2";}
         os << "\tlogNevar";
-        for (int k=0; k<Ncont+L; k++)   {
+        for (int k=0; k<Ncont+L-1; k++)   {
             os << "\tmean_" << k;
         }
-        for (int k=0; k<Ncont+L; k++)   {
+        for (int k=0; k<Ncont+L-1; k++)   {
             os << "\troot_" << k;
         }
-		for (int k=0; k<Ncont+L; k++)	{
-			for (int l=k+1; l<Ncont+L; l++)	{
+		for (int k=0; k<Ncont+L-1; k++)	{
+			for (int l=k+1; l<Ncont+L-1; l++)	{
 				os << '\t' << "sigma_" << k << '_' << l;
 			}
 		}
-		for (int k=0; k<Ncont+L; k++)	{
+		for (int k=0; k<Ncont+L-1; k++)	{
 			os << '\t' << "sigma_" << k << '_' << k;
 		}
 		os << "\tstatent";
@@ -802,20 +819,20 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << '\t' << beta->val();
 		if (!sameseq) {os << '\t' << beta2->val();}
         os << '\t' << logNevar->val();
-		for (int k=0; k<Ncont+L; k++)	{
+		for (int k=0; k<Ncont+L-1; k++)	{
             os << '\t' << process->GetMean(k);
         }
 
-		for (int k=0; k<Ncont+L; k++)	{
+		for (int k=0; k<Ncont+L-1; k++)	{
             os << '\t' << process->GetVal(tree->GetRoot(),k);
         }
 
-		for (int k=0; k<Ncont+L; k++)	{
-			for (int l=k+1; l<Ncont+L; l++)	{
+		for (int k=0; k<Ncont+L-1; k++)	{
+			for (int l=k+1; l<Ncont+L-1; l++)	{
 				os << '\t' << (*sigma)[k][l];
 			}
 		}
-		for (int k=0; k<Ncont+L; k++)	{
+		for (int k=0; k<Ncont+L-1; k++)	{
 			os << '\t' << (*sigma)[k][k];
 		}
 		os << '\t' << stationary->val().GetEntropy();

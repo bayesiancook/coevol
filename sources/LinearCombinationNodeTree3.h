@@ -22,9 +22,9 @@ class SynRateLinearCombination : public Dvar<Real> {
 			
 		
 	void specialUpdate() {
-        // dS = u * gentime per tree depth = u * gentime per day * # days per tree depth
+        // dS = u / gentime per tree depth = u / # days per generation * # days per tree depth
         // rootage is assumed to be in Myr
-        double a = (*x)[L] + (*x)[L+2] + log(rootage->val() * 365 * 1000 * 1000);
+        double a = (*x)[L] - (*x)[L+2] + log(rootage->val() * 365 * 1000 * 1000);
 		setval(a);	
 	}
 		
@@ -176,8 +176,11 @@ class LogNe: public Rvar<Real> {
 	}
 			
     void drawSample()   {
+        /*
         double v = (*x)[L+1] + sqrt(var->val()) * Random::sNormal();
         setval(v);
+        */
+        setval((*x)[L+1]);
     }
 
     double logProb()    {

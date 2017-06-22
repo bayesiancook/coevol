@@ -502,9 +502,9 @@ class MultiVariateTreeProcess : public MCMC , public NodeValPtrTree<Rvar<RealVec
 	protected :
 
     void RecursiveGetLeafPtrArray(const Link* from, Var<RealVector>** array, ContinuousData* data)    {
-	if (from->isLeaf())	{
-		int tax = data->GetTaxonSet()->GetTaxonIndex(from->GetNode()->GetName());
-		array[tax] = GetNodeVal(from->GetNode());
+        if (from->isLeaf())	{
+            int tax = data->GetTaxonSet()->GetTaxonIndex(from->GetNode()->GetName());
+            array[tax] = GetNodeVal(from->GetNode());
         }
         for (const Link* link=from->Next(); link!=from; link=link->Next())  {
             RecursiveGetLeafPtrArray(link->Out(),array,data);
