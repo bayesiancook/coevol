@@ -317,9 +317,9 @@ class NeutralOmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> >
 	private :
 	
 	void specialUpdate(Link* from)	{
-		if ((! from->isRoot()))	{
+		// if ((! from->isRoot()))	{
 			GetNodeVal(from->GetNode())->specialUpdate();
-		}
+		// }
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
@@ -376,9 +376,9 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	void specialUpdate(Link* from)	{
-		if ((! from->isRoot()))	{
+		// if ((! from->isRoot()))	{
 			GetNodeVal(from->GetNode())->specialUpdate();
-		}
+		// }
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
@@ -437,9 +437,9 @@ class ULinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	void specialUpdate(Link* from)	{
-		if ((! from->isRoot()))	{
+		// if ((! from->isRoot()))	{
 			GetNodeVal(from->GetNode())->specialUpdate();
-		}
+		// }
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
@@ -495,9 +495,9 @@ class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	void specialUpdate(Link* from)	{
-		if ((! from->isRoot()))	{
+		// if ((! from->isRoot()))	{
 			GetNodeVal(from->GetNode())->specialUpdate();
-		}
+		// }
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
@@ -544,9 +544,9 @@ class NeLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	void specialUpdate(Link* from)	{
-		if ((! from->isRoot()))	{
+		// if ((! from->isRoot()))	{
 			GetNodeVal(from->GetNode())->specialUpdate();
-		}
+		// }
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
