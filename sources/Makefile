@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= readcoevol readnearlyneutral2 readnearlyneutral1 branchmodel readbranchmodel readcoevol nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
+ALL= nearlyneutral3 readcoevol readnearlyneutral2 readnearlyneutral1 branchmodel readbranchmodel readcoevol nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -205,6 +205,10 @@ $(PROGSDIR)/dollo$(EXEEXT): Dollo.o $(OBJS)
 biclock$(EXEEXT): $(PROGSDIR)/biclock$(EXEEXT)
 $(PROGSDIR)/biclock$(EXEEXT): SimpleBiBranchOmegaMultivariate.o $(OBJS)
 	$(CC) SimpleBiBranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+nearlyneutral3$(EXEEXT): $(PROGSDIR)/nearlyneutral3$(EXEEXT)
+$(PROGSDIR)/nearlyneutral3$(EXEEXT): NearlyNeutralModel3.o $(OBJS)
+	$(CC) NearlyNeutralModel3.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 nearlyneutral1$(EXEEXT): $(PROGSDIR)/nearlyneutral1$(EXEEXT)
 $(PROGSDIR)/nearlyneutral1$(EXEEXT): NearlyNeutralModel1.o $(OBJS)
