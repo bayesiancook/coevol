@@ -254,19 +254,19 @@ class NonSynNumber : public Rvar<Int>  {
 
     public:
 
-	NonSynNumber(Var<RealVector>* inx, Var<Real>* inlogNe, Var<Real>* ingamma, Var<Real>* inbeta, Var<PosReal>* inNI, int inL, int inSNPnumber) {
+	NonSynNumber(Var<RealVector>* inx, Var<Real>* inlogNe, Var<Real>* ingamma, Var<Real>* inbeta, Var<Real>* indelta, int inL, int inSNPnumber) {
 		x = inx;
         logNe = inlogNe;
 		gamma = ingamma;
         beta = inbeta;
-        NI = inNI;
+        delta = indelta;
         L = inL;
         SNPnumber = inSNPnumber;
 		Register(x);
         Register(logNe);
 		Register(gamma);
 		Register(beta);
-        Register(NI);
+        Register(delta);
         // Sample();
 	}
 	
@@ -274,8 +274,8 @@ class NonSynNumber : public Rvar<Int>  {
         // piN/piS = b N_e ** -gamma
         // where b = beta * NI if model is constrained on same sequence, and beta otherwise
         double b = beta->val();
-        if (NI) {
-            b += log(NI->val());
+        if (delta) {
+            b += log(delta->val());
         }
         double logpin = (*x)[L] + log(4.0) + (1-gamma->val()) * logNe->val() + b;
         double rate = SNPnumber * exp(logpin);
@@ -315,7 +315,7 @@ class NonSynNumber : public Rvar<Int>  {
     Var<Real>* logNe;
 	Var<Real>* gamma;
 	Var<Real>* beta;
-    Var<PosReal>* NI;
+    Var<Real>* delta;
     int L;
     int SNPnumber;
 };

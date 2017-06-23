@@ -444,7 +444,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
                     npol++;
                     logNearray[i] = new LogNe(leafvalues[i],logNevar,L);
                     synarray[i] = new SynNumber(leafvalues[i],logNearray[i],L,npos);
-                    nonsynarray[i] = new NonSynNumber(leafvalues[i],logNearray[i],gamma,beta2,0,L,npos);
+                    nonsynarray[i] = new NonSynNumber(leafvalues[i],logNearray[i],gamma,beta,beta2,L,npos);
                     synarray[i]->ClampAt(ms);
                     nonsynarray[i]->ClampAt(mn);
                 }
