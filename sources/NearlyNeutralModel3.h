@@ -105,6 +105,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	Const<Real>* Zero;
 	Const<PosReal>* One;
+	Const<PosReal>* Ten;
+	Const<PosReal>* OneOverTen;
 	
 	Const<PosReal>* K;
 
@@ -270,6 +272,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		Zero = new Const<Real>(0);
 		One = new Const<PosReal>(1);
+		Ten = new Const<PosReal>(10.0);
+		OneOverTen = new Const<PosReal>(0.1);
 		
 		if (sameseq) {	 
 			cerr << "same seq: still to be implemented\n";
@@ -407,10 +411,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		//create the combination factors 
 		
-		gamma = new Normal(Zero, One);
-		beta = new Normal(Zero, One);
+		gamma = new Normal(Zero, Ten);
+		beta = new Normal(Zero, Ten);
         beta2 = 0;
-		if (!sameseq) {beta2 = new Normal(Zero, One);}
+		if (!sameseq) {beta2 = new Normal(Zero, Ten);}
 		
 		gamma->setval(0.2);
 		beta->setval(0);
@@ -418,7 +422,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		
         cerr << "linear combinations\n";
-        logNevar = new Gamma(One,One);
+        logNevar = new Gamma(OneOverTen,OneOverTen);
         leafvalues = new Var<RealVector>*[Ntaxa];
         for (int i=0; i<Ntaxa; i++) {
             leafvalues[i] = 0;
@@ -497,6 +501,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// register model
 		RootRegister(Zero);
 		RootRegister(One);
+		RootRegister(OneOverTen);
+		RootRegister(Ten);
 		RootRegister(relrate);
 		RootRegister(stationary);
 		RootRegister(gamma);
@@ -720,14 +726,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				scheduler.Register(new SimpleMove(beta2,0.008),10,"beta2");
 				scheduler.Register(new SimpleMove(beta2,0.001),10,"beta2");
 
-				scheduler.Register(new GammaBetaMove(gamma,beta2,1,11),10,"gammabeta2");
-				scheduler.Register(new GammaBetaMove(gamma,beta2,0.1,11),10,"gammabeta2");
-				scheduler.Register(new GammaBetaMove(gamma,beta2,0.01,11),10,"gammabeta2");
+				scheduler.Register(new GammaBetaMove(gamma,beta,1,11),10,"gammabeta");
+				scheduler.Register(new GammaBetaMove(gamma,beta,0.1,11),10,"gammabeta");
+				scheduler.Register(new GammaBetaMove(gamma,beta,0.01,11),10,"gammabeta");
 			}
 			
-			scheduler.Register(new SimpleMove(logNevar,3),100,"logNe var");
-			scheduler.Register(new SimpleMove(logNevar,1),100,"logNe var");
-			scheduler.Register(new SimpleMove(logNevar,0.1),100,"logNe var");
             for (int i=0; i<Ntaxa; i++) {
                 if (logNearray[i])  {
                     scheduler.Register(new SimpleMove(logNearray[i],1),100,"logNe");
@@ -735,6 +738,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
                     scheduler.Register(new SimpleMove(logNearray[i],0.01),100,"logNe");
                 }
             }
+			scheduler.Register(new SimpleMove(logNevar,3),100,"logNe var");
+			scheduler.Register(new SimpleMove(logNevar,1),100,"logNe var");
+			scheduler.Register(new SimpleMove(logNevar,0.1),100,"logNe var");
 		}
 	}
 

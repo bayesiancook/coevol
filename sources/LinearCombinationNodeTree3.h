@@ -275,7 +275,7 @@ class NonSynNumber : public Rvar<Int>  {
         // where b = beta * NI if model is constrained on same sequence, and beta otherwise
         double b = beta->val();
         if (delta) {
-            b += log(delta->val());
+            b += delta->val();
         }
         double logpin = (*x)[L] + log(4.0) + (1-gamma->val()) * logNe->val() + b;
         double rate = SNPnumber * exp(logpin);
