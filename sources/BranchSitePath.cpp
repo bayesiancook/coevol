@@ -17,12 +17,14 @@ BranchSitePath::BranchSitePath()	{
 BranchSitePath::BranchSitePath(StateSpace* instatespace)	{
 	statespace = instatespace;
 	init = last = new Plink;
+	bkinit = bklast = new Plink;
 	nsub = 0;
 }
 
 BranchSitePath::~BranchSitePath()	{
 	Reset(0);
 	delete init;
+    delete bkinit;
 }
 
 void BranchSitePath::Reset(int state)	{
