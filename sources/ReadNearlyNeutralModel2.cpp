@@ -55,6 +55,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		}
 
 		double priorsigma = 1;
+        chronoprior = 0;
 
 		is >> modeltype;
 		is >> type;
