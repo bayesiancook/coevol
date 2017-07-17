@@ -106,7 +106,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	Const<Real>* Zero;
 	Const<PosReal>* One;
 	Const<PosReal>* Ten;
-	Const<PosReal>* OneOverTen;
 	
 	Const<PosReal>* K;
 
@@ -153,7 +152,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	PathConjugateTree* pathconjtree;
 	PhyloProcess* phyloprocess;
 
-    Gamma* logNevar;
+    Exponential* logNevar;
     Var<RealVector>** leafvalues;
     // short-term Ne
     LogNe** logNearray;
@@ -273,7 +272,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		Zero = new Const<Real>(0);
 		One = new Const<PosReal>(1);
 		Ten = new Const<PosReal>(10.0);
-		OneOverTen = new Const<PosReal>(0.1);
 		
 		if (sameseq) {	 
 			cerr << "same seq: still to be implemented\n";
@@ -422,7 +420,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		
         cerr << "linear combinations\n";
-        logNevar = new Gamma(OneOverTen,OneOverTen);
+        logNevar = new Exponential(Ten,Exponential::MEAN);
         leafvalues = new Var<RealVector>*[Ntaxa];
         for (int i=0; i<Ntaxa; i++) {
             leafvalues[i] = 0;
@@ -501,7 +499,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// register model
 		RootRegister(Zero);
 		RootRegister(One);
-		RootRegister(OneOverTen);
 		RootRegister(Ten);
 		RootRegister(relrate);
 		RootRegister(stationary);
