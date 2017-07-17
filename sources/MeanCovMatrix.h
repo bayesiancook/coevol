@@ -219,7 +219,7 @@ class MeanCovMatrix {
 					}
 					meanslope2[i][j] /= size;
 					varslope2[i][j] /= size;
-					varslope2[i][j] -= meanslope[i][j] * meanslope[i][j];
+					varslope2[i][j] -= meanslope2[i][j] * meanslope2[i][j];
 					sort(slope2[i][j].begin(), slope2[i][j].end());
 				}
 			}
