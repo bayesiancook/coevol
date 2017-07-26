@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= diffsel readdiffsel coevol readcoevol tipcoevol readtipcoevol ancov readancov
+ALL= diffsel readdiffsel inddiffsel readinddiffsel coevol readcoevol tipcoevol readtipcoevol ancov readancov
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -73,6 +73,14 @@ $(PROGSDIR)/diffsel$(EXEEXT): DirichletNormalCodonUsageSelectionMS.o $(OBJS)
 $readdiffsel(EXEEXT): $(PROGSDIR)/readdiffsel$(EXEEXT)
 $(PROGSDIR)/readdiffsel$(EXEEXT): ReadDirichletNormalCodonUsageSelectionMS.o $(OBJS)
 	$(CC) ReadDirichletNormalCodonUsageSelectionMS.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+$inddiffsel(EXEEXT): $(PROGSDIR)/inddiffsel$(EXEEXT)
+$(PROGSDIR)/inddiffsel$(EXEEXT): DirichletCodonUsageSelectionMS.o $(OBJS)
+	$(CC) DirichletCodonUsageSelectionMS.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+$readinddiffsel(EXEEXT): $(PROGSDIR)/readinddiffsel$(EXEEXT)
+$(PROGSDIR)/readinddiffsel$(EXEEXT): ReadDirichletCodonUsageSelectionMS.o $(OBJS)
+	$(CC) ReadDirichletCodonUsageSelectionMS.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 $poissongamma(EXEEXT): $(PROGSDIR)/poissongamma$(EXEEXT)
 $(PROGSDIR)/poissongamma$(EXEEXT): PoissonGamma.o $(OBJS)

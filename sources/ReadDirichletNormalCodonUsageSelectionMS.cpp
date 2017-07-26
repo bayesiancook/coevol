@@ -168,7 +168,7 @@ class DirichletNormalCodonUsageSelectionMSSample : public Sample	{
 			cout << "category : " << k << '\n';
 			for (int cat=0; cat<ncat; cat++)	{
 				cout << 0.5 + ((double) cat) / 2 / ncat << '\t' << 0.5 + ((double) (cat+1)) / 2 / ncat << '\t';
-				cout << 100 * falsepositives[k][cat] << '\n';
+				cout << 100 * falsepositives[k][cat] << '\t' << Nsite*Naa * falsepositives[k][cat] << '\n';
 			}
 			cout << '\n';
 		}
@@ -522,7 +522,7 @@ class DirichletNormalCodonUsageSelectionMSSample : public Sample	{
 
 				for (int a=0; a<Naa; a++)	{
                     if ((ppsel[k][i][a] > cutoff) || (ppsel[k][i][a] < 1-cutoff)) {
-						os2 << i << '\t' << a << '\t' << ppsel[k][i][a] << '\t' << meansel[k][i][a] << '\n';
+						os2 << i << '\t' << AminoAcids[a] << '\t' << ppsel[k][i][a] << '\t' << meansel[k][i][a] << '\n';
 					}
 				}
 			}
