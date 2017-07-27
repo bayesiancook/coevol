@@ -15,8 +15,10 @@
 #include "CodonSubMatrix.h"
 #include "CodonStateSpace.h"
 #include "CodonSequenceAlignment.h"
+#include "MSCodonSubMatrix.h"
 
-#include "IIDArray.h"
+// #include "IIDArray.h"
+#include "IID.h"
 #include "SelectionPhyloProcess.h"
 #include "ProfileConjugatePath.h"
 #include "Jeffreys.h"
@@ -467,7 +469,8 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 			os << "conc" << i << '\t';
 			os << "selentropy" << i << '\t';
 		}
-		os << "rrent\tcount\tmax\n";
+		os << "rrent\n";
+		// os << "rrent\tcount\tmax\n";
 	}
 
 
@@ -483,8 +486,10 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 			os << '\t' << selectionprofile[i]->GetMeanEntropy();
 		}
 		os << '\t' << relrate->val().GetEntropy();
+        /*
 		os << '\t' << normerrorcount;
 		os << '\t' << normerrormax;
+        */
 		os << '\n';
 		os.flush();
 	}

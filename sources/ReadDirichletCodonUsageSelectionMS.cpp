@@ -71,6 +71,199 @@ class DirichletCodonUsageSelectionMSSample : public Sample	{
 		// all these points can be accessed to (only once) by repeated calls to GetNextPoint()
 	}
 
+	void ReadFalsePositives(int ncat)	{
+
+		int Nsite = GetModel()->GetSite();
+		int Naa = GetModel()->GetaaState();
+		int K = GetModel()->GetCategory();
+
+		double*** meansel = new double**[K];
+		double*** ppsel = new double**[K];
+
+		int kmin = 1;
+
+		for (int k=kmin; k<K; k++)	{
+			meansel[k] = new double*[Nsite];
+			ppsel[k] = new double*[Nsite];
+			for (int i=0; i<Nsite; i++)	{
+				meansel[k][i] = new double[Naa];
+				ppsel[k][i] = new double[Naa];
+				for (int j=0; j<Naa; j++)	{
+					meansel[k][i][j] = 0;
+					ppsel[k][i][j] = 0;
+				}
+			}
+		}
+
+		// cycle over the sample
+		for (int c=0; c<size; c++)	{
+			GetNextPoint();
+			cerr << '.';
+
+			//get selection profile
+			for(int k=kmin;k<K;k++)	{
+				for(int i=0;i<Nsite;i++)	{
+					double logsum = 0; 
+					for(int j=0;j<Naa;j++)	{ 
+						double tmp = log(GetModel()->GetSelectionProfile(k, i, j)) - log(GetModel()->GetSelectionProfile(k-1,i,j));
+						logsum += tmp;
+					}
+					for(int j=0;j<Naa;j++)	{  
+						double tmp = log(GetModel()->GetSelectionProfile(k, i, j)) - log(GetModel()->GetSelectionProfile(k-1,i,j)) - (1.0/20) * (logsum);
+						meansel[k][i][j] += tmp;
+						if(tmp > 0)	{
+							ppsel[k][i][j]++;
+						}
+					}
+				}
+			}
+		}
+		cerr << '\n';
+
+		double** falsepositives = new double*[K];
+		for(int k=kmin;k<K;k++)	{
+			falsepositives[k] = new double[ncat];
+			for (int cat=0; cat<ncat; cat++)	{
+				falsepositives[k][cat] = 0;
+			}
+		}
+		for(int k=kmin;k<K;k++)	{
+			for(int i=0;i<Nsite;i++)	{
+				for(int j=0;j<Naa;j++)	{ 
+					meansel[k][i][j] /= size;
+					ppsel[k][i][j] /= size;
+					int cat = (int) (10*(ppsel[k][i][j] - 0.5));
+					if (cat < 0)	{
+						cat = -cat;
+					}
+					if (cat == ncat)	{
+						cat--;
+					}
+					falsepositives[k][cat]++;
+				}
+			}
+		}
+
+		for(int k=kmin;k<K;k++)	{
+			for (int cat=0; cat<ncat; cat++)	{
+				for (int cat2=cat+1; cat2<ncat; cat2++)	{
+					falsepositives[k][cat] +=falsepositives[k][cat2];
+				}
+			}
+		}
+
+		for(int k=kmin;k<K;k++)	{
+			for (int cat=0; cat<ncat; cat++)	{
+				falsepositives[k][cat] /= Nsite*Naa;
+			}
+		}
+
+
+		ofstream cout((GetName() + ".fp").c_str());
+		cout << '\n';
+		cout << "false positive rates:\n";
+		cout << '\n';
+		for(int k=kmin;k<K;k++)	{
+			cout << "category : " << k << '\n';
+			for (int cat=0; cat<ncat; cat++)	{
+				cout << 0.5 + ((double) cat) / 2 / ncat << '\t' << 0.5 + ((double) (cat+1)) / 2 / ncat << '\t';
+				cout << 100 * falsepositives[k][cat] << '\t' << Nsite*Naa * falsepositives[k][cat] << '\n';
+			}
+			cout << '\n';
+		}
+	}
+
+	void NewRead(double cutoff)	{
+
+		// prepare the mean and variance
+		
+		int Nsite = GetModel()->GetSite();
+		int K = GetModel()->GetCategory();
+
+		double*** meansel = new double**[K];
+		for (int k=1; k<K; k++)	{
+			meansel[k] = new double*[Nsite];
+			for (int i=0; i<Nsite; i++)	{
+				meansel[k][i] = new double[Naa];
+				for (int a=0; a<Naa; a++)	{
+					meansel[k][i][a] = 0;
+				}
+			}
+		}
+
+		double*** ppsel = new double**[K];
+		for (int k=1; k<K; k++)	{
+			ppsel[k] = new double*[Nsite];
+			for (int i=0; i<Nsite; i++)	{
+				ppsel[k][i] = new double[Naa];
+				for (int a=0; a<Naa; a++)	{
+					ppsel[k][i][a] = 0;
+				}
+			}
+		}
+
+		// cycle over the sample
+		for (int c=0; c<size; c++)	{
+			GetNextPoint();
+			cerr << '.';
+
+			for (int k=1; k<K; k++)	{
+				for (int i=0; i<Nsite; i++)	{
+
+					double delta[Naa];
+					for(int j=0;j<Naa;j++)	{ 
+						delta[j] = log(GetModel()->GetSelectionProfile(k, i, j)) - log(GetModel()->GetSelectionProfile(k-1,i,j));
+					}
+
+					double mean = 0;
+					for (int a=0; a<Naa; a++)	{
+						mean += delta[a];
+					}
+					mean /= Naa;
+
+					for (int a=0; a<Naa; a++)	{
+						double tmp = delta[a] - mean;
+						meansel[k][i][a] += tmp;
+						if (tmp > 0)	{
+							ppsel[k][i][a] ++;
+						}
+					}
+				}
+			}
+		}
+		cerr << '\n';
+
+		for (int k=1; k<K; k++)	{
+
+			ostringstream s1,s2;
+			s1 << GetName() << "_" << k << ".meandiffsel";
+			s2 << GetName() << "_" << k << ".signdiffsel";
+			ofstream os1(s1.str().c_str());
+			ofstream os2(s2.str().c_str());
+
+			for (int i=0; i<Nsite; i++)	{
+
+				os1 << i;
+				for (int a=0; a<Naa; a++)	{
+					ppsel[k][i][a] /= size;
+					os1 << '\t' << ppsel[k][i][a];
+					
+				}
+				for (int a=0; a<Naa; a++)	{
+					meansel[k][i][a] /= size;
+					os1 << '\t' << meansel[k][i][a];
+				}
+				os1 << '\n';
+
+				for (int a=0; a<Naa; a++)	{
+                    if ((ppsel[k][i][a] > cutoff) || (ppsel[k][i][a] < 1-cutoff)) {
+						os2 << i << '\t' << AminoAcids[a] << '\t' << ppsel[k][i][a] << '\t' << meansel[k][i][a] << '\n';
+					}
+				}
+			}
+		}
+	}
+
 	// a very simple (and quite uninteresting) method for obtaining
 	// the posterior mean and variance of the total length of the tree
 	void Read(double cutoff)	{
@@ -356,10 +549,15 @@ int main(int argc, char* argv[])	{
 	string name;
 
 	double alpha = 0.1;
-	double cutoff = 0.7;
+	double cutoff = 0.9;
 
 	int ppred = 0;
 	string basename = "";
+
+	int fp = 0;
+	int ncat = 10;
+
+	int comp = 1;
 
 	try	{
 
@@ -377,6 +575,13 @@ int main(int argc, char* argv[])	{
 			else if (s == "-c")	{
 				i++;
 				cutoff = atof(argv[i]);
+			}
+			else if (s == "-fp")	{
+				fp = 1;
+			}
+			else if (s == "-ncat")	{
+				i++;
+				ncat = atoi(argv[i]);
 			}
 			else if (s == "-ppred")	{
 				ppred = 1;
@@ -419,6 +624,13 @@ int main(int argc, char* argv[])	{
 	if (ppred)	{
 		cerr << "posterior predictive simulation\n";
 		sample.PostPred(basename);
+	}
+	else if (fp)	{
+		sample.ReadFalsePositives(ncat);
+	}
+	else if (comp)	{
+		cerr << "reading, new version\n";
+		sample.NewRead(cutoff);
 	}
 	else	{
 		cerr << "read\n";
