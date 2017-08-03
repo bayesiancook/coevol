@@ -32,7 +32,7 @@ foreach my $line (<INFILE>)	{
 					}
 				}
 				$seq = "";
-				print "$1\n";
+				# print "$1\n";
 				$ntax++;
 				
 			}
