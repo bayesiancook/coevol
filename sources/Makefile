@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= diffsel readdiffsel inddiffsel readinddiffsel coevol readcoevol tipcoevol readtipcoevol ancov readancov
+ALL= diffsel readdiffsel inddiffsel readinddiffsel 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files

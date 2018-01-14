@@ -9,68 +9,40 @@ class DirichletCodonUsageSelectionChainMS : public Chain	{
 	private:
 	string modeltype;
 	string datafile;
+    string contdatafile;
 	string treefile;
-	int category;
-	int every;
-	int burnin;
-	int conjugate;
- 	string type;
- 	string mechanism;
-
+    int ncond;
+    int fixglob;
+    int codonmodel;
 	public:
 
 	DirichletCodonUsageSelectionModelMS* GetModel() {return (DirichletCodonUsageSelectionModelMS*) model;}
 
 	string GetModelType() {return modeltype;}
 
-	DirichletCodonUsageSelectionChainMS(string indata, string intree, int incategory, int inburnin, int inevery, string filename, string intype, int inconjugate, string inmechanism, int force = 0 )	{
-		modeltype = "SELECTIONGTR";
+	DirichletCodonUsageSelectionChainMS(string indata, string incontdata, string intree, int inncond, int infixglob, int incodonmodel, int inevery, int inuntil, string filename, int force)	{
+		modeltype = "DIFFSELDIR";
 		datafile = indata;
+        contdatafile = incontdata;
 		treefile = intree;
-		category = incategory;
-		burnin = inburnin;
+        ncond = inncond;
+        fixglob = infixglob;
+        codonmodel = incodonmodel;
 		every = inevery;
 		name = filename;
-		conjugate = inconjugate;
-		type = intype;
-		mechanism = inmechanism;
-
 		New(force);
-
 	}
 
 
-	DirichletCodonUsageSelectionChainMS(string indata, string intree, int incategory, int inevery, string filename, string intype, int inconjugate, string inmechanism, int force = 0 )	{
-		modeltype = "SELECTIONGTR";
-		datafile = indata;
-		treefile = intree;
-		category = incategory;
-		every = inevery;
+	DirichletCodonUsageSelectionChainMS(string filename)    {
 		name = filename;
-		conjugate = inconjugate;
-		type = intype;
-		mechanism = inmechanism;
-
-		New(force);
-
-	}
-
-
-
-	DirichletCodonUsageSelectionChainMS(string filename, string intype, string inmechanism)	{
-
-		name = filename;
-		type = intype;
-		mechanism = inmechanism;
-
-		conjugate = 1;
 		Open();
 		Save();
 	}
 
 	void New(int force)	{
-		if (modeltype == "SELECTIONGTR")	{
-			model = new DirichletCodonUsageSelectionModelMS(datafile,treefile,category,type,conjugate,mechanism);
+		if (modeltype == "DIFFSELDIR")	{
+			model = new DirichletCodonUsageSelectionModelMS(datafile,contdatafile,treefile,ncond,fixglob,codonmodel,true);
 		}
 		else	{
 			cerr << "error, does not recognise model type : " << modeltype << '\n';
@@ -88,13 +60,13 @@ class DirichletCodonUsageSelectionChainMS : public Chain	{
 			exit(1);
 		}
 		is >> modeltype;
-		is >> datafile >> treefile >> category;
-		is >> conjugate;
-		is >> type >> mechanism;
+		is >> datafile >> contdatafile >> treefile;
+        is >> ncond;
+        is >> fixglob >> codonmodel;
 		is >> every >> until >> size;
 
-		if (modeltype == "SELECTIONGTR")	{
-			model = new DirichletCodonUsageSelectionModelMS(datafile,treefile,category,type,conjugate,mechanism);
+		if (modeltype == "DIFFSELIDR")	{
+			model = new DirichletCodonUsageSelectionModelMS(datafile,contdatafile,treefile,ncond,fixglob,codonmodel,true);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -109,64 +81,110 @@ class DirichletCodonUsageSelectionChainMS : public Chain	{
 	void Save()	{
 		ofstream param_os((name + ".param").c_str());
 		param_os << GetModelType() << '\n';
-		param_os << datafile << '\t' << treefile << '\t' << category << '\n';
-		param_os << conjugate << '\n';
-		param_os << type << '\t' << mechanism << '\n';
+		param_os << datafile << '\t' << contdatafile << '\t' << treefile << '\n';
+        param_os << ncond << '\n';
+        param_os << fixglob << '\t' << codonmodel << '\n';
 		param_os << every << '\t' << until << '\t' << size << '\n';
-
 		model->ToStream(param_os);
 
 	}
 
-
 	void Move()	{
-
 		for (int i=0; i<every; i++)	{
 			model->Move(1);
-			
 		}
-
 		SavePoint();
 		Save();
 		Monitor();
 	}
 };
 
-
-
-
 int main(int argc, char* argv[])	{
 
+    DirichletCodonUsageSelectionChainMS* chain = 0;
 	// this is an already existing chain on the disk; reopen and restart
-	if (argc == 4)	{
+	if (argc == 2)	{
 		string name = argv[1];
-		string type = argv[2];
-		string mechanism = argv[3];
-
-		DirichletCodonUsageSelectionChainMS* chain = new DirichletCodonUsageSelectionChainMS(name,type,mechanism);
-
-		cerr << "start\n";
-		chain->Start();
+		chain = new DirichletCodonUsageSelectionChainMS(name);
 	}
 
 	// this is a new chain
 	else if (argc == 9)	{
 
-		string datafile = argv[1];
-		string treefile = argv[2];
-		int category = atoi(argv[3]);
-		int every = atoi(argv[4]);
-		string name = argv[5];
-		string type = argv[6];
-		int conjugate = atoi(argv[7]);
-		string mechanism = argv[8];
+        string datafile = "";
+        string contdatafile = "";
+        string treefile = "";
+        int ncond = 2;
+        int fixglob = 1;
+        int codonmodel = 1;
 
-		cerr << "chain name : " << name << '\n';
+        string name = "";
+        int every = 1;
+        int until = -1;
 
-		DirichletCodonUsageSelectionChainMS* chain = new DirichletCodonUsageSelectionChainMS(datafile,treefile,category,every,name,type,conjugate,mechanism,1);
+        int force = 0;
 
-		cerr << "start\n";
-		chain->Start();
+        try	{
+
+            if (argc == 1)	{
+                throw(0);
+            }
+
+            int i = 1;
+            while (i < argc)	{
+                string s = argv[i];
+
+                if (s == "-d")	{
+                    i++;
+                    datafile = argv[i];
+                }
+                else if (s == "-c") {
+                    i++;
+                    contdatafile = argv[i];
+                }
+                else if ((s == "-t") || (s == "-T"))	{
+                    i++;
+                    treefile = argv[i];
+                }
+                else if (s == "-f") {
+                    force = 1;
+                }
+                else if (s == "-ncond")	{
+                    i++;
+                    ncond = atoi(argv[i]);
+                }
+                else if (s == "-ms")    {
+                    codonmodel = 1;
+                }
+                else if (s == "-sr")    {
+                    codonmodel = 0;
+                }
+                else if ( (s == "-x") || (s == "-extract") )	{
+                    i++;
+                    if (i == argc) throw(0);
+                    every = atoi(argv[i]);
+                    i++;
+                    if (i == argc) throw(0);
+                    until = atoi(argv[i]);
+                }
+                else	{
+                    if (i != (argc -1))	{
+                        throw(0);
+                    }
+                    name = argv[i];
+                }
+                i++;
+            }
+        }
+        catch(...)	{
+            cerr << "error in command\n";
+            exit(1);
+        }
+
+		chain = new DirichletCodonUsageSelectionChainMS(datafile,contdatafile,treefile,ncond,fixglob,codonmodel,every,until,name,force);
+
 	}
+    cerr << "START\n";
+	chain->Start();
 }
 

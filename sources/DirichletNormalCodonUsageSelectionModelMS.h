@@ -18,6 +18,7 @@
 #include "Jeffreys.h"
 #include "ConjugateInverseWishart.h"
 
+#include "ContinuousData.h"
 
 class DirichletNormalCompMove : public MCUpdate	{
 
@@ -336,6 +337,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 	// a fixed tree (read from file)
 	Tree* tree;
 	FileSequenceAlignment* data;
+    ContinuousData* contdata;
 	TaxonSet* taxonset;
 	CodonSequenceAlignment* codondata;
 
@@ -390,24 +392,26 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 	Dirichlet* codonusageselection;
 
 	int conjugate;
-	string type;
-	string mechanism;
+    int fixglob;
+    int fixvar;
+    int codonmodel;
 
 	public:
 
 	// constructor
 	// this is where the entire graph structure of the model is created
 
-	DirichletNormalCodonUsageSelectionModelMS(string datafile, string treefile, int inK, string intype, int inconjugate, string inmechanism, bool sample = true) {
+	DirichletNormalCodonUsageSelectionModelMS(string datafile, string contdatafile, string treefile, int inK, int infixglob, int infixvar, int incodonmodel, bool sample = true) {
 
-		conjugate = inconjugate;
-		type = intype;
-		mechanism = inmechanism;
+		conjugate = 1;
+        codonmodel = incodonmodel;
+        fixglob = infixglob;
+        fixvar = infixvar;
 		K = inK;
-
 
 		data = new FileSequenceAlignment(datafile);
 		codondata = new CodonSequenceAlignment(data,true );
+        contdata = new FileContinuousData(contdatafile);
 
 		Nsite = codondata->GetNsite();	// # columns
 		Nstate = codondata->GetNstate(); // # states (61 for codons)
@@ -443,7 +447,13 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 		lambda->setval(50);
 		gamtree = new GammaTree(tree,One,lambda);
 
-		allocatetree = new AllocationTree(tree, K);
+        int offset = 0;
+        /*
+        if (K == 2) {
+            offset = -1;
+        }
+        */
+		allocatetree = new AllocationTree(tree, contdata, K, offset);
 
 		relrate = new Dirichlet(Nnuc*(Nnuc-1)/2);
 		nucstationary = new Dirichlet(Nnuc);
@@ -473,11 +483,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 		center->setuniform();
 		concentration->setval(Naa);
 
-		/*
-		double min = 0.001;
-		double max = 1000;
-		*/
-
 		var = new Exponential*[K];
 		for (int k=1; k<K; k++)	{
 			var[k] = new Exponential(One,Exponential::MEAN);
@@ -485,42 +490,26 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 		}
 
 
-		if(type == "clamp_MCMC")	{
+		if(fixglob) {
 			center->Clamp();
 			concentration->Clamp();
 		}
 
-		if(type == "clamp_MCMC_var")	{
-			center->Clamp();
-			concentration->Clamp();
+		if(fixvar)  {
 			for (int k=1; k<K; k++)	{
 				var[k]->Clamp();
 			}
 		}
 
-
 		globalselectionprofile = new DirichletIIDArray(Nsite,center,concentration);
 
 		selectionnormal = new IIDNormalIIDArray*[K];
-		// selectionprofile = new SumConstrainedRealVector**[K];
 		statarray = new RenormalizedIIDStat** [K];
-
-
 
 		cerr << "selection profiles\n";
 		for( int k=1;k<K;k++){
 			selectionnormal[k] = new IIDNormalIIDArray(Nsite,Naa,Zero,var[k]);
 		}
-
-		/*
-		cerr << "stat arrays\n";
-		for (int k=1; k<K; k++)	{
-			selectionprofile[k] = new SumConstrainedRealVector*[Nsite];
-			for (int i=0; i<Nsite;i++){
-				selectionprofile[k][i] = new SumConstrainedRealVector(selectionnormal[k]->GetVal(i));
-			}
-		}
-		*/
 
 		for (int k=0; k<K; k++)	{
 			statarray[k] = new RenormalizedIIDStat*[Nsite];
@@ -548,10 +537,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 			}
 		}
 
-		cerr << "submatrices\n";
-
-//Square Root //phenimenological
-		if(mechanism == "SR")	{
+		if(codonmodel == 0)	{
 			submatrix = new RandomSubMatrix** [K];
 			for (int k=0; k<K; k++)	{
 				submatrix[k] = new RandomSubMatrix* [Nsite];
@@ -561,8 +547,7 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 			}
 		}
 
-//Mutation Selection // mechanistic
-		if(mechanism == "MS")	{
+		if (codonmodel == 1)    {
 			submatrix = new RandomSubMatrix** [K];
 			for (int k=0; k<K; k++)	{
 				submatrix[k] = new RandomSubMatrix* [Nsite];
@@ -574,7 +559,6 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 
 
 		if (conjugate)	{
-			cerr << "conjugate\n";
 			matrixtree = 0;
 			patharray = new ProfilePathConjugateArray(Nsite,K,submatrix);
 			patharray->InactivateSufficientStatistic();

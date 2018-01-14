@@ -8,12 +8,13 @@ class DirichletCodonUsageSelectionMSSample : public Sample	{
 	private:
 	string modeltype;
 	string datafile;
+    string contdatafile;
 	string treefile;
-	int category;
-	int conjugate;
-	double alpha;
-	string type;
-	string mechanism;
+    int ncond;
+    int fixglob;
+    int codonmodel;
+
+    double alpha;
 
 	public:
 
@@ -39,17 +40,14 @@ class DirichletCodonUsageSelectionMSSample : public Sample	{
 
 		// read model type, and other standard fields
 		is >> modeltype;
-		is >> datafile >> treefile >> category;
-		is >> conjugate;
-		is >> type >> mechanism;
+		is >> datafile >> contdatafile >> treefile;
+        is >> ncond;
+        is >> fixglob >> codonmodel;
 		is >> chainevery >> chainuntil >> chainsize;
-		// the chain's saving frequency, upper limit and current size
-		// not to be confused with the sample's subsampling frequency, upper limit and size
 
-
-		// make a new model depending on the type obtained from the file
-		if (modeltype == "SELECTIONGTR")	{
-			model = new DirichletCodonUsageSelectionModelMS(datafile,treefile,category,type,conjugate,mechanism,false);
+		if (modeltype == "DIFFSELDIR")	{
+			cerr << "CREATE\n";
+			model = new DirichletCodonUsageSelectionModelMS(datafile,contdatafile,treefile,ncond,fixglob,codonmodel,false);
 		}
 		else	{
 			cerr << "error when opening file "  << name << '\n';

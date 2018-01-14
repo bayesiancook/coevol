@@ -24,6 +24,7 @@
 #include "Jeffreys.h"
 #include "ConjugateInverseWishart.h"
 
+#include "ContinuousData.h"
 
 class ComplexDirichletIIDArrayMove : public MCUpdate	{
 
@@ -83,6 +84,7 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 	// a fixed tree (read from file)
 	Tree* tree;
 	FileSequenceAlignment* data;
+    ContinuousData* contdata;
 	TaxonSet* taxonset;
 	CodonSequenceAlignment* codondata;
 
@@ -132,23 +134,24 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 	Dirichlet* codonusageselection;
 
 	int conjugate;
-	string type;
-	string mechanism;
+    int fixglob;
+    int codonmodel;
 
 	public:
 
 	// constructor
 	// this is where the entire graph structure of the model is created
 
-	DirichletCodonUsageSelectionModelMS(string datafile, string treefile, int inK, string intype, int inconjugate, string inmechanism, bool sample = true) {
+	DirichletCodonUsageSelectionModelMS(string datafile, string contdatafile, string treefile, int inK, int infixglob, int incodonmodel, bool sample = true) {
 
-		conjugate = inconjugate;
-		type = intype;
-		mechanism = inmechanism;
+		conjugate = 1;
+        codonmodel = incodonmodel;
+        fixglob = infixglob;
 		K = inK;
 
 		data = new FileSequenceAlignment(datafile);
 		codondata = new CodonSequenceAlignment(data,true );
+        contdata = new FileContinuousData(contdatafile);
 
 		Nsite = codondata->GetNsite();	// # columns
 		Nstate = codondata->GetNstate(); // # states (61 for codons)
@@ -182,7 +185,13 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 		lambda->setval(50);
 		gamtree = new GammaTree(tree,One,lambda);
 
-		allocatetree = new AllocationTree(tree, K);
+        int offset = 0;
+        /*
+        if (K == 2) {
+            offset = -1;
+        }
+        */
+		allocatetree = new AllocationTree(tree, contdata, K, offset);
 
 		relrate = new Dirichlet(Nnuc*(Nnuc-1)/2);
 		nucstationary = new Dirichlet(Nnuc);
@@ -198,20 +207,17 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 		concentration = new Exponential* [K];
 
 		for (int k=0; k<K; k++)	{
+            center[k] = new Dirichlet(Naa);
+            PriorConcentration[k] = new Const<PosReal>(Naa);
+            concentration[k] = new Exponential(PriorConcentration[k],Exponential::MEAN);
 
-				center[k] = new Dirichlet(Naa);
-				PriorConcentration[k] = new Const<PosReal>(Naa);
-				concentration[k] = new Exponential(PriorConcentration[k],Exponential::MEAN);
-
-			if(type == "clamp_MCMC")	{
-				center[k]->setuniform();
-				center[k]->Clamp();
-
-				concentration[k]->setval(20);
-				concentration[k]->Clamp();
-			}
+            if (fixglob)    {
+                center[k]->setuniform();
+                center[k]->Clamp();
+                concentration[k]->setval(20);
+                concentration[k]->Clamp();
+            }
 		}
-
 
 		selectionprofile = new DirichletIIDArray*[K];
 		for (int k=0; k<K; k++)	{
@@ -221,8 +227,7 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 
 		cerr << "submatrices\n";
 
-//Square Root //phenimenological
-		if(mechanism == "SR")	{
+		if(codonmodel == 0) {
 			submatrix = new RandomSubMatrix** [K];
 			for (int k=0; k<K; k++)	{
 				submatrix[k] = new RandomSubMatrix* [Nsite];
@@ -232,9 +237,7 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 			}
 		}
 
-
-//Mutation Selection // mechanistic
-		if(mechanism == "MS")	{
+        if (codonmodel == 1)    {
 			submatrix = new RandomSubMatrix** [K];
 			for (int k=0; k<K; k++)	{
 				submatrix[k] = new RandomSubMatrix* [Nsite];
