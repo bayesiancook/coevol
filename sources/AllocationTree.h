@@ -26,7 +26,7 @@ class AllocationTree {
                 cerr << "error: did not find taxon: " << from->GetNode()->GetName() << '\n';
                 exit(1);
             }
-            int tmp = int(data->GetState(tax, 0)) - offset;
+            int tmp = int(data->GetState(tax, 0)) + offset;
             if (tmp >= K)   {
                 tmp = K-1;
             }
@@ -53,8 +53,8 @@ class AllocationTree {
             }
             allocmap[from->GetBranch()] = ret;
             cerr << ":" << ret;
+            cerr << ")";
         }
-        cerr << ")";
         return ret;
     }
 

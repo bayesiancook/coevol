@@ -186,11 +186,9 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 		gamtree = new GammaTree(tree,One,lambda);
 
         int offset = 0;
-        /*
         if (K == 2) {
             offset = -1;
         }
-        */
 		allocatetree = new AllocationTree(tree, contdata, K, offset);
 
 		relrate = new Dirichlet(Nnuc*(Nnuc-1)/2);

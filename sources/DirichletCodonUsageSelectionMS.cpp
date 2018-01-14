@@ -109,7 +109,7 @@ int main(int argc, char* argv[])	{
 	}
 
 	// this is a new chain
-	else if (argc == 9)	{
+	else    {
 
         string datafile = "";
         string contdatafile = "";
