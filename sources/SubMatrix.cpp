@@ -1,4 +1,4 @@
-#include "linalg.h"
+// #include "linalg.h"
 #include "SubMatrix.h"
 
 #include <cmath>
@@ -45,46 +45,24 @@ SubMatrix::SubMatrix(int inNstate, bool innormalise) : Nstate(inNstate), normali
 
 void SubMatrix::Create()	{
 
+    EigenQ = EMatrix(Nstate, Nstate);
+    u = EMatrix(Nstate, Nstate);
+    invu = EMatrix(Nstate, Nstate);
+    v = EVector(Nstate);
+    vi = EVector(Nstate);
+
 	Q = new double*[Nstate];
 	for (int i=0; i<Nstate; i++)	{
 		Q[i] = new double[Nstate];
 	}
 
-	u = new double*[Nstate];
-	for (int i=0; i<Nstate; i++)	{
-		u[i] = new double[Nstate];
-	}
-
-	invu = new double*[Nstate];
-	for (int i=0; i<Nstate; i++)	{
-		invu[i] = new double[Nstate];
-	}
-		/*
-		expu = new double*[Nstate];
-		for (int i=0; i<Nstate; i++)	{
-			expu[i] = new double[Nstate];
-		}
-		expu2 = new double*[Nstate];
-		for (int i=0; i<Nstate; i++)	{
-			expu2[i] = new double[Nstate];
-		}
-		*/
-
-	v = new double[Nstate];
-	vi = new double[Nstate];
-
 	mStationary = new double[Nstate];
+    mEigenStationary = EVector(Nstate);
 
 	UniMu = 1;
 	mPow = new double**[UniSubNmax];
 	for (int n=0; n<UniSubNmax; n++)	{
 		mPow[n] = 0;
-		/*
-		mPow[n] = new double*[Nstate];
-		for (int i=0; i<Nstate; i++)	{
-			mPow[n][i] = new double[Nstate];
-		}
-		*/
 	}
 
 	flagarray = new bool[Nstate];
@@ -109,24 +87,10 @@ void SubMatrix::Create()	{
 
 SubMatrix::~SubMatrix()	{
 
-		/*
-		for (int i=0; i<GetNstate(); i++)	{
-			delete[] expu[i];
-			delete[] expu2[i];
-		}
-		delete[] expu;
-		delete[] expu2;
-		*/
-
 	for (int i=0; i<Nstate; i++)	{
 		delete[] Q[i];
-		delete[] u[i];
-		delete[] invu[i];
-		delete[] aux[i];
 	}
 	delete[] Q;
-	delete[] u;
-	delete[] invu;
 
 	if (mPow)	{
 		for (int n=0; n<UniSubNmax; n++)	{
@@ -141,8 +105,6 @@ SubMatrix::~SubMatrix()	{
 	}
 	delete[] mStationary;
 	delete[] flagarray;
-	delete[] v;
-	delete[] vi;
 
 	delete[] aux;
 
@@ -166,68 +128,51 @@ void	SubMatrix::ScalarMul(double e)	{
 //		 Diagonalise()
 // ---------------------------------------------------------------------------
 
-int SubMatrix::Diagonalise()	{
+int SubMatrix::Diagonalise()  {
+    if (!ArrayUpdated()) {
+        UpdateMatrix();
+    }
 
-	if (! ArrayUpdated())	{
-		UpdateMatrix();
-	}
 
-	diagcount++;
-	int nmax = 1000;
-	double epsilon = 1e-20;
-	int n = LinAlg::DiagonalizeRateMatrix(Q,mStationary,Nstate,v,u,invu,nmax,epsilon);
-	bool failed = (n == nmax);
-	if (failed)	{
-		cerr << "in submatrix: diag failed\n";
-		cerr << "n : " << n << '\t' << nmax << '\n';
-		ofstream os("mat");
-		ToStream(os);
-		exit(1);
-	}
+    diagcount++;
+    const double* oldstat = GetStationary();
+    EVector& stat = mEigenStationary;
+    for (int i = 0; i < Nstate; i++) {
+        stat[i] = oldstat[i];
+    }
+    for (int i = 0; i < Nstate; i++) {
+        for (int j = 0; j < Nstate; j++) {
+            EigenQ(i,j) = Q[i][j];
+        }
+    }
 
-	/*
-	double * w = new double[Nstate];
-	int* iw = new int[Nstate];
-	double** a = new double*[Nstate];
-	for (int i=0; i<Nstate; i++)	{
-		a[i] = new double[Nstate];
-	}
+    EMatrix a(Nstate, Nstate);
 
-	// copy Q into a :
-	for (int i=0; i<Nstate; i++)	{
-		for (int j=0; j<Nstate; j++)	{
-			a[i][j] = Q[i][j];
-		}
-	}
+    for (int i = 0; i < Nstate; i++) {
+        for (int j = 0; j < Nstate; j++) {
+            a(i, j) = EigenQ(i, j) * sqrt(stat[i] / stat[j]);
+        }
+    }
 
-	// diagonalise a into v and u
-	int failed = EigenRealGeneral(Nstate, a, v, vi, u, iw, w);
-	if (failed)	{
-		ndiagfailed ++;
-	}
+    solver.compute(a);
+    v = solver.eigenvalues().real();
+    vi = solver.eigenvalues().imag();
+    u = solver.eigenvectors().real();
 
-	// copy u into a :
-	for (int i=0; i<Nstate; i++)	{
-		for (int j=0; j<Nstate; j++)	{
-			a[i][j] = u[i][j];
-		}
-	}
-	// invert a into invu
-	InvertMatrix(a, Nstate, w, iw, invu);
+    for (int i = 0; i < Nstate; i++) {
+        for (int j = 0; j < Nstate; j++) {
+            invu(i, j) = u(j, i) * sqrt(stat[j]);
+        }
+    }
+    for (int i = 0; i < Nstate; i++) {
+        for (int j = 0; j < Nstate; j++) {
+            u(i, j) /= sqrt(stat[i]);
+        }
+    }
 
-	for (int i=0; i<Nstate; i++)	{
-		delete[] a[i];
-	}
-	delete[] a;
-	delete[] w;
-	delete[] iw;
-	*/
-
-	diagflag = true;
-
-	return failed;
+    diagflag = true;
+    return 0;
 }
-
 
 // ---------------------------------------------------------------------------
 //		 ComputeRate()
@@ -254,21 +199,21 @@ double SubMatrix::GetRate()	{
 }
 
 
-double* SubMatrix::GetEigenVal() {
+const EVector& SubMatrix::GetEigenVal() {
 	if (! diagflag)	{
 		Diagonalise();
 	}
 	return v;
 }
 
-double** SubMatrix::GetEigenVect() {
+const EMatrix& SubMatrix::GetEigenVect() {
 	if (! diagflag)	{
 		Diagonalise();
 	}
 	return u;
 }
 
-double** SubMatrix::GetInvEigenVect() {
+const EMatrix& SubMatrix::GetInvEigenVect() {
 	if (! diagflag) Diagonalise();
 	return invu;
 }
@@ -498,7 +443,7 @@ void	SubMatrix::ComputeExponential(double range, double** expo)   {
 		for (int j=0; j<Nstate; j++)	{
 			double tmp = 0;
 			for (int k=0; k<Nstate; k++)	{
-				tmp += u[i][k] * invu[k][j] * exp(v[k] * range);
+				tmp += u(i,k) * invu(k,j) * exp(v[k] * range);
 			}
 			expo[i][j] = tmp;
 			tot += tmp;
