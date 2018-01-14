@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= inddiffsel readinddiffsel diffsel readdiffsel 
+ALL= diffom readdiffom inddiffsel readinddiffsel diffsel readdiffsel 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -65,6 +65,14 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 # Targets
+
+diffom$(EXEEXT): $(PROGSDIR)/diffom$(EXEEXT)
+ $(PROGSDIR)/diffom$(EXEEXT): OmegaSelection.o $(OBJS)
+	$(CC) OmegaSelection.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+readdiffom$(EXEEXT): $(PROGSDIR)/readdiffom$(EXEEXT)
+ $(PROGSDIR)/readdiffom$(EXEEXT): ReadOmegaSelection.o $(OBJS)
+	$(CC) ReadOmegaSelection.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 $diffsel(EXEEXT): $(PROGSDIR)/diffsel$(EXEEXT)
 $(PROGSDIR)/diffsel$(EXEEXT): DirichletNormalCodonUsageSelectionMS.o $(OBJS)

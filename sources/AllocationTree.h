@@ -13,8 +13,10 @@ class AllocationTree {
 		K = inK;
         offset = inoffset;
         data = indata;
+        nshift = 0;
         MakeAllocMap(tree->GetRoot());
         cerr << '\n';
+        cerr << "total number of shift events: " << nshift << '\n';
 	}
 
     int MakeAllocMap(const Link* from) {
@@ -45,6 +47,7 @@ class AllocationTree {
                 else    {
                     if (tmp != ret) {
                         ret = 0;
+                        nshift++;
                     }
                 }
                 if (link->Next() != from)   {
@@ -67,6 +70,7 @@ class AllocationTree {
     ContinuousData* data;
 	int K;	
     int offset;
+    int nshift;
     map<const Branch*, int> allocmap;
 
 };
