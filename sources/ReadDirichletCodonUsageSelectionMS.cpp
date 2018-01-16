@@ -260,6 +260,18 @@ class DirichletCodonUsageSelectionMSSample : public Sample	{
 				}
 			}
 		}
+
+		ofstream os((GetName() + ".postmeansel").c_str());
+		for (int i=0; i<Nsite; i++)	{
+			os << i << '\t';
+			int k = K-1;
+			// for (int k=1; k<K; k++)	{
+			for (int a=0; a<Naa; a++)	{
+				os << meansel[k][i][a] << '\t' << ppsel[k][i][a] << '\t';
+			}
+			// }
+			os << '\n';
+		}
 	}
 
 	// a very simple (and quite uninteresting) method for obtaining

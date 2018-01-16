@@ -453,9 +453,9 @@ class OmegaSelectionModel : public ProbModel	{
 		is >> *gamtree;
 		is >> *relrate;
 		is >> *nucstationary;
+		for( int k=0;k<K;k++){
 			is >> *shape;
 			is >> *scale;
-		for( int k=0;k<K;k++){
 			is >> *omega[k];
 		}
 	}
