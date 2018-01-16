@@ -248,7 +248,8 @@ int main(int argc, char* argv[])	{
 			tree->SetBranchVal(branchvalfile);
 		}
 		if (nodevalfile != "")	{
-			tree->SetExternalNodeVal(nodevalfile);
+			tree->SetExternalTipNodeVal(nodevalfile);
+			// tree->SetExternalNodeVal(nodevalfile);
 		}
 		if (nodecifile != "")	{
 			tree->SetExternalNodeCI(nodecifile);
