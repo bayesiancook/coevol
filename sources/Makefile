@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= diffom readdiffom inddiffsel readinddiffsel diffsel readdiffsel 
+ALL= gather diffom readdiffom inddiffsel readinddiffsel diffsel readdiffsel 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -65,6 +65,10 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 # Targets
+
+gather$(EXEEXT): $(PROGSDIR)/gather$(EXEEXT)
+ $(PROGSDIR)/gather$(EXEEXT): gather.o $(OBJS)
+	$(CC) gather.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 diffom$(EXEEXT): $(PROGSDIR)/diffom$(EXEEXT)
  $(PROGSDIR)/diffom$(EXEEXT): OmegaSelection.o $(OBJS)

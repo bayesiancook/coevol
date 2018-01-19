@@ -304,7 +304,7 @@ class OmegaSelectionModel : public ProbModel	{
 				scheduler.Register(new ProfileConjugateMove(patharray,1),1,"activate suff stat");
 			}
 
-			for (int m=0; m<20; m++)	{
+			for (int m=0; m<3; m++)	{
 
 				scheduler.Register(new ProfileMove(relrate,1,1),1,"relrates");
 				scheduler.Register(new ProfileMove(relrate,0.3,3),1,"relrates");
@@ -314,23 +314,21 @@ class OmegaSelectionModel : public ProbModel	{
 				scheduler.Register(new ProfileMove(nucstationary,0.03,1),1,"nucstationary");
 
 				for (int omrep=0; omrep<10; omrep++)	{
-				for(int k=0;k<K;k++){
 
-
-					std::stringstream temp;
-					std::string indice;
-					temp << k;
-					temp >> indice;
-
-					scheduler.Register(new GammaArrayMove(omega[k],1),1,"omega" + indice);
+					for(int k=0;k<K;k++){
+						std::stringstream temp;
+						std::string indice;
+						temp << k;
+						temp >> indice;
+						scheduler.Register(new GammaArrayMove(omega[k],10),1,"omega" + indice);
+						scheduler.Register(new GammaArrayMove(omega[k],1),1,"omega" + indice);
+					}
 
 					scheduler.Register(new ExpArrayMove(shape,1),10,"shape");
 					scheduler.Register(new ExpArrayMove(shape,0.3),10,"shape");
 
 					scheduler.Register(new ExpArrayMove(scale,1),10,"scale");
 					scheduler.Register(new ExpArrayMove(scale,0.3),10,"scale");
-
-				}
 				}
 			}
 
@@ -455,9 +453,9 @@ class OmegaSelectionModel : public ProbModel	{
 		is >> *gamtree;
 		is >> *relrate;
 		is >> *nucstationary;
+		for( int k=0;k<K;k++){
 			is >> *shape;
 			is >> *scale;
-		for( int k=0;k<K;k++){
 			is >> *omega[k];
 		}
 	}

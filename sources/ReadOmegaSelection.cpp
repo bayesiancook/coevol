@@ -83,8 +83,8 @@ class OmegaSelectionSample : public Sample	{
 
 		for(int k=0;k<K;k++)	{
 			for(int i=0;i<Nsite;i++)	{
-				omegaarray[K][Nsite] = 0;
-				omegapp[K][Nsite] = 0;
+				omegaarray[k][i] = 0;
+				omegapp[k][i] = 0;
 			}
 		}
 
@@ -95,18 +95,27 @@ class OmegaSelectionSample : public Sample	{
 			cerr << '*';
 
 			for(int k=0;k<K;k++)	{
-				if(k==0)	{
-					for(int i=0;i<Nsite;i++)	{
-						omegaarray[k][i] += GetModel()->GetOmega(k,i);	
+				for(int i=0;i<Nsite;i++)	{
+					double tmp = GetModel()->GetOmega(k,i);
+					if (isnan(tmp))	{
+						cerr << "omega is nan\n";
+						exit(1);
 					}
-				}
-
-				if(k>0)	{
-					for(int i=0;i<Nsite;i++)	{
-						omegaarray[k][i] += GetModel()->GetOmega(k,i) - GetModel()->GetOmega(k-1,i);
-						if (GetModel()->GetOmega(k,i) > 1)	{
-							omegapp[k][i]++;
-						}
+					if (isinf(tmp))	{
+						cerr << "omega is inf\n";
+						exit(1);
+					}
+					if (tmp < 0)	{
+						cerr << "negative omega\n";
+						exit(1);
+					}
+					if (tmp > 100)	{
+						cerr << "large omega: " << tmp << '\n';
+						exit(1);
+					}
+					omegaarray[k][i] += tmp;
+					if (tmp > 1)	{
+						omegapp[k][i]++;
 					}
 				}
 			}
@@ -123,6 +132,18 @@ class OmegaSelectionSample : public Sample	{
 		}
 
 
+		ofstream os((name + ".postmeanom").c_str());
+		for(int i=0;i<Nsite;i++)	{
+			os << i << '\t';
+			for(int k=0;k<K;k++)	{
+				os << omegaarray[k][i] << '\t' << omegapp[k][i] << '\t';
+				if (omegapp[k][i] > cutoff)	{
+					cerr << k << '\t' << i << '\t' << omegaarray[k][i] << '\t' << omegapp[k][i] << '\n';
+				}
+			}
+			os << '\n';
+		}
+		/*
 		for(int k=0;k<K;k++)	{
 			ostringstream s1;
 			s1 << GetName() + "_" << k << ".omega";
@@ -139,10 +160,12 @@ class OmegaSelectionSample : public Sample	{
 			for(int i=0;i<Nsite;i++)	{
 				os << omegaarray[k][i] << '\n';
 				ppos << omegapp[k][i] << '\n';
+				if (omegapp[k][i] > 0.9)	{
+					cerr << k << '\t' << i << '\t' << omegaarray[k][i] << '\t' << omegapp[k][i] << '\n';
+				}
 			}
 		}
-
-
+		*/
 	}
 
 	void PostPred(string basename)	{
