@@ -28,7 +28,7 @@ foreach my $line (<INFILE>)	{
 				}
 				else	{
 					if ($nsite != length($seq))	{
-						die "error : " , len($seq) , " instead of $nsite\n";
+						die "error : " , length($seq) , " instead of $nsite\n";
 					}
 				}
 				$seq = "";
