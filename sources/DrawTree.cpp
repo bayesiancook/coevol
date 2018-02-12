@@ -701,7 +701,7 @@ void HeatTree::PrepareDrawing()	{
 }
 
 void HeatTree::FinishDrawing(ostream& os, double xscale, double yscale)	{
-	// MakeScale(os);
+	MakeScale(os);
 }
 
 void HeatTree::MakeScale(ostream& os)	{
@@ -783,48 +783,6 @@ void HeatTree::SetBranchVal(string infile)	{
 	withbranchval = true;
 }
 
-void HeatTree::SetExternalTipNodeVal(string infile)	{
-	ifstream is(infile.c_str());
-	if (!is)	{
-		cerr << "error in heattree: did not find " << infile << '\n';
-		exit(1);
-	}
-	int n,p;
-	is >> n >> p;
-	for (int i=0; i<n; i++)	{
-		string name1;
-		double tmp;
-		is >> name1 >> tmp;
-		const Link* link = GetLCA(name1,name1);
-		if (! link)	{
-			cerr << "error in heattree: did not find common ancestor of " << name1 << " and " << name1 << '\n';
-			exit(1);
-		}
-		extnodeval[link->GetNode()] = tmp;
-	}
-	RecursiveSetExternalTipNodeVal(GetRoot());
-	withexternalnodeval = true;
-}
-
-double HeatTree::RecursiveSetExternalTipNodeVal(const Link* from)	{
-
-	if (from->isLeaf())	{
-		return extnodeval[from->GetNode()];
-	}
-	double ret = -1;
-	for (const Link* link=from->Next(); link!=from; link=link->Next())	{
-		double tmp = RecursiveSetExternalTipNodeVal(link->Out());
-		if (ret == -1)	{
-			ret = tmp;
-		}
-		else if (ret != tmp)	{
-			ret = 0;
-		}
-	}
-	extnodeval[from->GetNode()] = ret;
-	return ret;
-}
-       		       
 void HeatTree::SetExternalNodeVal(string infile)	{
 	ifstream is(infile.c_str());
 	if (!is)	{

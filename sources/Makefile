@@ -10,8 +10,8 @@ else
 GSLLIB=
 endif
 
-#LIBS=$(GSLLIB)
-LIBS=$(GSLLIB) -lboost_regex
+LIBS=$(GSLLIB)
+#LIBS=$(GSLLIB) -lboost_regex
 
 CC=mpic++
 #OMP=-fopenmp
@@ -32,7 +32,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= drawtree gather diffom readdiffom inddiffsel readinddiffsel diffsel readdiffsel 
+ALL= gather diffom readdiffom inddiffsel readinddiffsel diffsel readdiffsel 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files

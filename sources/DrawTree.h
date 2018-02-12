@@ -521,9 +521,6 @@ class HeatTree : public virtual DrawTree	{
 	void SetExternalNodeVal(string infile);
 	void SetExternalNodeCI(string infile);
 
-	void SetExternalTipNodeVal(string infile);
-	double RecursiveSetExternalTipNodeVal(const Link* from);
-
 	virtual const Link* GetLCA(string tax1, string tax2) = 0;
 
 	virtual double GetNodeVal(const Link* from) = 0;
@@ -602,9 +599,8 @@ class FileHeatTree : public FileTree, public HeatTree	{
 			cerr << "error in fileheattree: only one value should be associated with each node\n";
 			cerr << "leaf: " << HasLeafVal() << '\n';
 			cerr << "internal : " << HasInternalVal() << '\n';
-			// exit(1);
+			exit(1);
 		}
-		lmin = 0.001;
 	}
 
 	string GetNodeName(const Link* link) const {return Tree::GetNodeName(link);}
@@ -697,7 +693,7 @@ class FileHeatTree : public FileTree, public HeatTree	{
 			return 0;
 		}
 		double x = atof(from->GetBranch()->GetName().c_str());
-		return x + lmin;
+		return x;
 	}
 
 	double GetExternalNodeMin(const Link* from)	{
@@ -714,6 +710,4 @@ class FileHeatTree : public FileTree, public HeatTree	{
 		}
 		return FileTree::GetNodeVal(from);
 	}
-
-	double lmin;
 };
