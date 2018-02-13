@@ -5,7 +5,7 @@
 #include "RandomSubMatrix.h"
 #include "CodonStateSpace.h"
 
-const double omegamin = 1e-4;
+const double omegamin = 1e-5;
 
 // a general class representing all codon matrices
 // this is still an abstract class

@@ -240,7 +240,7 @@ inline int BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber(int 
 		m++;
 		fact *= mu * efflength / m;
 		total += GetSubMatrix()->Power(m,stateup,statedown) * fact;
-		if ((total-Z)>1e-12)	{
+		if ((total-Z)>1e-9)	{
 			cerr << "error in BranchSiteSubstitutionProcess::DrawUniformizedSubstitutionNumber: normalising constant\n";
 			cerr << total << '\t' << Z << '\t' << total - Z << '\n';
 			/*
