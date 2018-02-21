@@ -55,8 +55,8 @@ class AllocationTree {
                 }
             }
             allocmap[from->GetBranch()] = ret;
-            cerr << ":" << ret;
             cerr << ")";
+            cerr << ":" << ret;
         }
         return ret;
     }
