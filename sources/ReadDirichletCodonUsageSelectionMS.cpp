@@ -171,7 +171,7 @@ class DirichletCodonUsageSelectionMSSample : public Sample	{
 		}
 	}
 
-	void Read(double cutoff)	{
+	void Read(double cutoff, int siteoffset)	{
 
 		// prepare the mean and variance
 		
@@ -239,9 +239,18 @@ class DirichletCodonUsageSelectionMSSample : public Sample	{
 			ofstream os1(s1.str().c_str());
 			ofstream os2(s2.str().c_str());
 
+			os1 << "#site";
+			for (int a=0; a<Naa; a++)	{
+				os1 << '\t' << "pp_" << AminoAcids[a];
+			}
+			for (int a=0; a<Naa; a++)	{
+				os1 << '\t' << "delta_" << AminoAcids[a];
+			}
+			os1 << '\n';
+
 			for (int i=0; i<Nsite; i++)	{
 
-				os1 << i;
+				os1 << i + siteoffset;
 				for (int a=0; a<Naa; a++)	{
 					ppsel[k][i][a] /= size;
 					os1 << '\t' << ppsel[k][i][a];
@@ -255,15 +264,16 @@ class DirichletCodonUsageSelectionMSSample : public Sample	{
 
 				for (int a=0; a<Naa; a++)	{
                     if ((ppsel[k][i][a] > cutoff) || (ppsel[k][i][a] < 1-cutoff)) {
-						os2 << i << '\t' << AminoAcids[a] << '\t' << ppsel[k][i][a] << '\t' << meansel[k][i][a] << '\n';
+						os2 << i + siteoffset << '\t' << AminoAcids[a] << '\t' << ppsel[k][i][a] << '\t' << meansel[k][i][a] << '\n';
 					}
 				}
 			}
 		}
 
+		/*
 		ofstream os((GetName() + ".postmeansel").c_str());
 		for (int i=0; i<Nsite; i++)	{
-			os << i << '\t';
+			os << i + siteoffset << '\t';
 			int k = K-1;
 			// for (int k=1; k<K; k++)	{
 			for (int a=0; a<Naa; a++)	{
@@ -272,6 +282,7 @@ class DirichletCodonUsageSelectionMSSample : public Sample	{
 			// }
 			os << '\n';
 		}
+		*/
 	}
 
 	void PostPred(string basename)	{
@@ -303,6 +314,7 @@ int main(int argc, char* argv[])	{
 
 	double alpha = 0.1;
 	double cutoff = 0.9;
+	int siteoffset = 1;
 
 	int ppred = 0;
 	string basename = "";
@@ -338,6 +350,10 @@ int main(int argc, char* argv[])	{
 				ppred = 1;
 				i++;
 				basename = argv[i];
+			}
+			else if (s == "-s")	{
+				i++;
+				siteoffset = atoi(argv[i]);
 			}
 			else if ( (s == "-x") || (s == "-extract") )	{
 				i++;
@@ -380,7 +396,7 @@ int main(int argc, char* argv[])	{
 		sample.ReadFalsePositives(ncat);
 	}
 	else    {
-		sample.Read(cutoff);
+		sample.Read(cutoff,siteoffset);
 	}
 }
 
