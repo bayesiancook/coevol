@@ -33,7 +33,6 @@ class DirichletCodonUsageSelectionChainMS : public Chain	{
 		New(force);
 	}
 
-
 	DirichletCodonUsageSelectionChainMS(string filename)    {
 		name = filename;
 		Open();
@@ -50,7 +49,11 @@ class DirichletCodonUsageSelectionChainMS : public Chain	{
 		}
 		cerr << "RESET\n";
 		Reset(force);
-		cerr << "START\n";
+        /*
+        ofstream os((name + ".branchalloc").c_str());
+        GetModel()->PrintBranchAllocations(os);
+        cerr << "allocations in " << name << ".branchalloc\n";
+        */
 	}
 
 	void Open()	{

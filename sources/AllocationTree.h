@@ -15,10 +15,8 @@ class AllocationTree {
         data = indata;
         nshift = 0;
         if (data)   {
-            cerr << "branch allocations: based on parsimony reconstruction using character data at the tips\n";
+            cerr << "branch allocations: based on character data at the tips\n";
             MakeAllocMap(tree->GetRoot());
-            cerr << '\n';
-            cerr << "total number of shift events: " << nshift << '\n';
         }
         else    {
             cerr << "branch allocations: such as specified in tree file\n";
@@ -45,11 +43,8 @@ class AllocationTree {
             }
             allocmap[from->GetBranch()] = tmp;
             ret = tmp;
-            cerr << from->GetNode()->GetName() << ":" << tmp;
         }
         else    {
-
-            cerr << "(";
             for (const Link* link=from->Next(); link!=from; link=link->Next())  {
                 int tmp = MakeAllocMap(link->Out());
                 if (ret == -1)  {
@@ -61,13 +56,8 @@ class AllocationTree {
                         nshift++;
                     }
                 }
-                if (link->Next() != from)   {
-                    cerr << ",";
-                }
             }
             allocmap[from->GetBranch()] = ret;
-            cerr << ")";
-            cerr << ":" << ret;
         }
         return ret;
     }
@@ -90,6 +80,29 @@ class AllocationTree {
 
 	int GetBranchAllocation(const Branch* branch)	{
         return allocmap[branch];
+    }
+
+    void ToStream(ostream& os)  {
+        RecursiveToStream(os,tree->GetRoot());
+        os << ";\n";
+    }
+
+    void RecursiveToStream(ostream& os, const Link* from)   {
+
+        if (from->isLeaf()) {
+            os << from->GetNode()->GetName() << ":" << GetBranchAllocation(from->GetBranch());
+        }
+        else    {
+            os << "(";
+            for (const Link* link=from->Next(); link!=from; link=link->Next())  {
+                RecursiveToStream(os,link->Out());
+                if (link->Next() != from)   {
+                    os << ",";
+                }
+            }
+            os << ")";
+            os << ":" << GetBranchAllocation(from->GetBranch());
+        }
     }
 
 	private:

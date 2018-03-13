@@ -301,6 +301,10 @@ class DirichletCodonUsageSelectionModelMS : public ProbModel	{
 
 	~DirichletCodonUsageSelectionModelMS() {}
 
+    void PrintBranchAllocations(ostream& os)  {
+        allocatetree->ToStream(os);
+    }
+
 	Tree* GetTree() {return tree;}
 
 
