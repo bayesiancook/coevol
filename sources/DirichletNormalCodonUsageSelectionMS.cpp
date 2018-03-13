@@ -106,14 +106,16 @@ class DirichletNormalCodonUsageSelectionChainMS : public Chain	{
 int main(int argc, char* argv[])	{
 
     DirichletNormalCodonUsageSelectionChainMS* chain = 0;
+    string name = "";
+
 	// this is an already existing chain on the disk; reopen and restart
 	if (argc == 2)	{
-		string name = argv[1];
+		name = argv[1];
 		chain = new DirichletNormalCodonUsageSelectionChainMS(name);
 	}
 
 	// this is a new chain
-	else if (argc == 9)	{
+	else    {
 
         string datafile = "";
         string contdatafile = "None";
@@ -123,7 +125,6 @@ int main(int argc, char* argv[])	{
         int fixvar = 1;
         int codonmodel = 1;
 
-        string name = "";
         int every = 1;
         int until = -1;
 
