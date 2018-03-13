@@ -112,7 +112,7 @@ int main(int argc, char* argv[])	{
 	else    {
 
         string datafile = "";
-        string contdatafile = "";
+        string contdatafile = "None";
         string treefile = "";
         int ncond = 2;
         int fixglob = 1;

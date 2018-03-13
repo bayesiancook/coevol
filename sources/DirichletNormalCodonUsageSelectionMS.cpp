@@ -116,7 +116,7 @@ int main(int argc, char* argv[])	{
 	else if (argc == 9)	{
 
         string datafile = "";
-        string contdatafile = "";
+        string contdatafile = "None";
         string treefile = "";
         int ncond = 2;
         int fixglob = 1;
@@ -186,6 +186,7 @@ int main(int argc, char* argv[])	{
             exit(1);
         }
 
+        cerr << "codon model " << codonmodel << '\n';
         chain = new DirichletNormalCodonUsageSelectionChainMS(datafile,contdatafile,treefile,ncond,fixglob,fixvar,codonmodel,every,until,name,force);
 
 	}

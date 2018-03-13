@@ -411,7 +411,12 @@ class DirichletNormalCodonUsageSelectionModelMS : public ProbModel	{
 
 		data = new FileSequenceAlignment(datafile);
 		codondata = new CodonSequenceAlignment(data,true );
-        contdata = new FileContinuousData(contdatafile);
+        cerr << "codonmodel " << codonmodel << '\n';
+        cerr << "contdatafile  " << contdatafile << '\n';
+        contdata = 0;
+        if (contdatafile != "None") {
+            contdata = new FileContinuousData(contdatafile);
+        }
 
 		Nsite = codondata->GetNsite();	// # columns
 		Nstate = codondata->GetNstate(); // # states (61 for codons)

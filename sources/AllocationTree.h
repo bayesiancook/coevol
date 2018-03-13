@@ -14,9 +14,16 @@ class AllocationTree {
         offset = inoffset;
         data = indata;
         nshift = 0;
-        MakeAllocMap(tree->GetRoot());
-        cerr << '\n';
-        cerr << "total number of shift events: " << nshift << '\n';
+        if (data)   {
+            cerr << "branch allocations: based on parsimony reconstruction using character data at the tips\n";
+            MakeAllocMap(tree->GetRoot());
+            cerr << '\n';
+            cerr << "total number of shift events: " << nshift << '\n';
+        }
+        else    {
+            cerr << "branch allocations: such as specified in tree file\n";
+            RecursiveMakeBranchAllocations(tree->GetRoot());
+        }
 	}
 
     int MakeAllocMap(const Link* from) {
@@ -31,6 +38,10 @@ class AllocationTree {
             int tmp = int(data->GetState(tax, 0)) + offset;
             if (tmp >= K)   {
                 tmp = K-1;
+            }
+            if ((tmp < 0) || (tmp >= K))   {
+                cerr << "error in MakeAllocMap: out of bound for taxon : " << from->GetNode()->GetName() << " trait : " << tmp << '\n';
+                exit(1);
             }
             allocmap[from->GetBranch()] = tmp;
             ret = tmp;
@@ -60,6 +71,22 @@ class AllocationTree {
         }
         return ret;
     }
+
+	void RecursiveMakeBranchAllocations(const Link* from)	{
+		
+		if (! from->isRoot())	{
+			int k = atoi(from->GetBranch()->GetName().c_str());
+			if ((k<0) || (k >= K)) {
+			    std::cerr << "error : allocation out of bound\n";
+			    std::cerr << "k" << '\t' << "Ncond" << '\n';
+			    exit(1);
+			}
+			allocmap[from->GetBranch()] = k;
+		}
+		for (const Link* link=from->Next(); link!=from; link=link->Next())	{
+			RecursiveMakeBranchAllocations(link->Out());
+		}
+	}
 
 	int GetBranchAllocation(const Branch* branch)	{
         return allocmap[branch];
