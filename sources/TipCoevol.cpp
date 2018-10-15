@@ -407,9 +407,11 @@ int main(int argc, char* argv[])	{
 				else if (s == "-prior")	{
 					prior = 1;
 				}
+				/*
 				else if (s == "-fixbl")	{
 					prior = 2;
 				}
+				*/
 				else if (s == "-ln")	{
 					clockprior = 0;
 				}

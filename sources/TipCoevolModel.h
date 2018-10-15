@@ -272,6 +272,7 @@ class GTRLogNormalModel : public ProbModel {
 
 	GTRLogNormalModel(string nucdatafile, string morpho2datafile, string morpho3datafile, string morpho4datafile, string contdatafile, int contdatatype, string treefile, string calibfile, double inrootage, double inrootstdev, double divrateval, double extrateval, double massextval, double K0val, double K1val, double divratestdev, double extratestdev, double massextstdev, double K0stdev, double K1stdev, double T1val, double bddivratemean, double mumean, double psimean, double rhomean, double bddivratestdev, double mustdev, double psistdev, double rhostdev, double divcutoff, int Nextant, int inchronoprior, int inclampdiag, int inclamptree, int inmeanexp, int indf, int inbrownian, int innSegments, Segmentation insegm, int inclockprior, double ratemean, double ratestdev, double morphoratemean, double morphoratestdev, int inscaling, double scalet0val, double scalefactorval, double scalefactorstdev, double scalerateval, double scaleratestdev, int inprior, bool sample = true)	{
 
+		/*
 		if (inprior == 0)	{
 			prior = 0;
 			fixbl = 0;
@@ -284,6 +285,7 @@ class GTRLogNormalModel : public ProbModel {
 			prior = 0;
 			fixbl = 1;
 		}
+		*/
 
 		conjpath = true;
 		chronoprior = inchronoprior;
@@ -301,6 +303,9 @@ class GTRLogNormalModel : public ProbModel {
 		}
 		clampdiag = inclampdiag;
 		clamptree = inclamptree;
+		if (clamptree)	{
+			fixbl = 1;
+		}
 		meanexp = inmeanexp;
 
 		clockprior = inclockprior;
