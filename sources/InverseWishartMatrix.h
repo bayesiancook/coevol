@@ -495,7 +495,6 @@ class BoundForMultiNormal	{
 
 	void FromStream(istream& is)	{
 		is >> tax1 >> tax2 >> index >> lowerbound >> upperbound;
-		cerr << index << '\n';
 	}
 
 	friend ostream& operator<<(ostream& os, const BoundForMultiNormal& cal)	{
@@ -749,13 +748,13 @@ class MultiNormal : public virtual Rvar<RealVector>{
 		hasbounds = true;
 		int index = bound.GetIndex() + offset;
 		double upper = bound.GetUpperBound();
-		cerr << bound.GetIndex() << '\t' << offset << '\t' << index << '\t' << upper << '\n';
 		if (upper != -1)	{
 			if (upper <= 0)	{
 				cerr << "error : negative upper bound : " << upper << '\n';
 				exit(1);
 			}
-			SetUpperBound(index,log(upper));
+			SetUpperBound(index,upper);
+			// SetUpperBound(index,log(upper));
 		}
 		double lower = bound.GetLowerBound();
 		if (lower != -1)	{
@@ -763,7 +762,8 @@ class MultiNormal : public virtual Rvar<RealVector>{
 				cerr << "error : negative lower bound : " << lower << '\n';
 				exit(1);
 			}
-			SetLowerBound(index,log(lower));
+			SetLowerBound(index,lower);
+			// SetLowerBound(index,log(lower));
 		}
 	}
 
@@ -780,7 +780,7 @@ class MultiNormal : public virtual Rvar<RealVector>{
 	void CheckBounds()	{
 		for (int i=0; i<GetDim(); i++)	{
 			if (haslowerbound[i] && hasupperbound[i])	{
-				while ((val()[i] > hasupperbound[i]) && (val()[i] < haslowerbound[i]))	{
+				while ((val()[i] > upperbound[i]) || (val()[i] < lowerbound[i]))	{
 					if (val()[i] > upperbound[i])	{
 						val()[i] = 2 * upperbound[i] - val()[i];
 					}
