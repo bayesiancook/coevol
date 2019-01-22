@@ -172,6 +172,7 @@ class DrawTree	{
 			string tax1, tax2, name;
 			int text,color;
 			is >> name >> tax1 >> tax2 >> text >> color;
+            cerr << name << '\t' << tax1 << '\t' << tax2 << '\t' << text << '\t' << color << '\n';
 			const Link* link = GetLCA(tax1,tax2);
 			if (link)	{
 				groupname[link->GetNode()] = name;

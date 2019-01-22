@@ -5,6 +5,10 @@
 #include "CodonSubMatrix.h"
 #include "Var.h"
 
+static const double TOOSMALL = 1e-9;
+static const double TOOLARGE = 50;
+static const double TOOLARGENEGATIVE = -50;
+
 class MGCodonProfileMutSelCodonSubMatrix : public NucCodonSubMatrix   {
 
         public:
@@ -29,9 +33,6 @@ class MGCodonProfileMutSelCodonSubMatrix : public NucCodonSubMatrix   {
        
         Var<Profile>* CodonProfile;
 	Var<PosReal>* Neff;
-        static const double TOOSMALL = 1e-9;
-	static const double TOOLARGE = 50;
-	static const double TOOLARGENEGATIVE = -50;
 };
 
 

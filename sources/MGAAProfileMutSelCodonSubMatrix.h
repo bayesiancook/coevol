@@ -6,6 +6,10 @@
 // #include "CovMatrix.h"
 #include "Var.h"
 
+static const double TOOSMALL = 1e-20;
+static const double TOOLARGE = 50;
+static const double TOOLARGENEGATIVE = -50;
+
 class MGAAProfileMutSelCodonSubMatrix : public NucCodonSubMatrix   {
 
         public:
@@ -30,9 +34,6 @@ class MGAAProfileMutSelCodonSubMatrix : public NucCodonSubMatrix   {
        
         Var<Profile>* AAProfile;
 	Var<PosReal>* Neff;
-        static const double TOOSMALL = 1e-20;
-	static const double TOOLARGE = 50;
-	static const double TOOLARGENEGATIVE = -50;
 };
 
 

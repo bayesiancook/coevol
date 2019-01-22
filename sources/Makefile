@@ -10,19 +10,17 @@ else
 GSLLIB=
 endif
 
-#LIBS=$(GSLLIB)
-LIBS=$(GSLLIB) -lboost_regex
+LIBS=$(GSLLIB)
 
 CC=mpic++
-OMP=-fopenmp
 #CC=g++
 SYSLIB=
 INCLUDES=
 #CPPFLAGS= $(USE_GSL) $(INCLUDES)
 #CPPFLAGS= -g -Wall -O3 $(USE_GSL) $(INCLUDES)
-CPPFLAGS= -w -O3 -c -g $(OMP)
+CPPFLAGS= -w -O3 -c -g -std=c++11
 #LDFLAGS=$(STATIC)
-LDFLAGS= $(OMP)
+LDFLAGS= 
 INSTALL_DIR=
 INSTALL_LIB=
 SRCS= ConjugateGTRModel.cpp Chrono.cpp BaseType.cpp Chain.cpp DrawTree.cpp GTRSubMatrix.cpp linalg.cpp PhyloProcess.cpp ProbModel.cpp Random.cpp RandomBranchSitePath.cpp RandomTypes.cpp DAGnode.cpp Sample.cpp SequenceAlignment.cpp SiteMapping.cpp BranchSitePath.cpp StateSpace.cpp SubMatrix.cpp TaxonSet.cpp Tree.cpp CodonSubMatrix.cpp MG3OmegaCodonSubMatrix.cpp CodonStateSpace.cpp CodonSequenceAlignment.cpp Move.cpp AminoAcidOmegaSubMatrix.cpp SimilarityMatrix.cpp MGAAProfileMutSelCodonSubMatrix.cpp MGCodonProfileMutSelCodonSubMatrix.cpp MGCodonAAProfileMutSelCodonSubMatrix.cpp BrownianBridge.cpp  PureBrownianProcess.cpp BrownianProcess.cpp BrownianModel.cpp CovMatrix.cpp stabledistribution.cpp
