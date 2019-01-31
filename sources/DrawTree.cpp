@@ -497,10 +497,10 @@ void ChronoDrawTree::DrawTimeScale(ostream& os, double xscale, double yscale)	{
 	os << "\\path (" << sizeX + 0.4 << "," << -8 *dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {Myr};\n";
 
 	// KT
-	double rootage = GetDepth();
+	// double rootage = GetDepth();
 	// double rootage = GetDepth(GetRoot());
-	os << "\\path[draw,dashed,thin] (" << sizeX * (rootage - 65.0) / rootage << "," << y << ")-- +(0," << sizeY - y << ");\n";
-	os << "\\path (" << sizeX * (rootage - 65.0) / rootage << "," <<  - 8*dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {\\bf KPg};\n";
+	// os << "\\path[draw,dashed,thin] (" << sizeX * (rootage - 65.0) / rootage << "," << y << ")-- +(0," << sizeY - y << ");\n";
+	// os << "\\path (" << sizeX * (rootage - 65.0) / rootage << "," <<  - 8*dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {\\bf KPg};\n";
 }
 
 

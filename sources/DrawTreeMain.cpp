@@ -215,7 +215,16 @@ int main(int argc, char* argv[])	{
 		}
 	}
 	catch(...)	{
-		cerr << "drawtree [-x <xsize> -y <ysize> -o <outfile> -ns <node_val_scale> -mm] <inputfile> \n";
+		cerr << "drawtree [-x <xsize> -y <ysize> -o <outfile> -fs <font_size (default 8)> -color] <inputfile> \n";
+        cerr << "\t-x <xsize> : tree depth (horizontal, default: 6)\n";
+        cerr << "\t-y <xsize> : tree height (vertical, default: 8)\n";
+        cerr << "\t-fs <font_size> : font size (default: 8)\n";
+        cerr << "\t-color : tree with colored branches (heat map from yellow to red): input file should have point estimates at nodes\n";
+        cerr << "\t-bubble : tree with bubbles attached to nodes: input file should have min_max interval estimates at nodes\n";
+        // cerr << "\t-chrono : chronogram: input file should have min_max date estimates at nodes\n";
+        cerr << "\t-nt : with node text (node values or names printed full text next to each node)\n";
+        // cerr << "\t-scale <scale>: set scale in tex picture (default: 1)\n";
+        cerr << "\t-leafnames : tip names not printed out\n";
 		cerr << '\n';
 		exit(1);
 	}
