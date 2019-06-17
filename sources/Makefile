@@ -23,14 +23,14 @@ CPPFLAGS= -w -O3 -c -g -std=c++11
 LDFLAGS= 
 INSTALL_DIR=
 INSTALL_LIB=
-SRCS= ConjugateGTRModel.cpp Chrono.cpp BaseType.cpp Chain.cpp DrawTree.cpp GTRSubMatrix.cpp linalg.cpp PhyloProcess.cpp ProbModel.cpp Random.cpp RandomBranchSitePath.cpp RandomTypes.cpp DAGnode.cpp Sample.cpp SequenceAlignment.cpp SiteMapping.cpp BranchSitePath.cpp StateSpace.cpp SubMatrix.cpp TaxonSet.cpp Tree.cpp CodonSubMatrix.cpp MG3OmegaCodonSubMatrix.cpp CodonStateSpace.cpp CodonSequenceAlignment.cpp Move.cpp AminoAcidOmegaSubMatrix.cpp SimilarityMatrix.cpp MGAAProfileMutSelCodonSubMatrix.cpp MGCodonProfileMutSelCodonSubMatrix.cpp MGCodonAAProfileMutSelCodonSubMatrix.cpp BrownianBridge.cpp  PureBrownianProcess.cpp BrownianProcess.cpp BrownianModel.cpp CovMatrix.cpp stabledistribution.cpp
+SRCS= ConjugateGTRModel.cpp Chrono.cpp BaseType.cpp Chain.cpp DrawTree.cpp GTRSubMatrix.cpp linalg.cpp PhyloProcess.cpp ProbModel.cpp Random.cpp RandomBranchSitePath.cpp RandomTypes.cpp DAGnode.cpp Sample.cpp SequenceAlignment.cpp SiteMapping.cpp BranchSitePath.cpp StateSpace.cpp SubMatrix.cpp TaxonSet.cpp Tree.cpp CodonSubMatrix.cpp MG3OmegaCodonSubMatrix.cpp CodonStateSpace.cpp CodonSequenceAlignment.cpp Move.cpp AminoAcidOmegaSubMatrix.cpp SimilarityMatrix.cpp MGAAProfileMutSelCodonSubMatrix.cpp MGCodonProfileMutSelCodonSubMatrix.cpp MGCodonAAProfileMutSelCodonSubMatrix.cpp BrownianBridge.cpp  PureBrownianProcess.cpp BrownianProcess.cpp BrownianModel.cpp CovMatrix.cpp stabledistribution.cpp correlation.cpp correl.cpp
 
 OBJS=$(patsubst %.cpp,%.o,$(SRCS))
 ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= drawtree coevol readcoevol tipcoevol readtipcoevol ancov readancov
+ALL= coevol readcoevol tipcoevol readtipcoevol ancov readancov tracecomp drawtree 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -371,6 +371,10 @@ $(PROGSDIR)/drawcomptree$(EXEEXT): DrawCompTree.o $(OBJS)
 simucoevol$(EXEEXT): $(PROGSDIR)/simucoevol$(EXEEXT)
 $(PROGSDIR)/simucoevol$(EXEEXT): SimuBranchOmegaMultivariate.o $(OBJS)
 	$(CC) SimuBranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+tracecomp$(EXEEXT): $(PROGSDIR)/tracecomp$(EXEEXT)
+$(PROGSDIR)/tracecomp$(EXEEXT): TraceComp.o $(OBJS)
+	$(CC) TraceComp.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 
 clean:
