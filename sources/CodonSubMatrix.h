@@ -6,6 +6,9 @@
 #include "CodonStateSpace.h"
 
 const double omegamin = 1e-5;
+static const double TOOSMALL = 1e-20;
+static const double TOOLARGE = 50;
+static const double TOOLARGENEGATIVE = -50;
 
 // a general class representing all codon matrices
 // this is still an abstract class

@@ -29,9 +29,6 @@ class MGCodonProfileMutSelCodonSubMatrix : public NucCodonSubMatrix   {
        
         Var<Profile>* CodonProfile;
 	Var<PosReal>* Neff;
-        static const double TOOSMALL = 1e-9;
-	static const double TOOLARGE = 50;
-	static const double TOOLARGENEGATIVE = -50;
 };
 
 
