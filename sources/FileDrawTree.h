@@ -6,9 +6,8 @@
 
 #include "StringStreamUtils.h"
 #include "BiologicalSequences.h"
+#include <regex>
 
-#include <boost/regex.hpp>  // Boost.Regex lib
-using namespace boost;
 
 static const string number = "\\-?\\d*(\\.\\d+)?(e\\+\\d+)?";
 
