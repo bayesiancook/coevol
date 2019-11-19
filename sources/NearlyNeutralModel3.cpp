@@ -156,6 +156,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 	}
 };
 
+/*
 double NeutralityIndexFactor(int nind, int jmax)	{
 
 	double total = 0;
@@ -174,6 +175,7 @@ double NeutralityIndexFactor(int nind, int jmax)	{
 	cerr << "NI(0.2)   : " << 1 + 0.2*total << '\n';
 	return total;
 }
+*/
 
 int main(int argc, char* argv[])	{
 
