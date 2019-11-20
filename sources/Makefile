@@ -13,8 +13,8 @@ endif
 LIBS=$(GSLLIB)
 #LIBS=$(GSLLIB) -lboost_regex
 
+CC=mpic++
 #OMP=-fopenmp
-CC=g++
 SYSLIB=
 INCLUDES=
 #CPPFLAGS= $(USE_GSL) $(INCLUDES)
