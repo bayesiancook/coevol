@@ -13,9 +13,8 @@ endif
 LIBS=$(GSLLIB)
 #LIBS=$(GSLLIB) -lboost_regex
 
-CC=mpic++
 #OMP=-fopenmp
-#CC=g++
+CC=g++
 SYSLIB=
 INCLUDES=
 #CPPFLAGS= $(USE_GSL) $(INCLUDES)
@@ -32,7 +31,7 @@ ALL_SRCS=$(wildcard *.cpp)
 ALL_OBJS=$(patsubst %.cpp,%.o,$(ALL_SRCS))
 
 PROGSDIR=../data
-ALL= readnearlyneutral3 nearlyneutral3 readcoevol readnearlyneutral2 readnearlyneutral1 branchmodel readbranchmodel readcoevol nearlyneutral1 nearlyneutral2 readnearlyneutral1 readnearlyneutral2 coevol readcoevol 
+ALL= coevol readcoevol nearlyneutral readnearlyneutral 
 PROGS=$(addprefix $(PROGSDIR)/, $(ALL))
 
 # If we are on a windows platform, executables are .exe files
@@ -206,29 +205,13 @@ biclock$(EXEEXT): $(PROGSDIR)/biclock$(EXEEXT)
 $(PROGSDIR)/biclock$(EXEEXT): SimpleBiBranchOmegaMultivariate.o $(OBJS)
 	$(CC) SimpleBiBranchOmegaMultivariate.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-nearlyneutral3$(EXEEXT): $(PROGSDIR)/nearlyneutral3$(EXEEXT)
-$(PROGSDIR)/nearlyneutral3$(EXEEXT): NearlyNeutralModel3.o $(OBJS)
-	$(CC) NearlyNeutralModel3.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
-nearlyneutral1$(EXEEXT): $(PROGSDIR)/nearlyneutral1$(EXEEXT)
-$(PROGSDIR)/nearlyneutral1$(EXEEXT): NearlyNeutralModel1.o $(OBJS)
-	$(CC) NearlyNeutralModel1.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
-nearlyneutral2$(EXEEXT): $(PROGSDIR)/nearlyneutral2$(EXEEXT)
-$(PROGSDIR)/nearlyneutral2$(EXEEXT): NearlyNeutralModel2.o $(OBJS)
+nearlyneutral$(EXEEXT): $(PROGSDIR)/nearlyneutral$(EXEEXT)
+$(PROGSDIR)/nearlyneutral$(EXEEXT): NearlyNeutralModel2.o $(OBJS)
 	$(CC) NearlyNeutralModel2.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-readnearlyneutral1$(EXEEXT): $(PROGSDIR)/readnearlyneutral1$(EXEEXT)
-$(PROGSDIR)/readnearlyneutral1$(EXEEXT): ReadNearlyNeutralModel1.o $(OBJS)
-	$(CC) ReadNearlyNeutralModel1.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
-readnearlyneutral2$(EXEEXT): $(PROGSDIR)/readnearlyneutral2$(EXEEXT)
-$(PROGSDIR)/readnearlyneutral2$(EXEEXT): ReadNearlyNeutralModel2.o $(OBJS)
+readnearlyneutral$(EXEEXT): $(PROGSDIR)/readnearlyneutral$(EXEEXT)
+$(PROGSDIR)/readnearlyneutral$(EXEEXT): ReadNearlyNeutralModel2.o $(OBJS)
 	$(CC) ReadNearlyNeutralModel2.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
-readnearlyneutral3$(EXEEXT): $(PROGSDIR)/readnearlyneutral3$(EXEEXT)
-$(PROGSDIR)/readnearlyneutral3$(EXEEXT): ReadNearlyNeutralModel3.o $(OBJS)
-	$(CC) ReadNearlyNeutralModel3.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 divbd$(EXEEXT): $(PROGSDIR)/divbd$(EXEEXT)
 $(PROGSDIR)/divbd$(EXEEXT): DivBD.o $(OBJS)

@@ -203,7 +203,7 @@ int main(int argc, char* argv[])	{
 
 		string name = "";
 		bool sameseq = false;
-		bool noadapt = false;
+		bool noadapt = true;
 		bool clamptree = false;
 		bool meanexp = false;
 		GeneticCodeType type = Universal;
@@ -313,6 +313,9 @@ int main(int argc, char* argv[])	{
 				}
 				else if (s == "-noadapt")	{
 					noadapt = true;
+				}	
+				else if (s == "-withadapt")	{
+					noadapt = false;
 				}	
 				else if (s == "-meanexp")	{
 					meanexp = true;
