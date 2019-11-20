@@ -17,9 +17,7 @@ CC=mpic++
 #OMP=-fopenmp
 SYSLIB=
 INCLUDES=
-#CPPFLAGS= $(USE_GSL) $(INCLUDES)
-#CPPFLAGS= -g -Wall -O3 $(USE_GSL) $(INCLUDES)
-CPPFLAGS= -w -O3 -c -g $(OMP)
+CPPFLAGS= -w -O3 -c --std=c++11 
 #LDFLAGS=$(STATIC)
 LDFLAGS= $(OMP)
 INSTALL_DIR=
