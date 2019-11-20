@@ -19,7 +19,7 @@ class SplitNodeDate : public Dvar<PosReal>	{
 
 	void specialUpdate()	{
 		double tmp = down->val() + (up->val() - down->val()) * f;
-		if (isnan(tmp))	{
+		if (std::isnan(tmp))	{
 			cerr << "error in SplitNodeDate:: special update: nan\n";
 			exit(1);
 		}

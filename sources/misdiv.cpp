@@ -28,7 +28,7 @@ double logg(double lambda, double mu, double t)	{
 		ret = - d - 2 * log(mu - lambda*e);
 	}
 
-	if (isnan(ret))	{
+	if (std::isnan(ret))	{
 		cerr << "internal log prob is nan\n";
 		exit(1);
 	}
@@ -68,7 +68,7 @@ double logprob(double* theta, double* age)	{
 		ret += logg(lambda,mu,age[j]);
 	}
 
-	if (isnan(ret))	{
+	if (std::isnan(ret))	{
 		cerr << "log prob is nan\n";
 		cerr << "lambda : " << lambda << '\n';
 		cerr << "mu     : " << mu << '\n';

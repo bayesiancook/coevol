@@ -189,12 +189,12 @@ class SerialBirthDeath : public CalibratedChronogram, public Rnode {
 			cerr << p0 << '\n';
 			exit(1);
 		}
-		if (isinf(p0))	{
+		if (std::isinf(p0))	{
 			cerr << "error in serial bd: p0 is inf\n";
 			exit(1);
 		}
 
-		if (isnan(p0))	{
+		if (std::isnan(p0))	{
 			cerr << "error in serial bd: p0 is nan\n";
 			exit(1);
 		}
@@ -221,11 +221,11 @@ class SerialBirthDeath : public CalibratedChronogram, public Rnode {
 		double b = onePlusC2+oneMinusC2*exp(ct);
 		double tmp = exp( ct ) / (b*b);
 
-		if (isinf(tmp))	{
+		if (std::isinf(tmp))	{
 			cerr << "error in serial bd q function: inf\n";
 			exit(1);
 		}
-		if (isnan(tmp))	{
+		if (std::isnan(tmp))	{
 			cerr << "error in serial bd q function: nan\n";
 			exit(1);
 		}
@@ -299,7 +299,7 @@ class SerialBirthDeath : public CalibratedChronogram, public Rnode {
 		if (Nextant)	{
 			double expo = exp(- div * cutoff);
 			double tmp = log((birth * (1 - expo)) / (birth - death * expo));
-			if (isnan(tmp))	{
+			if (std::isnan(tmp))	{
 				return log(0);
 			}
 			tot += (Nextant - Ntaxa) * tmp;
@@ -309,12 +309,12 @@ class SerialBirthDeath : public CalibratedChronogram, public Rnode {
 		// tot += (Ntaxa-2 + GetNfossil(1.0)) * log(scale->val());
 
 		/*
-		if (isinf(tot))	{
+		if (std::isinf(tot))	{
 			cerr << "error in SerialBDP: log prob is inf\n";
 			exit(1);
 		}
 		*/
-		if (isnan(tot))	{
+		if (std::isnan(tot))	{
 			cerr << "error in SerialBDP: log prob is nan\n";
 			cerr << birth << '\t' << death << '\t' << psi->val()  << '\n';
 			exit(1);

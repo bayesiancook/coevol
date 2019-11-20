@@ -145,11 +145,11 @@ class ConjugateRandomBrownianPath : public virtual ConjugateSampling<BrownianBri
 		/*
 		for(int i=0; i<dim; i++)	{
 			for(int j=0; j<dim; j++)	{
-				if (isinf(contrast[i][j]))	{
+				if (std::isinf(contrast[i][j]))	{
 					cerr << "inf\n";
 					exit(1);
 				}
-				if (isnan(contrast[i][j]))	{
+				if (std::isnan(contrast[i][j]))	{
 					cerr << "nan\n";
 					exit(1);
 				}

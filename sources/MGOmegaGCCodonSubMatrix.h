@@ -197,7 +197,7 @@ double MGOmegaGCCodonSubMatrix::AverageFixProbRatio(double s0)	{
 	for (int i=0; i<N; i++) {
 		total += v[i] * FixProbRatio(y[i]+s0);
 	}
-	if (isinf(total))	{
+	if (std::isinf(total))	{
 		cerr << "inf prob in MGOmegaGCCodoSubMatrix\n";
 		cerr << "rescaled bgc : " << s0 << '\n';
 		cerr << '\n';

@@ -163,7 +163,7 @@ double RandomBranchSitePath::PathLogProb()	{
 			total += ReducedWaitingTimeLogProb(link->GetState(), GetAbsoluteTime(link));
 			total += ReducedOneStepLogProb(link->GetState(),link->next->GetState());
 			/*
-			if (isinf(ReducedOneStepLogProb(link->GetState(),link->next->GetState())))	{
+			if (std::isinf(ReducedOneStepLogProb(link->GetState(),link->next->GetState())))	{
 				cerr << "forbidden transition\n";
 				cerr << GetStateSpace()->GetState(link->GetState()) << '\t' << GetStateSpace()->GetState(link->next->GetState()) << '\n';
 				exit(1);

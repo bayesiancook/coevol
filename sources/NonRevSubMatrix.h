@@ -133,7 +133,7 @@ void NonRevSubMatrix::BackwardPropagate(const double* up, double* down, double l
 	}
 
 	for (int i=0; i<GetNstate(); i++)	{
-		if (isnan(down[i]))	{
+		if (std::isnan(down[i]))	{
 			cerr << "error in back prop\n";
 			cerr << "non rev\n";
 			for (int j=0; j<GetNstate(); j++)	{
@@ -274,7 +274,7 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
 	}
 
 	for (int i=0; i<GetNstate(); i++)	{
-		if (isnan(down[i]))	{
+		if (std::isnan(down[i]))	{
 			cerr << "error in back prop\n";
 			for (int j=0; j<GetNstate(); j++)	{
 				cerr << up[j] << '\t' << down[j] << '\n';

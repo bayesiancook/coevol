@@ -419,7 +419,7 @@ class CovMatrix : public BaseType, public Multiplicative {
 			ret += GetLogEigenVal()[i];
 		}
 		/*
-		if (isnan(ret))	{
+		if (std::isnan(ret))	{
 			cerr << "covmatrix det: nan\n";
 			exit(1);
 		}
@@ -613,7 +613,7 @@ class CovMatrix : public BaseType, public Multiplicative {
 		}
 		delete[] a;
 		diagflag = false;
-		if (isinf(logdet))	{
+		if (std::isinf(logdet))	{
 			cerr << "error in cov matrix: non invertible\n";
 			return 1;
 			exit(1);

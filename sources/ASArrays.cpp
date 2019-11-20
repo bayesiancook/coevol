@@ -90,11 +90,11 @@ class ASArrays	{
 					cerr << a << '\t' << t << '\t' << total << '\n';
 				}
 				double logtotal = log(total);
-				if (isnan(logtotal))	{
+				if (std::isnan(logtotal))	{
 					cerr << "error in lnpdf: nan\n";
 					exit(1);
 				}
-				if (isinf(logtotal))	{
+				if (std::isinf(logtotal))	{
 					cerr << "error in lnpdf: inf\n";
 					exit(1);
 				}

@@ -19,7 +19,7 @@ class SplitLength : public Dvar<PosReal>	{
 
 	void specialUpdate()	{
 		double tmp = from->val() * f;
-		if (isnan(tmp))	{
+		if (std::isnan(tmp))	{
 			cerr << "error in special update: nan\n";
 			cerr << from->val() << '\t' << f << '\n';
 			exit(1);

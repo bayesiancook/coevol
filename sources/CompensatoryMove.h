@@ -142,12 +142,12 @@ class MultiVariateRootCompensatoryMove : public MCUpdate, public Mnode {
 		chronogram->MultiplyTimes(rootright,rr/sr);
 		process->RecursivePiecewiseTranslation(rootright,log(sr/rr),index,1);
 
-		if (isinf(logHastings))	{
+		if (std::isinf(logHastings))	{
 			cerr << "in root comp move: inf\n";
 			exit(1);
 		}
 
-		if (isnan(logHastings))	{
+		if (std::isnan(logHastings))	{
 			cerr << "in root comp move: nan\n";
 			exit(1);
 		}

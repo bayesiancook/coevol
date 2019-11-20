@@ -299,7 +299,7 @@ class RandomAlphaStablePath : public Rvar<RealVector>	{
 
 		double y = scale*Random::sNormal();
 		double x = m + y;
-		if (isnan(x))	{
+		if (std::isnan(x))	{
 			cerr << "draw cond normal: nan \n";
 			cerr << x0 << '\t' << x1 << '\t' << t0 << '\t' << t1 << '\t' << tuning << '\t' << tau0 << '\t' << tau1 << '\t' << m << '\t' << scale << '\n';
 			exit(1);
@@ -373,7 +373,7 @@ class RandomAlphaStablePath : public Rvar<RealVector>	{
 		for (int i=0; i<GetNSegments(); i++)	{
 			integral += 0.5 * (exp((*this)[i]) + exp((*this)[i+1])) * segmentlength;
 		}
-		if (isinf(integral))	{
+		if (std::isinf(integral))	{
 			cerr << "get exp int: inf\n";
 			cerr << "length : " << length->val() << '\n';
 			cerr << "nseg : " << GetNSegments() << '\n';
@@ -383,7 +383,7 @@ class RandomAlphaStablePath : public Rvar<RealVector>	{
 			cerr << '\n';
 			exit(1);
 		}
-		if (isnan(integral))	{
+		if (std::isnan(integral))	{
 			cerr << "get exp int: nan\n";
 			cerr << "length : " << length->val() << '\n';
 			cerr << "nseg : " << GetNSegments() << '\n';
@@ -410,7 +410,7 @@ class RandomAlphaStablePath : public Rvar<RealVector>	{
 		}
 		integral /= GetNSegments();
 
-		if (isinf(integral))	{
+		if (std::isinf(integral))	{
 			cerr << "get exp int: inf\n";
 			cerr << "length : " << length->val() << '\n';
 			cerr << "nseg : " << GetNSegments() << '\n';
@@ -420,7 +420,7 @@ class RandomAlphaStablePath : public Rvar<RealVector>	{
 			cerr << '\n';
 			exit(1);
 		}
-		if (isnan(integral))	{
+		if (std::isnan(integral))	{
 			cerr << "get exp int: nan\n";
 			cerr << "length : " << length->val() << '\n';
 			cerr << "nseg : " << GetNSegments() << '\n';

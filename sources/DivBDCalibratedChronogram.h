@@ -69,7 +69,7 @@ class DivBDCalibratedNodeDate : public CalibratedNodeDate	{
 			ret = - d - 2 * log(mu->val() - lambda->val()*e);
 		}
 
-		if (isnan(ret))	{
+		if (std::isnan(ret))	{
 			cerr << "internal log prob is nan\n";
 			exit(1);
 		}
@@ -109,7 +109,7 @@ class DivBDCalibratedNodeDate : public CalibratedNodeDate	{
 			ret += (ntaxa-1) * log(lambda->val()) - log(mu->val()) + (2*ntaxa-2)*log(mu->val() - lambda->val()) + log(log(lambda->val() * e / (mu->val() - lambda->val()*e)));
 		}
 
-		if (isnan(ret))	{
+		if (std::isnan(ret))	{
 			cerr << "root log prob is nan\n";
 			cerr << "lambda : " << lambda->val() << '\n';
 			cerr << "mu     : " << mu->val() << '\n';
@@ -186,7 +186,7 @@ class DivBDCalibratedChronogram : public CalibratedChronogram	{
 
 		double tmp = RecursiveGetLogProb(GetRoot());
 		cerr << tmp << '\n';
-		if (isnan(tmp))	{
+		if (std::isnan(tmp))	{
 			cerr << "log prob is nan\n";
 			exit(1);
 		}

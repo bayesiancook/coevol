@@ -164,7 +164,7 @@ class SegmentedPathConjugate : public DSemiConjugatePrior<void>	{
 				total += i->second * log( (*matrix[i->first.segment]) (i->first.first, i->first.second));
 				totnsub += i->second;
 			}
-						if(isnan(total) || isinf(total)) {
+						if(std::isnan(total) || std::isinf(total)) {
 							cerr << "suff stat log prob : " << total << endl;
 							exit(0);
 						}
