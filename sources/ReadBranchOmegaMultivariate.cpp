@@ -1594,22 +1594,27 @@ class BranchOmegaMultivariateSample : public Sample	{
 			alpha[i]=0;
 		}	
 		
-		int indice1(0);
-		int indice2(0);
+        // corresponds to generation_time
+		int indice1(-1);
+        // corresponds to pi_S
+		int indice2(-1);
 		
 		for (int k=0; k<Ncont; k++)	{
 			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "generation_time") {
 				indice1 = k+dim-Ncont;
 			}	
-			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "maturity" && indice1 == 0)	{
-				indice1 = k+dim-Ncont;
-			}
 			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
 				indice2 = k+dim-Ncont;
 			}	
 		}
 		
-		if (indice1 == 0 || indice2 == 0) {
+		if (indice1 == -1)  {
+            cerr << "error: cannot find entry generation_time in continuous data matrix\n";
+			exit(1);
+		}
+		
+		if (indice2 == -1)  {
+            cerr << "error: cannot find entry piS in continuous data matrix\n";
 			exit(1);
 		}
 		
@@ -1727,40 +1732,39 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "normalise\n";
 
         if (! clampdiag)    {
-		mat->Normalize();
-		ofstream cout((GetName() + ".cov").c_str());
+            mat->Normalize();
+            maty1->Normalize();
+            maty2->Normalize();
 
-		cout << *mat;
+            ofstream cout((GetName() + ".cov").c_str());
 
-		cerr << "covariance matrix in " << name << ".cov\n";
-		cerr << '\n';
-		
-		
-		mat->PrintSlopes(cout);
-		mat->PrintSlopes2(cout);
-		
+            cout << *mat;
 
-		maty1->Normalize();
-		ofstream cout1((GetName() + ".covNe_ds").c_str());
+            cerr << "covariance matrix in " << name << ".cov\n";
+            cerr << '\n';
 
-		cout1 << *maty1;
+            // mat->PrintSlopes(cout);
+            // mat->PrintSlopes2(cout);
 
-		cerr << "covariance matrix in " << name << ".covNe_ds\n";
-		cerr << '\n';
+            ofstream cout1((GetName() + ".covNe_ds").c_str());
 
-		maty1->PrintSlopes(cout1);
-		maty1->PrintSlopes2(cout1);
+            cout1 << *maty1;
 
-		maty2->Normalize();
-		ofstream cout2((GetName() + ".covNe_pis").c_str());
+            cerr << "covariance matrix in " << name << ".covNe_ds\n";
+            cerr << '\n';
 
-		cout2 << *maty2;
+            // maty1->PrintSlopes(cout1);
+            // maty1->PrintSlopes2(cout1);
 
-		cerr << "covariance matrix in " << name << ".covNe_pis\n";
-		cerr << '\n';
+            ofstream cout2((GetName() + ".covNe_pis").c_str());
 
-		maty2->PrintSlopes(cout2);
-		maty2->PrintSlopes2(cout2);
+            cout2 << *maty2;
+
+            cerr << "covariance matrix in " << name << ".covNe_pis\n";
+            cerr << '\n';
+
+            // maty2->PrintSlopes(cout2);
+            // maty2->PrintSlopes2(cout2);
         }
 
 		meanchrono->Normalise();

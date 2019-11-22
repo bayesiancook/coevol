@@ -37,24 +37,24 @@ class GammaBetaMove : public MCUpdate, public Mnode	{
 
 	public:
 
-	GammaBetaMove(Rvar<Real>* ingamma, Rvar<Real>* inbeta, double intuning, double ina)	{
-		gamma = ingamma;
+	GammaBetaMove(Rvar<Real>* inbeta, Rvar<Real>* inkappa1, double intuning, double ina)	{
 		beta = inbeta;
+		kappa1 = inkappa1;
 		tuning = intuning;
 		a = ina;
-		gamma->Register(this);
 		beta->Register(this);
+		kappa1->Register(this);
 	}
 
 	double Move(double tuning_modulator = 1)	{
 
 		double acc = 1.0;
-		if ((!gamma->isClamped()) && (! beta->isClamped()))	{
+		if ((!beta->isClamped()) && (! kappa1->isClamped()))	{
 			
 			Corrupt(true);
 			double u = tuning * tuning_modulator * (Random::Uniform() - 0.5);
-			gamma->setval(gamma->val() + u);
-			beta->setval(beta->val() + a*u);
+			beta->setval(beta->val() + u);
+			kappa1->setval(kappa1->val() + a*u);
 			double logratio = Update();
 			acc = (log(Random::Uniform()) < logratio);
 			if (! acc)	{
@@ -67,8 +67,8 @@ class GammaBetaMove : public MCUpdate, public Mnode	{
 	}
 
 	private:
-	Rvar<Real>* gamma;
 	Rvar<Real>* beta;
+	Rvar<Real>* kappa1;
 	double tuning;
 	double a;
 };
@@ -128,9 +128,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	
 	//parameter of the linear combination
 	
-	Normal* gamma;
 	Normal* beta;
-	Normal* beta2;	
+	Normal* kappa1;
+	Normal* kappa2;	
 	
 	Var<PosReal>* absrootage;
 	
@@ -408,13 +408,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		//create the combination factors 
 		
-		gamma = new Normal(Zero, One);
 		beta = new Normal(Zero, One);
-		if (!sameseq) {beta2 = new Normal(Zero, One);}
+		kappa1 = new Normal(Zero, One);
+		if (!sameseq) {kappa2 = new Normal(Zero, One);}
 		
-		gamma->setval(0.2);
-		beta->setval(0.9);
-		if (!sameseq) {beta2->setval(0.4);}
+		beta->setval(0.2);
+		kappa1->setval(0.9);
+		if (!sameseq) {kappa2->setval(0.4);}
 		
 		//create the slopes which define the linear combination
 		
@@ -433,11 +433,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		// create the node tree obtained from the linear combinations
 		
-		if (sameseq) {nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, gamma, K, neutralomegaslope,sameseq);}
-		if (!sameseq) {nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, beta, beta2, neutralomegaslope,sameseq);}
+		if (sameseq) {nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, beta, K, neutralomegaslope,sameseq);}
+		if (!sameseq) {nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, kappa1, kappa2, neutralomegaslope,sameseq);}
 		if (!noadapt) {nodeomegatree = new OmegaLinearCombinationNodeTree(process, nodeneutralomegatree, omegaslope);}
-		if (sameseq) {nodeutree = new ULinearCombinationNodeTree(process, gamma, beta, K, uslope,sameseq);}
-		if (!sameseq) {nodeutree = new ULinearCombinationNodeTree(process, gamma, beta2, uslope, sameseq);}
+		if (sameseq) {nodeutree = new ULinearCombinationNodeTree(process, beta, kappa1, K, uslope,sameseq);}
+		if (!sameseq) {nodeutree = new ULinearCombinationNodeTree(process, beta, kappa2, uslope, sameseq);}
 		nodesynratetree = new SynrateLinearCombinationNodeTree(process, nodeutree, absrootage, synrateslope);
 		nodeNetree = new NeLinearCombinationNodeTree(process, nodeutree, Neslope); 
 		
@@ -485,9 +485,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		RootRegister(One);
 		RootRegister(relrate);
 		RootRegister(stationary);
-		RootRegister(gamma);
 		RootRegister(beta);
-		if (!sameseq) {RootRegister(beta2);}
+		RootRegister(kappa1);
+		if (!sameseq) {RootRegister(kappa2);}
 		RootRegister(absrootage);
 		if (MeanChi)	{
 			RootRegister(MeanChi);
@@ -699,7 +699,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	// accessors
 	Tree* GetTree() {return tree;}
 	
-	Var<Real>* GetGamma() {return gamma;}
+	Var<Real>* GetGamma() {return beta;}
 	
 	Const<PosReal>* GetK() {return K;}
 
@@ -786,9 +786,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		total += relrate->GetLogProb();
 		total += stationary->GetLogProb();
-		total += gamma->GetLogProb();
 		total += beta->GetLogProb();
-		if (!sameseq) {total += beta2->GetLogProb();}
+		total += kappa1->GetLogProb();
+		if (!sameseq) {total += kappa2->GetLogProb();}
 		return total;
 	}
 
@@ -859,22 +859,22 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new ProfileMove(stationary,0.01,5),10,"stat10");
 			scheduler.Register(new SimpleMove(stationary,0.001),10,"stat");
 			
-			scheduler.Register(new SimpleMove(gamma,0.003),10,"gamma");
-			scheduler.Register(new SimpleMove(gamma,0.0008),10,"gamma");
-			scheduler.Register(new SimpleMove(gamma,0.0003),10,"gamma");
+			scheduler.Register(new SimpleMove(beta,0.003),10,"beta");
+			scheduler.Register(new SimpleMove(beta,0.0008),10,"beta");
+			scheduler.Register(new SimpleMove(beta,0.0003),10,"beta");
 			
-			scheduler.Register(new SimpleMove(beta,0.15),10,"beta");
-			scheduler.Register(new SimpleMove(beta,0.08),10,"beta");
-			scheduler.Register(new SimpleMove(beta,0.01),10,"beta");
+			scheduler.Register(new SimpleMove(kappa1,0.15),10,"kappa1");
+			scheduler.Register(new SimpleMove(kappa1,0.08),10,"kappa1");
+			scheduler.Register(new SimpleMove(kappa1,0.01),10,"kappa1");
 			
 			if (!sameseq) {
-				scheduler.Register(new SimpleMove(beta2,0.05),10,"beta2");
-				scheduler.Register(new SimpleMove(beta2,0.008),10,"beta2");
-				scheduler.Register(new SimpleMove(beta2,0.001),10,"beta2");
+				scheduler.Register(new SimpleMove(kappa2,0.05),10,"kappa2");
+				scheduler.Register(new SimpleMove(kappa2,0.008),10,"kappa2");
+				scheduler.Register(new SimpleMove(kappa2,0.001),10,"kappa2");
 
-				scheduler.Register(new GammaBetaMove(gamma,beta2,1,11),10,"gammabeta2");
-				scheduler.Register(new GammaBetaMove(gamma,beta2,0.1,11),10,"gammabeta2");
-				scheduler.Register(new GammaBetaMove(gamma,beta2,0.01,11),10,"gammabeta2");
+				scheduler.Register(new GammaBetaMove(beta,kappa2,1,11),10,"kappa1kappa2");
+				scheduler.Register(new GammaBetaMove(beta,kappa2,0.1,11),10,"kappa1kappa2");
+				scheduler.Register(new GammaBetaMove(beta,kappa2,0.01,11),10,"kappa1kappa2");
 			}
 			
 		}
@@ -893,9 +893,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		for (int l=0; l<L; l++)	{
 			process->CutOff(1,l);
 		}
-		gamma->Sample();
 		beta->Sample();
-		if (!sameseq) {beta2->Sample();}
+		kappa1->Sample();
+		if (!sameseq) {kappa2->Sample();}
 		relrate->Sample();
 		stationary->Sample();
 		phyloprocess->Sample();
@@ -917,9 +917,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (isCalibrated())	{
 			os << "\trootage";
 		}
-		os << "\tgamma";
 		os << "\tbeta";
-		if (!sameseq) {os << "\tbeta2";}
+		os << "\tkappa1";
+		if (!sameseq) {os << "\tkappa2";}
         for (int k=0; k<Ncont+L; k++)   {
             os << "\tmean_" << k;
         }
@@ -952,9 +952,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (isCalibrated())	{
 			os << '\t' << GetRootAge();
 		}
-		os << '\t' << gamma->val();
 		os << '\t' << beta->val();
-		if (!sameseq) {os << '\t' << beta2->val();}
+		os << '\t' << kappa1->val();
+		if (!sameseq) {os << '\t' << kappa2->val();}
 		for (int k=0; k<Ncont+L; k++)	{
             os << '\t' << process->GetMean(k);
         }
@@ -994,9 +994,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << *DiagArray << '\n';
 		os << *sigma << '\n';
 		os << *process << '\n';
-		os << *gamma << '\n';
 		os << *beta << '\n';
-		if (!sameseq) {os << *beta2 << '\n';}
+		os << *kappa1 << '\n';
+		if (!sameseq) {os << *kappa2 << '\n';}
 		os << *relrate << '\n';
 		os << *stationary << '\n';
 	}
@@ -1012,9 +1012,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		is >> *DiagArray;
 		is >> *sigma;
 		is >> *process;
-		is >> *gamma;
 		is >> *beta;
-		if (!sameseq) {is >> *beta2;}
+		is >> *kappa1;
+		if (!sameseq) {is >> *kappa2;}
 		is >> *relrate;
 		is >> *stationary;
 	}
