@@ -1814,6 +1814,9 @@ class BranchOmegaMultivariateSample : public Sample	{
             cov_os << '\n';
             cov_os << '\n';
 
+            cerr << "augmented covariance matrix including Ne" << name << ".cov\n";
+            cerr << '\n';
+
             ofstream cout((GetName() + ".cov0").c_str());
             cout << "entries are in the following order:\n";
             GetModel()->PrintEntries(cout);
