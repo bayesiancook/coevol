@@ -1737,6 +1737,7 @@ class BranchOmegaMultivariateSample : public Sample	{
             maty2->Normalize();
 
             ofstream cov_os((GetName() + ".cov").c_str());
+            cov_os.precision(3);
             cov_os << "entries are in the following order:\n";
             cov_os << "dS\n";
             cov_os << "dN/dS\n";
