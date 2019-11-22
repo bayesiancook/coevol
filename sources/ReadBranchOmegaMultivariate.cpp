@@ -1820,9 +1820,10 @@ class BranchOmegaMultivariateSample : public Sample	{
             cov_os << '\n';
             cov_os << '\n';
 
-            cerr << "augmented covariance matrix including Ne" << name << ".cov\n";
+            cerr << "augmented covariance matrix (including Ne) in " << name << ".cov\n";
             cerr << '\n';
 
+            /*
             ofstream cout((GetName() + ".cov0").c_str());
             cout << "entries are in the following order:\n";
             GetModel()->PrintEntries(cout);
@@ -1833,8 +1834,8 @@ class BranchOmegaMultivariateSample : public Sample	{
             cerr << "covariance matrix in original parameterization in " << name << ".cov0\n";
             cerr << '\n';
 
-            // mat->PrintSlopes(cout);
-            // mat->PrintSlopes2(cout);
+            mat->PrintSlopes(cout);
+            mat->PrintSlopes2(cout);
 
             ofstream cout1((GetName() + ".covNe_ds").c_str());
 
@@ -1843,8 +1844,8 @@ class BranchOmegaMultivariateSample : public Sample	{
             cerr << "covariance matrix with Ne instead of dS in " << name << ".covNe_ds\n";
             cerr << '\n';
 
-            // maty1->PrintSlopes(cout1);
-            // maty1->PrintSlopes2(cout1);
+            maty1->PrintSlopes(cout1);
+            maty1->PrintSlopes2(cout1);
 
             ofstream cout2((GetName() + ".covNe_pis").c_str());
 
@@ -1853,8 +1854,9 @@ class BranchOmegaMultivariateSample : public Sample	{
             cerr << "covariance matrix with Ne instead of pi_S in " << name << ".covNe_pis\n";
             cerr << '\n';
 
-            // maty2->PrintSlopes(cout2);
-            // maty2->PrintSlopes2(cout2);
+            maty2->PrintSlopes(cout2);
+            maty2->PrintSlopes2(cout2);
+            */
         }
 
 		meanchrono->Normalise();
