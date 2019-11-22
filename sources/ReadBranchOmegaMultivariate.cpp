@@ -1756,6 +1756,7 @@ class BranchOmegaMultivariateSample : public Sample	{
                 else    {
                     cov_os << setw(7) << maty1->mean[k][0] << '\t';
                 }
+                cov_os << '\n';
             }
             for (int l=0; l<dim; l++)   {
                 if (!l) {
@@ -1765,6 +1766,7 @@ class BranchOmegaMultivariateSample : public Sample	{
                     cov_os << setw(7) << maty1->mean[l][0] << '\t';
                 }
             }
+            cov_os << maty1->mean[0][0];
             cov_os << '\n';
 
             cov_os << "correlation coefficients\n";
@@ -1788,6 +1790,7 @@ class BranchOmegaMultivariateSample : public Sample	{
                     cov_os << setw(7) << maty1->correl[l][0] << '\t';
                 }
             }
+            cov_os << maty1->correl[0][0];
             cov_os << '\n';
             cov_os << '\n';
 
@@ -1812,6 +1815,7 @@ class BranchOmegaMultivariateSample : public Sample	{
                     cov_os << setw(7) << maty1->pp[l][0] << '\t';
                 }
             }
+            cov_os << maty1->pp[0][0];
             cov_os << '\n';
             cov_os << '\n';
 
