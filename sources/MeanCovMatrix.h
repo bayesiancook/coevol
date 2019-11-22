@@ -614,8 +614,6 @@ class MeanCovMatrix {
 		return os;
 	}
 
-	protected:
-
 	bool tex;
 	int dim;
 	unsigned int size;

@@ -1736,11 +1736,92 @@ class BranchOmegaMultivariateSample : public Sample	{
             maty1->Normalize();
             maty2->Normalize();
 
-            ofstream cout((GetName() + ".cov").c_str());
+            ofstream cov_os((GetName() + ".cov").c_str());
+            cov_os << "entries are in the following order:\n";
+            cov_os << "dS\n";
+            cov_os << "dN/dS\n";
+            for (int k=0; k<GetModel()->Ncont; k++)  {
+				cov_os << GetModel()->GetContinuousData()->GetCharacterName(k) << '\n';
+            }
+            cov_os << '\n';
+            cov_os << "covariances\n";
+            for (int k=0; k<dim; k++)   {
+                for (int l=0; l<dim; l++)   {
+                    cov_os << setw(7) << mat->mean[k][l] << '\t';
+                }
+                if (!k) {
+                    cov_os << setw(7) << maty2->mean[k][indice2] << '\t';
+                }
+                else    {
+                    cov_os << setw(7) << maty1->mean[k][0] << '\t';
+                }
+            }
+            for (int l=0; l<dim; l++)   {
+                if (!l) {
+                    cov_os << setw(7) << maty2->mean[l][indice2] << '\t';
+                }
+                else    {
+                    cov_os << setw(7) << maty1->mean[l][0] << '\t';
+                }
+            }
+            cov_os << '\n';
+
+            cov_os << "correlation coefficients\n";
+            for (int k=0; k<dim; k++)   {
+                for (int l=0; l<dim; l++)   {
+                    cov_os << setw(7) << mat->correl[k][l] << '\t';
+                }
+                if (!k) {
+                    cov_os << setw(7) << maty2->correl[k][indice2] << '\t';
+                }
+                else    {
+                    cov_os << setw(7) << maty1->correl[k][0] << '\t';
+                }
+                cov_os << '\n';
+            }
+            for (int l=0; l<dim; l++)   {
+                if (!l) {
+                    cov_os << setw(7) << maty2->correl[l][indice2] << '\t';
+                }
+                else    {
+                    cov_os << setw(7) << maty1->correl[l][0] << '\t';
+                }
+            }
+            cov_os << '\n';
+            cov_os << '\n';
+
+            cov_os << "correlation coefficients\n";
+            for (int k=0; k<dim; k++)   {
+                for (int l=0; l<dim; l++)   {
+                    cov_os << setw(7) << mat->pp[k][l] << '\t';
+                }
+                if (!k) {
+                    cov_os << setw(7) << maty2->pp[k][indice2] << '\t';
+                }
+                else    {
+                    cov_os << setw(7) << maty1->pp[k][0] << '\t';
+                }
+                cov_os << '\n';
+            }
+            for (int l=0; l<dim; l++)   {
+                if (!l) {
+                    cov_os << setw(7) << maty2->pp[l][indice2] << '\t';
+                }
+                else    {
+                    cov_os << setw(7) << maty1->pp[l][0] << '\t';
+                }
+            }
+            cov_os << '\n';
+            cov_os << '\n';
+
+            ofstream cout((GetName() + ".cov0").c_str());
+            cout << "entries are in the following order:\n";
+            GetModel()->PrintEntries(cout);
+            cout << '\n';
 
             cout << *mat;
 
-            cerr << "covariance matrix in " << name << ".cov\n";
+            cerr << "covariance matrix in original parameterization in " << name << ".cov0\n";
             cerr << '\n';
 
             // mat->PrintSlopes(cout);
@@ -1750,7 +1831,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
             cout1 << *maty1;
 
-            cerr << "covariance matrix in " << name << ".covNe_ds\n";
+            cerr << "covariance matrix with Ne instead of dS in " << name << ".covNe_ds\n";
             cerr << '\n';
 
             // maty1->PrintSlopes(cout1);
@@ -1760,7 +1841,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
             cout2 << *maty2;
 
-            cerr << "covariance matrix in " << name << ".covNe_pis\n";
+            cerr << "covariance matrix with Ne instead of pi_S in " << name << ".covNe_pis\n";
             cerr << '\n';
 
             // maty2->PrintSlopes(cout2);
