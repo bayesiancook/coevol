@@ -1768,6 +1768,7 @@ class BranchOmegaMultivariateSample : public Sample	{
             }
             cov_os << maty1->mean[0][0];
             cov_os << '\n';
+            cov_os << '\n';
 
             cov_os << "correlation coefficients\n";
             for (int k=0; k<dim; k++)   {
