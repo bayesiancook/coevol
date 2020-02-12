@@ -20,7 +20,7 @@ CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool for
 			Ntaxa = from->Ntaxa;
 			CodonStateSpace* tempstatespace = new CodonStateSpace(type);
 			statespace = tempstatespace;
-			// DNAStateSpace* nucspace = tempstatespace->GetDNAStateSpace();
+			DNAStateSpace* nucspace = tempstatespace->GetDNAStateSpace();
 
 			taxset = DNAsource->GetTaxonSet();
 
@@ -34,15 +34,14 @@ CodonSequenceAlignment::CodonSequenceAlignment(SequenceAlignment* from, bool for
 						Data[i][j] = GetCodonStateSpace()->GetCodonFromDNA(DNAsource->GetState(i, 3*j), DNAsource->GetState(i, 3*j+1), DNAsource->GetState(i, 3*j+2));
 						if (Data[i][j] == -1)	{
 							if ((DNAsource->GetState(i, 3*j) != -1) && (DNAsource->GetState(i, 3*j+1) != -1) && (DNAsource->GetState(i, 3*j+2) != -1))	{
-								// cerr << "in CodonSequenceAlignment: taxon " << taxset->GetTaxon(i) << " and codon " << j+1 << " (site " << 3*j+1 << ") :";
-								// cerr << nucspace->GetState(DNAsource->GetState(i, 3*j)) <<  nucspace->GetState(DNAsource->GetState(i, 3*j+1)) << nucspace->GetState(DNAsource->GetState(i, 3*j+2)) << '\n';
+								cerr << "stop codon: taxon " << taxset->GetTaxon(i) << " and codon " << j+1 << " (site " << 3*j+1 << ") :";
+								cerr << nucspace->GetState(DNAsource->GetState(i, 3*j)) <<  nucspace->GetState(DNAsource->GetState(i, 3*j+1)) << nucspace->GetState(DNAsource->GetState(i, 3*j+2)) << '\n';
 							}
 						}
 					}
 					catch(...)	{
 					// catch(Exception e)	{
-						// cerr << "in CodonSequenceAlignment: taxon " << i << " and codon " << j << " (site " << 3*j << ")\n";
-						// cerr << "taxon : " << taxset->GetTaxon(i) << '\n';
+						cerr << "stop codon: taxon " << taxset->GetTaxon(i) << " and codon " << j << " (site " << 3*j << ")\n";
 						if (force_stops)	{
 							// Data[i][j] = -2;
 							Data[i][j] = -1;
