@@ -218,8 +218,10 @@ int FileSequenceAlignment::ReadDataFromFile (string filespec, int forceinterleav
 		}
 		else	{
 			if (! forceinterleaved)	{
+                cerr << "test phylip seq\n";
 				int returnvalue = TestPhylipSequential(filespec);
 				if (returnvalue)	{
+                    cerr << "read phylip seq\n";
 					ReadPhylipSequential(filespec);
 					return 1;
 				}
@@ -583,12 +585,15 @@ int FileSequenceAlignment::TestPhylipSequential (string filespec)	{
 			}
 		}
 		if (DNAcomp)	{
+            cerr << "nucleotide data\n";
 			statespace = new DNAStateSpace;
 		}
 		else if (RNAcomp)	{
+            cerr << "RNA data\n";
 			statespace = new RNAStateSpace;
 		}
 		else if (AAcomp)	{
+            cerr << "amino-acid data\n";
 			statespace = new ProteinStateSpace;
 		}
 		else	{
@@ -791,7 +796,6 @@ int FileSequenceAlignment::TestPhylip (string filespec, int repeattaxa)	{
 				}
 				else	{
 					if (m != k)	{
-						cerr << "in test phylip\n";
 						cerr << "error when reading data non matching number of sequences in block number " << block << " for taxon " << i+1 << " " << SpeciesNames[i] << '\n';
 						cerr << "taxa : " << i << '\t' << SpeciesNames[i] << '\n';
 						cerr << "read " << k << " instead of " << m << "characters\n";
