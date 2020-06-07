@@ -141,6 +141,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meanneutralomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		
         meanNe->SetLogScale(10.0);
+        meanu->SetLogScale(10.0);
 
 		double alpha[dim];
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];

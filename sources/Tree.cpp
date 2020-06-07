@@ -88,6 +88,7 @@ Tree::Tree(const Tree* from)	{
 	RecursiveClone(from->root,root);
 }
 
+
 void Tree::RecursiveClone(const Link* from, Link* to)	{
 	Node* node = new Node(from->GetNode());
 	to->SetNode(node);

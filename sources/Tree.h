@@ -79,6 +79,18 @@ class Link	{
 	Branch* GetBranch() const {return branch;}
 	Node* GetNode() const {return node;}
 
+	void Swap()	{
+		if (next->next->next != this)	{
+			cerr << "error: tree is not binary\n";
+			exit(1);
+		}
+		Link* d1 = next;
+		Link* d2 = next->next;
+		next = d2;
+		d2->next = d1;
+		d1->next = this;
+	}
+
 	void SetBranch(Branch* inbranch)	{
 		/*
 		if (branch == inbranch)	{
@@ -297,6 +309,10 @@ class Tree : public NewickTree {
 	const TaxonSet* GetTaxonSet() const {return taxset;}
 
 	void RootAt(Link* newroot);
+
+	void SwapRoot()	{
+		root->Swap();
+	}
 
 	void RegisterWith(const TaxonSet* taxset);
 	// Registers all leaves of the tree with an external TaxonSet

@@ -296,7 +296,8 @@ void DrawTree::DrawNodeText(const Link* link, ostream& os, double x, double y)	{
 double BubbleTree::ComputeMaxNodeVal(const Link* from)	{
 	double max = 0;
 	if (from->isLeaf())	{
-		max = fabs(GetNodeMax(from));
+		max = GetNodeMax(from);
+		// max = fabs(GetNodeMax(from));
 	}
 	else	{
 		for (Link* link=from->Next(); link!=from; link=link->Next())	{
@@ -650,12 +651,13 @@ string HeatTree::GetColorCode(double z)	{
 double HeatTree::ComputeMaxNodeVal(const Link* from)	{
 	double max = 0;
 	if (from->isLeaf())	{
-		max = fabs(GetNodeVal(from));
+		max = GetNodeVal(from);
+		// max = fabs(GetNodeVal(from));
 	}
 	else	{
 		for (Link* link=from->Next(); link!=from; link=link->Next())	{
 			double tmp = ComputeMaxNodeVal(link->Out());
-			if (max < tmp)	{
+			if ((link == from->Next()) || (max < tmp))	{
 				max = tmp;
 			}
 		}
@@ -726,6 +728,8 @@ void HeatTree::MakeScale(ostream& os)	{
 	os << ", middle color = ";
 	os << smid;
 	os << "]";
+
+	cerr << "scale : " << z1 << '\t' << zmid << '\t' << z2 << '\n';
 
 	os << " (" << texapprox(x) << "," << texapprox(y-0.5*thickness) << ") rectangle (" << texapprox(x+dx-0.04) << ',' << texapprox(y+0.5*thickness) << ");\n";
 

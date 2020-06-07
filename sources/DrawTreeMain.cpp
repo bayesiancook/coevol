@@ -53,6 +53,8 @@ int main(int argc, char* argv[])	{
 
 	double rescale = 0;
 
+	int swaproot = 0;
+
 	try	{
 
 		if (argc == 1)	{
@@ -82,6 +84,9 @@ int main(int argc, char* argv[])	{
 			}
 			else if (s == "-aa")	{
 				Nstate = Naa;
+			}
+			else if (s == "-swap")	{
+				swaproot = 1;
 			}
 			else if (s == "-branch")	{
 				unibranch = true;
@@ -233,6 +238,9 @@ int main(int argc, char* argv[])	{
 	}
 	else if (heattree)	{
 		FileHeatTree* tree = new FileHeatTree(file);
+		if (swaproot)	{
+			tree->SwapRoot();
+		}
 		tree->SetDocumentStyle(style);
 		tree->SetScale(x,y);
 		tree->SetTexScale(texscale);

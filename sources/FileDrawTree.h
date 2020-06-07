@@ -9,7 +9,7 @@
 #include <regex>
 
 
-static const string number = "\\-?\\d*(\\.\\d+)?(e\\+\\d+)?";
+static const string number = "\\-?\\d*(\\.\\d+)?(e[\\-\\+]\\d+)?";
 
 void FileTree::Check(const Link* from)	{
 
