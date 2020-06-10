@@ -705,11 +705,21 @@ void HeatTree::PrepareDrawing()	{
 
 void HeatTree::FinishDrawing(ostream& os, double xscale, double yscale)	{
 	MakeScale(os);
+    if (maxtime)    {
+        DrawTimeScale(os,xscale,yscale);
+    }
 }
 
 void HeatTree::MakeScale(ostream& os)	{
 // void HeatTree::MakeScale(double x, double y, double dx, double min, double max, int ngrad)	{
+
+    // by default scale is below the tree
 	double y = -0.04 * sizeY;
+    if (maxtime)    {
+        // scale is above the tree
+        y = 1.07 * sizeY;
+    }
+
 	double dy= 0.006 * sizeY;
 	double x = 0.04 * sizeX;
 	double dx = sizeX / 5;
@@ -746,11 +756,35 @@ void HeatTree::MakeScale(ostream& os)	{
 		os << "\\path [draw] (" << xx << "," << y + dy << ") -- +(0," << -2 *dy << ");\n";
 		os.precision(3);
 		double x = ((double) ((int) (z * (min + (max-min) * ((double) i) / ngrad)))) / z;
-		os << "\\path (" << xx << "," << -8 *dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << x << "};\n";
-	// 	os << "\\path (" << xx << "," << -8 *dy << ") node[below] {" << min + (max - min) * ((double) i) / ngrad  << "};\n";
+		os << "\\path (" << xx << "," << y-dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << x << "};\n";
+		// os << "\\path (" << xx << "," << -8 *dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << x << "};\n";
 	}
 }
 
+
+void HeatTree::DrawTimeScale(ostream& os, double xscale, double yscale)	{
+
+    double rootage = GetMaxTime();
+    double step = 10.0 / GetMaxTime() * xscale;
+    cerr << rootage << '\t' << xscale << '\n';
+
+	double y = -0.04 * sizeY;
+	double dy= 0.006 * sizeY;
+
+	os << "\\path [draw] (" << sizeX - xscale << "," << y << ") -- (" << sizeX << "," << y << ");\n";
+	int tic = 0;
+    for (double x=0; x<xscale; x+=step)   {
+		os << "\\path [draw] (" << sizeX - x << "," << y + dy << ") -- +(0," << -2 *dy << ");\n";
+		if (! (tic % 5))	{
+			os << "\\path (" << sizeX - x << "," << -8 *dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << tic * 10 << "};\n";
+		}
+		tic ++;
+	}
+	os << "\\path (" << sizeX + 0.4 << "," << -8 *dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {Myr};\n";
+
+	os << "\\path[draw,dashed,thin] (" << sizeX * (rootage - 65.0) / rootage << "," << y << ")-- +(0," << sizeY - y << ");\n";
+	os << "\\path (" << sizeX * (rootage - 65.0) / rootage << "," <<  - 8*dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {\\bf KPg};\n";
+}
 
 void DrawTree::WriteNodeText(const Link* link, ostream& os, double x, double y)	{
 	os << "\\path [anchor=south east,font=\\fontsize{" << fontsize << "}{" << fontsize << "}\\selectfont,scale=" << texscale<< "]";

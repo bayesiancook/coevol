@@ -266,6 +266,7 @@ int main(int argc, char* argv[])	{
 			tree->SetGroups(groupfile);
 			tree->SetGroupFontSize(groupfontsize);
 		}
+        tree->SetMaxTime(maxtime);
 		tree->Draw(out);
 	}
 	else if (bubbletree)	{

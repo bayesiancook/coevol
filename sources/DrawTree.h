@@ -543,6 +543,14 @@ class HeatTree : public virtual DrawTree	{
 	}
 	*/
 
+    void SetMaxTime(double intime) {
+        maxtime = intime;
+    }
+
+    double GetMaxTime() {
+        return maxtime;
+    }
+
 	protected:
 
 	void LocalDrawBranch(const Link* link, ostream& os, double x, double y, double dx);
@@ -551,6 +559,7 @@ class HeatTree : public virtual DrawTree	{
 	void PrepareDrawing();
 	void FinishDrawing(ostream& os, double xscale, double yscale);
 	void MakeScale(ostream& os);
+	void DrawTimeScale(ostream& os, double xscale, double yscale);
 
 	void DrawCI(const Link* from, ostream& os, double x, double y);
 
@@ -587,6 +596,7 @@ class HeatTree : public virtual DrawTree	{
 	map<const Node*, double> extnodeval;
 	map<const Node*, double> extnodemin;
 	map<const Node*, double> extnodemax;
+    double maxtime;
 
 };
 
