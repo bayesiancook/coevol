@@ -531,6 +531,18 @@ class MeanCovMatrix {
 		os << '\n';
 	}
 
+    void PrintSlopesNe(ostream& os) const   {
+
+        int l = (int) (0.025 * size);
+        int i = 1;
+        int j = 0; 
+        os << "log dN/dS ~ log Ne  : ";
+        os << meanslope[j][i] << " ( " << slope[j][i][l] << " , " << slope[j][i][size-1-l] << " ) " << '\n';
+        i = 6;
+        os << "log piN/piS ~ log Ne : ";
+        os << meanslope[j][i] << " ( " << slope[j][i][l] << " , " << slope[j][i][size-1-l] << " ) " << '\n';
+    }
+
 	void PrintSlopes(ostream& os) const	{
 
 		os.precision(3);

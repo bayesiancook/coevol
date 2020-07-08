@@ -1820,11 +1820,12 @@ class BranchOmegaMultivariateSample : public Sample	{
             cov_os << '\n';
             cov_os << '\n';
 
-            cov_os << "slopes\n";
-            maty1->PrintSlopes(cov_os);
+            ofstream slope_os((GetName() + ".slopes").c_str());
+            maty1->PrintSlopesNe(slope_os);
 
-            cov_os << "slopes 2\n";
-            maty1->PrintSlopes2(cov_os);
+            cerr << "covariance matrix in " << name << ".cov\n";
+            cerr << "slopes of log dN/dS and log piN/piS ~ log Ne in " << name << ".slopes\n";
+            cerr << '\n';
 
             /*
             ofstream cout((GetName() + ".cov0").c_str());
@@ -1870,7 +1871,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 		meanchrono->Tabulate(cchos);
 
 		meanomega->Normalise();
-		cerr << meanomega;
 		ofstream oos((GetName() + ".postmeanomega.tre").c_str());
 		meanomega->ToStream(oos);
 		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
