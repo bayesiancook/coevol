@@ -1795,7 +1795,7 @@ class BranchOmegaMultivariateSample : public Sample	{
             cov_os << '\n';
             cov_os << '\n';
 
-            cov_os << "correlation coefficients\n";
+            cov_os << "posterior probabilities\n";
             for (int k=0; k<dim; k++)   {
                 for (int l=0; l<dim; l++)   {
                     cov_os << setw(7) << mat->pp[k][l] << '\t';
@@ -1820,8 +1820,11 @@ class BranchOmegaMultivariateSample : public Sample	{
             cov_os << '\n';
             cov_os << '\n';
 
-            cerr << "augmented covariance matrix (including Ne) in " << name << ".cov\n";
-            cerr << '\n';
+            cov_os << "slopes\n";
+            maty1->PrintSlopes(cov_os);
+
+            cov_os << "slopes 2\n";
+            maty1->PrintSlopes2(cov_os);
 
             /*
             ofstream cout((GetName() + ".cov0").c_str());
