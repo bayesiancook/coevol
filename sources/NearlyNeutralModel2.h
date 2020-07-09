@@ -910,6 +910,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		return omegatree->GetMean();
 	}
 
+	double GetBeta() const	{
+		return beta->val();
+	}
+
 	// trace
 	void TraceHeader(ostream& os)	{
 		os << "#logprior\tlnL";

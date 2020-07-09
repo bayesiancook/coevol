@@ -132,6 +132,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		int Ncont = GetModel()->Ncont;
 		int dim = GetModel()->GetCovMatrix()->GetDim();
 
+        vector<double> betadist;
+        double meanbeta = 0;
+
 		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
 		MeanExpNormTree* meanadaptativeomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
@@ -174,6 +177,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			GetModel()->GetNeNodeTree()->specialUpdate();
 			GetModel()->GetUNodeTree()->specialUpdate();
 			
+            betadist.push_back(GetModel()->GetBeta());
+            meanbeta += GetModel()->GetBeta();
+
 			Var<Real>* gamma(GetModel()->GetGamma());
 			
 			Const<PosReal>* K(GetModel()->GetK());
@@ -206,8 +212,21 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "covariance matrix in " << name << ".cov\n";
 		cerr << '\n';
 		
+        /*
 		mat->PrintSlopes(cout);
 		mat->PrintSlopes2(cout);
+        */
+
+        meanbeta /= size;
+        sort(betadist.begin(), betadist.end());
+        ofstream bos((GetName() + ".beta").c_str());
+        int l = (int) (0.025 * size);
+        int m = (int) (0.5 * size);
+        bos << "beta:  median (min, max) - postmean\n";
+        bos << "beta: " << betadist[m] << " (" << betadist[l] << ", " << betadist[size-1-l] << ") - " << meanbeta << "\n";
+		cerr << "shape parameter beta in " << name << ".beta\n";
+		cerr << '\n';
+
 		
         /*
 		maty1->Normalize();
