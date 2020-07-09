@@ -158,6 +158,19 @@ class DrawTree	{
 
 	virtual const Link* GetLCA(string tax1, string tax2) = 0;
 
+    void SetFocalTaxa(string filename)  {
+        ifstream is(filename.c_str());
+        int N;
+        is >> N;
+        for (int i=0; i<N; i++) {
+            string tax;
+            is >> tax;
+            cerr << tax << '\n';
+            const Link* link = GetLCA(tax,tax);
+            emphasize[link] = 1;
+        }
+    }
+
 	void SetGroups(string filename)	{
 
 		ifstream is(filename.c_str());
@@ -260,6 +273,8 @@ class DrawTree	{
 	map<const Node*, double> groupdy;
 	map<const Node*, int> grouptext;
 	map<const Node*, int> groupcolor;
+
+    map<const Link*, int> emphasize;
 
 };
 

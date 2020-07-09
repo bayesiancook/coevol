@@ -58,6 +58,8 @@ int main(int argc, char* argv[])	{
     int printlogscale = 0;
     string valuename = "";
 
+    string emphasize = "";
+
 	try	{
 
 		if (argc == 1)	{
@@ -104,6 +106,10 @@ int main(int argc, char* argv[])	{
 			else if (s == "-leafnames")	{
 				withleafnames = false;
 			}
+            else if (s == "-focaltaxa") {
+                i++;
+                emphasize = argv[i];
+            }
 			else if (s == "-th")	{
 				i++;
 				thickness = atof(argv[i]);
@@ -276,6 +282,9 @@ int main(int argc, char* argv[])	{
 			tree->SetGroups(groupfile);
 			tree->SetGroupFontSize(groupfontsize);
 		}
+        if (emphasize != "")    {
+            tree->SetFocalTaxa(emphasize);
+        }
         tree->SetPrintLogScale(printlogscale);
         tree->SetValueName(valuename);
         tree->SetMaxTime(maxtime);

@@ -150,7 +150,12 @@ double DrawTree::RecursiveDraw(const Link* from, ostream& os, double X, double Y
 	if (from->isLeaf())	{
 		if (withleafnames)	{
 			// write species name
-			os << "\\path (" << texapprox(X) + shiftname << "," << texapprox(Y) << ") node { " << GetPreLeafNodeName(from) << " \\,  " << "\\it " <<  GetLeafNodeName(from) << " };\n";
+            if (emphasize[from])    {
+                os << "\\path (" << texapprox(X) + shiftname << "," << texapprox(Y) << ") node { " << GetPreLeafNodeName(from) << " \\,  " << "\\it \\bf " <<  GetLeafNodeName(from) << " };\n";
+            }
+            else    {
+                os << "\\path (" << texapprox(X) + shiftname << "," << texapprox(Y) << ") node { " << GetPreLeafNodeName(from) << " \\,  " << "\\it " <<  GetLeafNodeName(from) << " };\n";
+            }
 			// os << "\\path (" << texapprox(X) + 10 * shiftname << "," << texapprox(Y) << ") node { \\it " <<  GetLeafNodeName(from) << " };\n";
 		}
 		ret = Y;
