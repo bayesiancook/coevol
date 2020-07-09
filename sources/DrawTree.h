@@ -165,7 +165,6 @@ class DrawTree	{
         for (int i=0; i<N; i++) {
             string tax;
             is >> tax;
-            cerr << tax << '\n';
             const Link* link = GetLCA(tax,tax);
             emphasize[link] = 1;
         }
