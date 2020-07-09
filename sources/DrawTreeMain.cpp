@@ -42,7 +42,7 @@ int main(int argc, char* argv[])	{
 
 	double maxtime = 0;
 
-	double texscale = 1;
+	double texscale = 1.0;
 
 	string branchvalfile = "";
 	string nodevalfile = "";
@@ -54,6 +54,9 @@ int main(int argc, char* argv[])	{
 	double rescale = 0;
 
 	int swaproot = 0;
+
+    int printlogscale = 0;
+    string valuename = "";
 
 	try	{
 
@@ -82,6 +85,13 @@ int main(int argc, char* argv[])	{
 				i++;
 				rescale = atof(argv[i]);
 			}
+            else if (s == "-printlogscale") {
+                printlogscale = 1;
+            }
+            else if (s == "-valname")   {
+                i++;
+                valuename = argv[i];
+            }
 			else if (s == "-aa")	{
 				Nstate = Naa;
 			}
@@ -266,6 +276,8 @@ int main(int argc, char* argv[])	{
 			tree->SetGroups(groupfile);
 			tree->SetGroupFontSize(groupfontsize);
 		}
+        tree->SetPrintLogScale(printlogscale);
+        tree->SetValueName(valuename);
         tree->SetMaxTime(maxtime);
 		tree->Draw(out);
 	}

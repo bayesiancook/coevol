@@ -257,9 +257,9 @@ class DrawTree	{
 
 	map<const Node*, string> groupname;
 	map<const Node*, double> groupy;
+	map<const Node*, double> groupdy;
 	map<const Node*, int> grouptext;
 	map<const Node*, int> groupcolor;
-
 
 };
 
@@ -510,7 +510,7 @@ class HeatTree : public virtual DrawTree	{
 
 	public:
 
-	HeatTree() : maxnodeval(-1), minnodeval(-1), nodepower(1.0) , thickness(0.06), unibranch(false), withbranchval(false), withexternalnodeval(false), withexternalnodeci(false) {}
+	HeatTree() : maxnodeval(-1), minnodeval(-1), nodepower(1.0) , thickness(0.06), unibranch(false), withbranchval(false), withexternalnodeval(false), withexternalnodeci(false), printlogscale(0), valuename("") {}
 
 	void SetMinMax(double min, double max)	{
 		minnodeval = min;
@@ -520,6 +520,14 @@ class HeatTree : public virtual DrawTree	{
 	void SetBranchVal(string infile);
 	void SetExternalNodeVal(string infile);
 	void SetExternalNodeCI(string infile);
+
+    void SetPrintLogScale(int in)   {
+        printlogscale = in;
+    }
+
+    void SetValueName(string in)    {
+        valuename = in;
+    }
 
 	virtual const Link* GetLCA(string tax1, string tax2) = 0;
 
@@ -597,7 +605,8 @@ class HeatTree : public virtual DrawTree	{
 	map<const Node*, double> extnodemin;
 	map<const Node*, double> extnodemax;
     double maxtime;
-
+    int printlogscale;
+    string valuename;
 };
 
 class FileHeatTree : public FileTree, public HeatTree	{

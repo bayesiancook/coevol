@@ -55,6 +55,7 @@ void DrawTree::Draw(string target)	{
 			os << "amsart";
 		}
 		os << "}\n";
+        os << "\\beamertemplatenavigationsymbolsempty\n";
 
 		os << "\\usepackage{times}\n";
 		os << "\\usepackage{pgf}\n";
@@ -130,6 +131,8 @@ void DrawTree::WriteGroupNames(ostream& os)	{
 			double x = sizeX + Z;
 			double y = groupy[node];
 			cerr << x << '\t' << y << '\n';
+			double dy = groupdy[node] * 0.95;
+			os << "\\path [draw] (" << texapprox(x) << ',' << texapprox(y - dy) << ") -- +(0," << texapprox(2*dy) << ");\n";
 			os << "\\path [anchor=west] (" << texapprox(x) << "," << texapprox(y) << ") node[font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" <<  name << " };\n";
 		}
 	}
@@ -159,6 +162,7 @@ double DrawTree::RecursiveDraw(const Link* from, ostream& os, double X, double Y
 
 		if (groupname[from->GetNode()] != "")	{
 			groupy[from->GetNode()] = Y;
+			groupdy[from->GetNode()] = 0.5*GetSize(from) * scaleY;
 		}
 
 		const Link* link = from->Next();
@@ -717,12 +721,16 @@ void HeatTree::MakeScale(ostream& os)	{
 	double y = -0.04 * sizeY;
     if (maxtime)    {
         // scale is above the tree
-        y = 1.07 * sizeY;
+        y = 1.09 * sizeY;
     }
 
 	double dy= 0.006 * sizeY;
 	double x = 0.04 * sizeX;
-	double dx = sizeX / 5;
+	double dx = sizeX / 3.5;
+
+	int ngrad = 2;
+    double x0 = x + dx / ngrad;
+
 	double min = minnodeval;
 	double max = maxnodeval;
 	double z1 = min;
@@ -741,9 +749,8 @@ void HeatTree::MakeScale(ostream& os)	{
 
 	cerr << "scale : " << z1 << '\t' << zmid << '\t' << z2 << '\n';
 
-	os << " (" << texapprox(x) << "," << texapprox(y-0.5*thickness) << ") rectangle (" << texapprox(x+dx-0.04) << ',' << texapprox(y+0.5*thickness) << ");\n";
+	os << " (" << texapprox(x0) << "," << texapprox(y-0.5*thickness) << ") rectangle (" << texapprox(x0+dx-0.04) << ',' << texapprox(y+0.5*thickness) << ");\n";
 
-	int ngrad = 2;
 	int z = 100;
 	std::ostringstream strs;
 	strs << min;
@@ -752,13 +759,51 @@ void HeatTree::MakeScale(ostream& os)	{
 		z=pow(10,std::count(str.begin(), str.end(), '0'));
 	}
 	for (int i=0; i <= ngrad; i++)	{
-		double xx = texapprox(x + dx * ((double) i) / ngrad);
+		double xx = texapprox(x0 + dx * ((double) i) / ngrad);
 		os << "\\path [draw] (" << xx << "," << y + dy << ") -- +(0," << -2 *dy << ");\n";
 		os.precision(3);
 		double x = ((double) ((int) (z * (min + (max-min) * ((double) i) / ngrad)))) / z;
-		os << "\\path (" << xx << "," << y-dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << x << "};\n";
+        /*
+        int exponent = 0;
+        int front = 0;
+        if (x > 0)  {
+            exponent = int(x);
+            front = int (exp(log(10.0) * (x - int(x))));
+            cerr << "scale : " << x << '\t' << front << '\t' << exponent << '\n';
+        }
+        else    {
+            if (fabs(x - int(x)) > 1e-2)    {
+                exponent = int(x) - 1;
+                front = int (exp(-log(10.0) * (exponent - x)));
+                cerr << "scale : " << x << '\t' << front << '\t' << exponent << '\n';
+            }
+            else    {
+                exponent = int(x);
+                front = 1;
+            }
+        }
+        */
+
+        if (printlogscale)  {
+            os << "\\path (" << xx << "," << y-dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << "$10^{" << x << "}$" << "};\n";
+            /*
+            if (exponent != 1)    {
+                os << "\\path (" << xx << "," << y-dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << "$" << exponent << ".10^{" << exponent << "}$" << "};\n";
+            }
+            else    {
+                os << "\\path (" << xx << "," << y-dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << "$10^{" << exponent << "}$" << "};\n";
+            }
+            */
+        }
+        else    {
+            os << "\\path (" << xx << "," << y-dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << x << "};\n";
+        }
+
 		// os << "\\path (" << xx << "," << -8 *dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << x << "};\n";
 	}
+    int i = -1;
+    double xx = texapprox(x0 + dx * ((double) i) / ngrad);
+    os << "\\path (" << xx << "," << y-dy << ") node[below,font=\\fontsize{" << groupfontsize << "}{" << groupfontsize << "}\\selectfont] {" << valuename << " ${}^{\ }$ " << "};\n";
 }
 
 
