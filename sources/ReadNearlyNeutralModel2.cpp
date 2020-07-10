@@ -222,8 +222,8 @@ class BranchOmegaMultivariateSample : public Sample	{
         ofstream bos((GetName() + ".beta").c_str());
         int l = (int) (0.025 * size);
         int m = (int) (0.5 * size);
-        bos << "beta:  median (min, max) - postmean\n";
-        bos << "beta: " << betadist[m] << " (" << betadist[l] << ", " << betadist[size-1-l] << ") - " << meanbeta << "\n";
+        bos << "median\tCI95min\tCI95max\n";
+        bos << betadist[m] << '\t' << betadist[l] << '\t' << betadist[size-1-l] << '\n';
 		cerr << "shape parameter beta in " << name << ".beta\n";
 		cerr << '\n';
 

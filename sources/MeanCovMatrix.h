@@ -536,11 +536,10 @@ class MeanCovMatrix {
         int l = (int) (0.025 * size);
         int i = 1;
         int j = 0; 
-        os << "log dN/dS ~ log Ne  : ";
-        os << meanslope[j][i] << " ( " << slope[j][i][l] << " , " << slope[j][i][size-1-l] << " ) " << '\n';
+        os << "relation\tmedian\tCI95min\tCI95max\n";
+        os << "logdN/dS~logNe" << '\t' << meanslope[j][i] << '\t' << slope[j][i][l] << '\t' << slope[j][i][size-1-l] << '\n';
         i = 6;
-        os << "log piN/piS ~ log Ne : ";
-        os << meanslope[j][i] << " ( " << slope[j][i][l] << " , " << slope[j][i][size-1-l] << " ) " << '\n';
+        os << "logpiN/piS~logNe" << '\t' << meanslope[j][i] << '\t' << slope[j][i][l] << '\t' << slope[j][i][size-1-l] << '\n';
     }
 
 	void PrintSlopes(ostream& os) const	{
