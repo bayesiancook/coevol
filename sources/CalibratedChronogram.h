@@ -406,6 +406,8 @@ class CalibratedChronogram : public Chronogram	{
 
 	CalibratedChronogram(Tree* intree, Var<PosReal>* inrate, double inalpha, double inbeta, CalibrationSet* incalibset, bool sample = true)	{
 
+        tree = intree;
+        rate = inrate;
 		alpha = inalpha;
 		beta = inbeta;
 		calibset = incalibset;

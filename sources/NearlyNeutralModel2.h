@@ -168,11 +168,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
     // number of repetitions for the whole MCMC cyle before saving new point
 	int nrep;
 
-    bool shiftdates;
-
 	public:
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inshiftdates, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
 
 		clamptree = inclamptree;
 		chronoprior = inchronoprior;
@@ -181,8 +179,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		sameseq = insameseq;
 		noadapt = innoadapt;
-
-        shiftdates = inshiftdates;
 
 		// here L = 1: adaptative omega
 		if (!noadapt) {L = 1;}
@@ -457,8 +453,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		cerr << "unfold model\n";
 		phyloprocess->Unfold();
-		cerr << "sample\n";
 		if (sample)	{
+            cerr << "sample\n";
 			if (phyloprocess)	{
 				phyloprocess->Sample();
 			}

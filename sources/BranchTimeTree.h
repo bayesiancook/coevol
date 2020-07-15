@@ -50,6 +50,7 @@ class BranchTimeTree : public BranchValPtrTree<Dvar<PosReal> >  {
         chronogram = inchronogram;
         rate = inrate;
         RecursiveCreate(GetRoot());
+        specialUpdate();
     }
 
     ~BranchTimeTree()   {

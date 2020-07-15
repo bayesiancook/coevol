@@ -248,7 +248,6 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 		Register(rate);
 		*/
 
-
 		RecursiveSetCalibrations(GetRoot());
 
 		RecursiveYoungerLimit(GetRoot());
