@@ -33,45 +33,8 @@
 #include "MeanChronogram.h"
 #include "AuxCoevol.h"
 
-class GammaBetaMove : public MCUpdate, public Mnode	{
-
-	public:
-
-	GammaBetaMove(Rvar<Real>* inbeta, Rvar<Real>* inkappa1, double intuning, double ina)	{
-		beta = inbeta;
-		kappa1 = inkappa1;
-		tuning = intuning;
-		a = ina;
-		beta->Register(this);
-		kappa1->Register(this);
-	}
-
-	double Move(double tuning_modulator = 1)	{
-
-		double acc = 1.0;
-		if ((!beta->isClamped()) && (! kappa1->isClamped()))	{
-			
-			Corrupt(true);
-			double u = tuning * tuning_modulator * (Random::Uniform() - 0.5);
-			beta->setval(beta->val() + u);
-			kappa1->setval(kappa1->val() + a*u);
-			double logratio = Update();
-			acc = (log(Random::Uniform()) < logratio);
-			if (! acc)	{
-				Corrupt(false);
-				Restore();
-			}
-		}
-		return acc;
-
-	}
-
-	private:
-	Rvar<Real>* beta;
-	Rvar<Real>* kappa1;
-	double tuning;
-	double a;
-};
+#include "ConstrainedLogKappa2.h"
+#include "BetaKappaMove.h"
 
 class BranchOmegaMultivariateModel : public ProbModel {
 
@@ -105,8 +68,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	Const<Real>* Zero;
 	Const<PosReal>* One;
 	
-	Const<PosReal>* K;
-
+    // prior on div times
 	double meanchi;
 	double meanchi2;
 	Const<PosReal>* MeanChi;
@@ -114,42 +76,52 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	Rvar<PosReal>* Chi;
 	Rvar<PosReal>* Chi2;
 
+    // chronogram
 	Chronogram* chronogram;
 
+    // absolute root age
+	Var<PosReal>* absrootage;
+	
+    // prior on scaling factors for Brownian process
+    // (different scaling factor for each trait)
 	JeffreysIIDArray* DiagArray;
 	SigmaZero* sigmaZero;
+
+    // covariance matrix
 	ConjugateInverseWishart* sigma;
 
+    // prior for initial value of process at the root
 	Const<RealVector>* rootmean;
 	Const<PosRealVector>* rootvar;
 
+    // process of trait evolution (log-Brownian)
 	ConjugateMultiVariateTreeProcess* process;
-
 	
-	//parameter of the linear combination
-	
+	// structural parameters of the DFE
+    // (determine scaling of piN/piS and dN/dS w.r.t. Ne)
 	Normal* beta;
-	Normal* kappa1;
-	Normal* kappa2;	
+	Normal* logkappa1;
+	Normal* normal_logkappa2;	
+    ConstrainedLogKappa2* constrained_logkappa2;
+    Var<Real>* logkappa2;
 	
-	Var<PosReal>* absrootage;
-	
-	double* neutralomegaslope;
-	double* omegaslope;
-	double* uslope;
-	double* synrateslope;
-	double* Neslope;
-		
+    // indices of piS, piN/piS and generation times in data file
+    int idxpiS;
+    int idxpiNpiS;
+    int idxgentime;
 
+    // node-log-values of key molecular evolutionary quantities
+    // omega0, omega, u, Ne and dS
+    // all are linear combinations of components of the process (piS, piN/piS and generation time)
 	NeutralOmegaLinearCombinationNodeTree* nodeneutralomegatree;
 	OmegaLinearCombinationNodeTree* nodeomegatree;
 	ULinearCombinationNodeTree* nodeutree;
-	SynrateLinearCombinationNodeTree* nodesynratetree;
 	NeLinearCombinationNodeTree* nodeNetree;
+	SynrateLinearCombinationNodeTree* nodesynratetree;
 	
-
-	MeanExpTree* omegatree;
+    // branch-specific values of dS and dN/dS
 	MeanExpTree* synratetree;
+	MeanExpTree* omegatree;
 
 	// nucleotide mutation matrix is relrate * stationary
 	Dirichlet* relrate;
@@ -165,64 +137,47 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	// if true: covariances are all set equal to 0
 	bool clampdiag;
 
+    // divergence times are fixed
 	bool clamptree;
+
+    // arithmetic / geodesic approximation for branch-averages of log-Brownian rates (see Poujol et al)
 	bool meanexp;
 	
+    // same coding sequences are used in multiple sequence alignment and polymorphism data
 	bool sameseq;
-	
+    // no adaptive component in omega (i.e omega = omega_0 = kappa1 N_e^-beta)
 	bool noadapt;
 
-	// total number of substitution parameters modelled as non homogeneous
+	// number of entries of log-Brownian process
+    // in addition to those given in data file
+    // L == 1 if adaptive component included, 0 otherwise
 	int L;
 
-	int nrep;
-
+    // number of degrees of freedom of the inverse wishart
 	int df;
 
+    // whether tree is calibrated
 	bool iscalib;
+
+    // prior on div times
+    // 0 : uniform prior
+    // 1 : birth death prior
 	int chronoprior;
+
+    // number of repetitions for the whole MCMC cyle before saving new point
+	int nrep;
 
 	public:
 
-    /*
-	double NeutralityIndexFactor(int nind, int jmax)	{
-
-
-        double denom = 0;
-        for (int k=1; k<2*nind; k++)    {
-            denom += 1.0 / k;
-        }
-
-		double total = 0;
-        for (int j=2; j<=jmax; j++)	{
-            double z = boost::math::zeta(j) / j;
-            double num = 0;
-            for (int k=1; k<2*nind; k++)    {
-                num += exp(Random::logGamma(2*nind+1) - Random::logGamma(k+1) - Random::logGamma(2*nind-k+1) + Random::logGamma(k) + Random::logGamma(2*nind-k+j) - Random::logGamma(2*nind+j));
-            }
-            total += z * num / denom;
-        }
-		cerr << "NI factor : " << total << '\n';
-		cerr << "NI(0.2)   : " << 1 + 0.2*total << '\n';
-		return total;
-	}
-    */
-
-
 	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
 
-		// if we want the divergence times to be fixed
 		clamptree = inclamptree;
 		chronoprior = inchronoprior;
 
-		// arithmetic / geodesic averages (see Poujol et al)
 		meanexp = inmeanexp;
 		
 		sameseq = insameseq;
-		
 		noadapt = innoadapt;
-
-		// number of components of the Brownian process corresponding to rates
 
 		// here L = 1: adaptative omega
 		if (!noadapt) {L = 1;}
@@ -269,24 +224,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		Zero = new Const<Real>(0);
 		One = new Const<PosReal>(1);
-		
-		if (sameseq) {	 
-			cerr << "same seq: still to be implemented\n";
-			exit(1);
-			/*
-			int i(2);
-			double k(0);
-			double tempo(0);
-			do {
-				tempo = (boost::math::zeta (i) * factorielle(1999) * factorielle(i) * factorielle(2001)) / (factorielle(2000 + i) * factorielle(1999) * i);
-				k += tempo;
-				i++;
-			}while (tempo > pow(10, -7));
-		
-			K = new Const<PosReal>(k);
-			*/
-		}
 
+        cerr << "chronogram\n";
 
 		MeanChi = 0;
 		MeanChi2 = 0;
@@ -295,7 +234,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		meanchi = -1;
 		meanchi2 = -1;
 
-		cerr << "new chrono\n";
 		if (calibfile != "None")	{
 			iscalib = true;
 			double a = rootage * rootage / rootstdev / rootstdev;
@@ -334,8 +272,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			chronogram->Clamp();
 		}
 	
-		cerr << "ok\n";
-		
 		if (iscalib) {
 			absrootage = GetCalibratedChronogram()->GetScale();
 		}
@@ -343,12 +279,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			absrootage = new Const<PosReal>(rootage);	
 		}
 		
-		
-		cerr << "checking rootage \t" << absrootage->val() << "\n";	
+		cerr << "sigma\n";
 
 		// Ncont : number of quantitative traits
-		// L : number of substitution parameters coevolving with traits (typically, 2: dS and dN/dS).
-		// create an array of positive variables kappa_i, i=1..Ncont + L
+		// L : 1 if omega_a included, 0 otherwise
+		// create an array of scaling factor k_i, i=1..Ncont + L
 		double mindiag = 0.01;
 		double maxdiag = 100;
 		DiagArray = new JeffreysIIDArray(Ncont+L,mindiag,maxdiag,Zero);
@@ -358,102 +293,144 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		else	{
 			DiagArray->ClampAt(priorsigma);
 		}
-		// create a diagonal matrix, with the kappa_i along the diagonal
+		// create a diagonal matrix, with the k_i's along the diagonal
 		sigmaZero = new SigmaZero(DiagArray);
 
 		// create covariance matrix
 		// from an inverse wishart of parameter sigma0
 		// and df degrees of freedom
 		df = Ncont + L + indf;
-		cerr << "sigma\n";
 		sigma = new ConjugateInverseWishart(sigmaZero, df);
 
 		// create a multivariate brownian process (of dimension Ncont + L)
 		// along the chronogram, and with covariance matrix sigma
-		cerr << "process\n";
+
+		cerr << "log-Brownian process\n";
 		process = new ConjugateMultiVariateTreeProcess(sigma,chronogram);
 		process->Reset();
 		
-		int indice1;
-		int indice2;
-		int indice3;
-		string char1("piS");
-		string char2("piNpiS");
-		string char3("generation_time");
+        idxpiS = -1;
+        idxpiNpiS = -1;
+        idxgentime = -1;
+
 		for (int i=0; i<Ncont; i++) {
-			if (GetContinuousData()->GetCharacterName(i)==char1) {
-				indice1 = i;
+			if (GetContinuousData()->GetCharacterName(i)=="piS") {
+                idxpiS = i;
 			}	
-			else if (GetContinuousData()->GetCharacterName(i)==char2) {
-				indice2 = i;
+			else if (GetContinuousData()->GetCharacterName(i)=="piNpiS") {
+				idxpiNpiS = i;
 			}	
-			else if (GetContinuousData()->GetCharacterName(i)==char3) {
-				indice3 = i;
+			else if (GetContinuousData()->GetCharacterName(i)=="generation_time") {
+				idxgentime = i;
 			}	
 		}	
+
+        if (idxpiS == -1)   {
+            cerr << "error: did not find piS in cont data file\n";
+            exit(1);
+        }
+        if (idxpiNpiS == -1)    {
+            cerr << "error: did not find piNpiS in cont data file\n";
+            exit(1);
+        }
+        if (idxgentime == -1)   {
+            cerr << "error: did not find generation_time in cont data file\n";
+            exit(1);
+        }
 		
-		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice1), indice1+L, 1);
-		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice2), indice2+L, 1);
-		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(indice3), indice3+L, 1);
+        // center process on mean observed values
+        // necessary for gentle start (avoiding numerical errors)
+		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(idxpiS), idxpiS + L, 1);
+		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(idxpiNpiS), idxpiNpiS + L, 1);
+		process->PiecewiseTranslation(GetContinuousData()->GetMeanLog(idxgentime), idxgentime + L, 1);
 		
 		// condition the multivariate process
 		// on the matrix of quantitative traits.
-		// note the offset here : first trait corresponds to entry L+1 of the process, etc.
-
-		// this is because the first L entries of the process correspond to the substitution variables (mut)
-
+        // offset of L == 1 if adaptive component, 0 otherwise
         for (int i=0; i<Ncont; i++)	{
             process->SetAndClamp(contdata,L+i,i,contdatatype);
         }
 
+        cerr << "DFE structural parameters\n";
+
 		//create the combination factors 
+        // structural parameters of the DFE 
+        // these parameters determine the response of piN/piS and dN/dS to changes in Ne:
+        // omega_0 = kappa_1 N_e^{-beta}
+        // piN/piS = kappa_2 N_e^{-beta}
+        //
+        // if adaptive component included:
+        // omega = omega_0 + omega_a (adaptive version of the model; otherwise, omega_a set to 0)
 		
+        // shape parameter of DFE
 		beta = new Normal(Zero, One);
-		kappa1 = new Normal(Zero, One);
-		if (!sameseq) {kappa2 = new Normal(Zero, One);}
-		
+
+        // kappa1 and kappa2
+        // normally, kappa1 and kappa2 are linked: two different functions of beta and of the mean s of the DFE
+        // but if polymorphism data and multiple sequence alignments are not based on same coding sequences
+        // then these two variables may not match
+        // in that case, kappa1 and kapp2 are considered as 2 independent degrees of freedom of the model
+		logkappa1 = new Normal(Zero, One);
+		if (!sameseq) {
+            normal_logkappa2 = new Normal(Zero, One);
+            constrained_logkappa2 = 0;
+            logkappa2 = normal_logkappa2;
+        }
+        else    {
+            normal_logkappa2 = 0;
+            constrained_logkappa2 = new ConstrainedLogKappa2(beta, logkappa1);
+            logkappa2 = constrained_logkappa2;
+        }
+
+        // reasonable initial values
 		beta->setval(0.2);
-		kappa1->setval(0.9);
-		if (!sameseq) {kappa2->setval(0.4);}
+		logkappa1->setval(0.9);
+		if (!sameseq) {normal_logkappa2->setval(0.4);}
 		
-		//create the slopes which define the linear combination
+		// create the node-trees for omega0, Ne, u, dS, Ne, and tau (all in log)
+        // based on the structural parameters and the 3-dim process (piS, piNpiS, gentime)
+        // specifically:
+        // log u = log piS
 		
-		neutralomegaslope = new double[L + Ncont];
-		if (!noadapt) {omegaslope = new double[L + Ncont];}
-		uslope = new double[L + Ncont];
-		synrateslope = new double[L + Ncont];
-		Neslope = new double[L + Ncont];
-		
-		CreateNeutralOmegaSlope();
-		if (!noadapt) {CreateOmegaSlope();}
-		CreateUSlope();
-		CreateSynrateSlope();
-		CreateNeSlope();
+        // log omega_0 = log piN/piS + log kappa_1 - log kappa_2
+        nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, logkappa1, logkappa2, idxpiNpiS);
 
+        // using : log Ne -1/beta * (log piN/piS - log kappa_2)
+        // log u = log piS - log N_e - log 4.0
+        //       = log piS + 1/beta * log piN/piS - 1/beta * log kappa_2 - log 4.0
+        nodeutree = new ULinearCombinationNodeTree(process, beta, logkappa2, idxpiS, idxpiNpiS);
 
-		// create the node tree obtained from the linear combinations
+        // log Ne = log piS - log u - log 4.0
+        // (note that it could also have been computed based on relation given above)
+		nodeNetree = new NeLinearCombinationNodeTree(process, nodeutree, idxpiS); 
+
+        // log dS = log u - log tau
+		nodesynratetree = new SynrateLinearCombinationNodeTree(process, nodeutree, absrootage, idxgentime);
 		
-		if (sameseq) {nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, beta, K, neutralomegaslope,sameseq);}
-		if (!sameseq) {nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, kappa1, kappa2, neutralomegaslope,sameseq);}
-		if (!noadapt) {nodeomegatree = new OmegaLinearCombinationNodeTree(process, nodeneutralomegatree, omegaslope);}
-		if (sameseq) {nodeutree = new ULinearCombinationNodeTree(process, beta, kappa1, K, uslope,sameseq);}
-		if (!sameseq) {nodeutree = new ULinearCombinationNodeTree(process, beta, kappa2, uslope, sameseq);}
-		nodesynratetree = new SynrateLinearCombinationNodeTree(process, nodeutree, absrootage, synrateslope);
-		nodeNetree = new NeLinearCombinationNodeTree(process, nodeutree, Neslope); 
-		
-		// create the branch lengths resulting from combining
+        // if adaptive component included, then compute omega = omega_0 + omega_a
+        // check that: sum should be in natural units
+		if (!noadapt) {
+            cerr << "check node omega tree\n";
+            exit(1);
+            nodeomegatree = new OmegaLinearCombinationNodeTree(process, nodeneutralomegatree, 0);
+        }
+
+		// create the branch-specific mean dS and mean dN/dS
 		
 		// the times given by the chronogram with the rate 
 		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL, false);
 
 		// create the dN/dS on each branch, nased on the second entry of the multivariate process
-		if (!noadapt) {omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN, false);}
-		if (noadapt) {omegatree = new MeanExpTree(nodeneutralomegatree, chronogram, MEAN, false);}
+		if (!noadapt) {
+            omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN, false);
+        }
+        else    {
+            omegatree = new MeanExpTree(nodeneutralomegatree, chronogram, MEAN, false);
+        }
 		
 		// create u on each branch, nased on the third entry of the multivariate process
 
-		cerr << "matrix\n";
-
+		cerr << "codon matrices\n";
 		// create a GTR nucleotide matrix
 		relrate = new Dirichlet(Nnuc*(Nnuc-1)/2);
 		stationary = new Dirichlet(Nnuc);
@@ -463,6 +440,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// each codon matrix is parameterized by the global nucleotide matrix, combined with the branch-specific dN/dS
 		matrixtree = new MatrixTree((CodonStateSpace*) codondata->GetStateSpace(), nucmatrix, omegatree, One);
 
+        cerr << "phylo process\n";
 		// create a phylo process based on this array of branch specific matrices
 		// and condition it on the multiple alignment codondata
 		// pathconjtree = new BranchMatrixPathConjugateTree(synratetree, matrixtree, codondata);
@@ -470,7 +448,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		phyloprocess = new PathConjugatePhyloProcess(pathconjtree);
 
 
-		cerr << "unfold\n";
+		cerr << "unfold model\n";
 		phyloprocess->Unfold();
 		cerr << "sample\n";
 		if (sample)	{
@@ -486,8 +464,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		RootRegister(relrate);
 		RootRegister(stationary);
 		RootRegister(beta);
-		RootRegister(kappa1);
-		if (!sameseq) {RootRegister(kappa2);}
+		RootRegister(logkappa1);
+		RootRegister(logkappa2);
 		RootRegister(absrootage);
 		if (MeanChi)	{
 			RootRegister(MeanChi);
@@ -497,216 +475,23 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		MakeScheduler();
 		if (sample)	{
+            cerr << "update\n";
 			Update();
 		}
+        cerr << "ok\n";
 	}
 
 	// destructor
 	// deallocations should normally be done here
 	// but in general, the model is deleted just before the program exits, so we can dispense with it for the moment
-	~BranchOmegaMultivariateModel() {
-		DeleteNeutralOmegaSlope();
-		if (!noadapt) {DeleteOmegaSlope();}
-		DeleteUSlope();
-		DeleteSynrateSlope();
-		DeleteNeSlope();
-		}
+	~BranchOmegaMultivariateModel() {}
 	
-	
-	void CreateUSlope() {
-		if (sameseq) {
-			if (!noadapt) {
-				string cha1("piS");
-				string cha2("piNpiS");
-				uslope[0] = 0;
-				for (int i = 0; i<Ncont; i++) {
-					if (GetContinuousData()->GetCharacterName(i)==cha1) {
-						uslope[i+1] = 1;
-					}	
-					else if (GetContinuousData()->GetCharacterName(i)==cha2) {
-						uslope[i+1] = 1000;
-					}
-					else {
-						uslope[i+1] = 0;
-					}
-				}
-			}
-			else {
-				string cha1("piS");
-				string cha2("piNpiS");
-				for (int i = 0; i<Ncont; i++) {
-					if (GetContinuousData()->GetCharacterName(i)==cha1) {
-						uslope[i] = 1;
-					}	
-					else if (GetContinuousData()->GetCharacterName(i)==cha2) {
-						uslope[i] = 1000;
-					}
-					else {
-						uslope[i] = 0;
-					}
-				}
-			}
-		}	
-		if (!sameseq) {
-			if (!noadapt) {
-				string cha1("piS");
-				string cha2("piNpiS");
-				uslope[0] = 0;
-				for (int i = 0; i<Ncont; i++) {
-					if (GetContinuousData()->GetCharacterName(i)==cha1) {
-						uslope[i+1] = 1;
-					}	
-					else if (GetContinuousData()->GetCharacterName(i)==cha2) {
-						uslope[i+1] = 1000;
-					}
-					else {
-						uslope[i+1] = 0;
-					}
-				}
-			}
-			else {
-				string cha1("piS");
-				string cha2("piNpiS");
-				for (int i = 0; i<Ncont; i++) {
-					if (GetContinuousData()->GetCharacterName(i)==cha1) {
-						uslope[i] = 1;
-					}	
-					else if (GetContinuousData()->GetCharacterName(i)==cha2) {
-						uslope[i] = 1000;
-					}
-					else {
-						uslope[i] = 0;
-					}
-				}
-			}	
-		}	
-	}	
-	
-	void DeleteUSlope() {
-		delete uslope;
-	}	
-			
-	
-	void CreateSynrateSlope() {
-		if (!noadapt) {
-			string cha("generation_time");
-			synrateslope[0] = 0;
-			for (int i=0; i<Ncont; i++) {
-				if (GetContinuousData()->GetCharacterName(i)==cha) {
-					synrateslope[i+1] = -1;
-				}	
-				else {
-					synrateslope[i+1] = 0;
-				}
-			}
-		}
-		else {
-			string cha("generation_time");
-			for (int i=0; i<Ncont; i++) {
-				if (GetContinuousData()->GetCharacterName(i)==cha) {
-					synrateslope[i] = -1;
-				}	
-				else {
-					synrateslope[i] = 0;
-				}
-			}
-		}	
-	}	
-				
-
-		 
-	void DeleteSynrateSlope() {
-		delete synrateslope;
-	}
-	
-	
-	void CreateNeutralOmegaSlope() {
-		if (!noadapt) {
-			string cha("piNpiS");
-			neutralomegaslope[0] = 0;
-			for (int i=0; i<Ncont; i++) {
-				if (GetContinuousData()->GetCharacterName(i)==cha) {
-					neutralomegaslope[i+1] = 1;
-				}	
-				else {
-					neutralomegaslope[i+1] = 0;
-				}
-			}
-		}
-		else {
-			string cha("piNpiS");
-			for (int i=0; i<Ncont; i++) {
-				if (GetContinuousData()->GetCharacterName(i)==cha) {
-					neutralomegaslope[i] = 1;
-				}	
-				else {
-					neutralomegaslope[i] = 0;
-				}
-			}
-		}
-	}	
-	 
-	
-	void DeleteNeutralOmegaSlope() {
-		delete neutralomegaslope;
-	}
-	
-	
-	void CreateOmegaSlope() {
-		omegaslope[0] = 1;
-		for (int i=0; i<Ncont; i++) {
-			omegaslope[i+1] = 0;
-		}
-	}
-	
-	void DeleteOmegaSlope() {
-		delete omegaslope;
-	}
-	
-	
-	void CreateNeSlope() {
-		if (!noadapt) {
-			string cha("piS");
-			Neslope[0] = 0;
-			for (int i=0; i<Ncont; i++) {
-				if (GetContinuousData()->GetCharacterName(i)==cha) {
-					Neslope[i+1] = 1;
-				}	
-				else {
-					Neslope[i+1] = 0;
-				}
-			}
-		}
-		else {				
-			string cha("piS");
-			for (int i=0; i<Ncont; i++) {
-				if (GetContinuousData()->GetCharacterName(i)==cha) {
-					Neslope[i] = 1;
-				}	
-				else {
-					Neslope[i] = 0;
-				}
-			}
-		}
-	}	
-		
-	void DeleteNeSlope() {
-		delete Neslope;
-	}
-	
-
-		
 	// accessors
 	Tree* GetTree() {return tree;}
 	
-	Var<Real>* GetGamma() {return beta;}
-	
-	Const<PosReal>* GetK() {return K;}
-
 	SequenceAlignment* GetData()	{
 		return codondata;
 	}
-
 
 	MeanExpTree* GetSynRateTree() {return synratetree;}
 	MeanExpTree* GetOmegaTree() {return omegatree;}
@@ -724,13 +509,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	
 	ULinearCombinationNodeTree* GetUNodeTree() {return nodeutree;}
 	
-	
-	double* GetNeutralOmegaSlope() {return neutralomegaslope;}
-	double* GetUSlope() {return uslope;}
-	double* GetSynrateSlope() {return synrateslope;}
-	double* GetNeSlope() {return Neslope;}
-
-
 	Chronogram* GetChronogram() {return chronogram;}
 
 	bool isCalibrated()	{
@@ -787,8 +565,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		total += relrate->GetLogProb();
 		total += stationary->GetLogProb();
 		total += beta->GetLogProb();
-		total += kappa1->GetLogProb();
-		if (!sameseq) {total += kappa2->GetLogProb();}
+		total += logkappa1->GetLogProb();
+		if (!sameseq) {total += normal_logkappa2->GetLogProb();}
 		return total;
 	}
 
@@ -796,14 +574,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		double ret = pathconjtree->GetLogProb();
 		return ret;
 	}
-
-	/*
-	double Move(double tuning = 1)	{
-		// Cycle(1,1,verbose,check)
-		scheduler.Cycle(1,1,true,false);
-		return 1;
-	}
-	*/
 
 	// MCMC schedule
 	virtual void MakeScheduler()	{
@@ -846,9 +616,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,0.01,10),1,"conjugate sigma - process");
 			scheduler.Register(new ConjugateMultiVariateMove(sigma,process,0.001,10),1,"conjugate sigma - process");
 
-			scheduler.Register(new SimpleMove(DiagArray,10),10,"kappa");
-			scheduler.Register(new SimpleMove(DiagArray,1),10,"kappa");
-			scheduler.Register(new SimpleMove(DiagArray,0.1),10,"kappa");
+			scheduler.Register(new SimpleMove(DiagArray,10),10,"cov matrix scaling factors");
+			scheduler.Register(new SimpleMove(DiagArray,1),10,"cov matrix scaling factors");
+			scheduler.Register(new SimpleMove(DiagArray,0.1),10,"cov matrix scaling factors");
 
 			scheduler.Register(new ProfileMove(relrate,0.1,1),10,"relrates");
 			scheduler.Register(new ProfileMove(relrate,0.03,2),10,"relrates");
@@ -863,20 +633,19 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new SimpleMove(beta,0.0008),10,"beta");
 			scheduler.Register(new SimpleMove(beta,0.0003),10,"beta");
 			
-			scheduler.Register(new SimpleMove(kappa1,0.15),10,"kappa1");
-			scheduler.Register(new SimpleMove(kappa1,0.08),10,"kappa1");
-			scheduler.Register(new SimpleMove(kappa1,0.01),10,"kappa1");
+			scheduler.Register(new SimpleMove(logkappa1,0.15),10,"logkappa1");
+			scheduler.Register(new SimpleMove(logkappa1,0.08),10,"logkappa1");
+			scheduler.Register(new SimpleMove(logkappa1,0.01),10,"logkappa1");
 			
 			if (!sameseq) {
-				scheduler.Register(new SimpleMove(kappa2,0.05),10,"kappa2");
-				scheduler.Register(new SimpleMove(kappa2,0.008),10,"kappa2");
-				scheduler.Register(new SimpleMove(kappa2,0.001),10,"kappa2");
+				scheduler.Register(new SimpleMove(normal_logkappa2,0.05),10,"logkappa2");
+				scheduler.Register(new SimpleMove(normal_logkappa2,0.008),10,"logkappa2");
+				scheduler.Register(new SimpleMove(normal_logkappa2,0.001),10,"logkappa2");
 
-				scheduler.Register(new GammaBetaMove(beta,kappa2,1,11),10,"kappa1kappa2");
-				scheduler.Register(new GammaBetaMove(beta,kappa2,0.1,11),10,"kappa1kappa2");
-				scheduler.Register(new GammaBetaMove(beta,kappa2,0.01,11),10,"kappa1kappa2");
+				scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,1,11),10,"betakappa2");
+				scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,0.1,11),10,"betakappa2");
+				scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,0.01,11),10,"betakappa2");
 			}
-			
 		}
 	}
 
@@ -894,8 +663,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			process->CutOff(1,l);
 		}
 		beta->Sample();
-		kappa1->Sample();
-		if (!sameseq) {kappa2->Sample();}
+		logkappa1->Sample();
+		if (!sameseq) {normal_logkappa2->Sample();}
 		relrate->Sample();
 		stationary->Sample();
 		phyloprocess->Sample();
@@ -922,8 +691,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			os << "\trootage";
 		}
 		os << "\tbeta";
-		os << "\tkappa1";
-		if (!sameseq) {os << "\tkappa2";}
+		os << "\tlogkappa1";
+		os << "\tlogkappa2";
         for (int k=0; k<Ncont+L; k++)   {
             os << "\tmean_" << k;
         }
@@ -942,7 +711,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << "\trrent";
 		if (chronoprior)	{
 			os << "\tchronologprior";
-			os << "\tdelta\tkappa";
+			os << "\tchi\tchi2";
 		}
 		os << '\n';
 	}
@@ -957,8 +726,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			os << '\t' << GetRootAge();
 		}
 		os << '\t' << beta->val();
-		os << '\t' << kappa1->val();
-		if (!sameseq) {os << '\t' << kappa2->val();}
+		os << '\t' << logkappa1->val();
+		os << '\t' << logkappa2->val();
 		for (int k=0; k<Ncont+L; k++)	{
             os << '\t' << process->GetMean(k);
         }
@@ -999,8 +768,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		os << *sigma << '\n';
 		os << *process << '\n';
 		os << *beta << '\n';
-		os << *kappa1 << '\n';
-		if (!sameseq) {os << *kappa2 << '\n';}
+		os << *logkappa1 << '\n';
+		if (!sameseq) {os << *normal_logkappa2 << '\n';}
 		os << *relrate << '\n';
 		os << *stationary << '\n';
 	}
@@ -1017,8 +786,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		is >> *sigma;
 		is >> *process;
 		is >> *beta;
-		is >> *kappa1;
-		if (!sameseq) {is >> *kappa2;}
+		is >> *logkappa1;
+		if (!sameseq) {is >> *normal_logkappa2;}
 		is >> *relrate;
 		is >> *stationary;
 	}

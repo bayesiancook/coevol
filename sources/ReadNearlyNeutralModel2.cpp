@@ -152,13 +152,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		}
 
-
-		double* synrateslope(GetModel()->GetSynrateSlope());
-		double* neutralomegaslope(GetModel()->GetNeutralOmegaSlope());
-		double* uslope(GetModel()->GetUSlope());
-		double* Neslope(GetModel()->GetNeSlope());
-		
-		
 		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
 
 		// cycle over the sample
@@ -179,10 +172,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			
             betadist.push_back(GetModel()->GetBeta());
             meanbeta += GetModel()->GetBeta();
-
-			Var<Real>* gamma(GetModel()->GetGamma());
-			
-			Const<PosReal>* K(GetModel()->GetK());
 
 			meanchrono->Add(GetModel()->GetChronogram());
 

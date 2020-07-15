@@ -11,11 +11,8 @@ class random_init	{
 	public:
 	random_init()	{
 		cerr << '\n';
-		Random::InitRandom();
-		// Random::InitRandom(625878);
-		// Random::InitRandom(645823);
-		// Random::InitRandom(778389);
-		// Random::InitRandom(818970);
+		// Random::InitRandom();
+		Random::InitRandom(1001);
 		cerr << "random seed : " << Random::GetSeed() << '\n';
 		cerr << '\n';
 	}

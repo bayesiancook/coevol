@@ -7,298 +7,166 @@
 #include <cmath>
 #include <sstream>
 
-
 class NeutralOmegaLinearCombination : public Dvar<Real> {
 	
 	public :
 	
-	
-	NeutralOmegaLinearCombination(Var<RealVector>* inx, Var<Real>* ingamma, Const<PosReal>* inK, double* inneutralomegaslope, bool insameseq) {
+	NeutralOmegaLinearCombination(Var<RealVector>* inx, Var<Real>* inlogkappa1, Var<Real>* inlogkappa2, int inidxpiNpiS) {
 		x = inx;
-		gamma = ingamma;
-		K = inK;
-		neutralomegaslope = inneutralomegaslope;
-		sameseq = insameseq;
+        logkappa1 = inlogkappa1;
+        logkappa2 = inlogkappa2;
+        idxpiNpiS = inidxpiNpiS;
 		Register(x);
-		Register(gamma);
-		specialUpdate();
-	}
-	
-	NeutralOmegaLinearCombination(Var<RealVector>* inx, Var<Real>* inbeta, Var<Real>* inbeta2, double* inneutralomegaslope, bool insameseq) {
-		x = inx;
-		beta = inbeta;
-		beta2 = inbeta2;
-		neutralomegaslope = inneutralomegaslope;
-		sameseq = insameseq;
-		Register(x);
-		Register(beta);
-		Register(beta2);
+		Register(logkappa1);
+		Register(logkappa2);
 		specialUpdate();
 	}
 			
-		
+    // since:
+    // omega_0 = kappa_1 N_e^{-beta}
+    // piN/piS = kappa_2 N_e^{-beta}
+    //
+    // -> log omega_0 = log piN/piS + log kappa_1 - log kappa_2
 	void specialUpdate() {
-		if (sameseq) {
-			double a(0);
-			for (int i=0; i<x->GetDim(); i++) {
-				a+= (*x)[i] * neutralomegaslope[i] * ( 1 / ( 1 + *gamma * *K ) );
-			}
-			setval(a);	
-		}
-		if (!sameseq) {
-			double a(0);
-			for (int i=0; i<x->GetDim(); i++) {
-				a+= (*x)[i] * neutralomegaslope[i];
-				//cerr << (*x)[i];
-				//cerr << '\t';
-				//cerr << a;
-				//cerr << '\n';
-			}
-			a+= *beta - *beta2;
-			//cerr << a;
-			//cerr << '\n';
-			setval(a);		
-		}
+        setval((*x)[idxpiNpiS] + logkappa1->val() - logkappa2->val());
 	}		
 	
 	private :
 	
-	
 	Var<RealVector>* x;
-	Var<Real>* gamma;
-	Const<PosReal>* K;
-	Var<Real>* beta;
-	Var<Real>* beta2;
-	double* neutralomegaslope;
-	bool sameseq;
-	
+	Var<Real>* logkappa1;
+	Var<Real>* logkappa2;
+    int idxpiNpiS;
 };		
-
 
 
 class OmegaLinearCombination : public Dvar<Real> {
 	
 	public :
 	
-	OmegaLinearCombination(Var<RealVector>* inx, Var<Real>* ino, double* inomegaslope) {
+    // process x at index idx, gives log omega_a
+    // log omega_0 given as a separate real variable
+	OmegaLinearCombination(Var<RealVector>* inx, Var<Real>* inlogom0, int inidx)    {
 		x = inx;
-		o = ino;
-		omegaslope = inomegaslope;
+		logom0 = inlogom0;
+        idx = inidx;
 		Register(x);
-		Register(o);
+		Register(logom0);
 		specialUpdate();
 	}
 			
-		
+    // omega = omega_0 + omega_a
 	void specialUpdate() {
-		double a(0);
-		for (int i=0; i<x->GetDim(); i++) {
-			a+= exp((*x)[i]) * omegaslope[i];
-			//cerr << (*x)[i];
-			//cerr << '\n';
-		}
-		a+= exp(*o);
-		//cerr << a;
-		//cerr << '\n';
-		setval(log(a));	
+        setval(exp(logom0->val()) + exp((*x)[idx]));
 	}	
 	
 	private :
 	
-	
 	Var<RealVector>* x;
-	Var<Real>* o;
-	double* omegaslope;
-	
+	Var<Real>* logom0;
+    int idx;
 };	
-
-
-
 
 class ULinearCombination : public Dvar<Real> {
 	
 	public :
 	
-	ULinearCombination(Var<RealVector>* inx, Var<Real>* ingamma, Var<Real>* inbeta, Const<PosReal>* inK, double* inuslope, bool insameseq) {
+	ULinearCombination(Var<RealVector>* inx, Var<Real>* inbeta, Var<Real>* inlogkappa2, int inidxpiS, int inidxpiNpiS) {
 		x = inx;
-		gamma = ingamma;
-		beta = inbeta,
-		K = inK;
-		uslope = inuslope;
-		sameseq = insameseq;
-		Register(beta);
-		Register(gamma);
+        beta = inbeta;
+        logkappa2 = inlogkappa2;
+        idxpiS = inidxpiS;
+        idxpiNpiS = inidxpiNpiS;
 		Register(x);
+		Register(beta);
+        Register(logkappa2);
 		specialUpdate();
 	}
+			
+    // using : log Ne -1/beta * (log piN/piS - log kappa_2)
+    // log u = log piS - log N_e - log 4.0
+    //       = log piS + 1/beta * log piN/piS - 1/beta * log kappa_2 - log 4.0
+	void specialUpdate() {
+        setval((*x)[idxpiS] + 1/beta->val()*(*x)[idxpiNpiS] - logkappa2->val()/beta->val() - log(4.0));
+	}
 	
-	ULinearCombination(Var<RealVector>* inx, Var<Real>* ingamma, Var<Real>* inbeta2, double* inuslope, bool insameseq) {
+	private :
+	
+	Var<RealVector>* x;
+	Var<Real>* beta;
+	Var<Real>* logkappa2;
+    int idxpiS;
+    int idxpiNpiS;
+};
+
+
+class NeLinearCombination : public Dvar<Real> {
+	
+	public :
+	
+	NeLinearCombination(Var<RealVector>* inx, Var<Real>* inlogu, int inidxpiS) {
 		x = inx;
-		gamma = ingamma;
-		beta2 = inbeta2,
-		uslope = inuslope;
-		sameseq = insameseq;
-		Register(beta2);
-		Register(gamma);
+		logu = inlogu;
+        idxpiS = inidxpiS;
 		Register(x);
+		Register(logu);
 		specialUpdate();
 	}
 			
 		
 	void specialUpdate() {
-		if (sameseq) {
-			double a(0);
-			for (int i=0; i<x->GetDim(); i++) {
-				if (uslope[i] == 1000) {
-					a+= ( 1 / *gamma ) * (*x)[i];
-				}
-				else {
-					a+= (*x)[i] * uslope[i];
-				}
-			}	
-			a += ( 1 / *gamma ) * ( *beta - log(*K) - *gamma * log(4) );	
-			setval(a);	
-		}
-		if (!sameseq) {
-			double a(0);
-			for (int i=0; i<x->GetDim(); i++) {
-				if (uslope[i] == 1000) {
-					a+= (*x)[i] / *gamma;
-				}
-				else {
-					a+= (*x)[i] * uslope[i];
-				}
-				//cerr << (*x)[i];
-				//cerr << "\t";
-				//cerr << a;
-				//cerr << "\n";
-			}	
-			a -= ( *beta2 / *gamma ) + log(4);	
-			setval(a);	
-			//cerr << a;
-			//cerr << "\n";
-		}	
+        setval((*x)[idxpiS] - logu->val() - log(4.0));
 	}
 	
-	private :
-	
+	private :			
 	
 	Var<RealVector>* x;
-	Var<Real>* gamma;
-	Var<Real>* beta;
-	Var<Real>* beta2;
-	Const<PosReal>* K;
-	double* uslope;
-	bool sameseq;
-	
-};
-
+	Var<Real>* logu;
+	int idxpiS;
+		
+};		
 
 class SynrateLinearCombination : public Dvar<Real> {
 	
 	public :
 	
-	SynrateLinearCombination(Var<RealVector>* inx, Var<Real>* ino, Var<PosReal>* inrootage, double* insynrateslope) {
+	SynrateLinearCombination(Var<RealVector>* inx, Var<Real>* inlogu, Var<PosReal>* inrootage, int inidxgentime)    {
 		x = inx;
-		o = ino;
+        logu = inlogu;
 		rootage = inrootage;
-		synrateslope = insynrateslope;
+        idxgentime = inidxgentime;
 		Register(x);
-		Register(o);
+		Register(logu);
 		Register(rootage);
 		specialUpdate();
 	}
-			
 		
+    // dS is per tree depth, which is itself given in myr
+    // log dS = log u - log tau + log(rootage*365.10^6)
+    // generation time is given in days
+    // 365.10^6: # days per myr
 	void specialUpdate() {
-		double a(0);
-		for (int i=0; i<x->GetDim(); i++) {
-			a+= (*x)[i] * synrateslope[i];
-			//cerr << (*x)[i];
-			//cerr << '\t';
-			//cerr << a;
-			//cerr << '\n'; 
-		}
-		a+= *o;
-		//cerr << a;
-		//cerr << "\n";
-		a += log(rootage->val() * 365 * pow(10, 6));
-		//cerr << rootage->val();
-		//cerr << "\n";
-		//cerr << a;
-		//cerr << '\n';
-		setval(a);	
+        setval(logu->val() - (*x)[idxgentime] + log(rootage->val()) + log(365.0) + 6*log(10.0));
 	}
-		
-					
 	
 	private :			
 	
 	Var<RealVector>* x;
-	Var<Real>* o;
-	double* synrateslope;
+	Var<Real>* logu;
 	Var<PosReal>* rootage;
-		
+    int idxgentime;
 };		
-		
-		
-		
-	
-class NeLinearCombination : public Dvar<Real> {
-	
-	public :
-	
-	NeLinearCombination(Var<RealVector>* inx, Var<Real>* ino, double* inNeslope) {
-		x = inx;
-		o = ino;
-		Neslope = inNeslope;
-		Register(x);
-		Register(o);
-		specialUpdate();
-	}
-			
-		
-	void specialUpdate() {
-		double a(0);
-		for (int i=0; i<x->GetDim(); i++) {
-			a+= (*x)[i] * Neslope[i];
-		}
-		a -= *o;
-		a -= log(4);
-		setval(a);	
-	}
-		
-					
-	
-	private :			
-	
-	Var<RealVector>* x;
-	Var<Real>* o;
-	double* Neslope;
-		
-};		
-
 
 
 class NeutralOmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	
 	public :
 	
-	NeutralOmegaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<Real>* ingamma, Const<PosReal>* inK, double* inneutralomegaslope, bool insameseq) {
+	NeutralOmegaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<Real>* inlogkappa1, Var<Real>* inlogkappa2, int inidxpiNpiS)  {
 		process	= inprocess;
-		gamma = ingamma;
-		K = inK;
-		neutralomegaslope = inneutralomegaslope;
-		sameseq = insameseq;
-		RecursiveCreate(GetRoot());
-	}
-	
-	NeutralOmegaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<Real>* inbeta, Var<Real>* inbeta2, double* inneutralomegaslope, bool insameseq) {
-		process	= inprocess;
-		beta = inbeta;
-		beta2 = inbeta2;
-		neutralomegaslope = inneutralomegaslope;
-		sameseq = insameseq;
+        logkappa1 = inlogkappa1;
+        logkappa2 = inlogkappa2;
+        idxpiNpiS = inidxpiNpiS;
 		RecursiveCreate(GetRoot());
 	}
 	
@@ -317,46 +185,31 @@ class NeutralOmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> >
 	private :
 	
 	void specialUpdate(Link* from)	{
-		// if ((! from->isRoot()))	{
-			GetNodeVal(from->GetNode())->specialUpdate();
-		// }
+        GetNodeVal(from->GetNode())->specialUpdate();
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
 	}
 
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		if (sameseq) {
-			return new NeutralOmegaLinearCombination(process->GetNodeVal(link->GetNode()), gamma, K, neutralomegaslope, sameseq);
-		}
-		if (!sameseq) {
-			return new NeutralOmegaLinearCombination(process->GetNodeVal(link->GetNode()), beta, beta2, neutralomegaslope, sameseq);
-		}
+        return new NeutralOmegaLinearCombination(process->GetNodeVal(link->GetNode()), logkappa1, logkappa2, idxpiNpiS);
 	}
 		
 	
 	NodeVarTree<RealVector>* process;
-	Var<Real>* gamma;
-	Const<PosReal>* K;
-	Var<Real>* beta;
-	Var<Real>* beta2;
-	double* neutralomegaslope;
-	bool sameseq;
-	
+	Var<Real>* logkappa1;
+    Var<Real>* logkappa2;
+    int idxpiNpiS;
 };	
-
-
-
-
 
 class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	
 	public :
 	
-	OmegaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, NodeVarTree<Real>* innodeneutralomegatree, double* inomegaslope) {
+	OmegaLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, NodeVarTree<Real>* innodeneutralomegatree, int inidx)  {
 		process	= inprocess;
 		nodeneutralomegatree = innodeneutralomegatree;
-		omegaslope = inomegaslope;
+        idx = inidx;
 		RecursiveCreate(GetRoot());
 	}
 	
@@ -376,51 +229,35 @@ class OmegaLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	void specialUpdate(Link* from)	{
-		// if ((! from->isRoot()))	{
-			GetNodeVal(from->GetNode())->specialUpdate();
-		// }
+        GetNodeVal(from->GetNode())->specialUpdate();
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
 	}
 	
-	
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		return new OmegaLinearCombination(process->GetNodeVal(link->GetNode()), nodeneutralomegatree->GetNodeVal(link->GetNode()), omegaslope);
+		return new OmegaLinearCombination(process->GetNodeVal(link->GetNode()), nodeneutralomegatree->GetNodeVal(link->GetNode()), idx);
 	}
 	
 	
 	NodeVarTree<RealVector>* process;
 	NodeVarTree<Real>* nodeneutralomegatree;
-	double* omegaslope;
-	
+    int idx;
 };				
-			
 
-		
 class ULinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	
 	public :
 	
-	ULinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<Real>* ingamma, Var<Real>* inbeta, Const<PosReal>* inK, double* inuslope, bool insameseq) {
+	ULinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<Real>* inbeta, Var<Real>* inlogkappa2, int inidxpiS, int inidxpiNpiS)    {
 		process	= inprocess;
-		gamma = ingamma;
-		beta = inbeta;
-		K = inK;
-		uslope = inuslope;
-		sameseq = insameseq;
+        beta = inbeta;
+        logkappa2 = inlogkappa2;
+        idxpiS = inidxpiS;
+        idxpiNpiS = inidxpiNpiS;
 		RecursiveCreate(GetRoot());
 	}
 		
-	ULinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, Var<Real>* ingamma, Var<Real>* inbeta2, double* inuslope, bool insameseq) {
-		process	= inprocess;
-		gamma = ingamma;
-		beta2 = inbeta2;
-		uslope = inuslope;
-		sameseq = insameseq;
-		RecursiveCreate(GetRoot());
-	}
-	
 	~ULinearCombinationNodeTree() {
 		RecursiveDelete(GetRoot());
 	}
@@ -429,7 +266,6 @@ class ULinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 		specialUpdate(GetRoot());
 	}
 	
-	
 	Tree* GetTree() {
 		return process->GetTree();
 	}	
@@ -437,95 +273,32 @@ class ULinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	void specialUpdate(Link* from)	{
-		// if ((! from->isRoot()))	{
-			GetNodeVal(from->GetNode())->specialUpdate();
-		// }
+        GetNodeVal(from->GetNode())->specialUpdate();
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
 	}
 	
-	
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		if (sameseq) {
-			return new ULinearCombination(process->GetNodeVal(link->GetNode()), gamma, beta, K, uslope, sameseq);
-		}
-		if (!sameseq) {
-			return new ULinearCombination(process->GetNodeVal(link->GetNode()), gamma, beta2, uslope, sameseq);
-		}	
+        return new ULinearCombination(process->GetNodeVal(link->GetNode()), beta, logkappa2, idxpiS, idxpiNpiS);
 	}
 	
 	
 	NodeVarTree<RealVector>* process;
-	Var<Real>* gamma;
 	Var<Real>* beta;
-	Var<Real>* beta2;
-	Const<PosReal>* K;
-	double* uslope;
-	bool sameseq;
-	
+	Var<Real>* logkappa2;
+    int idxpiS;
+    int idxpiNpiS;
 };						
-	
-	
-	
-class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
-	
-	public :
-	
-	SynrateLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, NodeVarTree<Real>* innodeutree, Var<PosReal>* inrootage, double* insynrateslope) {
-		process	= inprocess;
-		nodeutree = innodeutree;
-		rootage = inrootage;
-		synrateslope = insynrateslope;
-		RecursiveCreate(GetRoot());
-	}
-	
-	~SynrateLinearCombinationNodeTree() {
-		RecursiveDelete(GetRoot());
-	}
-	
-	void specialUpdate()	{
-		specialUpdate(GetRoot());
-	}
-	
-	Tree* GetTree() {
-		return process->GetTree();
-	}	
-		
-	private :
 
-	void specialUpdate(Link* from)	{
-		// if ((! from->isRoot()))	{
-			GetNodeVal(from->GetNode())->specialUpdate();
-		// }
-		for(Link* link=from->Next(); link!=from; link=link->Next())	{
-			specialUpdate(link->Out());
-		}
-	}
-	
-	
-	Dvar<Real>* CreateNodeVal(const Link* link){
-		return new SynrateLinearCombination(process->GetNodeVal(link->GetNode()), nodeutree->GetNodeVal(link->GetNode()), rootage, synrateslope);
-	}
-	
-	
-	NodeVarTree<RealVector>* process;
-	NodeVarTree<Real>* nodeutree;
-	Var<PosReal>* rootage;
-	double* synrateslope;
-	
-};
-		
-		
-	
 class NeLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	
 	public :
 	
-	NeLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, NodeVarTree<Real>* innodeutree, double* inNeslope) {
+	NeLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, NodeVarTree<Real>* innodeutree, int inidxpiS)   {
 		process	= inprocess;
 		nodeutree = innodeutree;
-		Neslope = inNeslope;
+        idxpiS = inidxpiS;
 		RecursiveCreate(GetRoot());
 	}
 	
@@ -544,32 +317,65 @@ class NeLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
 	private :
 
 	void specialUpdate(Link* from)	{
-		// if ((! from->isRoot()))	{
-			GetNodeVal(from->GetNode())->specialUpdate();
-		// }
+        GetNodeVal(from->GetNode())->specialUpdate();
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			specialUpdate(link->Out());
 		}
 	}
 	
+	Dvar<Real>* CreateNodeVal(const Link* link){
+		return new NeLinearCombination(process->GetNodeVal(link->GetNode()), nodeutree->GetNodeVal(link->GetNode()), idxpiS);
+	}
+	
+	NodeVarTree<RealVector>* process;
+	NodeVarTree<Real>* nodeutree;
+    int idxpiS;
+};
+
+class SynrateLinearCombinationNodeTree : public NodeValPtrTree<Dvar<Real> > {
+	
+	public :
+	
+	SynrateLinearCombinationNodeTree(NodeVarTree<RealVector>* inprocess, NodeVarTree<Real>* innodeutree, Var<PosReal>* inrootage, int inidxgentime) {
+		process	= inprocess;
+		nodeutree = innodeutree;
+		rootage = inrootage;
+        idxgentime = inidxgentime;
+		RecursiveCreate(GetRoot());
+	}
+	
+	~SynrateLinearCombinationNodeTree() {
+		RecursiveDelete(GetRoot());
+	}
+	
+	void specialUpdate()	{
+		specialUpdate(GetRoot());
+	}
+	
+	Tree* GetTree() {
+		return process->GetTree();
+	}	
+		
+	private :
+
+	void specialUpdate(Link* from)	{
+        GetNodeVal(from->GetNode())->specialUpdate();
+		for(Link* link=from->Next(); link!=from; link=link->Next())	{
+			specialUpdate(link->Out());
+		}
+	}
 	
 	Dvar<Real>* CreateNodeVal(const Link* link){
-		return new NeLinearCombination(process->GetNodeVal(link->GetNode()), nodeutree->GetNodeVal(link->GetNode()), Neslope);
+		return new SynrateLinearCombination(process->GetNodeVal(link->GetNode()), nodeutree->GetNodeVal(link->GetNode()), rootage, idxgentime);
 	}
 	
 	
 	NodeVarTree<RealVector>* process;
 	NodeVarTree<Real>* nodeutree;
-	double* Neslope;
-	
+	Var<PosReal>* rootage;
+    int idxgentime;
 };
-		
-			
-			
-			
+
 #endif	
-	
-	
-	
-	
-	
+
+
