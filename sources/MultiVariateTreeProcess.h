@@ -21,7 +21,7 @@ class MultiVariateTreeProcess : public MCMC , public NodeValPtrTree<Rvar<RealVec
 	Var<PosRealVector>* rootvar;
 
 	Var<PosReal>* agescale;
-	NodeBranchVarTree<PosReal,PosReal>* chrono;
+	NodeVarTree<PosReal>* chrono;
 	GlobalScalingFunction* scalefunction;
 
 	public:
@@ -45,9 +45,9 @@ class MultiVariateTreeProcess : public MCMC , public NodeValPtrTree<Rvar<RealVec
 		RecursiveCreate(GetRoot());
 	}
 
-	MultiVariateTreeProcess(Var<CovMatrix>* insigma, NodeBranchVarTree<PosReal,PosReal>* inchrono, Var<PosReal>* inagescale, GlobalScalingFunction* inscalefunction, Var<RealVector>* inrootmean = 0, Var<PosRealVector>* inrootvar = 0){
+	MultiVariateTreeProcess(Var<CovMatrix>* insigma, LengthTree* intree, NodeVarTree<PosReal>* inchrono, Var<PosReal>* inagescale, GlobalScalingFunction* inscalefunction, Var<RealVector>* inrootmean = 0, Var<PosRealVector>* inrootvar = 0){
 		sigma = insigma;
-		tree = inchrono;
+		tree = intree;
 		chrono = inchrono;
 		scaletree = 0;
 		drift = 0;

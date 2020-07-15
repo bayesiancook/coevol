@@ -6,43 +6,7 @@
 #include <math.h>
 #include <algorithm>
 #include "RandomTypes.h"
-
-template<class U, class V> class NodeBranchProcess : public MCMC , public NodeBranchValPtrTree<Rvar <U>, Dvar <V> > {
-
-	public:
-	U val(const Node* node)	{
-		return this->GetNodeVal(node)->val();
-	}
-
-	void setval(const Node* node, U inval)	{
-		this->GetNodeVal(node)->setval(inval);
-	}
-
-	V val(const Branch* branch)	{
-		return this->GetBranchVal(branch)->val();
-	}
-
-	void setval(const Branch* branch, V inval)	{
-		this->GetBranchVal(branch)->setval(inval);
-	}
-
-	virtual void drawSample()	{
-		// drawSample(this->GetRoot());
-	}
-
-	virtual double GetLogProb(const Link* from)	{
-		double total = this->GetNodeVal(from->GetNode())->GetLogProb();
-		for(Link* link=from->Next(); link!=from; link=link->Next())	{
-			total += GetLogProb(link->Out());
-		}
-		return total;
-	}
-
-	virtual double GetLogProb()	{
-		return GetLogProb(this->GetRoot());
-	}
-
-};
+#include "NodeProcess.h"
 
 class NodeDate : public Rvar<PosReal>{
 
@@ -104,93 +68,21 @@ class NodeDate : public Rvar<PosReal>{
 };
 
 
-class BranchLength : public Dvar<PosReal>{
-
-	private:
-	Var<PosReal>* Before;
-	Var<PosReal>* After;
-	Var<PosReal>* Rate;
-
-
-	public:
-	BranchLength(Var<PosReal>* inBefore, Var<PosReal>* inAfter, Var<PosReal>* inRate){
-		Before = inBefore;
-		After = inAfter;
-		Rate = inRate;
-		Register(inRate);
-		Register(inBefore);
-		Register(inAfter);
-		SetName("time");
-		specialUpdate();
-	}
-
-
-	~BranchLength(){};
-
-
-	void specialUpdate(){
-		double newval = (Before->val() - After->val()) * Rate->val();
-		if (newval < 1e-7)	{
-			newval = 1e-7;
-		}
-		setval(newval);
-	}
-};
-
-
-
-class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
+class Chronogram : public NodeProcess<PosReal>  {
 
 	public:
 
-	Chronogram() {}
+    Chronogram() : NodeProcess(0) {}
 
-	Chronogram(Tree* intree, Var<PosReal>* inRate) {
-		SetWithRoot(false);
-		tree = intree;
+	Chronogram(Tree* intree, Var<PosReal>* inRate) : NodeProcess(intree) {
 		rate = inRate;
 		// Create objects
-		RecursiveCreateNode(GetRoot());
-		RecursiveCreateBranch(GetRoot());
+		RecursiveCreate(GetRoot());
 		// Set values and make the tree ultra-metric
 		double maxage = RecursiveSetNodesValues(GetRoot());
 		RecursiveEqualizeLeafNodes(GetRoot(),maxage);
 		RecursiveNormalizeTree(GetRoot(),maxage,true);
-		RecursiveUpdateBranches(GetRoot());
-		/*
-		cerr << GetMinDeltaTime(GetRoot()) << '\n';
-		while (GetMinDeltaTime(GetRoot()) < 2e-3)	{
-			EmptyMove();
-			cerr << GetMinDeltaTime(GetRoot()) << '\n';
-		}
-		*/
 	}
-
-	Chronogram(Tree* intree) {
-		rate = new Const<PosReal>(1);
-		SetWithRoot(false);
-		tree = intree;
-		// Create objects
-		RecursiveCreateNode(GetRoot());
-		RecursiveCreateBranch(GetRoot());
-		// Set values and make the tree ultra-metric
-		double maxage = RecursiveSetNodesValues(GetRoot());
-		RecursiveEqualizeLeafNodes(GetRoot(),maxage);
-		RecursiveNormalizeTree(GetRoot(),maxage,true);
-		RecursiveUpdateBranches(GetRoot());
-		// PrintAges(GetRoot(),maxage);
-	}
-
-	/*
-	void PrintAges(const Link* from,double rootage)	{
-		if (! from->isLeaf())	{
-			cout << *GetNodeDate(from->GetNode()) * rootage << '\n';
-			for (const Link* link=from->Next(); link!=from; link=link->Next())	{
-				PrintAges(link->Out(),rootage);
-			}
-		}
-	}
-	*/
 
 	void PrintAges(ostream& os)	{
 		PrintAges(os,GetRoot());
@@ -291,17 +183,6 @@ class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
 		return tree;
 	}
 
-	BranchLength* GetBranchLength(const Branch* branch)	{
-		BranchLength* tmp = dynamic_cast<BranchLength*>(GetBranchVal(branch));
-		if (!tmp)	{
-			cerr << "error in Chronogram::GetBranchLength : dynamic cast \n";
-			cerr << "branch : " << branch << '\n';
-			exit(1);
-		}
-		return tmp;
-	}
-
-
 	NodeDate* GetNodeDate(const Node* node)	{
 		NodeDate* tmp = dynamic_cast<NodeDate*>(GetNodeVal(node));
 		if (! tmp)	{
@@ -348,32 +229,19 @@ class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
 		return d;
 	}
 
-	double GetDistance(const Link* from1, const Link* from2)	{
-		if (from1 == from2)	{
-			return 0;
+	double GetMinDeltaTime(const Link* from)	{
+		double min = -1;
+		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
+			double tmp = GetBranchTimeLength(link->Out());
+			if ((min==-1) || (min > tmp))	{
+				min = tmp;
+			}
+			double tmp2 = GetMinDeltaTime(link->Out());
+			if ((tmp2 != -1) && (min > tmp2))	{
+				min = tmp2;
+			}
 		}
-		const Link* link = GetTree()->GetLCA(from1,from2);
-		/*
-		cerr << GetTree()->GetLeftMost(from1) << '\t' << GetTree()->GetRightMost(from1) << '\t' << GetAbsoluteTime(from1) << '\n';
-		cerr << GetTree()->GetLeftMost(from2) << '\t' << GetTree()->GetRightMost(from2) << '\t' << GetAbsoluteTime(from2) << '\n';
-		cerr << GetTree()->GetLeftMost(link) << '\t' << GetTree()->GetRightMost(link) << '\t' << GetAbsoluteTime(link) << '\n';
-		*/
-		if (link == from1)	{
-			return GetMidTime(from1) - GetMidTime(from2);
-		}
-		if (link == from2)	{
-			return GetMidTime(from2) - GetMidTime(from1);
-		}
-		// return 2 * GetAbsoluteTime(link) - GetAbsoluteTime(from1) - GetAbsoluteTime(from2);
-		return 2 * GetAbsoluteTime(link) - GetMidTime(from1) - GetMidTime(from2);
-	}
-
-	double GetMidTime(const Link* from)	{
-		if (from->isRoot())	{
-			cerr << "error in chronogram::getmidtime: called on root\n";
-			exit(1);
-		}
-		return GetAbsoluteTime(from) + 0.5 * GetBranchTimeLength(from);
+		return min;
 	}
 
 	void Sample()	{
@@ -387,41 +255,12 @@ class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
 		RecursiveClamp(GetRoot());
 	}
 
-	void specialUpdate()	{
-		RecursiveUpdate(GetRoot());
-	}
-
-	double GetTotalTime()	{
-		return RecursiveGetTotalTime(GetRoot());
-	}
-
 	void RecursiveClamp(const Link* from)	{
 		for (const Link* link=from->Next(); link!=from; link=link->Next())	{
 			RecursiveClamp(link->Out());
 		}
 		GetNodeVal(from->GetNode())->Clamp();
 	}
-
-	double RecursiveGetTotalTime(const Link* from)	{
-		double total = 0;
-		for (const Link* link=from->Next(); link!=from; link=link->Next())	{
-			total += RecursiveGetTotalTime(link->Out());
-		}
-		if (! from->isRoot())	{
-			total += GetBranchVal(from->GetBranch())->val();
-		}
-		return total;
-	}
-
-	void RecursiveUpdate(const Link* from)	{
-		for (const Link* link=from->Next(); link!=from; link=link->Next())	{
-			RecursiveUpdate(link->Out());
-		}
-		if (! from->isRoot())	{
-			GetBranchVal(from->GetBranch())->specialUpdate();
-		}
-	}
-
 
 	double Move(double tuning){
 		int n = 0;
@@ -438,21 +277,6 @@ class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
 			RecursiveRegister(node,link->Out());
 		}
-	}
-
-	double GetMinDeltaTime(const Link* from)	{
-		double min = -1;
-		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
-			double tmp = GetBranchTimeLength(link->Out());
-			if ((min==-1) || (min > tmp))	{
-				min = tmp;
-			}
-			double tmp2 = GetMinDeltaTime(link->Out());
-			if ((tmp2 != -1) && (min > tmp2))	{
-				min = tmp2;
-			}
-		}
-		return min;
 	}
 
 	int GetNnode()	{
@@ -489,29 +313,19 @@ class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
 		return RecursiveGetLogProb(GetRoot());
 	}
 
+    double GetBranchLength(const Link* link)    {
+        double ret = GetNodeDate(link->Out()->GetNode())->val() - GetNodeDate(link->GetNode())->val();
+        if (ret < 0)    {
+            cerr << "error in calibrated chronogram: negative branch length\n";
+            exit(1);
+        }
+        return ret;
+    }
+
 	protected:
 
 	Rvar<PosReal>* CreateNodeVal (const Link* link){
 		return new NodeDate(rate);
-	}
-
-	void RecursiveCreateNode(Link* from) {
-		nodeval[from->GetNode()] = CreateNodeVal(from);
-		for(Link* link=from->Next(); link!=from; link=link->Next()) {
-			RecursiveCreateNode(link->Out());
-		}
-	}
-
-	Dvar<PosReal>* CreateBranchVal(const Link* link){
-		BranchLength* bl = new BranchLength(GetNodeVal(link->GetNode()),GetNodeVal(link->Out()->GetNode()),rate);
-		return bl;
-	}
-
-	void RecursiveCreateBranch(Link* from) {
-		for(Link* link=from->Next(); link!=from; link=link->Next()) {
-			branchval[link->GetBranch()] = CreateBranchVal(link);
-			RecursiveCreateBranch(link->Out());
-		}
 	}
 
 	void RecursiveMultiplyTimes(const Link* from, double d)	{
@@ -585,13 +399,6 @@ class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
 		}
 	}
 
-	void RecursiveUpdateBranches(const Link* from)	{
-		for(const Link* link=from->Next(); link!=from; link=link->Next()){
-			GetBranchLength(link->GetBranch())->specialUpdate();
-			RecursiveUpdateBranches(link->Out());
-		}
-	}
-
 	double MoveTime(double tuning, Link* from){
 		SetMinMax(from);
 		return GetNodeVal(from->GetNode())->Move(tuning);
@@ -639,13 +446,9 @@ class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
 		return ret;
 	}
 
-
 	protected:
 
-	Tree* tree;
 	Var<PosReal>* rate;
-
-
 };
 
 #endif

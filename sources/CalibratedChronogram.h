@@ -406,9 +406,6 @@ class CalibratedChronogram : public Chronogram	{
 
 	CalibratedChronogram(Tree* intree, Var<PosReal>* inrate, double inalpha, double inbeta, CalibrationSet* incalibset, bool sample = true)	{
 
-		SetWithRoot(false);
-		tree = intree;
-		rate = inrate;
 		alpha = inalpha;
 		beta = inbeta;
 		calibset = incalibset;
@@ -429,10 +426,7 @@ class CalibratedChronogram : public Chronogram	{
 		scale = new ChronoScale(rate,alpha,beta,rootmin,rootmax);
 		// scale = new Gamma(alpha,beta);
 
-		RecursiveCreateNode(GetRoot());
-		RecursiveCreateBranch(GetRoot());
-
-		// RecursiveSetChrono(GetRoot());
+		RecursiveCreate(GetRoot());
 
 		if (!sample)	{
 
@@ -440,7 +434,6 @@ class CalibratedChronogram : public Chronogram	{
 			double maxage = RecursiveSetNodesValues(GetRoot());
 			// RecursiveEqualizeLeafNodes(GetRoot(),maxage);
 			RecursiveNormalizeTree(GetRoot(),maxage,true);
-			RecursiveUpdateBranches(GetRoot());
 
 			scale->setval(maxage);
 			map<DAGnode*,int> tmpmap;
@@ -456,7 +449,6 @@ class CalibratedChronogram : public Chronogram	{
 			double d = RecursiveDrawAges(GetRoot());
 
 			RecursiveNormalizeTree(GetRoot(),d,false);
-			RecursiveUpdateBranches(GetRoot());
 
 			scale->setval(d);
 			map<DAGnode*,int> tmpmap;
@@ -488,28 +480,16 @@ class CalibratedChronogram : public Chronogram	{
 	}
 
 	~CalibratedChronogram()	{
-		RecursiveDeleteBranch(GetRoot());
-		RecursiveDeleteNode(GetRoot());
+		RecursiveDelete(GetRoot());
 	}
 
 	void drawSample()	{
 		double d = RecursiveDrawAges(GetRoot());
 		RecursiveNormalizeTree(GetRoot(),d,false);
-		RecursiveUpdateBranches(GetRoot());
 		scale->Corrupt(true);
 		scale->setval(d);
 		scale->Update();
 	}
-
-	/*
-	void RecursiveSetChrono(const Link* from)	{
-
-		GetCalibratedNodeDate(from->GetNode())->SetChrono(this);
-		for (const Link* link=from->Next(); link!=from; link=link->Next())	{
-			RecursiveSetChrono(link->Out());
-		}
-	}
-	*/
 
 	virtual double GeneralMoveTime(double tuning, Link* from, int& n){
 		if(from->isLeaf() && (! isCalibrated(from->GetNode()))){
@@ -748,7 +728,6 @@ class CalibratedChronogram : public Chronogram	{
 	}
 
 	string GetNodeName(const Link* link)	{
-
 		ostringstream s;
 		s << link->GetNode()->GetName();
 		s << "_";
@@ -758,10 +737,8 @@ class CalibratedChronogram : public Chronogram	{
 	}
 
 	string GetBranchName(const Link* link)	{
-
 		ostringstream s;
-		// s << GetRootAge() * ;
-		s << GetBranchLength(link->GetBranch())->val();
+		s << GetBranchLength(link);
 		return s.str();
 	}
 

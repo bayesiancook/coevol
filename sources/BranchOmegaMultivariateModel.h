@@ -12,6 +12,7 @@
 
 #include "BDChronogram.h"
 #include "BDCalibratedChronogram.h"
+#include "BranchTimeTree.h"
 
 #include "BranchProcess.h"
 #include "MatrixTree.h"
@@ -42,7 +43,6 @@
 #include "PartitionMultiVariateTreeProcess.h"
 
 #include "WhiteNoise.h"
-#include "TimeLineMultiVariateTreeProcess.h"
 #include "MeanChronogram.h"
 
 #include "WishartArray.h"
@@ -123,8 +123,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	Chronogram* chronogram;
 	bool iscalib;
 
+    BranchTimeTree* branchtimetree;
+
 	GammaTree* syngammatree;
 
+    SplitLengthTree* splitlengthtree;
 	LengthTree* lengthtree;
 
 	// if different branches have different scaling factors
@@ -133,13 +136,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	GammaMixTree* gammamixtree;
 	GammaTree* gammatree;
 	Jeffreys* MixAlpha;
-
-	JeffreysIIDArray* TimeLineDiagArray;
-	SigmaZero* TimeLineSigmaZero;
-	Rvar<CovMatrix>* timelinesigma;
-
-	TimeIntervals* timeintervals;
-	TimeLine* timeline;
 
 	string mix;
 
@@ -318,8 +314,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	int clampsuffstat;
 	string suffstatfile;
 
-	bool withtimeline;
-
 	int krkctype;
 	int splitkrkctype;
 	GeneticCodeType codetype;
@@ -329,15 +323,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	SplitAAMatrix* aasplitMatrix;
 
 	public:
-
-	TimeLineMultiVariateTreeProcess* GetTimeLineMultiVariateTreeProcess() {
-		TimeLineMultiVariateTreeProcess* tmp = dynamic_cast<TimeLineMultiVariateTreeProcess*>(process);
-		if (! tmp)	{
-			cerr << "error : in dynamic cast of multivariate tree process : " << process << '\t' << tmp << '\n';
-			exit(1);
-		}
-		return tmp;
-	}
 
 	SequenceAlignment* GetData()	{
 		if (codondata)	{
@@ -395,7 +380,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	}
 
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta,  double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inclampdiag, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile,  string insuffstatfile, bool intimeline, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta,  double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inclampdiag, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile,  string insuffstatfile, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
 
 		sample = insample;
 
@@ -428,8 +413,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		separatesyn = inseparatesyn;
 		separateomega = inseparateomega;
-
-		withtimeline = intimeline;
 
 		suffstatfile = insuffstatfile;
 		clampsuffstat = (suffstatfile != "None");
@@ -497,11 +480,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			omegaratiotree = inomegaratiotree;
 		}
 
-
-		if (withtimeline && ! clamptree)	{
-			cerr << "error : should clamp the tree to use timeline\n";
-			exit(1);
-		}
 
 		gc = ingc;
 		if (gc == 2)	{
@@ -743,13 +721,14 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				chronogram->Clamp();
 			}
 
+            branchtimetree = new BranchTimeTree(chronogram, One);
 			if (Split())	{
-				lengthtree = new SplitLengthTree(chronogram,GetSplitTree());
+				splitlengthtree = new SplitLengthTree(branchtimetree,GetSplitTree());
+				lengthtree = splitlengthtree;
 			}
 			else	{
-				lengthtree = chronogram;
+				lengthtree = branchtimetree;
 			}
-
 		}
 
 		if (mix == "branch")	{
@@ -903,21 +882,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			}
 		}
 
-		if (withtimeline)	{
-			if (Unconstrained())	{
-				cerr << "error : timeline and unconstrained incompatible\n";
-				exit(1);
-			}
-			TimeLineDiagArray = new JeffreysIIDArray(Ncont+L,mindiag,maxdiag,Zero);
-			TimeLineDiagArray->ClampAt(1.0);
-			TimeLineSigmaZero = new SigmaZero(TimeLineDiagArray);
-			timelinesigma = new DiagonalCovMatrix(TimeLineSigmaZero, Ncont+L+df);
-			timelinesigma->SetIdentity();
-
-			timeintervals = new TimeIntervals(chronogram);
-			timeline = new TimeLine(chronogram,timeintervals, timelinesigma);
-		}
-
 		ugam = 0;
 		ugamtree = 0;
 		wngamtree = 0;
@@ -961,14 +925,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			phi = 0;
 			mean = 0;
 			if (gammatree)	{
-				// process = new PartitionMultiVariateTreeProcess(sigmaarray,lengthtree,GetPartition(),gammatree,driftarray,driftphiarray, chronogram);
 				process = new PartitionMultiVariateTreeProcess(sigmaarray,lengthtree,GetPartition(),gammatree,driftarray,driftphiarray,chronogram, rootmean, rootvar, driftarray2, driftphiarray2, GetScale(), 65);
 			}
-			else if (withtimeline)	{
-				process = new TimeLineMultiVariateTreeProcess(sigma,timeline,chronogram);
-			}
 			else	{
-				///process = new PartitionMultiVariateTreeProcess(sigmaarray,lengthtree,GetPartition(),gammamixtree,driftarray,driftphiarray, chronogram);
 				process = new PartitionMultiVariateTreeProcess(sigmaarray,lengthtree,GetPartition(),gammamixtree,driftarray,driftphiarray,chronogram, rootmean, rootvar, driftarray2, driftphiarray2, GetScale(), 65);
 			}
 		}
@@ -2244,10 +2203,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		return tvgcindex;
 	}
 
-	TimeLine* GetTimeLine() {return timeline;}
-	TimeIntervals* GetTimeIntervals() {return timeintervals;}
-
 	MultiVariateTreeProcess* GetMultiVariateProcess() {return process;}
+
 	Chronogram* GetChronogram() {
 		if (Unconstrained())	{
 			cerr << "error : chronogram does not exist under unconstrained model\n";
@@ -2255,17 +2212,21 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		return chronogram;
 	}
-	LengthTree* GetLengthTree() {return lengthtree;}
-	SplitLengthTree* GetSplitLengthTree()	{
-		SplitLengthTree* tmp = dynamic_cast<SplitLengthTree*>(lengthtree);
-		if (! tmp)	{
-			cerr << "error in GetSplitLengthTree : null pointer\n";
-			cerr << lengthtree << '\t' << tmp << '\n';
-			exit(1);
-		}
-		return tmp;
-	}
 
+    void UpdateLengthTree() {
+        if (branchtimetree) {
+            branchtimetree->specialUpdate();
+        }
+        else    {
+            if (! splitlengthtree)  {
+                cerr << "error in update length tree\n";
+                exit(1);
+            }
+            splitlengthtree->specialUpdate();
+        }
+    }
+
+	LengthTree* GetLengthTree() {return lengthtree;}
 
 	double GetMixAlpha()	{
 		if (gammatree)	{
@@ -2362,10 +2323,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (contjitter)	{
 			total += GetLeafStatesLogProb();
 			total += leafvar->GetLogProb();
-		}
-		if (withtimeline)	{
-			total += timelinesigma->GetLogProb();
-			total += timeline->GetLogProb();
 		}
 
 		// cerr << total << '\n';
@@ -2673,18 +2630,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new MultiVariatePropagateMove(process,0.01,0.99,0.99),n,"propmove");
 			*/
 
-			if (withtimeline)	{
-				scheduler.Register(new SimpleMove(timelinesigma,10),100,"timelinesigma");
-				scheduler.Register(new SimpleMove(timelinesigma,1),100,"timelinesigma");
-				scheduler.Register(new SimpleMove(timelinesigma,0.1),100,"timelinesigma");
-				scheduler.Register(new SimpleMove(timelinesigma,0.01),100,"timelinesigma");
-
-				scheduler.Register(new SimpleMove(timeline,10),100,"timeline");
-				scheduler.Register(new SimpleMove(timeline,1),100,"timeline");
-				scheduler.Register(new SimpleMove(timeline,0.1),100,"timeline");
-				scheduler.Register(new SimpleMove(timeline,0.01),100,"timeline");
-			}
-
 			if (Split())	{
 
 				scheduler.Register(nodesplitarray[0],10,"split node process");
@@ -2884,11 +2829,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			leafvar->Sample();
 		}
 
-		if (withtimeline)	{
-			timelinesigma->Sample();
-			timeline->Sample();
-		}
-
 		if (separatesyn)	{
 			synsigma->setval(1.0);
 			lognormalsyntree->Sample();
@@ -2955,33 +2895,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (phyloprocess)	{
 			phyloprocess->Sample();
 		}
-	}
-
-	double GetMeanTimeLine(int k)	{
-		double mean = 0;
-		for (int i=0; i<timeline->GetSize(); i++)	{
-			mean += (*(timeline->GetVal(i)))[k];
-		}
-		mean /= timeline->GetSize();
-		return mean;
-	}
-
-	double GetTimeLine(int i, int k)	{
-		return (*(timeline->GetVal(i)))[k];
-	}
-
-	double GetVarTimeLine(int k)	{
-		double mean = 0;
-		double var = 0;
-		for (int i=0; i<timeline->GetSize(); i++)	{
-			double tmp = (*(timeline->GetVal(i)))[k];
-			mean += tmp;
-			var += tmp * tmp;
-		}
-		mean /= timeline->GetSize();
-		var /= timeline->GetSize();
-		var -= mean * mean;
-		return var;
 	}
 
 	Var<RealVector>* GetDrift(int i = 0)	{
@@ -3106,7 +3019,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			cerr << "error : get total time under unconstrained\n";
 			exit(1);
 		}
-		return chronogram->GetTotalTime();
+        if (! branchtimetree)   {
+            cerr << "error in GetTotalTime: branchtimetree not defined\n";
+            exit(1);
+        }
+		return branchtimetree->GetTotalTime();
 	}
 
 	double GetMeanKappa()	{
@@ -3277,14 +3194,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				os << '\t' << "sigma_" << k+1 << '_' << k+1;
 			}
 		}
-		if (withtimeline)	{
-			for (int k=0; k<Ncont+L; k++)	{
-				os << "\tmeantimeline" << k+1;
-			}
-			for (int k=0; k<Ncont+L; k++)	{
-				os << "\tvartimeline" << k+1;
-			}
-		}
 		if (whitenoise)	{
 			os << '\t' << "wnvar";
 		}
@@ -3433,14 +3342,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			}
 			for (int k=0; k<Ncont+L; k++)	{
 				os << '\t' << (*sigmaarray->GetVal(mat))[k][k];
-			}
-		}
-		if (withtimeline)	{
-			for (int k=0; k<Ncont+L; k++)	{
-				os << '\t' << GetMeanTimeLine(k);
-			}
-			for (int k=0; k<Ncont+L; k++)	{
-				os << '\t' << GetVarTimeLine(k);
 			}
 		}
 		if (whitenoise)	{
@@ -3747,10 +3648,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			os << *MixAlpha << '\n';
 			os << *gammatree << '\n';
 		}
-		if (withtimeline)	{
-			os << *timelinesigma << '\n';
-			os << *timeline << '\n';
-		}
 		if (whitenoise)	{
 			os << *wnvar << '\n';
 			os << *wntree << '\n';
@@ -3837,10 +3734,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (gammatree)	{
 			is >> *MixAlpha;
 			is >> *gammatree;
-		}
-		if (withtimeline)	{
-			is >> *timelinesigma;
-			is >> *timeline;
 		}
 		if (whitenoise)	{
 			is >> *wnvar;
@@ -3935,10 +3828,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			n++;
 			n += gammatree->GetNbranchVals();
 		}
-		if (withtimeline)	{
-			n += timelinesigma->GetNVals();
-			n += timeline->GetNvals();
-		}
 		if (whitenoise)	{
 			// is >> *wnvar;
 			n++;
@@ -4030,10 +3919,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (gammatree)	{
 			is >> *MixAlpha;
 			is >> *gammatree;
-		}
-		if (withtimeline)	{
-			is >> *timelinesigma;
-			is >> *timeline;
 		}
 		if (whitenoise)	{
 			is >> *wnvar;

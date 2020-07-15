@@ -175,10 +175,10 @@ class BranchOmegaMultivariateChain : public Chain	{
 	void New(int force)	{
 
 		if (modeltype == "BRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
 		}
 		else if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
+			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
 		}
 		else	{
 			cerr << "error, does not recognise model type : " << modeltype << '\n';
@@ -293,10 +293,10 @@ class BranchOmegaMultivariateChain : public Chain	{
 		is >> every >> until >> size;
 
 		if (modeltype == "BRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
 		}
 		else if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
+			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,myid,nprocs,1,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -563,9 +563,6 @@ int main(int argc, char* argv[])	{
 				}
 				else if (s == "-f")	{
 					force = 1;
-				}
-				else if (s == "-timeline")	{
-					withtimeline = true;
 				}
 				else if (s == "-sepsyn")	{
 					separatesyn = true;

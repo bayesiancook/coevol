@@ -219,10 +219,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		// make a new model depending on the type obtained from the file
 		if (modeltype == "BRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
 		}
 		else if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,withtimeline,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
+			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -531,7 +531,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
 				GetModel()->GetSynRateTree()->specialUpdate();
 			}
-			GetModel()->GetChronogram()->specialUpdate();
+			GetModel()->UpdateLengthTree();
 			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
 				synrate->Add(GetModel()->GetSynRateTree(),GetModel()->GetChronogram(),true);
 			}
@@ -602,85 +602,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			s << GetName() << "." << k << "timeline";
 			ofstream os(s.str().c_str());
 			tree[k]->ToStream(os);
-		}
-	}
-
-	void ReadTimeLine()	{
-
-		int timesize = GetModel()->GetTimeLine()->GetSize();
-		int K = GetModel()->GetCovMatrix()->GetDim();
-		double* date = new double[timesize];
-		for (int i=0; i<timesize; i++)	{
-			date[i] = 1 - GetModel()->GetTimeIntervals()->GetDate(i);
-		}
-		double** current = new double*[timesize];
-		double** meandiff = new double*[timesize];
-		double** vardiff = new double*[timesize];
-		double** ppdiff = new double*[timesize];
-		double** mean = new double*[timesize];
-		double** var = new double*[timesize];
-		for (int i=0; i<timesize; i++)	{
-			mean[i] = new double[K];
-			var[i] = new double[K];
-			current[i] = new double[K];
-			meandiff[i] = new double[K];
-			vardiff[i] = new double[K];
-			ppdiff[i] = new double[K];
-			for (int k=0; k<K; k++)	{
-				mean[i][k] = 0;
-				var[i][k] = 0;
-				current[i][k] = 0;
-				meandiff[i][k] = 0;
-				vardiff[i][k] = 0;
-				ppdiff[i][k] = 0;
-			}
-		}
-
-		for (int j=0; j<size; j++)	{
-			cerr << '.';
-			GetNextPoint();
-			for (int i=0; i<timesize; i++)	{
-				for (int k=0; k<K; k++)	{
-					double tmp = (*GetModel()->GetTimeLine()->GetVal(i))[k];
-					current[i][k] = tmp;
-					double tmp2 = (*GetModel()->GetTimeLine()->GetVal(2))[k];
-					tmp-=tmp2;
-					mean[i][k] += tmp;
-					var[i][k] += tmp * tmp;
-				}
-			}
-			for (int i=1; i<timesize; i++)	{
-				for (int k=0; k<K; k++)	{
-					double tmp = (current[i][k] - current[i-1][k]) / sqrt(date[i] - date[i-1]);
-					meandiff[i][k] += tmp;
-					vardiff[i][k] += tmp * tmp;
-					if (tmp > 0)	{
-						ppdiff[i][k] ++;
-					}
-				}
-			}
-		}
-		cerr << '\n';
-
-		ofstream os((name + ".timeline").c_str());
-		for (int i=0; i<timesize; i++)	{
-			os << date[i];
-			for (int k=0; k<K; k++)	{
-				mean[i][k] /= size;
-				var[i][k] /= size;
-				var[i][k] -= mean[i][k] * mean[i][k];
-
-				meandiff[i][k] /= size;
-				vardiff[i][k] /= size;
-				vardiff[i][k] -= meandiff[i][k] * meandiff[i][k];
-				if (!i)	{
-					vardiff[i][k] = 0;
-				}
-				ppdiff[i][k] /= size;
-				os << '\t' << mean[i][k] << '\t' << sqrt(var[i][k]) << '\t';
-				// os << '\t' << mean[i][k] << '\t' << sqrt(var[i][k]) << '\t' << meandiff[i][k] << '\t' << sqrt(vardiff[i][k]) << '\t' << ppdiff[i][k] << '\t';
-			}
-			os << '\n';
 		}
 	}
 
@@ -806,9 +727,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
 				GetModel()->GetSynRateTree()->specialUpdate();
 			}
-			if (! GetModel()->Unconstrained())	{
-				GetModel()->GetChronogram()->specialUpdate();
-			}
+            GetModel()->UpdateLengthTree();
 			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
 				double r = GetModel()->GetMeanSynRate();
 				meansyn += r;
@@ -829,10 +748,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			if (! GetModel()->Unconstrained())	{
 				meanchrono->Add(GetModel()->GetChronogram());
-			}
-
-			if (GetModel()->Split())	{
-				GetModel()->GetSplitLengthTree()->specialUpdate();
 			}
 
 			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
@@ -1643,12 +1558,12 @@ class BranchOmegaMultivariateSample : public Sample	{
 			GetNextPoint();
 
 			GetModel()->GetSynRateTree()->specialUpdate();
-			GetModel()->GetChronogram()->specialUpdate();
+			GetModel()->UpdateLengthTree();
 
 			meanchrono->Add(GetModel()->GetChronogram());
 
-			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 0);
-			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), 1);
+			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 0);
+			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 1);
 
 			if (!iscalspe) {
 				t0 = GetModel()->GetRootAge();
@@ -1660,10 +1575,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 			double beta = log(t0 * 1000000)/log(10)+log(365)/log(10)-log(4)/log(10);
 			
 			
-			meanNe->AddNe(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), alpha, beta, dim, indice1, indice2);
+			meanNe->AddNe(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alpha, beta, dim, indice1, indice2);
 
 			for (int k=0; k<Ncont; k++)	{
-				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), GetModel()->GetL()+k);
+				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), GetModel()->GetL()+k);
 			}
 
             if (! clampdiag)    {
@@ -2218,16 +2133,6 @@ int main(int argc, char* argv[])	{
 
 	if (trend)	{
 		sample.PostPredTrend();
-		exit(1);
-	}
-
-	if (timeline)	{
-		if (sample.GetModel()->withtimeline)	{
-			sample.ReadTimeLine();
-		}
-		else	{
-			sample.MakeTimeLine();
-		}
 		exit(1);
 	}
 	if (check)	{

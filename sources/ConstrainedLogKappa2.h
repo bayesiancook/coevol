@@ -1,4 +1,6 @@
 
+// #include <boost/math/special_functions/zeta.hpp>
+
 
 // still to be implemented: relations between log kappa1, log kappa2 and mean s
     /*

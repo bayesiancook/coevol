@@ -13,7 +13,7 @@ class PartitionMultiVariateTreeProcess : public virtual MultiVariateTreeProcess	
 
 	PartitionMultiVariateTreeProcess() {}
 
-	PartitionMultiVariateTreeProcess(VarArray<CovMatrix>* insigmaarray, LengthTree* intree, BranchPartition* inparttree = 0, LengthTree* inscaletree = 0, VarArray<RealVector>* indriftarray = 0, VarArray<PosReal>* indriftphiarray = 0, NodeBranchVarTree<PosReal,PosReal>* inchrono = 0, Var<RealVector>* inrootmean = 0, Var<PosRealVector>* inrootvar = 0, VarArray<RealVector>* indriftarray2 = 0, VarArray<PosReal>* indriftphiarray2 = 0, Var<PosReal>* inagescale = 0, double inkt = 0, GenericTimeLine* intimeline = 0, Var<Real>* inalpha = 0) {
+	PartitionMultiVariateTreeProcess(VarArray<CovMatrix>* insigmaarray, LengthTree* intree, BranchPartition* inparttree = 0, LengthTree* inscaletree = 0, VarArray<RealVector>* indriftarray = 0, VarArray<PosReal>* indriftphiarray = 0, NodeVarTree<PosReal>* inchrono = 0, Var<RealVector>* inrootmean = 0, Var<PosRealVector>* inrootvar = 0, VarArray<RealVector>* indriftarray2 = 0, VarArray<PosReal>* indriftphiarray2 = 0, Var<PosReal>* inagescale = 0, double inkt = 0, GenericTimeLine* intimeline = 0, Var<Real>* inalpha = 0) {
 
 		sigma = 0;
 		drift = 0;
@@ -99,7 +99,6 @@ class PartitionMultiVariateTreeProcess : public virtual MultiVariateTreeProcess	
 	VarArray<PosReal>* driftphiarray2;
 	// Var<PosReal>* agescale;
 	double kt;
-	// NodeBranchVarTree<PosReal,PosReal>* chrono;
 	BranchPartition* parttree;
 	GenericTimeLine* timeline;
 	Var<Real>* alpha;
@@ -110,7 +109,7 @@ class ConjugatePartitionMultiVariateTreeProcess : public PartitionMultiVariateTr
 
 	public:
 
-	ConjugatePartitionMultiVariateTreeProcess(VarArray<CovMatrix>* insigmaarray, LengthTree* intree, BranchPartition* inparttree = 0, LengthTree* inscaletree = 0, VarArray<RealVector>* indriftarray = 0, VarArray<PosReal>* indriftphiarray = 0, NodeBranchVarTree<PosReal,PosReal>* inchrono = 0, Var<RealVector>* inrootmean =  0, Var<PosRealVector>* inrootvar = 0, VarArray<RealVector>* indriftarray2 = 0, VarArray<PosReal>* indriftphiarray2 = 0, Var<PosReal>* inagescale = 0, double inkt = 0, GenericTimeLine* intimeline = 0, Var<Real>* inalpha = 0) {
+	ConjugatePartitionMultiVariateTreeProcess(VarArray<CovMatrix>* insigmaarray, LengthTree* intree, BranchPartition* inparttree = 0, LengthTree* inscaletree = 0, VarArray<RealVector>* indriftarray = 0, VarArray<PosReal>* indriftphiarray = 0, NodeVarTree<PosReal>* inchrono = 0, Var<RealVector>* inrootmean =  0, Var<PosRealVector>* inrootvar = 0, VarArray<RealVector>* indriftarray2 = 0, VarArray<PosReal>* indriftphiarray2 = 0, Var<PosReal>* inagescale = 0, double inkt = 0, GenericTimeLine* intimeline = 0, Var<Real>* inalpha = 0) {
 		sigma = 0;
 		drift = 0;
 		rootmean = inrootmean;

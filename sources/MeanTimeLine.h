@@ -113,7 +113,7 @@ class MeanTimeLine {
 		// if (from != intree->GetTree()->GetLCA("Procavia","Pan"))	{
 		if (! from->isRoot())	{
 			double tmp = intree->GetBranchVal(from->GetBranch())->val();
-			double time = inchrono->GetBranchVal(from->GetBranch())->val();
+			double time = inchrono->GetBranchLength(from);
 			if (withmean)	{
 				tmp /= time;
 			}
@@ -137,7 +137,7 @@ class MeanTimeLine {
 		// if (from != intree->GetTree()->GetLCA("Procavia","Pan"))	{
 		if (! from->isRoot())	{
 			double tmp = intree->GetBranchVal(from->GetBranch())->val();
-			double time = inchrono->GetBranchVal(from->GetBranch())->val();
+			double time = inchrono->GetBranchLength(from);
 			if (withmean)	{
 				tmp /= time;
 			}

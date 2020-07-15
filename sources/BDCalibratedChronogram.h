@@ -178,11 +178,10 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 
 	static int NumErrorCount;
 
-	BDCalibratedChronogram(Tree* intree, Var<PosReal>* inrate, Var<PosReal>* inchi, Var<PosReal>* inchi2, double inalpha, double inbeta, CalibrationSet* incalibset, int inpriortype, double inSofta = 0.025, double inLowerP =0.1, double inLowerC = 1)	{
+	BDCalibratedChronogram(Tree* intree, Var<PosReal>* inrate, Var<PosReal>* inchi, Var<PosReal>* inchi2, double inalpha, double inbeta, CalibrationSet* incalibset, int inpriortype, double inSofta = 0.025, double inLowerP =0.1, double inLowerC = 1) {
 
 		DAGnode::SetName("BD Chrono");
 
-		SetWithRoot(false);
 		tree = intree;
 		rate = inrate;
 		alpha = inalpha;
@@ -233,8 +232,7 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 		}
 		// scale = new Gamma(alpha,beta);
 
-		RecursiveCreateNode(GetRoot());
-		RecursiveCreateBranch(GetRoot());
+		RecursiveCreate(GetRoot());
 		// logggtree = new LogGGTree(this,chi,chi2,alpha,beta,scale);
 
 		copytree = new CalCopyTree(this,chi,chi2,alpha,beta,scale);
@@ -260,7 +258,6 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 		// cerr << "age  " << d << '\n';
 
 		RecursiveNormalizeTree(GetRoot(),d,false);
-		RecursiveUpdateBranches(GetRoot());
 
 		scale->setval(d);
 		map<DAGnode*,int> tmpmap;
@@ -275,8 +272,7 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 	}
 
 	~BDCalibratedChronogram()	{
-		RecursiveDeleteBranch(GetRoot());
-		RecursiveDeleteNode(GetRoot());
+		RecursiveDelete(GetRoot());
 		delete scale;
 	}
 

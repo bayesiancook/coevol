@@ -162,8 +162,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			GetNextPoint();
 
+            GetModel()->UpdateLengthTree();
 			GetModel()->GetSynRateTree()->specialUpdate();
-			GetModel()->GetChronogram()->specialUpdate();
 			GetModel()->GetNeutralOmegaNodeTree()->specialUpdate();
 			GetModel()->GetSynrateNodeTree()->specialUpdate();
 			if (!noadapt) {GetModel()->GetOmegaNodeTree()->specialUpdate();}
@@ -175,15 +175,15 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 			meanchrono->Add(GetModel()->GetChronogram());
 
-			if (!noadapt) {meanadaptativeomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(),0);}
-			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetChronogram());
-			if (!noadapt) {meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetChronogram());}
-			meanu->Add(GetModel()->GetUNodeTree(), GetModel()->GetChronogram());
-			meanNe->Add(GetModel()->GetNeNodeTree(), GetModel()->GetChronogram());
-			meanneutralomega->Add(GetModel()->GetNeutralOmegaNodeTree(), GetModel()->GetChronogram());
+			if (!noadapt) {meanadaptativeomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(),0);}
+			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetLengthTree());
+			if (!noadapt) {meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetLengthTree());}
+			meanu->Add(GetModel()->GetUNodeTree(), GetModel()->GetLengthTree());
+			meanNe->Add(GetModel()->GetNeNodeTree(), GetModel()->GetLengthTree());
+			meanneutralomega->Add(GetModel()->GetNeutralOmegaNodeTree(), GetModel()->GetLengthTree());
 
 			for (int k=0; k<Ncont; k++)	{
-				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetChronogram(), GetModel()->GetL()+k);
+				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), GetModel()->GetL()+k);
 			}
 
 			CovMatrix& m = *(GetModel()->GetCovMatrix());

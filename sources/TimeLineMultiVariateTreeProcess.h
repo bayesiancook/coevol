@@ -103,7 +103,7 @@ class TimeLineMultiVariateTreeProcess : public virtual MultiVariateTreeProcess	{
 	TimeLineMultiVariateTreeProcess()	{}
 
 
-	TimeLineMultiVariateTreeProcess(Var<CovMatrix>* insigma, TimeLine* intimeline, Chronogram* intree) : MultiVariateTreeProcess() {
+	TimeLineMultiVariateTreeProcess(Var<CovMatrix>* insigma, TimeLine* intimeline, LengthTree* intree) : MultiVariateTreeProcess() {
 		sigma = insigma;
 		timeline = intimeline;
 		tree = intree;

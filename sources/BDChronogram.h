@@ -75,21 +75,18 @@ class BDChronogram : public Chronogram	{
 
 	BDChronogram(Tree* intree, Var<PosReal>* inrate, Var<PosReal>* indelta, Var<PosReal>* inkappa)	{
 
-		SetWithRoot(false);
 		tree = intree;
 		rate = inrate;
 		delta = indelta;
 		kappa = inkappa;
 
 		// Create objects
-		RecursiveCreateNode(GetRoot());
-		RecursiveCreateBranch(GetRoot());
+		RecursiveCreate(GetRoot());
 
 		// Set values and make the tree ultra-metric
 		double maxage = RecursiveSetNodesValues(GetRoot());
 		RecursiveEqualizeLeafNodes(GetRoot(),maxage);
 		RecursiveNormalizeTree(GetRoot(),maxage,true);
-		RecursiveUpdateBranches(GetRoot());
 	}
 
 	Rvar<PosReal>* CreateNodeVal (const Link* link){

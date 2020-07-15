@@ -7,8 +7,6 @@
 #include <string> 
 #include <cmath>
 
-// #include <boost/math/special_functions/zeta.hpp>
-
 #include "MeanValTree.h"
 
 #include "BaseType.h"
@@ -19,6 +17,7 @@
 #include "CalibratedChronogram.h"
 #include "BDChronogram.h"
 #include "BDCalibratedChronogram.h"
+#include "BranchTimeTree.h"
 #include "BranchProcess.h"
 #include "OneMatrixPhyloProcess.h"
 #include "ContinuousData.h"
@@ -82,6 +81,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
     // absolute root age
 	Var<PosReal>* absrootage;
 	
+    BranchTimeTree* branchtimetree;
+
     // prior on scaling factors for Brownian process
     // (different scaling factor for each trait)
 	JeffreysIIDArray* DiagArray;
@@ -167,9 +168,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
     // number of repetitions for the whole MCMC cyle before saving new point
 	int nrep;
 
+    bool shiftdates;
+
 	public:
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inshiftdates, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
 
 		clamptree = inclamptree;
 		chronoprior = inchronoprior;
@@ -178,6 +181,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		sameseq = insameseq;
 		noadapt = innoadapt;
+
+        shiftdates = inshiftdates;
 
 		// here L = 1: adaptative omega
 		if (!noadapt) {L = 1;}
@@ -271,7 +276,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		if (clamptree)	{
 			chronogram->Clamp();
 		}
-	
+
 		if (iscalib) {
 			absrootage = GetCalibratedChronogram()->GetScale();
 		}
@@ -279,6 +284,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			absrootage = new Const<PosReal>(rootage);	
 		}
 		
+        branchtimetree = new BranchTimeTree(chronogram, One);
+	
 		cerr << "sigma\n";
 
 		// Ncont : number of quantitative traits
@@ -306,7 +313,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// along the chronogram, and with covariance matrix sigma
 
 		cerr << "log-Brownian process\n";
-		process = new ConjugateMultiVariateTreeProcess(sigma,chronogram);
+		process = new ConjugateMultiVariateTreeProcess(sigma,branchtimetree);
 		process->Reset();
 		
         idxpiS = -1;
@@ -418,14 +425,14 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// create the branch-specific mean dS and mean dN/dS
 		
 		// the times given by the chronogram with the rate 
-		synratetree = new MeanExpTree(nodesynratetree, chronogram, INTEGRAL, false);
+		synratetree = new MeanExpTree(nodesynratetree, branchtimetree, INTEGRAL, false);
 
 		// create the dN/dS on each branch, nased on the second entry of the multivariate process
 		if (!noadapt) {
-            omegatree = new MeanExpTree(nodeomegatree, chronogram, MEAN, false);
+            omegatree = new MeanExpTree(nodeomegatree, branchtimetree, MEAN, false);
         }
         else    {
-            omegatree = new MeanExpTree(nodeneutralomegatree, chronogram, MEAN, false);
+            omegatree = new MeanExpTree(nodeneutralomegatree, branchtimetree, MEAN, false);
         }
 		
 		// create u on each branch, nased on the third entry of the multivariate process
@@ -510,6 +517,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	ULinearCombinationNodeTree* GetUNodeTree() {return nodeutree;}
 	
 	Chronogram* GetChronogram() {return chronogram;}
+
+    LengthTree* GetLengthTree() {return branchtimetree;}
 
 	bool isCalibrated()	{
 		return iscalib;
@@ -669,6 +678,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		stationary->Sample();
 		phyloprocess->Sample();
 	}
+
+    void UpdateLengthTree() {
+        branchtimetree->specialUpdate();
+    }
 
 	// summary statistics
 	double GetTotalLength()	{

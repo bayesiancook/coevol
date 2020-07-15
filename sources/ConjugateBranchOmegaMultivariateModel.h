@@ -6,7 +6,7 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 
 	public:
 
-	ConjugateBranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta, double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile, string insuffstatfile, bool intimeline, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
+	ConjugateBranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta, double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile, string insuffstatfile, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
 
 		sample = insample;
 
@@ -35,8 +35,6 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 
 		separatesyn = inseparatesyn;
 		separateomega = inseparateomega;
-
-		withtimeline = intimeline;
 
 		suffstatfile = insuffstatfile;
 		clampsuffstat = (suffstatfile != "None");
@@ -102,11 +100,6 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 		}
 		else	{
 			omegaratiotree = inomegaratiotree;
-		}
-
-		if (withtimeline && ! clamptree)	{
-			cerr << "error : should clamp the tree to use timeline\n";
-			exit(1);
 		}
 
 		gc = ingc;
@@ -350,11 +343,12 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 				chronogram->Clamp();
 			}
 
+            branchtimetree = new BranchTimeTree(chronogram, One);
 			if (Split())	{
-				lengthtree = new SplitLengthTree(chronogram,GetSplitTree());
+				lengthtree = new SplitLengthTree(branchtimetree, GetSplitTree());
 			}
 			else	{
-				lengthtree = chronogram;
+				lengthtree = branchtimetree;
 			}
 		}
 
@@ -504,21 +498,6 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 			}
 		}
 
-		if (withtimeline)	{
-			if (Unconstrained())	{
-				cerr << "error : timeline and unconstrained incompatible\n";
-				exit(1);
-			}
-			TimeLineDiagArray = new JeffreysIIDArray(Ncont+L,mindiag,maxdiag,Zero);
-			TimeLineDiagArray->ClampAt(1.0);
-			TimeLineSigmaZero = new SigmaZero(TimeLineDiagArray);
-			timelinesigma = new DiagonalCovMatrix(TimeLineSigmaZero, Ncont+L+df);
-			timelinesigma->SetIdentity();
-
-			timeintervals = new TimeIntervals(chronogram);
-			timeline = new TimeLine(chronogram,timeintervals, timelinesigma);
-		}
-
 		ugam = 0;
 		ugamtree = 0;
 		wngamtree = 0;
@@ -564,27 +543,17 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 			phi = 0;
 			mean = 0;
 			if (gammatree)	{
-				// process = new ConjugatePartitionMultiVariateTreeProcess(sigmaarray,lengthtree,GetPartition(),gammatree,driftarray, driftphiarray, chronogram);
 				if (withexpdrift)	{
 					process = new ConjugatePartitionMultiVariateTreeProcess(sigmaarray,lengthtree,GetPartition(),gammatree,driftarray,driftphiarray,chronogram, rootmean, rootvar, driftarray2, driftphiarray2, GetScale(), 65);
 				}
 				else	{
 				}
 			}
-			else if (withtimeline)	{
-				process = new ConjugateTimeLineMultiVariateTreeProcess(GetConjugateInverseWishart(0),timeline,chronogram);
-			}
 			else	{
-				// process = new ConjugatePartitionMultiVariateTreeProcess(sigmaarray,lengthtree,GetPartition(),0,driftarray, driftphiarray, chronogram);
 				process = new ConjugatePartitionMultiVariateTreeProcess(sigmaarray,lengthtree,GetPartition(),gammamixtree,driftarray,driftphiarray,chronogram, rootmean, rootvar, driftarray2, driftphiarray2, GetScale(), 65);
 			}
 		}
 
-		/*
-		if (Mix2Omega())	{
-			process->Reset();
-		}
-		*/
 		cerr << "process RESET\n";
 		process->Reset();
 
@@ -913,48 +882,10 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 			scheduler.Register(new SimpleMove(process,0.1),150,"multinormal");
 			scheduler.Register(new SimpleMove(process,0.01),150,"multinormal");
 
-			// scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(),GetConjugateMultiVariateTreeProcess(),1,0),1,"conjugate sigma - process");
-
-			/*
-			scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),10,10),1,"conjugate sigma - process");
-			scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),1,10),1,"conjugate sigma - process");
-			scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),0.1,10),1,"conjugate sigma - process");
-			scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),0.01,10),1,"conjugate sigma - process");
-			scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),0.001,10),1,"conjugate sigma - process");
-			*/
-
-			/*
-			if (!withtimeline)	{
-			// if (Split())	{
-				scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),10,10),1,"conjugate sigma - process");
-				scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),1,10),1,"conjugate sigma - process");
-				scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),0.1,10),1,"conjugate sigma - process");
-				scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),0.01,10),1,"conjugate sigma - process");
-				scheduler.Register(new ConjugatePartitionMultiVariateMove(GetConjugatePartitionMultiVariateTreeProcess(),0.001,10),1,"conjugate sigma - process");
-			}
-			*/
-			// else	{
-				/*
-				scheduler.Register(new ConjugateMultiVariateExternalMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),10,10),1,"external conjugate sigma - process");
-				scheduler.Register(new ConjugateMultiVariateExternalMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),1,10),1,"external conjugate sigma - process");
-				scheduler.Register(new ConjugateMultiVariateExternalMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),0.1,10),1,"external conjugate sigma - process");
-				scheduler.Register(new ConjugateMultiVariateExternalMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),0.01,10),1,"external conjugate sigma - process");
-				scheduler.Register(new ConjugateMultiVariateExternalMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),0.001,10),1,"external conjugate sigma - process");
-
-				*/
-				scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),10,10),1,"conjugate sigma - process");
-				scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),1,10),1,"conjugate sigma - process");
-				scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),0.1,10),1,"conjugate sigma - process");
-				scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),0.01,10),1,"conjugate sigma - process");
-			// }
-
-			/*
-			scheduler.Register(new ConjugateInverseWishartPriorMove(GetConjugateInverseWishart(),priorOnSigmaZero,10,10),1,"conjugate sigma - prior");
-			scheduler.Register(new ConjugateInverseWishartPriorMove(GetConjugateInverseWishart(),priorOnSigmaZero,1,10),1,"conjugate sigma - prior");
-			scheduler.Register(new ConjugateInverseWishartPriorMove(GetConjugateInverseWishart(),priorOnSigmaZero,0.1,10),1,"conjugate sigma - prior");
-			scheduler.Register(new ConjugateInverseWishartPriorMove(GetConjugateInverseWishart(),priorOnSigmaZero,0.01,10),1,"conjugate sigma - prior");
-			scheduler.Register(new ConjugateInverseWishartPriorMove(GetConjugateInverseWishart(),priorOnSigmaZero,0.001,10),1,"conjugate sigma - prior");
-			*/
+			scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),10,10),1,"conjugate sigma - process");
+			scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),1,10),1,"conjugate sigma - process");
+			scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),0.1,10),1,"conjugate sigma - process");
+			scheduler.Register(new ConjugateMultiVariateMove(GetConjugateInverseWishart(0),GetConjugateMultiVariateTreeProcess(),0.01,10),1,"conjugate sigma - process");
 
 			if (withdrift)	{
 				scheduler.Register(new SimpleMove(driftarray,10),10,"drift");
@@ -1005,18 +936,6 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 				scheduler.Register(new SimpleMove(omegasigma,1),100,"omega sigma");
 				scheduler.Register(new SimpleMove(omegasigma,0.1),100,"omega sigma");
 				scheduler.Register(new SimpleMove(omegasigma,0.01),100,"omega sigma");
-			}
-
-			if (withtimeline)	{
-				scheduler.Register(new SimpleMove(timelinesigma,10),100,"timelinesigma");
-				scheduler.Register(new SimpleMove(timelinesigma,1),100,"timelinesigma");
-				scheduler.Register(new SimpleMove(timelinesigma,0.1),100,"timelinesigma");
-				scheduler.Register(new SimpleMove(timelinesigma,0.01),100,"timelinesigma");
-
-				scheduler.Register(new SimpleMove(timeline,10),100,"timeline");
-				scheduler.Register(new SimpleMove(timeline,1),100,"timeline");
-				scheduler.Register(new SimpleMove(timeline,0.1),100,"timeline");
-				scheduler.Register(new SimpleMove(timeline,0.01),100,"timeline");
 			}
 
 			if (autoregressive)	{
