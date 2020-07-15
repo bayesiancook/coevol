@@ -17,6 +17,7 @@
 #include "CalibratedChronogram.h"
 #include "BDChronogram.h"
 #include "BDCalibratedChronogram.h"
+#include "ShiftedChronogram.h"
 #include "BranchTimeTree.h"
 #include "BranchProcess.h"
 #include "OneMatrixPhyloProcess.h"
@@ -81,7 +82,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
     // absolute root age
 	Var<PosReal>* absrootage;
 	
+    ShiftedChronogram* shiftedchronogram;
+
     BranchTimeTree* branchtimetree;
+    BranchTimeTree* shiftedbranchtimetree;
 
     // prior on scaling factors for Brownian process
     // (different scaling factor for each trait)
@@ -168,9 +172,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
     // number of repetitions for the whole MCMC cyle before saving new point
 	int nrep;
 
+    bool shiftages;
+
 	public:
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inshiftages, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
 
 		clamptree = inclamptree;
 		chronoprior = inchronoprior;
@@ -179,6 +185,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		sameseq = insameseq;
 		noadapt = innoadapt;
+
+        shiftages = inshiftages;
 
 		// here L = 1: adaptative omega
 		if (!noadapt) {L = 1;}
@@ -281,7 +289,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		
         branchtimetree = new BranchTimeTree(chronogram, One);
-	
+
 		cerr << "sigma\n";
 
 		// Ncont : number of quantitative traits
@@ -418,17 +426,27 @@ class BranchOmegaMultivariateModel : public ProbModel {
             nodeomegatree = new OmegaLinearCombinationNodeTree(process, nodeneutralomegatree, 0);
         }
 
+        // account for ancestral polymorphism
+        if (shiftages)  {
+            shiftedchronogram = new ShiftedChronogram(chronogram, nodeNetree, process, absrootage, idxgentime);
+            shiftedbranchtimetree = new BranchTimeTree(shiftedchronogram, One);
+        }
+        else    {
+            shiftedchronogram = 0;
+            shiftedbranchtimetree = branchtimetree;
+        }
+	
 		// create the branch-specific mean dS and mean dN/dS
 		
 		// the times given by the chronogram with the rate 
-		synratetree = new MeanExpTree(nodesynratetree, branchtimetree, INTEGRAL, false);
+		synratetree = new MeanExpTree(nodesynratetree, shiftedbranchtimetree, INTEGRAL, false);
 
 		// create the dN/dS on each branch, nased on the second entry of the multivariate process
 		if (!noadapt) {
-            omegatree = new MeanExpTree(nodeomegatree, branchtimetree, MEAN, false);
+            omegatree = new MeanExpTree(nodeomegatree, shiftedbranchtimetree, MEAN, false);
         }
         else    {
-            omegatree = new MeanExpTree(nodeneutralomegatree, branchtimetree, MEAN, false);
+            omegatree = new MeanExpTree(nodeneutralomegatree, shiftedbranchtimetree, MEAN, false);
         }
 		
 		// create u on each branch, nased on the third entry of the multivariate process
@@ -677,6 +695,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
     void UpdateLengthTree() {
         branchtimetree->specialUpdate();
+        if (shiftages)  {
+            shiftedchronogram->specialUpdate();
+            shiftedbranchtimetree->specialUpdate();
+        }
     }
 
 	// summary statistics
