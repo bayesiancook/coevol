@@ -214,11 +214,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "covariance matrix in " << name << ".cov\n";
 		cerr << '\n';
 		
-        /*
-		mat->PrintSlopes(cout);
-		mat->PrintSlopes2(cout);
-        */
-
         meanbeta /= size;
         sort(betadist.begin(), betadist.end());
         ofstream bos((GetName() + ".beta").c_str());
@@ -228,53 +223,6 @@ class BranchOmegaMultivariateSample : public Sample	{
         bos << betadist[m] << '\t' << betadist[l] << '\t' << betadist[size-1-l] << '\n';
 		cerr << "shape parameter beta in " << name << ".beta\n";
 		cerr << '\n';
-
-		
-        /*
-		maty1->Normalize();
-		ofstream cout1((GetName() + ".cov_all").c_str());
-
-		cout1 << *maty1;
-
-		cerr << "covariance matrix in " << name << ".cov_all\n";
-		cerr << '\n';
-
-		maty1->PrintSlopes(cout1);
-		maty1->PrintSlopes2(cout1);
-		
-		maty2->Normalize();
-		ofstream cout2((GetName() + ".cov_dS->piS").c_str());
-
-		cout2 << *maty2;
-
-		cerr << "covariance matrix in " << name << ".cov_dS->piS\n";
-		cerr << '\n';
-		
-		maty2->PrintSlopes(cout2);
-		maty2->PrintSlopes2(cout2);
-		
-		maty3->Normalize();
-		ofstream cout3((GetName() + ".cov_omega->piS").c_str());
-
-		cout3 << *maty3;
-
-		cerr << "covariance matrix in " << name << ".cov_omega->piS\n";
-		cerr << '\n';
-				
-		maty3->PrintSlopes(cout3);
-		maty3->PrintSlopes2(cout3);
-
-		maty4->Normalize();
-		ofstream cout4((GetName() + ".cov_Ne->piS").c_str());
-		
-		cout4 << *maty4;
-		
-		cerr << "covariance matrix in " << name << ".cov_Ne->piS\n";
-		cerr << '\n';
-
-		maty4->PrintSlopes(cout4);
-		maty4->PrintSlopes2(cout4);
-        */
 
 		meanchrono->Normalise();
 		ofstream chos((GetName() + ".postmeandates.tre").c_str());
@@ -327,8 +275,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "reconstructed variations of neutral_omega in " << name << ".postmeanneutral_omega.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meanneutralomega->GetPPLeafRoot() << '\n';
 
-
-
 		for (int k=0; k<Ncont; k++)	{
 			tree[k]->Normalise();
 			ostringstream s;
@@ -369,8 +315,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 		meanneutralomega->Tabulate(aaos);
 		aaos.close();
 		
-		
-
 		for (int k=0; k<Ncont; k++)	{
 			ostringstream s;
 			s << GetName() << ".postmean" << k+1 << ".tab";
