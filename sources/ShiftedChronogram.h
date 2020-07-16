@@ -26,7 +26,16 @@ class ShiftedNodeAge : public Dvar<PosReal> {
             cerr << age->val() << '\n';
             exit(1);
         }
-        setval(age->val() + 2 * exp(logNe->val() + (*x)[idxgentime] - 6*log(10.0)) / rootage->val() / 365);
+        if (age->val() < 1e-4)  {
+            setval(age->val());
+        }
+        else    {
+            setval(age->val() + 2 * exp(logNe->val() + (*x)[idxgentime] - 6*log(10.0)) / rootage->val() / 365);
+        }
+        /*
+        cerr << age->val() << '\t' << 2 * exp(logNe->val() + (*x)[idxgentime] - 6*log(10.0)) / rootage->val() / 365 << '\t';
+        cerr << age->val() * rootage->val() << '\t' << 2 * exp(logNe->val() + (*x)[idxgentime] - 6*log(10.0)) / 365 << '\n';
+        */
     }
 
     protected:

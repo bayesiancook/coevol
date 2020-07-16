@@ -27,11 +27,13 @@ class BranchLength : public Dvar<PosReal>{
 
 	void specialUpdate(){
 		double newval = (Before->val() - After->val()) * Rate->val();
+        /*
         if (newval < 0) {
             cerr << "in branch time tree: negative time\n";
             cerr << newval << '\n';
             exit(1);
         }
+        */
 		if (newval < 1e-7)	{
 			newval = 1e-7;
 		}

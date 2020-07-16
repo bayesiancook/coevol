@@ -26,6 +26,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 	bool noadapt;
 	bool clamptree;
 	bool meanexp;
+    bool shiftages;
 	GeneticCodeType type;
 
 	int contdatatype;
@@ -75,9 +76,14 @@ class BranchOmegaMultivariateSample : public Sample	{
 		if (check)	{
 			is >> chronoprior;
 			is >> check;
+            shiftages = 0;
 			if (check)	{
-				cerr << "error when reading model\n";
-				exit(1);
+                is >> shiftages;
+                is >> check;
+                if (check)  {
+                    cerr << "error when reading model\n";
+                    exit(1);
+                }
 			}
 		}
 
@@ -88,7 +94,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		// make a new model depending on the type obtained from the file
 		if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,contdatatype,sameseq,noadapt,clamptree,meanexp,nrep,false,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,contdatatype,sameseq,noadapt,shiftages,clamptree,meanexp,nrep,false,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
