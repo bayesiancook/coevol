@@ -22,7 +22,6 @@ class BranchLength : public Dvar<PosReal>{
 		specialUpdate();
 	}
 
-
 	~BranchLength(){};
 
 	void specialUpdate(){
@@ -40,8 +39,10 @@ class BranchLength : public Dvar<PosReal>{
 		setval(newval);
 	}
 
+    double GetRawVal() {
+		return (Before->val() - After->val()) * Rate->val();
+    }
 };
-
 
 class BranchTimeTree : public BranchValPtrTree<Dvar<PosReal> >  {
 
@@ -64,12 +65,26 @@ class BranchTimeTree : public BranchValPtrTree<Dvar<PosReal> >  {
     }
 
 	void specialUpdate()	{
+        errcount = 0;
 		specialUpdate(GetRoot());
 	}
 
 	double GetTotalTime()	{
 		return RecursiveGetTotalTime(GetRoot());
 	}
+
+    int GetNerr()   {
+        return errcount;
+    }
+
+    BranchLength* GetBranchLength(const Branch* branch) {
+        BranchLength* tmp = dynamic_cast<BranchLength*>(GetBranchVal(branch));
+        if (!tmp)   {
+            cerr << "error in GetBranchLength: dynamic cast\n";
+            exit(1);
+        }
+        return tmp;
+    }
 
     protected:
 
@@ -86,6 +101,9 @@ class BranchTimeTree : public BranchValPtrTree<Dvar<PosReal> >  {
 
 	void specialUpdate(Link* from)	{
 		if ((! from->isRoot()) || WithRoot())	{
+            if (GetBranchLength(from->GetBranch())->GetRawVal() < 0)   {
+                errcount++;
+            }
 			GetBranchVal(from->GetBranch())->specialUpdate();
 		}
 		for(Link* link=from->Next(); link!=from; link=link->Next())	{
@@ -103,5 +121,6 @@ class BranchTimeTree : public BranchValPtrTree<Dvar<PosReal> >  {
 
 	NodeVarTree<PosReal>* chronogram;
 	Var<PosReal>* rate;
+    int errcount;
 };
 

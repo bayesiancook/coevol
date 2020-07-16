@@ -160,6 +160,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
 
+        int nerr = 0;
+
 		// cycle over the sample
 		for (int i=0; i<size; i++)	{
 			cerr << '.';
@@ -169,6 +171,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 			GetNextPoint();
 
             GetModel()->UpdateLengthTree();
+            nerr += GetModel()->GetShiftNerr();
+
 			GetModel()->GetSynRateTree()->specialUpdate();
 			GetModel()->GetNeutralOmegaNodeTree()->specialUpdate();
 			GetModel()->GetSynrateNodeTree()->specialUpdate();
@@ -197,6 +201,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		}
 						
 		cerr << '\n';
+        cerr << "number of shifting errors: " << nerr << '\t' << ((double) nerr)  / size << '\n';
+		cerr << '\n';
+
 		cerr << "normalise\n";
 
 		mat->Normalize();

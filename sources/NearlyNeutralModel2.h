@@ -701,6 +701,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
         }
     }
 
+    int GetShiftNerr()  {
+        return shiftedbranchtimetree->GetNerr();
+    }
+
 	// summary statistics
 	double GetTotalLength()	{
 		return GetSynRateTree()->GetTotal();
