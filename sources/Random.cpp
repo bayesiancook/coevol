@@ -11,8 +11,8 @@ class random_init	{
 	public:
 	random_init()	{
 		cerr << '\n';
-		// Random::InitRandom();
-		Random::InitRandom(1001);
+		Random::InitRandom();
+		// Random::InitRandom(1001);
 		cerr << "random seed : " << Random::GetSeed() << '\n';
 		cerr << '\n';
 	}
