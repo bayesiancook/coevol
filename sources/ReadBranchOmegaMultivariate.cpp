@@ -1474,7 +1474,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			}
 
             // offsets for log-linear combinations for logNe and logu phylogenetic histories
-            double betau = log(365.0*t0*1000000.0);
+            double betau = -log(365.0*t0*1000000.0);
             double betaNe = log(365.0*t0*1000000.0/4.0);
 				
 			meanNe->AddLogLinearCombination(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alphaNe, betaNe);
@@ -1693,13 +1693,17 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meanomega->GetPPLeafRoot() << '\n';
 
-		
 		meanNe->Normalise();
 		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
 		meanNe->ToStream(Neos);
 		cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
 		cerr << "pp of mean leaf values > root value : " << meanNe->GetPPLeafRoot() << '\n';
 
+		meanu->Normalise();
+		ofstream uos((GetName() + ".postmeanu.tre").c_str());
+		meanu->ToStream(uos);
+		cerr << "reconstructed variations of u in " << name << ".postmeanu.tre\n";
+		cerr << "pp of mean leaf values > root value : " << meanu->GetPPLeafRoot() << '\n';
 
 		meansynrate->Normalise();
 		ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
@@ -1728,6 +1732,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 		ofstream NeNeos((GetName() + ".postmeanNe.tab").c_str());
 		meanNe->Tabulate(NeNeos);
 		NeNeos.close();
+
+		ofstream uuos((GetName() + ".postmeanu.tab").c_str());
+		meanu->Tabulate(uuos);
+		uuos.close();
 
 		for (int k=0; k<Ncont; k++)	{
 			ostringstream s;
