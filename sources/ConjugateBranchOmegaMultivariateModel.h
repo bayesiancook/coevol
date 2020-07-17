@@ -6,7 +6,7 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 
 	public:
 
-	ConjugateBranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta, double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile, string insuffstatfile, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
+	ConjugateBranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta, double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inshiftages, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile, string insuffstatfile, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
 
 		sample = insample;
 
@@ -90,6 +90,12 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 		meanexp = inmeanexp;
 
 		iscalspe = iniscalspe;
+
+        shiftages = inshiftages;
+        if (Split() && shiftages)   {
+            cerr << "error: split and shift ages incompatible with current version\n";
+            exit(1);
+        }
 
 		// A FROZEN ACCIDENT...
 		if (inomegaratiotree == 3)	{
@@ -256,6 +262,26 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 
 		cerr << "tree and data ok\n";
 		cerr << '\n';
+
+        idxpiS = -1;
+
+        if (shiftages)  {
+            if (! Ncont)    {
+                cerr << "error: shift ages possible only with continuous data (including piS)\n";
+                exit(1);
+            }
+
+            for (int i=0; i<Ncont; i++) {
+                if (GetContinuousData()->GetCharacterName(i)=="piS") {
+                    idxpiS = i;
+                }	
+            }	
+
+            if (idxpiS == -1)    {
+                cerr << "error: shift ages possibly only with polymorphism data (piS)\n";
+                exit(1);
+            }
+        }
 
 		// ----------
 		// construction of the graph
@@ -616,6 +642,15 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 			process->SetBounds(boundset,L);
 		}
 
+        // account for ancestral polymorphism
+        if (shiftages)  {
+            shiftedchronogram = new ShiftedChronogram(chronogram, process, idxpiS, 0);
+            shiftedbranchtimetree = new BranchTimeTree(shiftedchronogram, One);
+        }
+        else    {
+            shiftedchronogram = 0;
+            shiftedbranchtimetree = branchtimetree;
+        }
 		CreateSubstitutionProcess(sample);
 
 		if (phyloprocess)	{
@@ -626,7 +661,6 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
 				phyloprocess->Sample();
 			}
 		}
-
 
 		RootRegister(PriorMu);
 		RootRegister(Zero);

@@ -12,6 +12,7 @@
 
 #include "BDChronogram.h"
 #include "BDCalibratedChronogram.h"
+#include "ShiftedChronogramCoevol.h"
 #include "BranchTimeTree.h"
 
 #include "BranchProcess.h"
@@ -123,7 +124,10 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	Chronogram* chronogram;
 	bool iscalib;
 
+    ShiftedChronogram* shiftedchronogram;
+
     BranchTimeTree* branchtimetree;
+    BranchTimeTree* shiftedbranchtimetree;
 
 	GammaTree* syngammatree;
 
@@ -251,6 +255,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	bool clamproot;
 	bool clamptree;
+
+    bool shiftages;
+    int idxpiS;
 
 	bool meanexp;
 
@@ -380,7 +387,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	}
 
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta,  double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inclampdiag, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile,  string insuffstatfile, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, bool iniscalspe, double rootstdev, int inchronoprior, double insofta,  double inmeanchi, double inmeanchi2, double priorsigma, string priorsigmafile, int indf, int inmutmodel, int ingc, bool inclampdiag, bool inautoregressive, int inconjpath, double inmappingfreq, int contdatatype, int inomegaratiotree, bool inshiftages, bool inclamproot, bool inclamptree, bool inmeanexp, bool innormalise, int innrep, int inncycle, string inbounds, string inmix, int inNinterpol, int inwithdrift, int inuniformprior, string rootfile,  string insuffstatfile, bool inseparatesyn, bool inseparateomega, int inkrkctype, int injitter, int inmyid, int innprocs, int insample, GeneticCodeType type)	{
 
 		sample = insample;
 
@@ -467,6 +474,12 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		meanexp = inmeanexp;
 
 		iscalspe = iniscalspe;
+
+        shiftages = inshiftages;
+        if (Split() && shiftages)   {
+            cerr << "error: split and shift ages incompatible with current version\n";
+            exit(1);
+        }
 
 		// A FROZEN ACCIDENT...
 		if (inomegaratiotree == 3)	{
@@ -634,6 +647,26 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		cerr << "tree and data ok\n";
 		cerr << '\n';
 
+        idxpiS = -1;
+
+        if (shiftages)  {
+            if (! Ncont)    {
+                cerr << "error: shift ages possible only with continuous data (including piS)\n";
+                exit(1);
+            }
+
+            for (int i=0; i<Ncont; i++) {
+                if (GetContinuousData()->GetCharacterName(i)=="piS") {
+                    idxpiS = i;
+                }	
+            }	
+
+            if (idxpiS == -1)    {
+                cerr << "error: shift ages possibly only with polymorphism data (piS)\n";
+                exit(1);
+            }
+        }
+
 		// ----------
 		// construction of the graph
 		// ----------
@@ -728,6 +761,16 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			else	{
 				lengthtree = branchtimetree;
 			}
+
+            // account for ancestral polymorphism
+            if (shiftages)  {
+                shiftedchronogram = new ShiftedChronogram(chronogram, process, idxpiS, 0);
+                shiftedbranchtimetree = new BranchTimeTree(shiftedchronogram, One);
+            }
+            else    {
+                shiftedchronogram = 0;
+                shiftedbranchtimetree = branchtimetree;
+            }
 		}
 
 		if (mix == "branch")	{
@@ -1093,7 +1136,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				synratetree = lognormalsyntree;
 			}
 			else	{
-				synratetree = new MeanExpTreeFromMultiVariate(process,index,INTEGRAL,false,meanexp);
+                if (shiftages)  {
+                    cerr << "ds: shifted\n";
+                    synratetree = new MeanExpTreeFromMultiVariate(shiftedbranchtimetree,process,index,INTEGRAL,false,meanexp);
+                }
+                else    {
+                    synratetree = new MeanExpTreeFromMultiVariate(process,index,INTEGRAL,false,meanexp);
+                }
 				dsindex = index;
 				index++;
 			}
@@ -1112,7 +1161,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 					omegatree = new MeanExpTreeFromMultiVariate(process,index,MEAN,false,meanexp,wngamtree);
 				}
 				else {
-					omegatree = new MeanExpTreeFromMultiVariate(process,index,MEAN,false,meanexp,ugamtree);
+                    cerr << "omega tree: shifted\n";
+                    if (shiftages)  {
+                        omegatree = new MeanExpTreeFromMultiVariate(shiftedbranchtimetree,process,index,MEAN,false,meanexp,ugamtree);
+                    }
+                    else    {
+                        omegatree = new MeanExpTreeFromMultiVariate(process,index,MEAN,false,meanexp,ugamtree);
+                    }
 				}
 				omegaindex = index;
 				index++;
@@ -1168,7 +1223,13 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			omegatree = omegatv0tree;
 		}
 		else	{
-			nonsynratetree = new MeanExpTreeFromMultiVariate(process,index,INTEGRAL,false,meanexp);
+            if (shiftages)  {
+                cerr << "dnds: shifted\n";
+                nonsynratetree = new MeanExpTreeFromMultiVariate(shiftedbranchtimetree, process,index,INTEGRAL,false,meanexp);
+            }
+            else {
+                nonsynratetree = new MeanExpTreeFromMultiVariate(process,index,INTEGRAL,false,meanexp);
+            }
 			omegaindex = index;
 			index++;
 			omegatree = new RatioTree(nonsynratetree,synratetree);
@@ -2213,14 +2274,12 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	}
 
     void UpdateLengthTree() {
-        if (branchtimetree) {
-            branchtimetree->specialUpdate();
+        branchtimetree->specialUpdate();
+        if (shiftages)  {
+            shiftedchronogram->specialUpdate();
+            shiftedbranchtimetree->specialUpdate();
         }
-        else    {
-            if (! splitlengthtree)  {
-                cerr << "error in update length tree\n";
-                exit(1);
-            }
+        if (splitlengthtree)  {
             splitlengthtree->specialUpdate();
         }
     }

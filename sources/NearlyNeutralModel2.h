@@ -400,8 +400,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		
 		// create the node-trees for omega0, Ne, u, dS, Ne, and tau (all in log)
         // based on the structural parameters and the 3-dim process (piS, piNpiS, gentime)
-        // specifically:
-        // log u = log piS
 		
         // log omega_0 = log piN/piS + log kappa_1 - log kappa_2
         nodeneutralomegatree = new NeutralOmegaLinearCombinationNodeTree(process, logkappa1, logkappa2, idxpiNpiS);

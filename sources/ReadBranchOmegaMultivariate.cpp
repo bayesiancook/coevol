@@ -45,6 +45,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 	int contdatatype;
 
 	int omegaratiotree;
+    bool shiftages;
 
 	bool normalise;
 	int nrep;
@@ -115,6 +116,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		double priorsigma = 1;
 		string priorsigmafile = "None";
 
+        shiftages = false;
 		nsplit = 1;
 		withdrift = 0;
 		uniformprior = 0;
@@ -192,8 +194,12 @@ class BranchOmegaMultivariateSample : public Sample	{
 																			is >> ncycle;
 																			is >> check;
 																			if (check)	{
-																				cerr << "error when reading model\n";
-																				exit(1);
+                                                                                is >> shiftages;
+                                                                                is >> check;
+                                                                                if (check)  {
+                                                                                    cerr << "error when reading model\n";
+                                                                                    exit(1);
+                                                                                }
 																			}
 																		}
 																	}
@@ -218,10 +224,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		// make a new model depending on the type obtained from the file
 		if (modeltype == "BRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,clampdiag,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,shiftages,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
 		}
 		else if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
+			model = new ConjugateBranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,iscalspe,rootstdev,chronoprior,softa,meanchi,meanchi2,priorsigma,priorsigmafile,df,mutmodel,gc,autoregressive,conjpath,mappingfreq,contdatatype,omegaratiotree,shiftages,clamproot,clamptree,meanexp,normalise,nrep,ncycle,bounds,mix,nsplit,withdrift,uniformprior,rootfile,suffstatfile,separatesyn,separateomega,krkctype,jitter,0,1,sample,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
