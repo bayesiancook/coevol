@@ -793,6 +793,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	// save current state
 	void ToStream(ostream& os)	{
 		os << *chronogram << '\n';
+        os << *branchtimetree << '\n';
 		if (isCalibrated())	{
 			os << *GetCalibratedChronogram()->GetScale() << '\n';
 			if (chronoprior)	{
@@ -811,6 +812,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	void FromStream(istream& is)	{
 		is >> *chronogram;
+        is >> *branchtimetree;
 		if (isCalibrated())	{
 			is >> *GetCalibratedChronogram()->GetScale();
 			if (chronoprior)	{

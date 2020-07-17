@@ -387,7 +387,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		nprocs = innprocs;
 		myid = inmyid;
 
-		dsindex = -1;
 		whitenoise = false;
 
 		contjitter = 0;
@@ -3634,6 +3633,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		else	{
 			os << *chronogram << '\n';
+            // to stay consistent with old chronogram version
+            os << *branchtimetree << '\n';
 			if (isCalibrated())	{
 				os << *GetCalibratedChronogram()->GetScale() << '\n';
 			}
@@ -3721,6 +3722,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		else	{
 			is >> *chronogram;
+            // to stay consistent with old chronogram version
+            is >> *branchtimetree;
 			if (isCalibrated())	{
 				is >> *GetCalibratedChronogram()->GetScale();
 			}
@@ -3800,191 +3803,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			is >> *freestationary;
 		}
 	}
-
-	/*
-	int CountParam()	{
-		int n = 0;
-		// mu
-		n++;
-		if (Unconstrained())	{
-			n += syngammatree->GetNBranchVals();
-		}
-		else	{
-			n += chronogram->GetNnodeVals();
-			if (isCalibrated())	{
-				// is >> *GetCalibratedChronogram()->GetScale();
-				n++;
-			}
-			if (chronoprior)	{
-				// is >> *Chi >> *Chi2;
-				n += 2;
-			}
-		}
-		if (gammamixtree)	{
-			n += gammamixtree->GetNBranchVals();
-		}
-		if (gammatree)	{
-			// is >> *MixAlpha;
-			n++;
-			n += gammatree->GetNbranchVals();
-		}
-		if (whitenoise)	{
-			// is >> *wnvar;
-			n++;
-			n += wntree->GetNBranchVals();
-		}
-		if (jitter == 1)	{
-			// is >> *ugam;
-			n++;
-			n += ugamtree->GetNBranchVals();;
-		}
-		if (jitter == 2)	{
-			// is >> *ugam;
-			n++;
-			n += wngamtree->GetNBranchVals();
-		}
-		if (contjitter)	{
-			// is >> *leafvar;
-			n++;
-		}
-
-		if (separatesyn)	{
-			// is >> *synsigma;
-			n++;
-			n += lognormalsyntree->GetNNodeVals();
-		}
-		if (separateomega)	{
-			// is >> *omegasigma;
-			n++;
-			n += lognormalomegatree->GetNNodeVals();
-		}
-
-		is >> *DiagArray;
-		is >> *sigmaarray;
-		is >> *driftarray;
-		if (withexpdrift)	{
-			is >> *driftphiarray;
-		}
-		if (withreldrift)	{
-			is >> *driftphiarray2;
-			is >> *driftarray2;
-		}
-		if (autoregressive)	{
-			is >> *phi;
-			is >> *mean;
-		}
-		is >> *process;
-		if (rawNstate == Naa)	{
-			is >> *exprelrate;
-		}
-		else if ((! mutmodel) || (mutmodel >= 4))	{
-		// if (! mutmodel)	{
-			is >> *exprelrate;
-			// is >> *relrate;
-		}
-		else if (mutmodel == 2)	{
-			is >> *tsrelrate;
-			is >> *tvrelrate;
-		}
-		if (gc == 3)	{
-			is >> *rootgc1;
-			is >> *rootgc2;
-			is >> *rootgc3;
-		}
-		if (rootgc)	{
-			is >> *rootgc;
-		}
-		if (freestationary)	{
-			is >> *freestationary;
-		}
-	}
-
-	void FromStream(istream& is)	{
-		is >> *mu;
-		if (Unconstrained())	{
-			is >> *syngammatree;
-		}
-		else	{
-			is >> *chronogram;
-			if (isCalibrated())	{
-				is >> *GetCalibratedChronogram()->GetScale();
-			}
-			if (chronoprior)	{
-				is >> *Chi >> *Chi2;
-			}
-		}
-		if (gammamixtree)	{
-			is >> *gammamixtree;
-		}
-		if (gammatree)	{
-			is >> *MixAlpha;
-			is >> *gammatree;
-		}
-		if (whitenoise)	{
-			is >> *wnvar;
-			is >> *wntree;
-		}
-		if (jitter == 1)	{
-			is >> *ugam;
-			is >> *ugamtree;
-		}
-		if (jitter == 2)	{
-			is >> *ugam;
-			is >> *wngamtree;
-		}
-		if (contjitter)	{
-			is >> *leafvar;
-		}
-
-		if (separatesyn)	{
-			is >> *synsigma;
-			is >> *lognormalsyntree;
-		}
-		if (separateomega)	{
-			is >> *omegasigma;
-			is >> *lognormalomegatree;
-		}
-
-		is >> *DiagArray;
-		is >> *sigmaarray;
-		is >> *driftarray;
-		if (withexpdrift)	{
-			is >> *driftphiarray;
-		}
-		if (withreldrift)	{
-			is >> *driftphiarray2;
-			is >> *driftarray2;
-		}
-		if (autoregressive)	{
-			is >> *phi;
-			is >> *mean;
-		}
-		is >> *process;
-		if (rawNstate == Naa)	{
-			is >> *exprelrate;
-		}
-		else if ((! mutmodel) || (mutmodel >= 4))	{
-		// if (! mutmodel)	{
-			is >> *exprelrate;
-			// is >> *relrate;
-		}
-		else if (mutmodel == 2)	{
-			is >> *tsrelrate;
-			is >> *tvrelrate;
-		}
-		if (gc == 3)	{
-			is >> *rootgc1;
-			is >> *rootgc2;
-			is >> *rootgc3;
-		}
-		if (rootgc)	{
-			is >> *rootgc;
-		}
-		if (freestationary)	{
-			is >> *freestationary;
-		}
-	}
-	*/
 
 	void GetNucMatrix(ifstream& is)	{
 		if (rawNstate == Naa)	{
@@ -4064,18 +3882,6 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 		return correl;
 	}
-
-	/*
-	void PostPredCompo(string name)	{
-
-		CodonSequenceAlignment* datacopy = new CodonSequenceAlignment(codondata);
-		phyloprocess->PostPredSample();
-		phyloprocess->GetLeafData(datacopy);
-		ostringstream s;
-		ofstream os((name + ".ali").c_str());
-		datacopy->ToStream(os);
-	}
-	*/
 
 	void PostPredAli(string name)	{
 
