@@ -177,12 +177,6 @@ class MeanExpNormTree : public NewickTree {
 
 	public:
 
-	/*
-	MeanExpNormTree(Tree* intree, bool inlogit) : tree(intree), logit(inlogit), printlog(false), printmean(false), printci(true), printstdev(false) {
-		Reset();
-	}
-	*/
-
 	MeanExpNormTree(Tree* intree, bool inlogit, bool inprintlog, bool inprintmean, bool inprintci, bool inprintstdev, bool inwithleaf, bool inwithinternal, double inmeanreg = 0, double instdevreg = 0) : tree(intree), logit(inlogit), printlog(inprintlog), printmean(inprintmean), printci(inprintci), printstdev(inprintstdev), withleaf(inwithleaf), withinternal(inwithinternal), meanreg(inmeanreg), stdevreg(instdevreg) {
 		ppleafroot = 0;
 		threshold = 0;
@@ -190,6 +184,11 @@ class MeanExpNormTree : public NewickTree {
 		withdepth = false;
 
         logscale = 1.0;
+
+        if (meanreg)    {
+            cerr << "in MeanExpNormTree: check interplay meanreg, _GetMeanLog, _GetVarLog and log scale\n";
+            exit(1);
+        }
 
 		Reset();
 	}
@@ -268,7 +267,7 @@ class MeanExpNormTree : public NewickTree {
 		if (meanreg)	{
 			double tmp = _GetMeanLog(node) - 1.959964 * sqrt(_GetVarLog(node));
 			if (printlog)	{
-				return tmp;
+				return tmp / logscale;
 			}
 			else if (logit)	{
 				return exp(tmp) / (1 + exp(tmp));
@@ -340,7 +339,6 @@ class MeanExpNormTree : public NewickTree {
 		map<const Node*, double>::const_iterator j = meanlog.find(node);
 		if (meanreg)	{
 			return meanreg * meanreg * i->second;
-			// return meanreg * meanreg * i->second + j->second * j->second * stdevreg * stdevreg;
 		}
 		return i->second / logscale / logscale;
 	}
@@ -606,23 +604,14 @@ class MeanExpNormTree : public NewickTree {
 	}
 	
 	void RecursiveTabulateDistribution(ostream& os, Link* from)	{
-		/*
-		if (fabs(var[from->GetNode()]) > 1e-6)	{
-			os << meanlog[from->GetNode()] / log(10.0)  << '\t' << sqrt(varlog[from->GetNode()]) / log(10.0)  << '\t';
-		}
-		else	{
-			os << meanlog[from->GetNode()] / log(10.0) << '\t' << 0 << '\t';
-		}
-		*/
 
 		if ((from->isLeaf() && withleaf) || ((! from->isLeaf()) && (withinternal)))	{
 			os << GetTree()->GetLeftMost(from) << '\t' << GetTree()->GetRightMost(from) << '\t';
-			// os << meanlog[from->GetNode()] << '\t';
 			map<const Node*, list<double> >::const_iterator f = dist.find(from->GetNode());
 			list<double> l = f->second;
 			for (list<double>::const_iterator i = l.begin(); i != l.end(); i++)	{
 				if (printlog)	{
-					os << *i / log(10.0) << '\t';
+					os << *i / logscale << '\t';
 				}
 				else	{
 					os << exp(*i) << '\t';
@@ -639,8 +628,7 @@ class MeanExpNormTree : public NewickTree {
 	void RecursiveLooTabulate(ostream& os, ContinuousData* contdata, Link* from)	{
 		if (from->isLeaf())	{
 			if (contdata->isMissing(from->GetNode()->GetName()))	{
-			// if (varlog[from->GetNode()] > 1e-3)	{
-				os << meanlog[from->GetNode()]  << '\t' << sqrt(varlog[from->GetNode()])  << '\n';
+				os << _GetMeanLog(from->GetNode())  << '\t' << sqrt(_GetVarLog(from->GetNode()))  << '\n';
 			}
 		}
 		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
@@ -698,7 +686,7 @@ class MeanExpNormTree : public NewickTree {
 	
 	void RecursiveAddLogLinearCombination(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, const vector<double>& alpha, double beta)  {
 
-        double tmp = beta * log(10.0);
+        double tmp = beta;
         for (unsigned int i=0; i<alpha.size(); i++) {
             tmp += alpha[i] * (* sample->GetNodeVal(from->GetNode()))[i];
         }
@@ -715,7 +703,7 @@ class MeanExpNormTree : public NewickTree {
 		varlog[from->GetNode()] += tmp * tmp;
 		dist[from->GetNode()].push_front(tmp);
 
-        double exptmp = exp(tmp * log(10.0));
+        double exptmp = exp(tmp);
 		double temp = logit ? exptmp / (1.0 + exptmp) : exptmp;
 		mean[from->GetNode()] += temp;
 		var[from->GetNode()] += temp * temp;
@@ -1003,7 +991,7 @@ class MeanExpNormTree : public NewickTree {
 	void RecursiveTabulate(ostream& os, Link* from, bool leafonly)	{
 		if ((! leafonly) || (from->isLeaf()))	{
 			if (fabs(var[from->GetNode()]) > 1e-6)	{
-				os << meanlog[from->GetNode()] / log(10.0)  << '\t' << sqrt(varlog[from->GetNode()]) / log(10.0)  << '\n';
+				os << meanlog[from->GetNode()] / logscale << '\t' << sqrt(varlog[from->GetNode()]) / log(10.0)  << '\n';
 			}
 			else	{
 				os << meanlog[from->GetNode()] / log(10.0) << '\t' << 0 << '\n';

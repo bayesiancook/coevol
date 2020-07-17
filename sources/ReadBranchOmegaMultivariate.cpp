@@ -1474,8 +1474,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 			}
 
             // offsets for log-linear combinations for logNe and logu phylogenetic histories
-            double betau = log(365.0*t0*1000000.0)/log(10.0);
-            double betaNe = log(365.0*t0*1000000.0/4.0)/log(10.0);
+            double betau = log(365.0*t0*1000000.0);
+            double betaNe = log(365.0*t0*1000000.0/4.0);
 				
 			meanNe->AddLogLinearCombination(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alphaNe, betaNe);
 			meanu->AddLogLinearCombination(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alphau, betau);
