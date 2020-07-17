@@ -427,15 +427,11 @@ class MeanExpNormTree : public NewickTree {
 	}
 	
 	
-	void AddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, double alpha[], double beta, int dim, int indice1, int indice2, Var<Real>* Offset = 0)	{
+	void AddLogLinearCombination(NodeVarTree<RealVector>* sample, LengthTree* chronogram, const vector<double>& alpha, double beta)   {
 		meanleaf = 0;
 		meanroot = 0;
 		leafsize = 0;
-		double offset = 0;
-		if (Offset)	{
-			offset = Offset->val();
-		}
-		RecursiveAddNe(sample, chronogram, GetTree()->GetRoot(), alpha, beta, dim, indice1, indice2, offset);
+		RecursiveAddLogLinearCombination(sample, chronogram, GetTree()->GetRoot(), alpha, beta);
 		meanleaf /= leafsize;
 		if (meanleaf > meanroot)	{
 			ppleafroot++;
@@ -700,21 +696,12 @@ class MeanExpNormTree : public NewickTree {
 		}
 	}
 	
-	void RecursiveAddNe(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, double alpha[], double beta, int dim, int indice1, int indice2, double offset)	{
-		double tmp(0);
+	void RecursiveAddLogLinearCombination(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, const vector<double>& alpha, double beta)  {
 
-        /*
-		tmp += alpha[0] * ((* sample->GetNodeVal(from->GetNode()))[0])/log(10);
-		tmp += alpha[indice1] * ((* sample->GetNodeVal(from->GetNode()))[indice1])/log(10);
-		tmp += alpha[indice2] * ((* sample->GetNodeVal(from->GetNode()))[indice2])/log(10);
-		tmp += beta;
-		tmp += offset;
-        */
-		tmp += alpha[0] * ((* sample->GetNodeVal(from->GetNode()))[0]);
-		tmp += alpha[indice1] * ((* sample->GetNodeVal(from->GetNode()))[indice1]);
-		tmp += alpha[indice2] * ((* sample->GetNodeVal(from->GetNode()))[indice2]);
-		tmp += beta*log(10.0);
-		tmp += offset*log(10.0);
+        double tmp = beta * log(10.0);
+        for (unsigned int i=0; i<alpha.size(); i++) {
+            tmp += alpha[i] * (* sample->GetNodeVal(from->GetNode()))[i];
+        }
 
 		if (from->isRoot())	{
 			meanroot = tmp;
@@ -723,14 +710,18 @@ class MeanExpNormTree : public NewickTree {
 			meanleaf += tmp;
 			leafsize++;
 		}
-		double temp = logit ? pow(10,tmp) / (1 + pow(10,tmp)) : pow(10,tmp);
+
 		meanlog[from->GetNode()] += tmp;
 		varlog[from->GetNode()] += tmp * tmp;
+		dist[from->GetNode()].push_front(tmp);
+
+        double exptmp = exp(tmp * log(10.0));
+		double temp = logit ? exptmp / (1.0 + exptmp) : exptmp;
 		mean[from->GetNode()] += temp;
 		var[from->GetNode()] += temp * temp;
-		dist[from->GetNode()].push_front(tmp);
+
 		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
-			RecursiveAddNe(sample, chronogram, link->Out(), alpha, beta, dim, indice1, indice2, offset);
+			RecursiveAddLogLinearCombination(sample, chronogram, link->Out(), alpha, beta);
 			double time = chronogram->GetBranchVal(link->GetBranch())->val();
 			meantime[link->GetBranch()] += time;
 			vartime[link->GetBranch()] += time * time;

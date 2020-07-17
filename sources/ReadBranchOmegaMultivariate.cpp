@@ -9,7 +9,6 @@
 #include "MeanChronoBubbleTree.h"
 
 #include "TexTab.h"
-#include "MeanTimeLine.h"
 #include <cmath>
 
 class BranchOmegaMultivariateSample : public Sample	{
@@ -495,116 +494,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 		}
 	}
 
-	void MakeTimeLine()	{
-		int N = 100;
-		MeanTimeLine* synrate = new MeanTimeLine(N);
-		MeanTimeLine* omega = 0;
-		MeanTimeLine* omegats = 0;
-		MeanTimeLine* omegatv0 = 0;
-		MeanTimeLine* omegatvgc = 0;
-		MeanTimeLine* gc = 0;
-		if (GetModel()->Has3Omega())	{
-			omegats = new MeanTimeLine(N);
-			omegatv0 = new MeanTimeLine(N);
-			omegatvgc = new MeanTimeLine(N);
-		}
-		else if (GetModel()->Has2Omega())	{
-			omegats = new MeanTimeLine(N);
-			omegatv0 = new MeanTimeLine(N);
-		}
-		else if (GetModel()->HasOmega())	{
-			omega = new MeanTimeLine(N);
-		}
-		if (GetModel()->isGCActivated())	{
-			gc = new MeanTimeLine(N);
-		}
-
-		int Ncont = GetModel()->Ncont;
-		MeanTimeLine** tree = new MeanTimeLine*[Ncont];
-		for (int k=0; k<Ncont; k++)	{
-			tree[k] = new MeanTimeLine(N);
-		}
-
-		for (int j=0; j<size; j++)	{
-			cerr << '.';
-			GetNextPoint();
-			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
-				GetModel()->GetSynRateTree()->specialUpdate();
-			}
-			GetModel()->UpdateLengthTree();
-			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
-				synrate->Add(GetModel()->GetSynRateTree(),GetModel()->GetChronogram(),true);
-			}
-			if (GetModel()->Has3Omega())	{
-				GetModel()->GetOmegaTSTree()->specialUpdate();
-				omegats->Add(GetModel()->GetOmegaTSTree(),GetModel()->GetChronogram(),false);
-				GetModel()->GetOmegaTV0Tree()->specialUpdate();
-				omegatv0->Add(GetModel()->GetOmegaTV0Tree(),GetModel()->GetChronogram(),false);
-				GetModel()->GetOmegaTVGCTree()->specialUpdate();
-				omegatvgc->Add(GetModel()->GetOmegaTVGCTree(),GetModel()->GetChronogram(),false);
-			}
-			else if (GetModel()->Has2Omega())	{
-				GetModel()->GetOmegaTSTree()->specialUpdate();
-				omegats->Add(GetModel()->GetOmegaTSTree(),GetModel()->GetChronogram(),false);
-				GetModel()->GetOmegaTV0Tree()->specialUpdate();
-				omegatv0->Add(GetModel()->GetOmegaTV0Tree(),GetModel()->GetChronogram(),false);
-			}
-			else if (GetModel()->HasOmega())	{
-				GetModel()->UpdateOmegaTree();
-				omega->Add(GetModel()->GetOmegaTree(),GetModel()->GetChronogram(),false);
-			}
-			if (GetModel()->isGCActivated())	{
-				GetModel()->GetMeanLogitGCTree()->specialUpdate();
-				gc->Add(GetModel()->GetGCTree(),GetModel()->GetChronogram(),false);
-			}
-			for (int k=0; k<Ncont; k++)	{
-				tree[k]->Add(GetModel()->GetMultiVariateProcess(),GetModel()->GetChronogram(),GetModel()->GetL() + k);
-			}
-		}
-		cerr << '\n';
-		synrate->Normalize();
-		ofstream sos((GetName() + ".synratetimeline").c_str());
-		synrate->ToStream(sos);
-
-		if (GetModel()->Has3Omega())	{
-			omegats->Normalize();
-			ofstream otsos((GetName() + ".omegatstimeline").c_str());
-			omegats->ToStream(otsos);
-			omegatv0->Normalize();
-			ofstream otv0os((GetName() + ".omegatv0timeline").c_str());
-			omegatv0->ToStream(otv0os);
-			omegatvgc->Normalize();
-			ofstream otvgcos((GetName() + ".omegatvgctimeline").c_str());
-			omegatvgc->ToStream(otvgcos);
-		}
-		else if (GetModel()->Has2Omega())	{
-			omegats->Normalize();
-			ofstream otsos((GetName() + ".omegatstimeline").c_str());
-			omegats->ToStream(otsos);
-			omegatv0->Normalize();
-			ofstream otv0os((GetName() + ".omegatv0timeline").c_str());
-			omegatv0->ToStream(otv0os);
-		}
-		else if (GetModel()->HasOmega())	{
-			omega->Normalize();
-			ofstream oos((GetName() + ".omegatimeline").c_str());
-			omega->ToStream(oos);
-		}
-		if (GetModel()->isGCActivated())	{
-			gc->Normalize();
-			ofstream gcos((GetName() + ".gctimeline").c_str());
-			gc->ToStream(gcos);
-		}
-
-		for (int k=0; k<Ncont; k++)	{
-			tree[k]->Normalize();
-			ostringstream s;
-			s << GetName() << "." << k << "timeline";
-			ofstream os(s.str().c_str());
-			tree[k]->ToStream(os);
-		}
-	}
-
 	void DrawDensities(string taxpairfile, int cont)	{
 
 		MeanExpNormTree* tree = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,true,true,false,true,true,true);
@@ -723,11 +612,10 @@ class BranchOmegaMultivariateSample : public Sample	{
 			cerr << '.';
 
 			GetNextPoint();
-
+            GetModel()->UpdateLengthTree();
 			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
 				GetModel()->GetSynRateTree()->specialUpdate();
 			}
-            GetModel()->UpdateLengthTree();
 			if (!GetModel()->Unconstrained() && ! GetModel()->SeparateSyn())	{
 				double r = GetModel()->GetMeanSynRate();
 				meansyn += r;
@@ -1500,43 +1388,61 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 
 		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-		
         meanNe->SetLogScale(10.0);
 
-		double alpha[dim];
-		
-		for (int i=0; i<dim; i++) {
-			alpha[i]=0;
-		}	
-		
-        // corresponds to generation_time
-		int indice1(-1);
-        // corresponds to pi_S
-		int indice2(-1);
+		MeanExpNormTree* meanu = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+        meanu->SetLogScale(10.0);
+
+        // index of dS: 0
+        int idxdS = 0;
+        // index of generation_time in continuous data
+		int idxgentime(-1);
+        // index of piS in continuous data
+		int idxpiS(-1);
 		
 		for (int k=0; k<Ncont; k++)	{
 			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "generation_time") {
-				indice1 = k+dim-Ncont;
+				idxgentime= k+dim-Ncont;
 			}	
 			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
-				indice2 = k+dim-Ncont;
+				idxpiS = k+dim-Ncont;
 			}	
 		}
 		
-		if (indice1 == -1)  {
+		if (idxgentime == -1)  {
             cerr << "error: cannot find entry generation_time in continuous data matrix\n";
 			exit(1);
 		}
 		
-		if (indice2 == -1)  {
+		if (idxpiS == -1)  {
             cerr << "error: cannot find entry piS in continuous data matrix\n";
 			exit(1);
 		}
 		
-		alpha[0] = -1;
-		alpha[indice1] = -1;
-		alpha[indice2] = 1;
+        // dS: mutation rate per tree depth
+        // tau: generation time in days
+        // rootage: tree depth in myr
+        // rootage * 365.10^6: tree depth in days
+        //
+        // mutation rate per generation:
+        // u = dS * tau / (rootage * 365.10^6)
+        // log u = log dS + log tau - log(rootage * 365.10^6)
+        //
+        // effective population size:
+        // Ne = pi_S / 4 / u = pi_s / 4 / dS / tau * (rootage * 365.10^6)
+        // log Ne = log pi_S - log dS - log tau + log(rootage * 365.10^6 / 4)
 
+        // alphau and alphaNe: slopes
+        vector<double> alphau(dim, 0);
+		alphau[idxdS] = 1;
+		alphau[idxgentime] = 1;
+		
+        vector<double> alphaNe(dim, 0);
+		alphaNe[idxdS] = -1;
+		alphaNe[idxgentime] = -1;
+		alphaNe[idxpiS] = 1;
+
+        // betau and betaNe: offsets (but dependent on root age, and so, defined point by point)
 		
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
@@ -1547,35 +1453,32 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanCovMatrix*  maty1 = new MeanCovMatrix(dim);
 		MeanCovMatrix*  maty2 = new MeanCovMatrix(dim);
 
-
 		// cycle over the sample
 		for (int i=0; i<size; i++)	{
 			cerr << '.';
 
-			// get next point -> will be stored into "model", and thus, will be accessible through GetModel()
-			double t0;
-
 			GetNextPoint();
-
+            GetModel()->UpdateLengthTree();
 			GetModel()->GetSynRateTree()->specialUpdate();
-			GetModel()->UpdateLengthTree();
 
 			meanchrono->Add(GetModel()->GetChronogram());
-
 			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 0);
 			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 1);
 
+            double t0 = 0;
 			if (!iscalspe) {
 				t0 = GetModel()->GetRootAge();
 			}
 			else {
 				t0 = rootage;
 			}
+
+            // offsets for log-linear combinations for logNe and logu phylogenetic histories
+            double betau = log(365.0*t0*1000000.0)/log(10.0);
+            double betaNe = log(365.0*t0*1000000.0/4.0)/log(10.0);
 				
-			double beta = log(t0 * 1000000)/log(10)+log(365)/log(10)-log(4)/log(10);
-			
-			
-			meanNe->AddNe(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alpha, beta, dim, indice1, indice2);
+			meanNe->AddLogLinearCombination(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alphaNe, betaNe);
+			meanu->AddLogLinearCombination(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alphau, betau);
 
 			for (int k=0; k<Ncont; k++)	{
 				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), GetModel()->GetL()+k);
@@ -1585,14 +1488,13 @@ class BranchOmegaMultivariateSample : public Sample	{
 			CovMatrix& m = *(GetModel()->GetCovMatrix());
 			mat->Add(&m);
 			
-			
 			double mas1[dim][dim];
 			CovMatrix my1(dim);
 			
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (i == 0) {
-						mas1[i][j] = alpha[indice2] * m[indice2][j] + alpha[0] * m[0][j] + alpha[indice1] * m[indice1][j];
+						mas1[i][j] = alphaNe[idxpiS] * m[idxpiS][j] + alphaNe[idxdS] * m[idxdS][j] + alphaNe[idxgentime] * m[idxgentime][j];
 					}	
 					else {	
                         mas1[i][j] = m[i][j];
@@ -1603,7 +1505,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
 					if (j == 0) {
-						my1[i][j] = alpha[indice2] * mas1[i][indice2] + alpha[0] * mas1[i][0] + alpha[indice1] * mas1[i][indice1];
+						my1[i][j] = alphaNe[idxpiS] * mas1[i][idxpiS] + alphaNe[idxdS] * mas1[i][idxdS] + alphaNe[idxgentime] * mas1[i][idxgentime];
 					}	
 					else {	
                         my1[i][j] = mas1[i][j];
@@ -1617,8 +1519,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 			
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
-					if (i == indice2) {
-						mas2[i][j] = alpha[indice2] * m[indice2][j] + alpha[0] * m[0][j] + alpha[indice1] * m[indice1][j];
+					if (i == idxpiS) {
+						mas2[i][j] = alphaNe[idxpiS] * m[idxpiS][j] + alphaNe[idxdS] * m[idxdS][j] + alphaNe[idxgentime] * m[idxgentime][j];
 					}	
 					else {	
                         mas2[i][j] = m[i][j];
@@ -1629,8 +1531,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 			
 			for (int i = 0; i<dim; i++) {
 				for (int j = 0; j<dim; j++) {
-					if (j == indice2) {
-						my2[i][j] = alpha[indice2] * mas2[i][indice2] + alpha[0] * mas2[i][0] + alpha[indice1] * mas2[i][indice1];
+					if (j == idxpiS) {
+						my2[i][j] = alphaNe[idxpiS] * mas2[i][idxpiS] + alphaNe[idxdS] * mas2[i][idxdS] + alphaNe[idxgentime] * mas2[i][idxgentime];
 					}	
 					else {	
                         my2[i][j] = mas2[i][j];
@@ -1666,19 +1568,19 @@ class BranchOmegaMultivariateSample : public Sample	{
                     cov_os << setw(7) << mat->mean[k][l] << '\t';
                 }
                 if (!k) {
-                    cov_os << setw(7) << maty2->mean[k][indice2] << '\t';
+                    cov_os << setw(7) << maty2->mean[k][idxpiS] << '\t';
                 }
                 else    {
-                    cov_os << setw(7) << maty1->mean[k][0] << '\t';
+                    cov_os << setw(7) << maty1->mean[k][idxdS] << '\t';
                 }
                 cov_os << '\n';
             }
             for (int l=0; l<dim; l++)   {
                 if (!l) {
-                    cov_os << setw(7) << maty2->mean[l][indice2] << '\t';
+                    cov_os << setw(7) << maty2->mean[l][idxpiS] << '\t';
                 }
                 else    {
-                    cov_os << setw(7) << maty1->mean[l][0] << '\t';
+                    cov_os << setw(7) << maty1->mean[l][idxdS] << '\t';
                 }
             }
             cov_os << maty1->mean[0][0];
@@ -1691,19 +1593,19 @@ class BranchOmegaMultivariateSample : public Sample	{
                     cov_os << setw(7) << mat->correl[k][l] << '\t';
                 }
                 if (!k) {
-                    cov_os << setw(7) << maty2->correl[k][indice2] << '\t';
+                    cov_os << setw(7) << maty2->correl[k][idxpiS] << '\t';
                 }
                 else    {
-                    cov_os << setw(7) << maty1->correl[k][0] << '\t';
+                    cov_os << setw(7) << maty1->correl[k][idxdS] << '\t';
                 }
                 cov_os << '\n';
             }
             for (int l=0; l<dim; l++)   {
                 if (!l) {
-                    cov_os << setw(7) << maty2->correl[l][indice2] << '\t';
+                    cov_os << setw(7) << maty2->correl[l][idxpiS] << '\t';
                 }
                 else    {
-                    cov_os << setw(7) << maty1->correl[l][0] << '\t';
+                    cov_os << setw(7) << maty1->correl[l][idxdS] << '\t';
                 }
             }
             cov_os << maty1->correl[0][0];
@@ -1716,19 +1618,19 @@ class BranchOmegaMultivariateSample : public Sample	{
                     cov_os << setw(7) << mat->pp[k][l] << '\t';
                 }
                 if (!k) {
-                    cov_os << setw(7) << maty2->pp[k][indice2] << '\t';
+                    cov_os << setw(7) << maty2->pp[k][idxpiS] << '\t';
                 }
                 else    {
-                    cov_os << setw(7) << maty1->pp[k][0] << '\t';
+                    cov_os << setw(7) << maty1->pp[k][idxdS] << '\t';
                 }
                 cov_os << '\n';
             }
             for (int l=0; l<dim; l++)   {
                 if (!l) {
-                    cov_os << setw(7) << maty2->pp[l][indice2] << '\t';
+                    cov_os << setw(7) << maty2->pp[l][idxpiS] << '\t';
                 }
                 else    {
-                    cov_os << setw(7) << maty1->pp[l][0] << '\t';
+                    cov_os << setw(7) << maty1->pp[l][idxdS] << '\t';
                 }
             }
             cov_os << maty1->pp[0][0];
@@ -1867,7 +1769,6 @@ int main(int argc, char* argv[])	{
 
 	string mulreg = "";
 
-	bool timeline = false;
 	bool trend = false;
 
 	bool strandsym = false;
@@ -2007,9 +1908,6 @@ int main(int argc, char* argv[])	{
 			*/
 			else if (s == "-ic")	{
 				ic = true;
-			}
-			else if (s == "-timeline")	{
-				timeline = true;
 			}
 			else if (s == "-trend")	{
 				trend = true;
