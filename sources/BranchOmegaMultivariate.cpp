@@ -484,7 +484,7 @@ int main(int argc, char* argv[])	{
 		int until = -1;
 
 		int omegaratiotree = 0;
-        bool shiftages;
+        bool shiftages = false;
 
 		int nrep = 0;
 		int ncycle = 1;
