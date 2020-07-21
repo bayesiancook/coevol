@@ -151,6 +151,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		
         meanNe->SetLogScale(10.0);
         meanu->SetLogScale(10.0);
+        meansynrate->SetLogScale(10.0);
 
 		double alpha[dim];
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
@@ -180,13 +181,21 @@ class BranchOmegaMultivariateSample : public Sample	{
 			GetModel()->GetNeNodeTree()->specialUpdate();
 			GetModel()->GetUNodeTree()->specialUpdate();
 			
+			double rootage = GetModel()->GetRootAge();
+
             betadist.push_back(GetModel()->GetBeta());
             meanbeta += GetModel()->GetBeta();
 
 			meanchrono->Add(GetModel()->GetChronogram());
 
 			if (!noadapt) {meanadaptativeomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(),0);}
-			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetLengthTree());
+
+            // dS: mutation rate per tree depth
+            // tree depth in years: rootage * 365.10^6
+            // mutation rate per year: r = dS / rootage / 10^6
+            double synrate_offset = -log(rootage * 1000000);
+			meansynrate->Add(GetModel()->GetSynrateNodeTree(), GetModel()->GetLengthTree(), synrate_offset);
+
 			if (!noadapt) {meanomega->Add(GetModel()->GetOmegaNodeTree(), GetModel()->GetLengthTree());}
 			meanu->Add(GetModel()->GetUNodeTree(), GetModel()->GetLengthTree());
 			meanNe->Add(GetModel()->GetNeNodeTree(), GetModel()->GetLengthTree());

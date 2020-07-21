@@ -1391,6 +1391,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
 		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+        meansynrate->SetLogScale(10.0);
+
 		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 
 		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
@@ -1485,10 +1487,6 @@ class BranchOmegaMultivariateSample : public Sample	{
             GetModel()->UpdateLengthTree();
 			GetModel()->GetSynRateTree()->specialUpdate();
 
-			meanchrono->Add(GetModel()->GetChronogram());
-			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 0);
-			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 1);
-
             double t0 = 0;
 			if (!iscalspe) {
 				t0 = GetModel()->GetRootAge();
@@ -1496,6 +1494,16 @@ class BranchOmegaMultivariateSample : public Sample	{
 			else {
 				t0 = rootage;
 			}
+
+			meanchrono->Add(GetModel()->GetChronogram());
+
+            // dS: mutation rate per tree depth
+            // tree depth in years: rootage * 10^6
+            // mutation rate per year: dS / rootage / 10^6
+            double synrate_offset = -log(t0 * 1000000);
+			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 0, synrate_offset);
+
+			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 1);
 
             // offsets for log-linear combinations for logNe and logu phylogenetic histories
             double betau = -log(365.0*t0*1000000.0);
