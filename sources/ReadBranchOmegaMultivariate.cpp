@@ -1401,10 +1401,14 @@ class BranchOmegaMultivariateSample : public Sample	{
 
         // index of dS: 0
         int idxdS = 0;
+        // index of dNdS: 1
+        int idxdNdS = 1;
         // index of generation_time in continuous data
 		int idxgentime(-1);
         // index of piS in continuous data
 		int idxpiS(-1);
+        // index of piNpiS in cont data
+        int idxpiNpiS(-1);
 		
 		for (int k=0; k<Ncont; k++)	{
 			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "generation_time") {
@@ -1413,6 +1417,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
 				idxpiS = k+dim-Ncont;
 			}	
+            else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piNpiS")  {
+                idxpiNpiS = k+dim-Ncont;
+            }
 		}
 		
 		if (idxgentime == -1)  {
@@ -1424,6 +1431,17 @@ class BranchOmegaMultivariateSample : public Sample	{
             cerr << "error: cannot find entry piS in continuous data matrix\n";
 			exit(1);
 		}
+
+		if (idxpiNpiS == -1)  {
+            cerr << "error: cannot find entry piNpiS in continuous data matrix\n";
+			exit(1);
+		}
+
+        cerr << "dim       : " << dim << '\n';
+        cerr << "idxdS     : " << idxdS << '\n';
+        cerr << "idxpiS    : " << idxpiS << '\n';
+        cerr << "idxpiNpiS : " << idxpiNpiS << '\n';
+        cerr << "idxgentime: " << idxgentime << '\n';
 		
         // dS: mutation rate per tree depth
         // tau: generation time in days
@@ -1567,6 +1585,7 @@ class BranchOmegaMultivariateSample : public Sample	{
             for (int k=0; k<GetModel()->Ncont; k++)  {
 				cov_os << GetModel()->GetContinuousData()->GetCharacterName(k) << '\n';
             }
+            cov_os << "Ne\n";
             cov_os << '\n';
             cov_os << "covariances\n";
             for (int k=0; k<dim; k++)   {
@@ -1644,7 +1663,7 @@ class BranchOmegaMultivariateSample : public Sample	{
             cov_os << '\n';
 
             ofstream slope_os((GetName() + ".slopes").c_str());
-            maty1->PrintSlopesNe(slope_os);
+            maty1->PrintSlopesNe(slope_os, idxdNdS, idxpiNpiS);
 
             cerr << "covariance matrix in " << name << ".cov\n";
             cerr << "slopes of log dN/dS and log piN/piS ~ log Ne in " << name << ".slopes\n";
