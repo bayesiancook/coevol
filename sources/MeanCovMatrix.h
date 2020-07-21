@@ -531,13 +531,17 @@ class MeanCovMatrix {
 		os << '\n';
 	}
 
-    void PrintSlopesNe(ostream& os, int idxdNdS, int idxpiNpiS) const   {
+    void PrintSlopesNe(ostream& os, int idxdNdS, int idxpiNpiS, int idxpiS) const   {
 
         int l = (int) (0.025 * size);
         int j = 0; 
         os << "relation\tmedian\tCI95min\tCI95max\n";
         os << "logdN/dS~logNe" << '\t' << meanslope[j][idxdNdS] << '\t' << slope[j][idxdNdS][l] << '\t' << slope[j][idxdNdS][size-1-l] << '\n';
         os << "logpiN/piS~logNe" << '\t' << meanslope[j][idxpiNpiS] << '\t' << slope[j][idxpiNpiS][l] << '\t' << slope[j][idxpiNpiS][size-1-l] << '\n';
+        os << '\n';
+        j = idxpiS;
+        os << "logdN/dS~logpiS" << '\t' << meanslope[j][idxdNdS] << '\t' << slope[j][idxdNdS][l] << '\t' << slope[j][idxdNdS][size-1-l] << '\n';
+        os << "logpiN/piS~logpiS" << '\t' << meanslope[j][idxpiNpiS] << '\t' << slope[j][idxpiNpiS][l] << '\t' << slope[j][idxpiNpiS][size-1-l] << '\n';
     }
 
 	void PrintSlopes(ostream& os) const	{

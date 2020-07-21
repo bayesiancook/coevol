@@ -1663,7 +1663,7 @@ class BranchOmegaMultivariateSample : public Sample	{
             cov_os << '\n';
 
             ofstream slope_os((GetName() + ".slopes").c_str());
-            maty1->PrintSlopesNe(slope_os, idxdNdS, idxpiNpiS);
+            maty1->PrintSlopesNe(slope_os, idxdNdS, idxpiNpiS, idxpiS);
 
             cerr << "covariance matrix in " << name << ".cov\n";
             cerr << "slopes of log dN/dS and log piN/piS ~ log Ne in " << name << ".slopes\n";
