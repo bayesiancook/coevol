@@ -96,6 +96,9 @@ class ConjugateBranchOmegaMultivariateModel : public BranchOmegaMultivariateMode
             cerr << "error: split and shift ages incompatible with current version\n";
             exit(1);
         }
+        else    {
+            splitlengthtree = 0;
+        }
 
 		// A FROZEN ACCIDENT...
 		if (inomegaratiotree == 3)	{
