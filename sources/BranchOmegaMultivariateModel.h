@@ -760,6 +760,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			}
 			else	{
 				lengthtree = branchtimetree;
+                splitlengthtree = 0;
 			}
 
             // account for ancestral polymorphism
@@ -1128,6 +1129,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		omegatv0tree = 0;
 		synratetstree = 0;
 		synratetvgctree = 0;
+
+        gctree = 0;
+        gctree1 = 0;
+        gctree2 = 0;
+        gctree3 = 0;
 
 		MultiNormal* rootval = process->GetMultiNormal(process->GetTree()->GetRoot());
 
