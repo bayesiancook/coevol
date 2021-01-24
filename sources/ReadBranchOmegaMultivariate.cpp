@@ -117,6 +117,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 		string priorsigmafile = "None";
 
         shiftages = false;
+        softa = 0;
+
 		nsplit = 1;
 		withdrift = 0;
 		uniformprior = 0;

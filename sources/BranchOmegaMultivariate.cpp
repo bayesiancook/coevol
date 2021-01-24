@@ -1,4 +1,3 @@
-
 #include "Chain.h"
 #include "ConjugateBranchOmegaMultivariateModel.h"
 #include "StringStreamUtils.h"
@@ -153,6 +152,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		df = 2;
 		omegaratiotree = 0;
         shiftages = false;
+        softa = 0;
 		clamproot = false;
 		clamptree = false;
 		meanexp = false;
