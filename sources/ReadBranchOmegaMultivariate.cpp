@@ -118,6 +118,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 		withdrift = 0;
 		uniformprior = 0;
 		rootfile = "None";
+        softa = 0;
 
 		// read model type, and other standard fields
 		is >> modeltype;

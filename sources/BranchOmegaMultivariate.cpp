@@ -159,6 +159,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		withdrift = 0;
 		uniformprior = 0;
 		rootfile = "None";
+        softa = 0;
 		withtimeline = false;
 		separatesyn = false;
 		separateomega = false;
