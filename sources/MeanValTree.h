@@ -728,7 +728,7 @@ class MeanExpNormTree : public NewickTree {
 				temp = 1;
 			}
 		}
-		if (isnan(temp))	{
+		if (std::isnan(temp))	{
 			cerr << "error in recursive add: nan\n";
 			if (from->isRoot())	{
 				cerr << "root\n";

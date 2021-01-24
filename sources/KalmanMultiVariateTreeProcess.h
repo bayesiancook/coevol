@@ -336,7 +336,7 @@ class ExternalKalmanMultiVariateTreeProcess : public virtual MultiVariateTreePro
 		cerr << "AFTER KALMAN\n";
 		for (int i=0; i<GetDim(); i++)	{
 			cerr << GetMean(i) << '\t';
-			if (isinf(GetMean(i)) || isnan(GetMean(i)))	{
+			if (std::isinf(GetMean(i)) || std::isnan(GetMean(i)))	{
 				cerr << "error : inf or nan\n";
 				cerr << (*this) << '\n';
 				exit(1);

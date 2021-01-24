@@ -41,7 +41,7 @@ class CalDateCopy : public Dvar<PosReal>	{
 			double t0 = Scale->val() * beta / alpha;
 			double t = nodedate->val() * t0;
 			loggg = BD_logg(Chi->val(),Chi2->val(),t,t0);
-			if (isinf(loggg))	{
+			if (std::isinf(loggg))	{
 				cerr << "in BD Cal Chrono: inf\n";
 				loggg = 1e4;
 			}
@@ -75,14 +75,14 @@ class CalDateCopy : public Dvar<PosReal>	{
 			// double nu = p2 * (1-e0) / (p2*(1 - e0) + p1*e0);
 			// double expret = p2 / nu * P0 * P0 * exp(-p1 * t);
 			// ret = log(expret);
-			if (isnan(ret))	{
+			if (std::isnan(ret))	{
 				cerr << "numerical error in BD_logg\n";
 				cerr << p1 << '\t' << p2 << '\n';
 				cerr << t << '\t' << t0 << '\n';
 				cerr << P0 << '\n';
 				exit(1);
 			}
-			if (isinf(ret))	{
+			if (std::isinf(ret))	{
 				cerr << "numerical error in BD_logg\n";
 				cerr << p1 << '\t' << p2 << '\n';
 				cerr << t << '\t' << t0 << '\n';
@@ -92,13 +92,13 @@ class CalDateCopy : public Dvar<PosReal>	{
 		}
 		else	{
 			ret = log( (1 + p2*t0) / t0 / (1 + p2*t) / (1 + p2*t));
-			if (isnan(ret))	{
+			if (std::isnan(ret))	{
 				cerr << "numerical error in BD_logg\n";
 				cerr << p1 << '\t' << p2 << '\n';
 				cerr << t << '\t' << t0 << '\n';
 				exit(1);
 			}
-			if (isinf(ret))	{
+			if (std::isinf(ret))	{
 				cerr << "numerical error in BD_logg\n";
 				cerr << p1 << '\t' << p2 << '\n';
 				cerr << t << '\t' << t0 << '\n';
@@ -361,7 +361,7 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 			else	{
 				total -= log(1-2*a) - log(t_u - t_l);
 			}
-			if (isnan(total))	{
+			if (std::isnan(total))	{
 				cerr << "error in log calib: log prob nan\n";
 				cerr << "lower and upper bound\n";
 				cerr << (t<t_l) << '\t' << (t>t_u) << '\n';
@@ -399,7 +399,7 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 					x = log(1 - a) - log(A) - log(Pi) - log(c) - log(t_l) - log(1 + f*f);
 					total -= x;
 				}
-				if (isnan(total))	{
+				if (std::isnan(total))	{
 					cerr << a << '\t' << p << '\t' << c << '\t' << A << '\t' << Pi << '\t' << theta << '\t' << t << '\t' << t_l  << '\t' << f << '\n';
 					cerr << log(theta) << '\n';
 					cerr << log(1 + f*f) << '\n';
@@ -422,11 +422,11 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 				total -= log(1 - a) + log(theta_u);
 			}
 		}
-		if (isinf(total))	{
+		if (std::isinf(total))	{
 			cerr << "error in log calib: log prob inf\n";
 			exit(1);
 		}
-		if (isnan(total))	{
+		if (std::isnan(total))	{
 			cerr << "error in log calib: log prob nan\n";
 			exit(1);
 		}
@@ -450,7 +450,7 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 			double f = (t - t_l * (1 + p)) / c / t_l;
 			double x = - log(A) - log(Pi) - log(c) - log(t_l) - log(1 + f*f);
 			total += x;
-			if (isnan(total))	{
+			if (std::isnan(total))	{
 				cerr << "error in BDCalibChrono: logCalibPrior\n";
 				exit(1);
 			}
@@ -595,7 +595,7 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 				total += log(k);
 			}
 			double tmp = BD_logDeltaG(chi->val(),chi2->val(),T[i],T[i+1],t0);
-			if (isinf(tmp) || isnan(tmp))	{
+			if (std::isinf(tmp) || std::isnan(tmp))	{
 				cerr << "chi2 : " << *chi2 << '\n';
 				exit(1);
 			}
@@ -620,7 +620,7 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 			ret += log(1 - exp(-p1*(t2-t1)));
 			ret -= log(p2*(1 - exp(-p1*t1)) + p1*exp(-p1*t1));
 			ret -= log(p2*(1 - exp(-p1*t2)) + p1*exp(-p1*t2));
-			if (isinf(ret) || isnan(ret))	{
+			if (std::isinf(ret) || std::isnan(ret))	{
 				cerr << "numerical error in BN_logDeltaG\n";
 				cerr << p1 << '\t' << p2 << '\n';
 				cerr << log(p2) << '\n';
@@ -637,7 +637,7 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 		else	{
 			ret = (1 + p2*t0) * t2 / t0 / (1 + p2*t2) ;
 			ret -= (1 + p2*t0) * t1 / t0 / (1 + p2*t1) ;
-			if (isinf(ret) || isnan(ret))	{
+			if (std::isinf(ret) || std::isnan(ret))	{
 				NumErrorCount++;
 				ret = 1;
 				cerr << "numerical error in BN_logDeltaG\n";

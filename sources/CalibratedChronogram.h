@@ -257,8 +257,6 @@ class FileCalibrationSet : public CalibrationSet	{
 	}
 };
 
-class CalibratedChronogram;
-
 class CalibratedNodeDate : public NodeDate	{
 
 	protected:

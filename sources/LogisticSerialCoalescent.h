@@ -357,11 +357,11 @@ class LogisticSerialCoalescent: public CalibratedChronogram, public Rnode {
 			exit(1);
 		}
 
-		if (isinf(tot))	{
+		if (std::isinf(tot))	{
 			cerr << "error in SerialBDP: log prob is inf\n";
 			exit(1);
 		}
-		if (isnan(tot))	{
+		if (std::isnan(tot))	{
 			cerr << "error in SerialBDP: log prob is nan\n";
 			exit(1);
 		}

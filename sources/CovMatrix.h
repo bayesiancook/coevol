@@ -613,7 +613,7 @@ class CovMatrix : public BaseType, public Multiplicative {
 		}
 		delete[] a;
 		diagflag = false;
-		if (isinf(logdet))	{
+		if (std::isinf(logdet))	{
 			cerr << "error in cov matrix: non invertible\n";
 			return 1;
 			exit(1);

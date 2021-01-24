@@ -451,7 +451,7 @@ inline void SubMatrix::BackwardPropagate(const double* up, double* down, double 
 
 
 	for (int i=0; i<GetNstate(); i++)	{
-		if (isnan(down[i]))	{
+		if (std::isnan(down[i]))	{
 			cerr << "error in back prop\n";
 			for (int j=0; j<GetNstate(); j++)	{
 				cerr << up[j] << '\t' << down[j] << '\t' << Stationary(j) << '\n';

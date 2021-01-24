@@ -49,11 +49,11 @@ class BDNodeDate : public NodeDate	{
 		double Prho = delta->val() / (kappa->val() + (delta->val() - kappa->val()) * expo);
 		double g = kappa->val() * Prho * Prho * expo / nu;
 		double h = log(g);
-		if (isnan(h))	{
+		if (std::isnan(h))	{
 			cerr << "error in bd node date : nan\n";
 			exit(1);
 		}
-		if (isinf(h))	{
+		if (std::isinf(h))	{
 			cerr << "error in bd node data : inf\n";
 			exit(1);
 		}

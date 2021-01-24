@@ -70,11 +70,11 @@ void MGCodonProfileMutSelCodonSubMatrix::ComputeArray(int i)    {
                                 cerr << "negative entry in matrix\n";
                                 exit(1);
                         }
-			if (isinf(Q[i][j]))	{
+			if (std::isinf(Q[i][j]))	{
 				cerr << "inf Q[i][j]\n";
 				exit(1);
 			}
-			if (isnan(Q[i][j]))	{
+			if (std::isnan(Q[i][j]))	{
 				cerr << "nan Q[i][j]\n";
 				exit(1);
 			}
