@@ -275,8 +275,11 @@ class BDCalibratedChronogram : public CalibratedChronogram, public Rnode {
 	}
 
 	~BDCalibratedChronogram()	{
+        /*
 		RecursiveDeleteBranch(GetRoot());
 		RecursiveDeleteNode(GetRoot());
+        */
+        delete copytree;
 		delete scale;
 	}
 

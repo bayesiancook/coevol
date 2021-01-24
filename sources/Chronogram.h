@@ -283,9 +283,11 @@ class Chronogram : public NodeBranchProcess<PosReal, PosReal> {
 		}
 	}
 
+    /*
 	~Chronogram(){
 		RecursiveDelete(GetRoot());
 	}
+    */
 
 	Tree* GetTree(){
 		return tree;

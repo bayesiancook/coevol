@@ -485,10 +485,12 @@ class CalibratedChronogram : public Chronogram	{
 		}
 	}
 
+    /*
 	~CalibratedChronogram()	{
 		RecursiveDeleteBranch(GetRoot());
 		RecursiveDeleteNode(GetRoot());
 	}
+    */
 
 	void drawSample()	{
 		double d = RecursiveDrawAges(GetRoot());
