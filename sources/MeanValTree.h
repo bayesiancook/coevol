@@ -12,7 +12,7 @@ class MeanBranchTree : public NewickTree {
 
 	public:
 
-	MeanBranchTree(Tree* intree, bool inwithroot = false) : tree(intree), withRoot(inwithroot)	{
+	MeanBranchTree(Tree* intree, bool inwithroot = false) : tree(intree), withRoot(inwithroot), size(0)	{
 
 	}
 
