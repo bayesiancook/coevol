@@ -881,7 +881,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			ofstream oos((GetName() + ".postmeanomega.tre").c_str());
 			meanomega->ToStream(oos);
 			cerr << "reconstructed variation in omega in " << name << ".postmeanomega.tre\n";
-			// cerr << "pp of mean leaf values > root value : " << meanomega->GetPPLeafRoot() << '\n';
 		}
 
 		if (GetModel()->isGC3Activated())	{
@@ -903,7 +902,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			ofstream gcos((GetName() + ".postmeangc.tre").c_str());
 			meangc->ToStream(gcos);
 			cerr << "reconstructed variation in gc in " << name << ".postmeangc.tre\n";
-			// cerr << "pp of mean leaf values > root value : " << meangc->GetPPLeafRoot() << '\n';
 		}
 
 		if (GetModel()->HasTvGC())	{
@@ -928,7 +926,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
 			meansynrate->ToStream(sos);
 			cerr << "reconstructed variation in dS in " << name << ".postmeansynrate.tre\n";
-			// cerr << "pp of mean leaf values > root value : " << meansynrate->GetPPLeafRoot() << '\n';
 			if (tex)	{
 				ostringstream s;
 				s << GetName() << ".postmeansynrate.tre";
@@ -949,7 +946,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			ofstream os(s.str().c_str());
 			tree[k]->ToStream(os);
 			cerr << "reconstructed variation in " << GetModel()->GetContinuousData()->GetCharacterName(k) << " in "  << name << ".postmean" << k+1 << ".tre\n";
-			// cerr << "pp of mean leaf values > root value : " << tree[k]->GetPPLeafRoot() << '\n';
 			if (tex && (! GetModel()->Unconstrained()))	{
 				MeanChronoBubbleTree* textree = new MeanChronoBubbleTree(meanchrono,tree[k],xscale,yscale,nodescale,nodepower,barwidth,fontsize,bubbletext,withheader,leafnameshift);
 				textree->Draw((s.str() + ".tex").c_str());
@@ -1444,11 +1440,13 @@ class BranchOmegaMultivariateSample : public Sample	{
 			exit(1);
 		}
 
+        /*
         cerr << "dim       : " << dim << '\n';
         cerr << "idxdS     : " << idxdS << '\n';
         cerr << "idxpiS    : " << idxpiS << '\n';
         cerr << "idxpiNpiS : " << idxpiNpiS << '\n';
         cerr << "idxgentime: " << idxgentime << '\n';
+        */
 		
         // dS: mutation rate per tree depth
         // tau: generation time in days
@@ -1604,25 +1602,21 @@ class BranchOmegaMultivariateSample : public Sample	{
 		ofstream oos((GetName() + ".postmeanomega.tre").c_str());
 		meanomega->ToStream(oos);
 		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
-		cerr << "pp of mean leaf values > root value : " << meanomega->GetPPLeafRoot() << '\n';
 
 		meanNe->Normalise();
 		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
 		meanNe->ToStream(Neos);
 		cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
-		cerr << "pp of mean leaf values > root value : " << meanNe->GetPPLeafRoot() << '\n';
 
 		meanu->Normalise();
 		ofstream uos((GetName() + ".postmeanu.tre").c_str());
 		meanu->ToStream(uos);
 		cerr << "reconstructed variations of u in " << name << ".postmeanu.tre\n";
-		cerr << "pp of mean leaf values > root value : " << meanu->GetPPLeafRoot() << '\n';
 
 		meansynrate->Normalise();
 		ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
 		meansynrate->ToStream(sos);
 		cerr << "reconstructed variations of Ks in " << name << ".postmeansynrate.tre\n";
-		cerr << "pp of mean leaf values > root value : " << meansynrate->GetPPLeafRoot() << '\n';
 
 		for (int k=0; k<Ncont; k++)	{
 			tree[k]->Normalise();
@@ -1631,7 +1625,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			ofstream os(s.str().c_str());
 			tree[k]->ToStream(os);
 			cerr << "reconstructed variations of continuous character # " << k+1 << " in "  << name << ".postmean" << k+1 << ".tre\n";
-			cerr << "pp of mean leaf values > root value : " << tree[k]->GetPPLeafRoot() << '\n';
 		}
 
 		ofstream ssos((GetName() + ".postmeansynrate.tab").c_str());
