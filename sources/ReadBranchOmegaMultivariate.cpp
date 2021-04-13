@@ -1413,6 +1413,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		int idxpiS(-1);
         // index of piNpiS in cont data
         int idxpiNpiS(-1);
+
+        int idxu(dim);
+        int idxNe(dim+1);
 		
 		for (int k=0; k<Ncont; k++)	{
 			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "generation_time") {
@@ -1470,16 +1473,29 @@ class BranchOmegaMultivariateSample : public Sample	{
 		alphaNe[idxgentime] = -1;
 		alphaNe[idxpiS] = 1;
 
-        // betau and betaNe: offsets (but dependent on root age, and so, defined point by point)
-		
+        // betau and betaNe: offsets (but dependent on root age, and so, defined point by point below)
+        
+        // matrix giving all original variables + logu and logNe as a function of original variables
+        vector<vector<double>> A(dim+2, vector<double>(dim+2, 0));
+        // original variables
+        for (int k=0; k<dim; k++)   {
+            A[k][k] = 1.0;
+        }
+        // log u
+        A[idxu][idxdS] = 1.0;
+        A[idxu][idxgentime] = 1.0;
+        // log Ne
+        A[idxNe][idxdS] = -1.0;
+        A[idxNe][idxgentime] = -1.0;
+        A[idxNe][idxpiS] = 1.0;
+
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
 			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
 		}
 
-		MeanCovMatrix*  mat = new MeanCovMatrix(dim);
-		MeanCovMatrix*  maty1 = new MeanCovMatrix(dim);
-		MeanCovMatrix*  maty2 = new MeanCovMatrix(dim);
+		MeanCovMatrix*  meancov = new MeanCovMatrix(dim);
+        MeanCovMatrix* expandedmeancov = new MeanCovMatrix(dim+2, false);
 
 		// cycle over the sample
 		for (int i=0; i<size; i++)	{
@@ -1519,63 +1535,31 @@ class BranchOmegaMultivariateSample : public Sample	{
 			}
 
             if (! clampdiag)    {
-			CovMatrix& m = *(GetModel()->GetCovMatrix());
-			mat->Add(&m);
-			
-			double mas1[dim][dim];
-			CovMatrix my1(dim);
-			
-			for (int i = 0; i<dim; i++) {
-				for (int j = 0; j<dim; j++) {
-					if (i == 0) {
-						mas1[i][j] = alphaNe[idxpiS] * m[idxpiS][j] + alphaNe[idxdS] * m[idxdS][j] + alphaNe[idxgentime] * m[idxgentime][j];
-					}	
-					else {	
-                        mas1[i][j] = m[i][j];
-					}
-				}
-			}
-			
-			for (int i = 0; i<dim; i++) {
-				for (int j = 0; j<dim; j++) {
-					if (j == 0) {
-						my1[i][j] = alphaNe[idxpiS] * mas1[i][idxpiS] + alphaNe[idxdS] * mas1[i][idxdS] + alphaNe[idxgentime] * mas1[i][idxgentime];
-					}	
-					else {	
-                        my1[i][j] = mas1[i][j];
-					}
-				}
-			}
-			
-			
-			double mas2[dim][dim];
-			CovMatrix my2(dim);
-			
-			for (int i = 0; i<dim; i++) {
-				for (int j = 0; j<dim; j++) {
-					if (i == idxpiS) {
-						mas2[i][j] = alphaNe[idxpiS] * m[idxpiS][j] + alphaNe[idxdS] * m[idxdS][j] + alphaNe[idxgentime] * m[idxgentime][j];
-					}	
-					else {	
-                        mas2[i][j] = m[i][j];
-					}
-				}
-			}
-			
-			
-			for (int i = 0; i<dim; i++) {
-				for (int j = 0; j<dim; j++) {
-					if (j == idxpiS) {
-						my2[i][j] = alphaNe[idxpiS] * mas2[i][idxpiS] + alphaNe[idxdS] * mas2[i][idxdS] + alphaNe[idxgentime] * mas2[i][idxgentime];
-					}	
-					else {	
-                        my2[i][j] = mas2[i][j];
-					}
-				}
-			}
-		
-			maty1->Add(&my1);
-			maty2->Add(&my2);
+                // original covariance matrix (dS, dN/dS, traits, generation time, piS and piN/piS)
+                CovMatrix& m = *(GetModel()->GetCovMatrix());
+                meancov->Add(&m);
+                
+                CovMatrix expandedcov(dim+2);
+                double midmat[dim+2][dim];
+                for (int i=0; i<dim+2; i++) {
+                    for (int j=0; j<dim; j++)    {
+                        double tmp = 0;
+                        for (int k=0; k<dim; k++)   {
+                            tmp += A[i][k] * m[k][j];
+                        }
+                        midmat[i][j] = tmp;
+                    }
+                }
+                for (int i=0; i<dim+2; i++) {
+                    for (int j=0; j<dim+2; j++) {
+                        double tmp = 0;
+                        for (int k=0; k<dim; k++)   {
+                            tmp += midmat[i][k] * A[j][k];
+                        }
+                        expandedcov[i][j] = tmp;
+                    }
+                }
+                expandedmeancov->Add(&expandedcov);
             }
 			
 		}
@@ -1583,9 +1567,9 @@ class BranchOmegaMultivariateSample : public Sample	{
 		cerr << "normalise\n";
 
         if (! clampdiag)    {
-            mat->Normalize();
-            maty1->Normalize();
-            maty2->Normalize();
+
+            meancov->Normalize();
+            expandedmeancov->Normalize();
 
             ofstream cov_os((GetName() + ".cov").c_str());
             cov_os.precision(3);
@@ -1595,124 +1579,18 @@ class BranchOmegaMultivariateSample : public Sample	{
             for (int k=0; k<GetModel()->Ncont; k++)  {
 				cov_os << GetModel()->GetContinuousData()->GetCharacterName(k) << '\n';
             }
+            cov_os << "u\n";
             cov_os << "Ne\n";
             cov_os << '\n';
-            cov_os << "covariances\n";
-            for (int k=0; k<dim; k++)   {
-                for (int l=0; l<dim; l++)   {
-                    cov_os << setw(7) << mat->mean[k][l] << '\t';
-                }
-                if (!k) {
-                    cov_os << setw(7) << maty2->mean[k][idxpiS] << '\t';
-                }
-                else    {
-                    cov_os << setw(7) << maty1->mean[k][idxdS] << '\t';
-                }
-                cov_os << '\n';
-            }
-            for (int l=0; l<dim; l++)   {
-                if (!l) {
-                    cov_os << setw(7) << maty2->mean[l][idxpiS] << '\t';
-                }
-                else    {
-                    cov_os << setw(7) << maty1->mean[l][idxdS] << '\t';
-                }
-            }
-            cov_os << maty1->mean[0][0];
-            cov_os << '\n';
-            cov_os << '\n';
 
-            cov_os << "correlation coefficients\n";
-            for (int k=0; k<dim; k++)   {
-                for (int l=0; l<dim; l++)   {
-                    cov_os << setw(7) << mat->correl[k][l] << '\t';
-                }
-                if (!k) {
-                    cov_os << setw(7) << maty2->correl[k][idxpiS] << '\t';
-                }
-                else    {
-                    cov_os << setw(7) << maty1->correl[k][idxdS] << '\t';
-                }
-                cov_os << '\n';
-            }
-            for (int l=0; l<dim; l++)   {
-                if (!l) {
-                    cov_os << setw(7) << maty2->correl[l][idxpiS] << '\t';
-                }
-                else    {
-                    cov_os << setw(7) << maty1->correl[l][idxdS] << '\t';
-                }
-            }
-            cov_os << maty1->correl[0][0];
-            cov_os << '\n';
-            cov_os << '\n';
-
-            cov_os << "posterior probabilities\n";
-            for (int k=0; k<dim; k++)   {
-                for (int l=0; l<dim; l++)   {
-                    cov_os << setw(7) << mat->pp[k][l] << '\t';
-                }
-                if (!k) {
-                    cov_os << setw(7) << maty2->pp[k][idxpiS] << '\t';
-                }
-                else    {
-                    cov_os << setw(7) << maty1->pp[k][idxdS] << '\t';
-                }
-                cov_os << '\n';
-            }
-            for (int l=0; l<dim; l++)   {
-                if (!l) {
-                    cov_os << setw(7) << maty2->pp[l][idxpiS] << '\t';
-                }
-                else    {
-                    cov_os << setw(7) << maty1->pp[l][idxdS] << '\t';
-                }
-            }
-            cov_os << maty1->pp[0][0];
-            cov_os << '\n';
-            cov_os << '\n';
+            expandedmeancov->ToStream(cov_os);
 
             ofstream slope_os((GetName() + ".slopes").c_str());
-            maty1->PrintSlopesNe(slope_os, idxdNdS, idxpiNpiS, idxpiS);
+            expandedmeancov->PrintSlopesNe(slope_os, idxdNdS, idxpiNpiS, idxpiS, idxNe);
 
             cerr << "covariance matrix in " << name << ".cov\n";
             cerr << "slopes of log dN/dS and log piN/piS ~ log Ne in " << name << ".slopes\n";
             cerr << '\n';
-
-            /*
-            ofstream cout((GetName() + ".cov0").c_str());
-            cout << "entries are in the following order:\n";
-            GetModel()->PrintEntries(cout);
-            cout << '\n';
-
-            cout << *mat;
-
-            cerr << "covariance matrix in original parameterization in " << name << ".cov0\n";
-            cerr << '\n';
-
-            mat->PrintSlopes(cout);
-            mat->PrintSlopes2(cout);
-
-            ofstream cout1((GetName() + ".covNe_ds").c_str());
-
-            cout1 << *maty1;
-
-            cerr << "covariance matrix with Ne instead of dS in " << name << ".covNe_ds\n";
-            cerr << '\n';
-
-            maty1->PrintSlopes(cout1);
-            maty1->PrintSlopes2(cout1);
-
-            ofstream cout2((GetName() + ".covNe_pis").c_str());
-
-            cout2 << *maty2;
-
-            cerr << "covariance matrix with Ne instead of pi_S in " << name << ".covNe_pis\n";
-            cerr << '\n';
-
-            maty2->PrintSlopes(cout2);
-            maty2->PrintSlopes2(cout2);
-            */
         }
 
 		meanchrono->Normalise();
