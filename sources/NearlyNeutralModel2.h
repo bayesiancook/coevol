@@ -173,10 +173,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	int nrep;
 
     bool shiftages;
+    double beta0;
 
 	public:
 
-	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inshiftages, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
+	BranchOmegaMultivariateModel(string datafile, string treefile, string contdatafile, string calibfile, double rootage, double rootstdev, int inchronoprior, double priorsigma, int indf, int contdatatype, bool insameseq, bool innoadapt, bool inshiftages, double inbeta0, bool inclamptree, bool inmeanexp, int innrep, bool sample=true, GeneticCodeType type=Universal)	{
 
 		clamptree = inclamptree;
 		chronoprior = inchronoprior;
@@ -187,6 +188,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		noadapt = innoadapt;
 
         shiftages = inshiftages;
+        beta0 = inbeta0;
 
 		// here L = 1: adaptative omega
 		if (!noadapt) {L = 1;}
@@ -394,7 +396,12 @@ class BranchOmegaMultivariateModel : public ProbModel {
         }
 
         // reasonable initial values
-		beta->setval(0.2);
+        if (beta0)  {
+            beta->ClampAt(beta0);
+        }
+        else    {
+            beta->setval(0.2);
+        }
 		logkappa1->setval(0.9);
 		if (!sameseq) {normal_logkappa2->setval(0.4);}
 		
@@ -650,9 +657,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new ProfileMove(stationary,0.01,5),10,"stat10");
 			scheduler.Register(new SimpleMove(stationary,0.001),10,"stat");
 			
-			scheduler.Register(new SimpleMove(beta,0.003),10,"beta");
-			scheduler.Register(new SimpleMove(beta,0.0008),10,"beta");
-			scheduler.Register(new SimpleMove(beta,0.0003),10,"beta");
+            if (beta0)  {
+                scheduler.Register(new SimpleMove(beta,0.003),10,"beta");
+                scheduler.Register(new SimpleMove(beta,0.0008),10,"beta");
+                scheduler.Register(new SimpleMove(beta,0.0003),10,"beta");
+            }
 			
 			scheduler.Register(new SimpleMove(logkappa1,0.15),10,"logkappa1");
 			scheduler.Register(new SimpleMove(logkappa1,0.08),10,"logkappa1");
@@ -663,9 +672,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				scheduler.Register(new SimpleMove(normal_logkappa2,0.008),10,"logkappa2");
 				scheduler.Register(new SimpleMove(normal_logkappa2,0.001),10,"logkappa2");
 
-				scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,1,11),10,"betakappa2");
-				scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,0.1,11),10,"betakappa2");
-				scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,0.01,11),10,"betakappa2");
+                if (beta0)  {
+                    scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,1,11),10,"betakappa2");
+                    scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,0.1,11),10,"betakappa2");
+                    scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,0.01,11),10,"betakappa2");
+                }
 			}
 		}
 	}
@@ -683,7 +694,9 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		for (int l=0; l<L; l++)	{
 			process->CutOff(1,l);
 		}
-		beta->Sample();
+        if (beta0)  {
+            beta->Sample();
+        }
 		logkappa1->Sample();
 		if (!sameseq) {normal_logkappa2->Sample();}
 		relrate->Sample();

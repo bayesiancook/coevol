@@ -21,6 +21,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 	bool sameseq;
 	bool noadapt;
     bool shiftages;
+    double beta0;
 
 	GeneticCodeType type;
 
@@ -35,7 +36,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 
 	string GetModelType() {return modeltype;}
 
-	BranchOmegaMultivariateChain(string indata, string intree, string incontdata, string incalibfile, double inrootage, double inrootstdev, int inchronoprior, double inpriorsigma, int indf, GeneticCodeType intype, int incontdatatype, bool insameseq, bool innoadapt, bool inshiftages, bool inclamptree, bool inmeanexp, int innrep, string filename, int force = 1)	{
+	BranchOmegaMultivariateChain(string indata, string intree, string incontdata, string incalibfile, double inrootage, double inrootstdev, int inchronoprior, double inpriorsigma, int indf, GeneticCodeType intype, int incontdatatype, bool insameseq, bool innoadapt, bool inshiftages, double inbeta0, bool inclamptree, bool inmeanexp, int innrep, string filename, int force = 1)	{
 		modeltype = "CONJUGATEBRANCHOMEGAMULTIVARIATE";
 
 		type = intype;
@@ -52,6 +53,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		sameseq = insameseq;
 		noadapt = innoadapt;
         shiftages = inshiftages;
+        beta0 = inbeta0;
 		clamptree = inclamptree;
 		meanexp = inmeanexp;
 		nrep = innrep;
@@ -72,7 +74,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 
 	void New(int force)	{
 		if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,contdatatype,sameseq,noadapt,shiftages,clamptree,meanexp,nrep,true,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,contdatatype,sameseq,noadapt,shiftages,beta0,clamptree,meanexp,nrep,true,type);
 		}
 		else	{
 			cerr << "error, does not recognise model type : " << modeltype << '\n';
@@ -107,12 +109,17 @@ class BranchOmegaMultivariateChain : public Chain	{
 			is >> chronoprior;
 			is >> check;
             shiftages = 0;
+            beta0 = 0;
 			if (check)	{
                 is >> shiftages;
                 is >> check;
                 if (check)  {
-                    cerr << "error when reading model\n";
-                    exit(1);
+                    is >> beta0;
+                    is >> check;
+                    if (check)  {
+                        cerr << "error when reading model\n";
+                        exit(1);
+                    }
                 }
 			}
 		}
@@ -120,7 +127,7 @@ class BranchOmegaMultivariateChain : public Chain	{
 		is >> every >> until >> size;
 
 		if (modeltype == "CONJUGATEBRANCHOMEGAMULTIVARIATE")	{
-			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,contdatatype,sameseq,noadapt,shiftages,clamptree,meanexp,nrep,true,type);
+			model = new BranchOmegaMultivariateModel(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,contdatatype,sameseq,noadapt,shiftages,beta0,clamptree,meanexp,nrep,true,type);
 		}
 		else	{
 			cerr << "error when opening file "  << name << " : does not recognise model type : " << modeltype << '\n';
@@ -150,6 +157,8 @@ class BranchOmegaMultivariateChain : public Chain	{
 		param_os << chronoprior << '\n';
 		param_os << 1 << '\n';
         param_os << shiftages << '\n';
+		param_os << 1 << '\n';
+        param_os << beta0 << '\n';
 		param_os << 0 << '\n';
 		param_os << every << '\t' << until << '\t' << size << '\n';
 		model->ToStream(param_os);
@@ -214,6 +223,7 @@ int main(int argc, char* argv[])	{
 		bool sameseq = false;
 		bool noadapt = true;
         bool shiftages = false;
+        double beta0 = 0;
 		bool clamptree = false;
 		bool meanexp = false;
 		GeneticCodeType type = Universal;
@@ -333,6 +343,10 @@ int main(int argc, char* argv[])	{
                 else if (s == "-ancpol")    {
                     shiftages = true;
                 }
+                else if (s == "-beta")  {
+                    i++;
+                    beta0 = atof(argv[i]);
+                }
 				else if (s == "-meanexp")	{
 					meanexp = true;
 				}
@@ -377,7 +391,7 @@ int main(int argc, char* argv[])	{
 			exit(1);
 		}
 
-		BranchOmegaMultivariateChain* chain = new BranchOmegaMultivariateChain(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,type,contdatatype,sameseq,noadapt,shiftages,clamptree,meanexp,nrep,name,force);
+		BranchOmegaMultivariateChain* chain = new BranchOmegaMultivariateChain(datafile,treefile,contdatafile,calibfile,rootage,rootstdev,chronoprior,priorsigma,df,type,contdatatype,sameseq,noadapt,shiftages,beta0,clamptree,meanexp,nrep,name,force);
 		chain->SetEvery(every);
 		chain->SetUntil(until);
 		cerr << "start\n";
