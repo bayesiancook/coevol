@@ -540,7 +540,53 @@ class MeanExpNormTree : public NewickTree {
 		}
 	}
 
+	void PrintPopSizeTree(ostream& os, double alpha, double refpopsize, string reftaxon)	{
+		double beta = GetPopSizeOffset(GetTree()->GetRoot(),alpha,refpopsize,reftaxon);
+		RecursivePopSizeTree(os, GetTree()->GetRoot(), alpha, beta);
+        os << ";\n";
+	}
+
 	private:
+
+	double GetPopSizeOffset(Link* from, double alpha, double refpopsize, string reftaxon)	{
+		double beta = -1;
+		if (from->isLeaf())	{
+			string t = from->GetNode()->GetName();
+			if (reftaxon == t)	{
+				beta = alpha * log(refpopsize) + mean[from->GetNode()];
+			}
+		}
+		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
+			double tmp = GetPopSizeOffset(link->Out(),alpha,refpopsize,reftaxon);
+			if (tmp != -1)	{
+				beta = tmp;
+			}
+		}
+		return beta;
+	}
+
+	void RecursivePopSizeTree(ostream& os, Link* from, double alpha, double beta)	{
+		if (from->isLeaf())	{
+            os << from->GetNode()->GetName();
+            os << "_";
+
+		}
+        else    {
+            os << "(";
+            for(const Link* link=from->Next(); link!=from; link=link->Next())	{
+                RecursivePopSizeTree(os, link->Out(),alpha,beta);
+                if (link->Next() != from)   {
+                    os << ",";
+                }
+            }
+            os << ")";
+        }
+		os << (beta - mean[from->GetNode()]) / alpha / log(10.0);
+        if (! from->isRoot())   {
+            os << ":";
+            os << GetMeanTime(from->GetBranch());
+        }
+	}
 
 	void RecursiveCutoffFromBelow(const Link* from, double cutoff)	{
 

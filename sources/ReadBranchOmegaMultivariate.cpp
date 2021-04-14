@@ -1382,6 +1382,29 @@ class BranchOmegaMultivariateSample : public Sample	{
 		delete[] trueval;
 	}
 	
+	void ReadOmegaNe(double alpha, double refpopsize, string reftaxon, bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal)	{
+
+		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+        // meanomega->SetLogScale(10.0);
+
+		// cycle over the sample
+		for (int i=0; i<size; i++)	{
+			cerr << '.';
+			GetNextPoint();
+            GetModel()->UpdateLengthTree();
+			GetModel()->GetSynRateTree()->specialUpdate();
+			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 1);
+        }
+		cerr << '\n';
+		meanomega->Normalise();
+		ofstream oos((GetName() + ".postmeanomega.tre").c_str());
+		meanomega->ToStream(oos);
+		cerr << "reconstructed variation in omega in " << name << ".postmeanomega.tre\n";
+        ofstream nos((GetName() + ".postmeanomegaNe.tre").c_str());
+        meanomega->PrintPopSizeTree(nos, alpha, refpopsize, reftaxon);
+        cerr << "reconstructed variation in Ne, based on dN/dS only, in " << name << ".postmeanomegaNe.tre\n";
+    }
+
 	void ReadNe(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, double meanreg, double stdevreg)	{
 
 		int Ncont = GetModel()->Ncont;
@@ -1562,7 +1585,6 @@ class BranchOmegaMultivariateSample : public Sample	{
 			
 		}
 		cerr << '\n';
-		cerr << "normalise\n";
 
         if (! clampdiag)    {
 
@@ -1718,6 +1740,10 @@ int main(int argc, char* argv[])	{
 	bool postdist = false;
 	bool Ne = false;
 	
+    double alpha = 0.16;
+    double refpopsize = 1.0;
+    string reftaxon = "None";
+
 	try	{
 
 		if (argc == 1)	{
@@ -1750,6 +1776,14 @@ int main(int argc, char* argv[])	{
 			else if (s == "-bf")	{
 				bf = true;
 			}
+            else if (s == "-omegaNe")   {
+                i++;
+                alpha = atof(argv[i]);
+                i++;
+                refpopsize = atof(argv[i]);
+                i++;
+                reftaxon = argv[i];
+            }
 			else if (s == "-postdist")	{
 				postdist = true;
 			}
@@ -1927,43 +1961,48 @@ int main(int argc, char* argv[])	{
 
 	if (densities)	{
 		sample.DrawDensities(taxpairfile,cont);
-		exit(1);
+		exit(0);
 	}
 	if (normtest)	{
 		sample.PostPredNormalityTest();
-		exit(1);
+		exit(0);
 	}
 	if (nuc)	{
 		sample.ReadNuc(taxon);
-		exit(1);
+		exit(0);
 	}
 
 	if (rr)	{
 		sample.ReadRelRates();
-		exit(1);
+		exit(0);
 	}
 
 	if (trend)	{
 		sample.PostPredTrend();
-		exit(1);
+		exit(0);
 	}
 	if (check)	{
 		cerr << "check cov\n";
 		sample.CheckCov(truefile);
-		exit(1);
+		exit(0);
 	}
 	if (ppred)	{
 		sample.PostPred();
-		exit(1);
+		exit(0);
 	}
 	if (ic)	{
 		sample.ReadIC();
-		exit(1);
+		exit(0);
 	}
 	
+    if (reftaxon != "None") {
+		sample.ReadOmegaNe(alpha,refpopsize,reftaxon,printlog,printmean,printci,printstdev,withleaf,withinternal);
+        exit(0);
+    }
+
 	if (Ne) {
 		sample.ReadNe(printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
-		exit(1);
+		exit(0);
 	}	
 	sample.Read(printlog,printmean,printci,printstdev,withleaf,withinternal,mulreg,tex,x,y,nodescale,nodepower,barwidth,fontsize,bubbletext,withheader,leafnameshift,meanreg,stdevreg,postdist);
 
