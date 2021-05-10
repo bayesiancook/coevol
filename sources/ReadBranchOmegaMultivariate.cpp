@@ -1458,10 +1458,12 @@ class BranchOmegaMultivariateSample : public Sample	{
 			exit(1);
 		}
 
+        /*
 		if (idxpiNpiS == -1)  {
             cerr << "error: cannot find entry piNpiS in continuous data matrix\n";
 			exit(1);
 		}
+        */
 
         /*
         cerr << "dim       : " << dim << '\n';
