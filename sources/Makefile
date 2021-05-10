@@ -79,15 +79,6 @@ readnearlyneutral$(EXEEXT): $(PROGSDIR)/readnearlyneutral$(EXEEXT)
 $(PROGSDIR)/readnearlyneutral$(EXEEXT): ReadNearlyNeutralModel2.o $(OBJS)
 	$(CC) ReadNearlyNeutralModel2.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-ancov$(EXEEXT): $(PROGSDIR)/ancov$(EXEEXT)
-$(PROGSDIR)/ancov$(EXEEXT): AncestralCovariance.o $(OBJS)
-	$(CC) AncestralCovariance.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
-readancov$(EXEEXT): $(PROGSDIR)/readancov$(EXEEXT)
-$(PROGSDIR)/readancov$(EXEEXT): ReadAncestralCovariance.o $(OBJS)
-	$(CC) ReadAncestralCovariance.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
-tipcoevol$(EXEEXT): $(PROGSDIR)/tipcoevol$(EXEEXT)
 $(PROGSDIR)/tipcoevol$(EXEEXT): TipCoevol.o $(OBJS)
 	$(CC) TipCoevol.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
@@ -95,21 +86,9 @@ readtipcoevol$(EXEEXT): $(PROGSDIR)/readtipcoevol$(EXEEXT)
 $(PROGSDIR)/readtipcoevol$(EXEEXT): ReadTipCoevol.o $(OBJS)
 	$(CC) ReadTipCoevol.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-tip$(EXEEXT): $(PROGSDIR)/tip$(EXEEXT)
-$(PROGSDIR)/tip$(EXEEXT): TipDating.o $(OBJS)
-	$(CC) TipDating.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
-readtip$(EXEEXT): $(PROGSDIR)/readtip$(EXEEXT)
-$(PROGSDIR)/readtip$(EXEEXT): ReadTipDating.o $(OBJS)
-	$(CC) ReadTipDating.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
 drawtree$(EXEEXT): $(PROGSDIR)/drawtree$(EXEEXT)
 $(PROGSDIR)/drawtree$(EXEEXT): DrawTreeMain.o $(OBJS)
 	$(CC) DrawTreeMain.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
-
-drawcomptree$(EXEEXT): $(PROGSDIR)/drawcomptree$(EXEEXT)
-$(PROGSDIR)/drawcomptree$(EXEEXT): DrawCompTree.o $(OBJS)
-	$(CC) DrawCompTree.o $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 clean:
 	-rm -f *.o *.d *.d.*
