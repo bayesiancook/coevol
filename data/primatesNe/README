@@ -2,25 +2,27 @@ data for the analyses presented in Brevet and Lartillot 2019
 Reconstructing the history of variation in effective population size along phylogenies
 bioarxiv.org/content/10.1101/793059v1
 
-
 prim.phy: multiple sequence alignment (subset of Perelman et al, 2011. A molecular phylogeny of primates. PLoS Genet 7(2):e1001342)
 prim.rootedtree: phylogenetic tree (rooted with Tupaia as the outgroup of primates)
 prim.calib: fossil calibrations
-prim.lht: life-history traits, including generation time (from Anage database), combined with estimates of pi_S and pi_N/pi_S (from Figuet et al, 2016, Life-history traits, protein evolution and the nearly-neutral theory in amniotes. Mol Biol Evol, 33(6):1517-27)
+
+nohyperprim.lht: life-history traits, including generation time (from Anage database), combined with estimates of pi_S and pi_N/pi_S (from Figuet et al, 2016, Life-history traits, protein evolution and the nearly-neutral theory in amniotes. Mol Biol Evol, 33(6):1517-27)
+
+hyperprim.lht: life-history traits, including generation time (from Anage database), combined with estimates of pi_S and pi_N/pi_S estimated using the hypergeometric sampling method.
 
 to run analyses:
 
 under phenomenological model:
-coevol -d prim.phy -t prim.rootedtree -cal prim.calib 80 80 -c prim.lht -dsom primNe
-run for ~1100 cycles
+coevol -f -d prim.phy -t prim.rootedtree -cal prim.calib 90 20 -bd -c hyperprim.lht -dsom primNe
+run for ~3100 cycles
 postanalysis:
 readcoevol -x 100 1 -Ne primNe
 
 under mechanistic model:
-nearlyneutral -d prim.phy -t prim.rootedtree -cal prim.calib 80 80 -c prim.lhy primNe_mech
-run for ~600 to 1100 cycles
+nearlyneutral -f -d prim.phy -t prim.rootedtree -cal prim.calib 90 20 -bd -c hyperprim.lht -ancpol primNe_mech
+run for ~1100 cycles
 postanalysis:
 readnearlyneutral -x 100 1 primNe_mech
 
-for more detailed information, see pdf manual (available on branch coevolNe)
+for more detailed information, see pdf manual 
 
