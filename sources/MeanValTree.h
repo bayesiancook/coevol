@@ -5,14 +5,14 @@
 #include "ValTree.h"
 #include "Var.h"
 #include "MultiVariateTreeProcess.h"
-
+#include <cmath>
 #include <list>
 
 class MeanBranchTree : public NewickTree {
 
 	public:
 
-	MeanBranchTree(Tree* intree, bool inwithroot = false) : tree(intree), withRoot(inwithroot)	{
+	MeanBranchTree(Tree* intree, bool inwithroot = false) : tree(intree), withRoot(inwithroot), size(0)	{
         Reset();
 	}
 
@@ -187,6 +187,14 @@ class MeanExpNormTree : public NewickTree {
 		threshold = 0;
 		withpp = false;
 		withdepth = false;
+
+        logscale = 1.0;
+
+        if (meanreg)    {
+            cerr << "in MeanExpNormTree: check interplay meanreg, _GetMeanLog, _GetVarLog and log scale\n";
+            exit(1);
+        }
+
 		Reset();
 	}
 
@@ -197,6 +205,10 @@ class MeanExpNormTree : public NewickTree {
 	}
 
 	void SetLog() {printlog = true;}
+
+    void SetLogScale(double inscale)    {
+        logscale = log(inscale);
+    }
 
 	void SetPrintMean(bool inprintmean = true) {printmean = inprintmean;}
 
@@ -260,7 +272,7 @@ class MeanExpNormTree : public NewickTree {
 		if (meanreg)	{
 			double tmp = _GetMeanLog(node) - 1.959964 * sqrt(_GetVarLog(node));
 			if (printlog)	{
-				return tmp;
+				return tmp / logscale;
 			}
 			else if (logit)	{
 				return exp(tmp) / (1 + exp(tmp));
@@ -274,7 +286,7 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit? exp(*i) / (1 + exp(*i)) : exp(*i));
+		return printlog ? *i / logscale : (logit? exp(*i) / (1 + exp(*i)) : exp(*i));
 	}
 
 	double GetMax95(const Node* node) const {
@@ -295,7 +307,7 @@ class MeanExpNormTree : public NewickTree {
 		for (int j=0; j<n; j++)	{
 			i++;
 		}
-		return printlog ? *i : (logit ? exp(*i) / (1 + exp(*i)) : exp(*i));
+		return printlog ? *i / logscale : (logit ? exp(*i) / (1 + exp(*i)) : exp(*i));
 	}
 
 	double _GetMean(const Node* node) const	{
@@ -303,6 +315,17 @@ class MeanExpNormTree : public NewickTree {
 		return i->second;
 	}
 
+	double _GetMedian(const Node* node) const	{
+		map<const Node*, list<double> >::const_iterator f = dist.find(node);
+		list<double> l = f->second;
+		list<double>::const_iterator i = l.begin();
+		int n = ((int) (((double) l.size()) / 100 * 50));
+		for (int j=0; j<n; j++)	{
+			i++;
+		}
+		return exp(*i);
+	}
+	
 	double _GetVar(const Node* node) const	{
 		map<const Node*, double>::const_iterator i = var.find(node);
 		return i->second;
@@ -313,7 +336,7 @@ class MeanExpNormTree : public NewickTree {
 		if (meanreg)	{
 			return meanreg * i->second + stdevreg;
 		}
-		return i->second;
+		return i->second / logscale;
 	}
 
 	double _GetVarLog(const Node* node) const	{
@@ -321,9 +344,8 @@ class MeanExpNormTree : public NewickTree {
 		map<const Node*, double>::const_iterator j = meanlog.find(node);
 		if (meanreg)	{
 			return meanreg * meanreg * i->second;
-			// return meanreg * meanreg * i->second + j->second * j->second * stdevreg * stdevreg;
 		}
-		return i->second;
+		return i->second / logscale / logscale;
 	}
 
 	double GetMeanTime(const Branch* branch) const	{
@@ -340,6 +362,10 @@ class MeanExpNormTree : public NewickTree {
 		return printlog ? _GetMeanLog(node) : _GetMean(node);
 	}
 
+	double GetMedian(const Node* node) const {
+		return printlog ? log(_GetMedian(node)) / logscale : _GetMedian(node);
+	}
+	
 	double GetVar(const Node* node) const {
 		return printlog ? _GetVarLog(node) : _GetVar(node);
 	}
@@ -356,6 +382,7 @@ class MeanExpNormTree : public NewickTree {
 				s << '_';
 			}
 			s << GetMean(link->GetNode());
+			// s << GetMedian(link->GetNode());
 			empty = false;
 		}
 		if ((! printmean) || (! isFixed(link->GetNode())))	{
@@ -402,6 +429,19 @@ class MeanExpNormTree : public NewickTree {
 		return ppleafroot;
 	}
 
+	void AddLogLinearCombination(NodeVarTree<RealVector>* sample, LengthTree* chronogram, const vector<double>& alpha, double beta)   {
+		meanleaf = 0;
+		meanroot = 0;
+		leafsize = 0;
+		RecursiveAddLogLinearCombination(sample, chronogram, GetTree()->GetRoot(), alpha, beta);
+		meanleaf /= leafsize;
+		if (meanleaf > meanroot)	{
+			ppleafroot++;
+		}
+		size++;
+	}
+
+    /*
 	void Add(NodeVarTree<RealVector>* sample, LengthTree* chronogram, int index, Var<Real>* Offset = 0)	{
 		meanleaf = 0;
 		meanroot = 0;
@@ -417,8 +457,9 @@ class MeanExpNormTree : public NewickTree {
 		}
 		size++;
 	}
+    */
 
-	void Add(NodeVarTree<RealVector>* sample, LengthTree* chronogram, int index, double offset)	{
+	void Add(NodeVarTree<RealVector>* sample, LengthTree* chronogram, int index, double offset = 0)	{
 		meanleaf = 0;
 		meanroot = 0;
 		leafsize = 0;
@@ -447,11 +488,11 @@ class MeanExpNormTree : public NewickTree {
 		size++;
 	}
 
-	void Add(NodeVarTree<Real>* sample, LengthTree* chronogram)	{
+	void Add(NodeVarTree<Real>* sample, LengthTree* chronogram, double offset = 0)	{
 		meanleaf = 0;
 		meanroot = 0;
 		leafsize = 0;
-		RecursiveAdd(sample, chronogram, GetTree()->GetRoot());
+		RecursiveAdd(sample, chronogram, GetTree()->GetRoot(), offset);
 		meanleaf /= leafsize;
 		if (meanleaf > meanroot)	{
 			ppleafroot++;
@@ -659,6 +700,38 @@ class MeanExpNormTree : public NewickTree {
 		}
 	}
 
+	void RecursiveAddLogLinearCombination(NodeVarTree<RealVector>* sample, LengthTree* chronogram, Link* from, const vector<double>& alpha, double beta)  {
+
+        double tmp = beta;
+        for (unsigned int i=0; i<alpha.size(); i++) {
+            tmp += alpha[i] * (* sample->GetNodeVal(from->GetNode()))[i];
+        }
+
+		if (from->isRoot())	{
+			meanroot = tmp;
+		}
+		else if (from->isLeaf())	{
+			meanleaf += tmp;
+			leafsize++;
+		}
+
+		meanlog[from->GetNode()] += tmp;
+		varlog[from->GetNode()] += tmp * tmp;
+		dist[from->GetNode()].push_front(tmp);
+
+        double exptmp = exp(tmp);
+		double temp = logit ? exptmp / (1.0 + exptmp) : exptmp;
+		mean[from->GetNode()] += temp;
+		var[from->GetNode()] += temp * temp;
+
+		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
+			RecursiveAddLogLinearCombination(sample, chronogram, link->Out(), alpha, beta);
+			double time = chronogram->GetBranchVal(link->GetBranch())->val();
+			meantime[link->GetBranch()] += time;
+			vartime[link->GetBranch()] += time * time;
+		}
+	}
+	
 	void RecursiveAdd(NodeVarTree<RealVector>* sample, LengthTree* chronogram, int index, double offset, Link* from)	{
 		double tmp = (* sample->GetNodeVal(from->GetNode()))[index];
 		tmp += offset;
@@ -684,8 +757,9 @@ class MeanExpNormTree : public NewickTree {
 		}
 	}
 
-	void RecursiveAdd(NodeVarTree<Real>* sample, LengthTree* chronogram, Link* from)	{
+	void RecursiveAdd(NodeVarTree<Real>* sample, LengthTree* chronogram, Link* from, double offset)	{
 		double tmp = sample->GetNodeVal(from->GetNode())->val();
+		tmp += offset;
 		if (from->isRoot())	{
 			meanroot = tmp;
 		}
@@ -702,7 +776,7 @@ class MeanExpNormTree : public NewickTree {
 		dist[from->GetNode()].push_front(tmp);
 
 		for(const Link* link=from->Next(); link!=from; link=link->Next())	{
-			RecursiveAdd(sample, chronogram, link->Out());
+			RecursiveAdd(sample, chronogram, link->Out(), offset);
 			double time = chronogram->GetBranchVal(link->GetBranch())->val();
 			meantime[link->GetBranch()] += time;
 			vartime[link->GetBranch()] += time * time;
@@ -824,6 +898,8 @@ class MeanExpNormTree : public NewickTree {
 	const Tree* tree;
 	int size;
 	bool logit;
+
+    double logscale;
 
 	int leafsize;
 	double meanleaf;

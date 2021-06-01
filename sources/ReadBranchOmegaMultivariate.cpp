@@ -1573,6 +1573,281 @@ class BranchOmegaMultivariateSample : public Sample	{
 		delete[] trueval;
 	}
 
+	void ReadNe(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, double meanreg, double stdevreg)	{
+
+		int Ncont = GetModel()->Ncont;
+		int dim = GetModel()->GetCovMatrix()->GetDim();
+
+		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
+		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+
+        meansynrate->SetLogScale(10.0);
+
+		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+
+		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+        meanNe->SetLogScale(10.0);
+
+		MeanExpNormTree* meanu = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+        meanu->SetLogScale(10.0);
+
+        // index of dS: 0
+        int idxdS = 0;
+        // index of dNdS: 1
+        int idxdNdS = 1;
+        // index of generation_time in continuous data
+		int idxgentime(-1);
+        // index of piS in continuous data
+		int idxpiS(-1);
+        // index of piNpiS in cont data
+        int idxpiNpiS(-1);
+
+        int idxu(dim);
+        int idxNe(dim+1);
+		
+		for (int k=0; k<Ncont; k++)	{
+			if (GetModel()->GetContinuousData()->GetCharacterName(k) == "generation_time") {
+				idxgentime= k+dim-Ncont;
+			}	
+			else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piS") {
+				idxpiS = k+dim-Ncont;
+			}	
+            else if (GetModel()->GetContinuousData()->GetCharacterName(k) == "piNpiS")  {
+                idxpiNpiS = k+dim-Ncont;
+            }
+		}
+		
+		if (idxgentime == -1)  {
+            cerr << "error: cannot find entry generation_time in continuous data matrix\n";
+			exit(1);
+		}
+		
+		if (idxpiS == -1)  {
+            cerr << "error: cannot find entry piS in continuous data matrix\n";
+			exit(1);
+		}
+
+        /*
+		if (idxpiNpiS == -1)  {
+            cerr << "error: cannot find entry piNpiS in continuous data matrix\n";
+			exit(1);
+		}
+        */
+
+        /*
+        cerr << "dim       : " << dim << '\n';
+        cerr << "idxdS     : " << idxdS << '\n';
+        cerr << "idxpiS    : " << idxpiS << '\n';
+        cerr << "idxpiNpiS : " << idxpiNpiS << '\n';
+        cerr << "idxgentime: " << idxgentime << '\n';
+        */
+		
+        // dS: mutation rate per tree depth
+        // tau: generation time in days
+        // rootage: tree depth in myr
+        // rootage * 365.10^6: tree depth in days
+        //
+        // mutation rate per generation:
+        // u = dS * tau / (rootage * 365.10^6)
+        // log u = log dS + log tau - log(rootage * 365.10^6)
+        //
+        // effective population size:
+        // Ne = pi_S / 4 / u = pi_s / 4 / dS / tau * (rootage * 365.10^6)
+        // log Ne = log pi_S - log dS - log tau + log(rootage * 365.10^6 / 4)
+
+        // alphau and alphaNe: slopes
+        vector<double> alphau(dim, 0);
+		alphau[idxdS] = 1;
+		alphau[idxgentime] = 1;
+		
+        vector<double> alphaNe(dim, 0);
+		alphaNe[idxdS] = -1;
+		alphaNe[idxgentime] = -1;
+		alphaNe[idxpiS] = 1;
+
+        // betau and betaNe: offsets (but dependent on root age, and so, defined point by point below)
+        
+        // matrix giving all original variables + logu and logNe as a function of original variables
+        vector<vector<double>> A(dim+2, vector<double>(dim+2, 0));
+        // original variables
+        for (int k=0; k<dim; k++)   {
+            A[k][k] = 1.0;
+        }
+        // log u
+        A[idxu][idxdS] = 1.0;
+        A[idxu][idxgentime] = 1.0;
+        // log Ne
+        A[idxNe][idxdS] = -1.0;
+        A[idxNe][idxgentime] = -1.0;
+        A[idxNe][idxpiS] = 1.0;
+
+		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
+		for (int k=0; k<Ncont; k++)	{
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		}
+
+		MeanCovMatrix*  meancov = new MeanCovMatrix(dim);
+        MeanCovMatrix* expandedmeancov = new MeanCovMatrix(dim+2, false);
+
+		// cycle over the sample
+		for (int i=0; i<size; i++)	{
+			cerr << '.';
+
+			GetNextPoint();
+            // GetModel()->UpdateLengthTree();
+			GetModel()->GetSynRateTree()->specialUpdate();
+
+			double t0 = GetModel()->GetRootAge();
+            /*
+            double t0 = 0;
+			if (!iscalspe) {
+				t0 = GetModel()->GetRootAge();
+			}
+			else {
+				t0 = rootage;
+			}
+            */
+
+			meanchrono->Add(GetModel()->GetChronogram());
+
+            // dS: mutation rate per tree depth
+            // tree depth in years: rootage * 10^6
+            // mutation rate per year: dS / rootage / 10^6
+            double synrate_offset = -log(t0 * 1000000);
+			meansynrate->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 0, synrate_offset);
+
+			meanomega->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), 1);
+
+            // offsets for log-linear combinations for logNe and logu phylogenetic histories
+            double betau = -log(365.0*t0*1000000.0);
+            double betaNe = log(365.0*t0*1000000.0/4.0);
+				
+			meanNe->AddLogLinearCombination(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alphaNe, betaNe);
+			meanu->AddLogLinearCombination(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), alphau, betau);
+
+			for (int k=0; k<Ncont; k++)	{
+				tree[k]->Add(GetModel()->GetMultiVariateProcess(), GetModel()->GetLengthTree(), GetModel()->GetL()+k);
+			}
+
+            if (! clampdiag)    {
+                // original covariance matrix (dS, dN/dS, traits, generation time, piS and piN/piS)
+                CovMatrix& m = *(GetModel()->GetCovMatrix());
+                meancov->Add(&m);
+                
+                CovMatrix expandedcov(dim+2);
+                double midmat[dim+2][dim];
+                for (int i=0; i<dim+2; i++) {
+                    for (int j=0; j<dim; j++)    {
+                        double tmp = 0;
+                        for (int k=0; k<dim; k++)   {
+                            tmp += A[i][k] * m[k][j];
+                        }
+                        midmat[i][j] = tmp;
+                    }
+                }
+                for (int i=0; i<dim+2; i++) {
+                    for (int j=0; j<dim+2; j++) {
+                        double tmp = 0;
+                        for (int k=0; k<dim; k++)   {
+                            tmp += midmat[i][k] * A[j][k];
+                        }
+                        expandedcov[i][j] = tmp;
+                    }
+                }
+                expandedmeancov->Add(&expandedcov);
+            }
+			
+		}
+		cerr << '\n';
+
+        if (! clampdiag)    {
+
+            meancov->Normalize();
+            expandedmeancov->Normalize();
+
+            ofstream cov_os((GetName() + ".cov").c_str());
+            cov_os.precision(3);
+            cov_os << "entries are in the following order:\n";
+            cov_os << "dS\n";
+            cov_os << "dN/dS\n";
+            for (int k=0; k<GetModel()->Ncont; k++)  {
+				cov_os << GetModel()->GetContinuousData()->GetCharacterName(k) << '\n';
+            }
+            cov_os << "u\n";
+            cov_os << "Ne\n";
+            cov_os << '\n';
+
+            expandedmeancov->ToStream(cov_os);
+
+            ofstream slope_os((GetName() + ".slopes").c_str());
+            expandedmeancov->PrintSlopesNe(slope_os, idxdNdS, idxpiNpiS, idxpiS, idxNe);
+
+            cerr << "covariance matrix in " << name << ".cov\n";
+            cerr << "slopes of log dN/dS and log piN/piS ~ log Ne in " << name << ".slopes\n";
+            cerr << '\n';
+        }
+
+		meanchrono->Normalise();
+		ofstream chos((GetName() + ".postmeandates.tre").c_str());
+		meanchrono->ToStream(chos);
+
+		ofstream cchos((GetName() + ".postmeandates.tab").c_str());
+		meanchrono->Tabulate(cchos);
+
+		meanomega->Normalise();
+		ofstream oos((GetName() + ".postmeanomega.tre").c_str());
+		meanomega->ToStream(oos);
+		cerr << "reconstructed variations of omega in " << name << ".postmeanomega.tre\n";
+
+		meanNe->Normalise();
+		ofstream Neos((GetName() + ".postmeanNe.tre").c_str());
+		meanNe->ToStream(Neos);
+		cerr << "reconstructed variations of Ne in " << name << ".postmeanNe.tre\n";
+
+		meanu->Normalise();
+		ofstream uos((GetName() + ".postmeanu.tre").c_str());
+		meanu->ToStream(uos);
+		cerr << "reconstructed variations of u in " << name << ".postmeanu.tre\n";
+
+		meansynrate->Normalise();
+		ofstream sos((GetName() + ".postmeansynrate.tre").c_str());
+		meansynrate->ToStream(sos);
+		cerr << "reconstructed variations of Ks in " << name << ".postmeansynrate.tre\n";
+
+		for (int k=0; k<Ncont; k++)	{
+			tree[k]->Normalise();
+			ostringstream s;
+			s << GetName() << ".postmean" << k+1 << ".tre";
+			ofstream os(s.str().c_str());
+			tree[k]->ToStream(os);
+			cerr << "reconstructed variations of continuous character # " << k+1 << " in "  << name << ".postmean" << k+1 << ".tre\n";
+		}
+
+		ofstream ssos((GetName() + ".postmeansynrate.tab").c_str());
+		meansynrate->Tabulate(ssos);
+		ssos.close();
+
+		ofstream ooos((GetName() + ".postmeanomega.tab").c_str());
+		meanomega->Tabulate(ooos);
+		ooos.close();
+
+		ofstream NeNeos((GetName() + ".postmeanNe.tab").c_str());
+		meanNe->Tabulate(NeNeos);
+		NeNeos.close();
+
+		ofstream uuos((GetName() + ".postmeanu.tab").c_str());
+		meanu->Tabulate(uuos);
+		uuos.close();
+
+		for (int k=0; k<Ncont; k++)	{
+			ostringstream s;
+			s << GetName() << ".postmean" << k+1 << ".tab";
+			ofstream os(s.str().c_str());
+			tree[k]->Tabulate(os);
+		}
+
+		cerr << '\n';
+	}	 
 };
 
 
@@ -1637,6 +1912,7 @@ int main(int argc, char* argv[])	{
 	string taxpairfile = "";
 
 	bool postdist = false;
+	bool Ne = false;
 
 	try	{
 
@@ -1798,6 +2074,9 @@ int main(int argc, char* argv[])	{
 			else if (s == "-rr")	{
 				rr = true;
 			}
+			else if (s == "-Ne") {
+				Ne = true;
+			}	
 			else if ( (s == "-x") || (s == "-extract") )	{
 				i++;
 				if (i == argc) throw(0);
@@ -1857,7 +2136,10 @@ int main(int argc, char* argv[])	{
 		sample.ReadNuc(taxon);
 		exit(1);
 	}
-
+	if (Ne) {
+		sample.ReadNe(printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+		exit(1);
+	}	
 	if (rr)	{
 		sample.ReadRelRates();
 		exit(1);

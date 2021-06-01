@@ -10,7 +10,7 @@ class MeanCovMatrix {
 
 	public:
 
-	MeanCovMatrix(int indim) : tex(false), dim(indim), size(0) {
+	MeanCovMatrix(int indim, bool ininverse = true) : tex(false), dim(indim), size(0), inverse(ininverse) {
 
 		val = new vector<double>*[GetDim()];
 		for (int i=0; i<GetDim(); i++)	{
@@ -137,6 +137,10 @@ class MeanCovMatrix {
 	}
 
 	double GetInvVal(int i, int j, int k) const	{
+        if (! inverse)  {
+            cerr << "error in MeanCovMatrix::GetInvVal: inverse not activated\n";
+            exit(1);
+        }
 		if (invval[i][j].size() != GetSize())	{
 			cerr << "error : " << i << '\t' << j << '\t' << k << '\n';
 			exit(1);
@@ -145,12 +149,15 @@ class MeanCovMatrix {
 	}
 
 	virtual void Add(CovMatrix* sample)	{
-		sample->Diagonalise();
+        if (inverse)    {
+            sample->Diagonalise();
+        }
 		for (int i=0; i<GetDim(); i++)	{
 			for (int j=0; j<GetDim(); j++)	{
-				// val[i][j].push_back(tmp[i][j]);
 				val[i][j].push_back((*sample)[i][j]);
-				invval[i][j].push_back(sample->GetInvMatrix()[i][j]);
+                if (inverse)    {
+                    invval[i][j].push_back(sample->GetInvMatrix()[i][j]);
+                }
 			}
 		}
 		size++;
@@ -209,32 +216,38 @@ class MeanCovMatrix {
 					double r = tmp / sqrt(val[i][i][k] * val[j][j][k]);
 					correl[i][j] += r;
 					correl2[i][j] += r*r;
-					double& inv = invval[i][j][k];
-					meaninv[i][j] += inv;
-					varinv[i][j] += inv * inv;
-					if (inv < 0)	{
-						ppinv[i][j] ++;
-					}
-					double pr = - inv / sqrt(invval[i][i][k] * invval[j][j][k]);
-					partialcorrel[i][j] += pr;
-					partialcorrel2[i][j] += pr * pr;
+                    if (inverse)    {
+                        double& inv = invval[i][j][k];
+                        meaninv[i][j] += inv;
+                        varinv[i][j] += inv * inv;
+                        if (inv < 0)	{
+                            ppinv[i][j] ++;
+                        }
+                        double pr = - inv / sqrt(invval[i][i][k] * invval[j][j][k]);
+                        partialcorrel[i][j] += pr;
+                        partialcorrel2[i][j] += pr * pr;
 
-					meanpropvar[i] += 1.0 - 1.0 /(val[i][i][k] * invval[i][i][k]);
+                        meanpropvar[i] += 1.0 - 1.0 /(val[i][i][k] * invval[i][i][k]);
+                    }
 				}
 				mean[i][j] /= size;
 				var[i][j] /= size;
 				var[i][j] -= mean[i][j] * mean[i][j];
 				pp[i][j] /= size;
-				meaninv[i][j] /= size;
-				varinv[i][j] /= size;
-				varinv[i][j] -= meaninv[i][j] * meaninv[i][j];
-				ppinv[i][j] /= size;
+                if (inverse)    {
+                    meaninv[i][j] /= size;
+                    varinv[i][j] /= size;
+                    varinv[i][j] -= meaninv[i][j] * meaninv[i][j];
+                    ppinv[i][j] /= size;
+                }
 				correl[i][j] /= size;
 				correl2[i][j] /= size;
-				partialcorrel[i][j] /= size;
-				partialcorrel2[i][j] /= size;
-				// sort(val[i][j].begin(), val[i][j].end());
-				meanpropvar[i] /= size;
+                if (inverse)    {
+                    partialcorrel[i][j] /= size;
+                    partialcorrel2[i][j] /= size;
+                    // sort(val[i][j].begin(), val[i][j].end());
+                    meanpropvar[i] /= size;
+                }
 			}
 		}
 		ComputeSlopes();
@@ -382,6 +395,10 @@ class MeanCovMatrix {
 
 	void PrintPartialR2(ostream& os) const	{
 
+        if (! inverse)  {
+            cerr << "error in MeanCovMatrix::PrintPartialR2: inverse not activated\n";
+            exit(1);
+        }
 		os.precision(3);
 
 		// correlation coefficients
@@ -400,6 +417,10 @@ class MeanCovMatrix {
 
 	void PrintPartialCorrel(ostream& os) const	{
 
+        if (! inverse)  {
+            cerr << "error in MeanCovMatrix::PrintPartialCorrel: inverse not activated\n";
+            exit(1);
+        }
 		os.precision(3);
 
 		// correlation coefficients
@@ -465,6 +486,10 @@ class MeanCovMatrix {
 
 	void PrintPrecisionsPosteriorProbs(ostream& os) const	{
 
+        if (! inverse)  {
+            cerr << "error in MeanCovMatrix::PrintPrecisionPosterioProbs: inverse not activated\n";
+            exit(1);
+        }
 		os.precision(2);
 
 		// pp
@@ -483,6 +508,23 @@ class MeanCovMatrix {
 		}
 		os << '\n';
 	}
+
+    void PrintSlopesNe(ostream& os, int idxdNdS, int idxpiNpiS, int idxpiS, int idxNe) const   {
+
+        int l = (int) (0.025 * size);
+        int j = idxNe; 
+        os << "relation\tmedian\tCI95min\tCI95max\n";
+        os << "logdN/dS~logNe" << '\t' << meanslope[j][idxdNdS] << '\t' << slope[j][idxdNdS][l] << '\t' << slope[j][idxdNdS][size-1-l] << '\n';
+        if (idxpiNpiS != -1)    {
+            os << "logpiN/piS~logNe" << '\t' << meanslope[j][idxpiNpiS] << '\t' << slope[j][idxpiNpiS][l] << '\t' << slope[j][idxpiNpiS][size-1-l] << '\n';
+        }
+        os << '\n';
+        j = idxpiS;
+        os << "logdN/dS~logpiS" << '\t' << meanslope[j][idxdNdS] << '\t' << slope[j][idxdNdS][l] << '\t' << slope[j][idxdNdS][size-1-l] << '\n';
+        if (idxpiNpiS != -1)    {
+            os << "logpiN/piS~logpiS" << '\t' << meanslope[j][idxpiNpiS] << '\t' << slope[j][idxpiNpiS][l] << '\t' << slope[j][idxpiNpiS][size-1-l] << '\n';
+        }
+    }
 
 	void PrintSlopes(ostream& os) const	{
 
@@ -528,9 +570,11 @@ class MeanCovMatrix {
 			PrintCovariances(os);
 			PrintCorrel(os);
 			PrintPosteriorProbs(os);
-			PrintPrecisions(os);
-			PrintPartialCorrel(os);
-			PrintPrecisionsPosteriorProbs(os);
+            if (inverse)    {
+                PrintPrecisions(os);
+                PrintPartialCorrel(os);
+                PrintPrecisionsPosteriorProbs(os);
+            }
 			// PrintSlopes(os);
 		}
 	}
@@ -545,6 +589,7 @@ class MeanCovMatrix {
 	bool tex;
 	int dim;
 	unsigned int size;
+    bool inverse;
 
 	// arrays of values
 	vector<double>** val;
