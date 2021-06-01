@@ -516,6 +516,7 @@ int main(int argc, char* argv[])	{
 					i++;
 					contdatafile = argv[i];
 				}
+                /*
 				else if (s == "-nn")	{
 					splitkrkctype = 1;
 				}
@@ -525,6 +526,7 @@ int main(int argc, char* argv[])	{
 				else if (s == "-krkc3")	{
 					omegaratiotree = 4;
 				}
+                */
 				else if (s == "-charge"){
 					krkctype = CHARGE;
 					// omegaratiotree = 1;
@@ -541,6 +543,7 @@ int main(int argc, char* argv[])	{
 					krkctype = POLARITYVOLUME;
 					// omegaratiotree = 1;
 				}
+                /*
 				else if (s == "-jitter")	{
 					jitter = 1;
 				}
@@ -553,6 +556,7 @@ int main(int argc, char* argv[])	{
 				else if (s == "-wncontjitter")	{
 					jitter = 4;
 				}
+                */
 				else if (s == "-suffstat")	{
 					i++;
 					suffstatfile = argv[i];
@@ -560,9 +564,11 @@ int main(int argc, char* argv[])	{
 				else if (s == "-f")	{
 					force = 1;
 				}
+                /*
 				else if (s == "-timeline")	{
 					withtimeline = true;
 				}
+                */
 				else if (s == "-sepsyn")	{
 					separatesyn = true;
 				}
@@ -575,6 +581,7 @@ int main(int argc, char* argv[])	{
 				else if (s == "-logit")	{
 					contdatatype = 1;
 				}
+                /*
 				else if (s == "-drift")	{
 					withdrift = 1;
 				}
@@ -590,10 +597,12 @@ int main(int argc, char* argv[])	{
 				else if (s == "-unidrift")	{
 					uniformprior = 1;
 				}
+                */
 				else if (s == "-root")	{
 					i++;
 					rootfile = argv[i];
 				}
+                /*
 				else if (s == "-split")	{
 					i++;
 					s = argv[i];
@@ -614,6 +623,7 @@ int main(int argc, char* argv[])	{
 				else if (s == "-uncons")	{
 					calibfile = "Unconstrained";
 				}
+                */
 				else if (s == "-cal")	{
 					i++;
 					calibfile = argv[i];
@@ -638,6 +648,7 @@ int main(int argc, char* argv[])	{
 				else if (s == "-bd")	{
 					chronoprior = 1;
 				}
+                /*
 				else if (s == "-cbd")	{
 					chronoprior = 2;
 				}
@@ -649,6 +660,7 @@ int main(int argc, char* argv[])	{
 					i++;
 					softa = atof(argv[i]);
 				}
+                */
 				else if (s == "-bdhyperprior")	{
 					i++;
 					if ((i == argc) || (! IsFloat(argv[i])))	{
@@ -747,12 +759,15 @@ int main(int argc, char* argv[])	{
 				else if (s == "-tstvgc")	{
 					mutmodel = 5;
 				}
+                /*
 				else if (s == "-gcstat")	{
 					gc = -1;
 				}
+                */
 				else if (s == "-gc")	{
 					gc = 1;
 				}
+                /*
 				else if (s == "-gc3")	{
 					gc = 3;
 				}
@@ -768,6 +783,7 @@ int main(int argc, char* argv[])	{
 				else if (s == "-clamproot")	{
 					clamproot = true;
 				}
+                */
 				else if ((s == "-fixtimes") || (s == "-fixbl"))	{
 					clamptree = true;
 				}
