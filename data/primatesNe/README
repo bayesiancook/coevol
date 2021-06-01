@@ -1,0 +1,22 @@
+data for reconstructing Ne, u (and their correlations with life-history traits)
+based on the analyses presented in Brevet and Lartillot 2021
+Reconstructing the history of variation in effective population size along phylogenies
+bioarxiv.org/content/10.1101/793059v1
+
+note: for a complete analysis along the lines of Brevet and Lartillot 2021, use the branch coevolNe. Here, on the master branch, only the phenomenological model (which is a modified postanalysis under the standard model of coevol) is implemented.
+
+prim.phy: multiple sequence alignment (subset of Perelman et al, 2011. A molecular phylogeny of primates. PLoS Genet 7(2):e1001342)
+prim.rootedtree: phylogenetic tree (rooted with Tupaia as the outgroup of primates)
+prim.calib: fossil calibrations
+
+hyperprim.lht: life-history traits, including generation time (from Anage database), combined with estimates of pi_S and pi_N/pi_S.
+
+to run analyses:
+
+coevol -f -d prim.phy -t prim.rootedtree -cal prim.calib 90 20 -bd -c hyperprim.lht -dsom primNe
+run for ~3100 cycles
+postanalysis:
+readcoevol -x 100 1 -Ne primNe
+
+for more detailed information, see pdf manual 
+
