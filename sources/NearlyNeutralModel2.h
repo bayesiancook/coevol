@@ -657,7 +657,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			scheduler.Register(new ProfileMove(stationary,0.01,5),10,"stat10");
 			scheduler.Register(new SimpleMove(stationary,0.001),10,"stat");
 			
-            if (beta0)  {
+            if (! beta0)  {
                 scheduler.Register(new SimpleMove(beta,0.003),10,"beta");
                 scheduler.Register(new SimpleMove(beta,0.0008),10,"beta");
                 scheduler.Register(new SimpleMove(beta,0.0003),10,"beta");
@@ -672,7 +672,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 				scheduler.Register(new SimpleMove(normal_logkappa2,0.008),10,"logkappa2");
 				scheduler.Register(new SimpleMove(normal_logkappa2,0.001),10,"logkappa2");
 
-                if (beta0)  {
+                if (! beta0)  {
                     scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,1,11),10,"betakappa2");
                     scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,0.1,11),10,"betakappa2");
                     scheduler.Register(new BetaKappaMove(beta,normal_logkappa2,0.01,11),10,"betakappa2");
