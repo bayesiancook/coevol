@@ -426,7 +426,7 @@ int main(int argc, char* argv[])	{
 	MPI_Comm_size(MPI_COMM_WORLD,&nprocs);
 
 	if (! myid)	{
-		cerr << "Coevol version 1.5\n";
+		cerr << "Coevol version 1.6\n";
 		cerr << '\n';
 	}
 
