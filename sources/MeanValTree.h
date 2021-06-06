@@ -514,7 +514,28 @@ class MeanExpNormTree : public NewickTree {
 		RecursiveLooTabulate(os,contdata,GetTree()->GetRoot());
 	}
 
+    void TabulateHeader(ostream& os)    {
+        os << "#taxon1\ttaxon2";
+        if (withdepth)	{
+            os << "\tdepth";
+        }
+        else	{
+            os << "\tbranch_delta_t";
+        }
+        if (printmean)	{
+            os << "\tmean";
+        }
+        if (printstdev)	{
+            os << "\tstdev";
+        }
+        if (printci)	{
+            os <<"\tmin95\tmax95";
+        }
+        os << '\n';
+    }
+
 	void Tabulate(ostream& os)	{
+        TabulateHeader(os);
 		RecursiveTabulate(os,GetTree()->GetRoot());
 	}
 
@@ -575,31 +596,31 @@ class MeanExpNormTree : public NewickTree {
 
 	void RecursiveTabulate(ostream& os, Link* from)	{
 		if ((from->isLeaf() && withleaf) || ((! from->isLeaf()) && (withinternal)))	{
-			os << GetTree()->GetLeftMost(from) << '\t' << GetTree()->GetRightMost(from) << '\t';
+			os << GetTree()->GetLeftMost(from) << '\t' << GetTree()->GetRightMost(from);
 			if (withdepth)	{
-				os << GetDepth(from) << '\t';
+				os << '\t' << GetDepth(from);
 			}
 			else	{
 				if (from->GetBranch())	{
-					os << GetMeanTime(from->GetBranch()) << '\t';
+					os << '\t' << GetMeanTime(from->GetBranch());
 				}
 				else	{
-					os << 0 << '\n';
+					os << '\t' << 0;
 				}
 			}
 			if (printmean)	{
-				os << GetMean(from->GetNode()) << '\t';
+				os << '\t' << GetMean(from->GetNode());
 			}
 			if (printstdev)	{
 				if (! isFixed(from->GetNode()))	{
-					os << sqrt(GetVar(from->GetNode())) << '\t';
+					os << '\t' << sqrt(GetVar(from->GetNode()));
 				}
 				else	{
-					os << 0 << '\t';
+					os << '\t' << 0;
 				}
 			}
 			if (printci)	{
-				os << GetMin95(from->GetNode()) << '\t' << GetMax95(from->GetNode()) << '\t';
+				os << '\t' << GetMin95(from->GetNode()) << '\t' << GetMax95(from->GetNode());
 			}
 			os << '\n';
 		}

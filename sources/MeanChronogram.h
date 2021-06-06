@@ -137,7 +137,25 @@ class MeanChronogram : public NewickTree {
 	}
 	*/
 
+    void TabulateHeader(ostream& os)    {
+        os << "#taxon1\ttaxon2";
+        if (printmean)	{
+            os << "\tmean";
+        }
+        if (printmedian)	{
+            os << "\tmedian";
+        }
+        if (printci)	{
+            os << "\tmin95\tmax95";
+        }
+        if (printstdev)	{
+            os << "\tstdev";
+        }
+        os << '\n';
+    }
+
 	void Tabulate(ostream& os)	{
+        TabulateHeader(os);
 		RecursiveTabulate(os,GetTree()->GetRoot());
 	}
 
