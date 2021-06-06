@@ -1,7 +1,7 @@
-CC=g++
+CC=mpic++
 SYSLIB=
 INCLUDES=
-CPPFLAGS= -w -O3 -c -g -std=c++11
+CPPFLAGS= -w -O3 -c -g -std=c++11 -DUSE_MPI
 LDFLAGS= 
 INSTALL_DIR=
 INSTALL_LIB=

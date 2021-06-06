@@ -1,11 +1,9 @@
 
+
+
 #include "Chain.h"
 #include "ConjugateBranchOmegaMultivariateModel.h"
 #include "StringStreamUtils.h"
-
-#include "Parallel.h"
-
-// int BGCMutSelSubMatrix::bgccount = 0;
 
 class BranchOmegaMultivariateChain : public Chain	{
 
@@ -405,11 +403,14 @@ class BranchOmegaMultivariateChain : public Chain	{
 
 int main(int argc, char* argv[])	{
 
-	int myid,nprocs;
+	int myid = 0;
+	int nprocs = 1;
 
+#ifdef USE_MPI
 	MPI_Init(&argc,&argv);
 	MPI_Comm_rank(MPI_COMM_WORLD,&myid);
 	MPI_Comm_size(MPI_COMM_WORLD,&nprocs);
+#endif
 
 	if (! myid)	{
 		cerr << "Coevol version 1.5\n";
@@ -843,7 +844,7 @@ int main(int argc, char* argv[])	{
 		}
 		catch(...)	{
 			cerr << "coevol -d <alignment> -t <tree> [-c <trait_data>]  <chainname> \n";
-			cerr << "see manual for deails\n";
+			cerr << "see manual for details\n";
 			cerr << '\n';
 			exit(1);
 		}
@@ -874,7 +875,9 @@ int main(int argc, char* argv[])	{
 			cerr << '\n';
 		}
 	}
+#ifdef USE_MPI
 	MPI_Finalize();
-	exit(1);
+#endif
+	exit(0);
 }
 

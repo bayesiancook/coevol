@@ -2,6 +2,10 @@
 #ifndef BRANCHOMEGAMULTI
 #define BRANCHOMEGAMULTI
 
+#ifdef USE_MPI
+#include "mpi.h"
+#endif
+
 #include "MeanValTree.h"
 
 #include "BaseType.h"
@@ -57,8 +61,6 @@
 #include "MultiVariateRelRateCompensatoryMove.h"
 #include "MultiVariateUgamCompMove.h"
 #include "ChronoCompensatoryMove.h"
-
-#include "Parallel.h"
 
 class BranchOmegaMultivariateModel : public ProbModel {
 
@@ -325,6 +327,8 @@ class BranchOmegaMultivariateModel : public ProbModel {
 
 	SimilarityMatrix * aasimilarityMatrix ;
 	SplitAAMatrix* aasplitMatrix;
+
+    int TAG1 = 0;
 
 	public:
 
@@ -1920,7 +1924,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 	}
 
 	void GlobalUpdateParameters()	{
-
+#ifdef USE_MPI
 		ostringstream os;
 		os.precision(20);
 		ToStream(os);
@@ -1942,10 +1946,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 			MPI_Recv(&tmp,1,MPI_DOUBLE,i,TAG1,MPI_COMM_WORLD,&stat);
 			lnL += tmp;
 		}
+#endif
 	}
 
 	void SlaveUpdateParameters()	{
-
+#ifdef USE_MPI
 		int size;
 		MPI_Bcast(&size,1,MPI_INT,0,MPI_COMM_WORLD);
 		char* c = new char[size];
@@ -1968,10 +1973,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		// send log likelihood
 		SimpleGetLogLikelihood();
 		MPI_Send(&lnL,1,MPI_DOUBLE,0,TAG1,MPI_COMM_WORLD);
+#endif
 	}
 
 	void GlobalUpdateSuffStat()	{
-
+#ifdef USE_MPI
 		if (pathconjtree)	{
 		pathconjtree->InactivateSufficientStatistic();
 		pathconjtree->ActivateSufficientStatistic();
@@ -1999,10 +2005,11 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		}
 		Update();
 		// cerr << "master : " << pathconjtree->GetLogProb() << '\n';
+#endif
 	}
 
 	void SlaveUpdateSuffStat()	{
-
+#ifdef USE_MPI
 		if (pathconjtree)	{
 		// cerr << "slave : " << pathconjtree->GetLogProb() << '\n';
 		ostringstream os;
@@ -2018,6 +2025,7 @@ class BranchOmegaMultivariateModel : public ProbModel {
 		MPI_Send(c,size,MPI_CHAR,0,TAG1,MPI_COMM_WORLD);
 		delete[] c;
 		}
+#endif
 	}
 
 	Tree* GetTree() {return tree;}
