@@ -684,7 +684,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 	void DrawDensities(string taxpairfile, int cont)	{
 
-		MeanExpNormTree* tree = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,true,true,false,true,true,true);
+		MeanExpNormTree* tree = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,true,true,false,false,true,true,true);
 
 		// cycle over the sample
 		for (int i=0; i<size; i++)	{
@@ -714,7 +714,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 	}
 
-	void Read(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, string mulreg, bool tex, double xscale, double yscale, double nodescale, double nodepower, double barwidth, int fontsize, bool bubbletext, bool withheader, double leafnameshift, double meanreg, double stdevreg, bool postdist)	{
+	void Read(bool printlog, bool printmean, bool printmed, bool printci, bool printstdev, bool withleaf, bool withinternal, string mulreg, bool tex, double xscale, double yscale, double nodescale, double nodepower, double barwidth, int fontsize, bool bubbletext, bool withheader, double leafnameshift, double meanreg, double stdevreg, bool postdist)	{
 
 		double meansyn = 0;
 		double varsyn = 0;
@@ -733,8 +733,8 @@ class BranchOmegaMultivariateSample : public Sample	{
 			meanchrono = new MeanChronogram(GetModel()->GetTree());
 		}
 
-		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
-		MeanExpNormTree* meanbranchsynrate = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+		MeanExpNormTree* meanbranchsynrate = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 
 		MeanExpNormTree* meanomega = 0;
 		MeanExpNormTree* meanomegats = 0;
@@ -744,19 +744,19 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		if (GetModel()->Has3Omega())	{
 			// cerr << "3 omega : " << GetModel()->GetOmegaTsIndex() << '\t' << GetModel()->GetOmegaTv0Index() << '\t' << GetModel()->GetOmegaTvGCIndex() << '\n';
-			meanomegats = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-			meanomegatv0 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-			meanomegatvgc = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			meanomegats = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
+			meanomegatv0 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
+			meanomegatvgc = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 		else if (GetModel()->Has2Omega())	{
 			// cerr << "2 omega : " << GetModel()->GetOmegaTsIndex() << '\t' << GetModel()->GetOmegaTv0Index() << '\n';
-			meanomegats = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-			meanomegatv0 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			meanomegats = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
+			meanomegatv0 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 		else if (GetModel()->HasOmega())	{
 			// cerr << "1 omega : " << GetModel()->GetOmegaIndex() << '\n';
-			meanomega = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-			meanbranchomega = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			meanomega = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
+			meanbranchomega = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		MeanExpNormTree* meantstv = 0;
@@ -764,11 +764,11 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		if (GetModel()->HasTsTv())	{
 			// cerr << "TsTv : " << GetModel()->GetTsTvIndex() << '\n';
-			meantstv = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			meantstv = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 		if (GetModel()->HasTvGC())	{
 			// cerr << "TvGC: " << GetModel()->GetTvGCIndex() << '\n';
-			meantvgc = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			meantvgc = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		MeanExpNormTree* meangc = 0;
@@ -777,17 +777,17 @@ class BranchOmegaMultivariateSample : public Sample	{
 		MeanExpNormTree* meangc3 = 0;
 		if (GetModel()->isGCActivated())	{
 			// cerr << "GC : " << GetModel()->GetGCIndex() << '\n';
-			meangc = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),true,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			meangc = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),true,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 		if (GetModel()->isGC3Activated())	{
-			meangc1 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),true,printlog,printmean,printci,printstdev,withleaf,withinternal);
-			meangc2 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),true,printlog,printmean,printci,printstdev,withleaf,withinternal);
-			meangc3 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),true,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			meangc1 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),true,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
+			meangc2 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),true,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
+			meangc3 = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),true,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
-			tree[k] = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			tree[k] = new MeanExpNormTree(GetModel()->GetFineGrainedTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		int dim = GetModel()->GetCovMatrix()->GetDim();
@@ -1573,22 +1573,22 @@ class BranchOmegaMultivariateSample : public Sample	{
 		delete[] trueval;
 	}
 
-	void ReadNe(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, double meanreg, double stdevreg)	{
+	void ReadNe(bool printlog, bool printmean, bool printmed, bool printci, bool printstdev, bool withleaf, bool withinternal, double meanreg, double stdevreg)	{
 
 		int Ncont = GetModel()->Ncont;
 		int dim = GetModel()->GetCovMatrix()->GetDim();
 
 		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
-		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
 
         meansynrate->SetLogScale(10.0);
 
-		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meanomega = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 
-		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meanNe = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
         meanNe->SetLogScale(10.0);
 
-		MeanExpNormTree* meanu = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meanu = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
         meanu->SetLogScale(10.0);
 
         // index of dS: 0
@@ -1683,7 +1683,7 @@ class BranchOmegaMultivariateSample : public Sample	{
 
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
-			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		MeanCovMatrix*  meancov = new MeanCovMatrix(dim);
@@ -1868,6 +1868,7 @@ int main(int argc, char* argv[])	{
 
 	bool printlog = false;
 	bool printmean = false;
+    bool printmed = false;
 	bool printci = true;
 	bool printstdev = false;
 	bool withleaf = true;
@@ -2035,9 +2036,17 @@ int main(int argc, char* argv[])	{
 			}
 			else if (s == "+mean")	{
 				printmean = true;
+                printmed = false;
 			}
 			else if (s == "-mean")	{
 				printmean = false;
+			}
+			else if ((s == "+med") || (s == "+median"))	{
+				printmed = true;
+                printmean = false;
+			}
+			else if ((s == "-med") || (s == "-median"))	{
+				printmed = false;
 			}
 			else if (s == "+stdev")	{
 				printstdev = true;
@@ -2137,7 +2146,7 @@ int main(int argc, char* argv[])	{
 		exit(1);
 	}
 	if (Ne) {
-		sample.ReadNe(printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+		sample.ReadNe(printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
 		exit(1);
 	}	
 	if (rr)	{
@@ -2173,7 +2182,7 @@ int main(int argc, char* argv[])	{
 		exit(1);
 	}
 
-	sample.Read(printlog,printmean,printci,printstdev,withleaf,withinternal,mulreg,tex,x,y,nodescale,nodepower,barwidth,fontsize,bubbletext,withheader,leafnameshift,meanreg,stdevreg,postdist);
+	sample.Read(printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,mulreg,tex,x,y,nodescale,nodepower,barwidth,fontsize,bubbletext,withheader,leafnameshift,meanreg,stdevreg,postdist);
 
 }
 

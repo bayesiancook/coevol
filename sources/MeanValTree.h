@@ -176,13 +176,7 @@ class MeanExpNormTree : public NewickTree {
 
 	public:
 
-	/*
-	MeanExpNormTree(Tree* intree, bool inlogit) : tree(intree), logit(inlogit), printlog(false), printmean(false), printci(true), printstdev(false) {
-		Reset();
-	}
-	*/
-
-	MeanExpNormTree(Tree* intree, bool inlogit, bool inprintlog, bool inprintmean, bool inprintci, bool inprintstdev, bool inwithleaf, bool inwithinternal, double inmeanreg = 0, double instdevreg = 0) : tree(intree), logit(inlogit), printlog(inprintlog), printmean(inprintmean), printci(inprintci), printstdev(inprintstdev), withleaf(inwithleaf), withinternal(inwithinternal), meanreg(inmeanreg), stdevreg(instdevreg) {
+	MeanExpNormTree(Tree* intree, bool inlogit, bool inprintlog, bool inprintmean, bool inprintmed, bool inprintci, bool inprintstdev, bool inwithleaf, bool inwithinternal, double inmeanreg = 0, double instdevreg = 0) : tree(intree), logit(inlogit), printlog(inprintlog), printmean(inprintmean), printmed(inprintmed), printci(inprintci), printstdev(inprintstdev), withleaf(inwithleaf), withinternal(inwithinternal), meanreg(inmeanreg), stdevreg(instdevreg) {
 		ppleafroot = 0;
 		threshold = 0;
 		withpp = false;
@@ -211,6 +205,8 @@ class MeanExpNormTree : public NewickTree {
     }
 
 	void SetPrintMean(bool inprintmean = true) {printmean = inprintmean;}
+
+    void SetPrintMedian(bool inprintmed = true) {printmed = inprintmed;}
 
 	void SetPrintCI(bool inprintci = true) {
 		printci = inprintci;
@@ -382,10 +378,16 @@ class MeanExpNormTree : public NewickTree {
 				s << '_';
 			}
 			s << GetMean(link->GetNode());
-			// s << GetMedian(link->GetNode());
 			empty = false;
 		}
-		if ((! printmean) || (! isFixed(link->GetNode())))	{
+		if (printmed)	{
+			if (! empty)	{
+				s << '_';
+			}
+			s << GetMedian(link->GetNode());
+			empty = false;
+		}
+		if (((! printmean) && (! printmed)) || (! isFixed(link->GetNode())))	{
 			if (printstdev)	{
 				if (! empty)	{
 					s << '_';
@@ -525,6 +527,9 @@ class MeanExpNormTree : public NewickTree {
         if (printmean)	{
             os << "\tmean";
         }
+        if (printmed)   {
+            os << "\tmedian";
+        }
         if (printstdev)	{
             os << "\tstdev";
         }
@@ -611,6 +616,9 @@ class MeanExpNormTree : public NewickTree {
 			if (printmean)	{
 				os << '\t' << GetMean(from->GetNode());
 			}
+            if (printmed)   {
+                os << '\t' << GetMedian(from->GetNode());
+            }
 			if (printstdev)	{
 				if (! isFixed(from->GetNode()))	{
 					os << '\t' << sqrt(GetVar(from->GetNode()));
@@ -929,6 +937,7 @@ class MeanExpNormTree : public NewickTree {
 
 	bool printlog;
 	bool printmean;
+    bool printmed;
 	bool printci;
 	bool printstdev;
 

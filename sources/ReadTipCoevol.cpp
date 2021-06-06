@@ -358,18 +358,18 @@ class LogNSample : public Sample	{
 
 	}
 
-	void ReadRateTrees(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal)	{
+	void ReadRateTrees(bool printlog, bool printmean, bool printmed, bool printci, bool printstdev, bool withleaf, bool withinternal)	{
 
 		if (prior == 1)	{
 			cerr << "error in read rate trees: chain under the prior\n";
 			exit(1);
 		}
 
-		MeanExpNormTree* meannucratetree =  new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
-		MeanExpNormTree* meanwnnucratetree =  new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meannucratetree =  new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
+		MeanExpNormTree* meanwnnucratetree =  new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		MeanExpNormTree* meanmorphoratetree = 0;
 		if (GetModel()->Morpho())	{
-			meanmorphoratetree =  new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			meanmorphoratetree =  new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		int L = GetModel()->GetL();
@@ -380,7 +380,7 @@ class LogNSample : public Sample	{
 		}
 		MeanExpNormTree** tree = new MeanExpNormTree*[dim];
 		for (int k=0; k<dim; k++)	{
-			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 
@@ -446,7 +446,7 @@ class LogNSample : public Sample	{
 
 	}
 
-	void Read(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, string mulreg)	{
+	void Read(bool printlog, bool printmean, bool printmed, bool printci, bool printstdev, bool withleaf, bool withinternal, string mulreg)	{
 
 		cerr << "read\n";
 
@@ -461,7 +461,7 @@ class LogNSample : public Sample	{
 		}
 		MeanExpNormTree** tree = new MeanExpNormTree*[dim];
 		for (int k=0; k<dim; k++)	{
-			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		MeanCovMatrix*  mat = 0;
@@ -667,6 +667,7 @@ int main(int argc, char* argv[])	{
 
 	bool printlog = false;
 	bool printmean = false;
+    bool printmed = false;
 	bool printci = true;
 	bool printstdev = false;
 	bool withleaf = true;
@@ -718,9 +719,17 @@ int main(int argc, char* argv[])	{
 			}
 			else if (s == "+mean")	{
 				printmean = true;
+                printmed = false;
 			}
 			else if (s == "-mean")	{
 				printmean = false;
+			}
+			else if ((s == "+med") || (s == "+median"))	{
+				printmed = true;
+                printmean = false;
+			}
+			else if ((s == "-med") || (s == "-median"))	{
+				printmed = false;
 			}
 			else if (s == "+stdev")	{
 				printstdev = true;
@@ -853,10 +862,10 @@ int main(int argc, char* argv[])	{
 		sample.ReadAcrossKT();
 	}
 	else if (ratetree)	{
-		sample.ReadRateTrees(printlog,printmean,printci,printstdev,withleaf,withinternal);
+		sample.ReadRateTrees(printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 	}
 	else	{
-		sample.Read(printlog,printmean,printci,printstdev,withleaf,withinternal,mulreg);
+		sample.Read(printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,mulreg);
 	}
 
 }

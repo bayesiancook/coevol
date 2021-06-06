@@ -112,19 +112,19 @@ class BrownianSample : public Sample	{
 		cerr << '\n';
 	}
 
-	void Read(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, string mulreg, bool tex, double xscale, double yscale, double nodescale, double nodepower, double barwidth, int fontsize, bool bubbletext, double meanreg, double stdevreg)	{
+	void Read(bool printlog, bool printmean, bool printmed, bool printci, bool printstdev, bool withleaf, bool withinternal, string mulreg, bool tex, double xscale, double yscale, double nodescale, double nodepower, double barwidth, int fontsize, bool bubbletext, double meanreg, double stdevreg)	{
 
 		int Ncont = GetModel()->GetNcont();
 
 		MeanChronogram* meanchrono = new MeanChronogram(GetModel()->GetTree());
-		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
+		MeanExpNormTree* meansynrate = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,meanreg,stdevreg);
 		MeanExpNormTree* meangc = 0;
 				if(gc)
-					meangc = new MeanExpNormTree(GetModel()->GetTree(),true,printlog,printmean,printci,printstdev,withleaf,withinternal);
+					meangc = new MeanExpNormTree(GetModel()->GetTree(),true,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 
 		MeanExpNormTree** tree = new MeanExpNormTree*[Ncont];
 		for (int k=0; k<Ncont; k++)	{
-			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		int dim = GetModel()->GetSigma()->GetDim();
@@ -441,6 +441,7 @@ int main(int argc, char* argv[])	{
 
 	bool printlog = false;
 	bool printmean = false;
+    bool printmed = false;
 	bool printci = true;
 	bool printstdev = false;
 	bool withleaf = true;
@@ -543,9 +544,17 @@ int main(int argc, char* argv[])	{
 			}
 			else if (s == "+mean")	{
 				printmean = true;
+                printmed = false;
 			}
 			else if (s == "-mean")	{
 				printmean = false;
+			}
+			else if ((s == "+med") || (s == "+median"))	{
+				printmed = true;
+                printmean = false;
+			}
+			else if ((s == "-med") || (s == "-median"))	{
+				printmed = false;
 			}
 			else if (s == "+stdev")	{
 				printstdev = true;
@@ -676,7 +685,7 @@ int main(int argc, char* argv[])	{
 		sample.CheckCov(truefile);
 	}
 	else	{
-		sample.Read(printlog,printmean,printci,printstdev,withleaf,withinternal,mulreg,tex,x,y,nodescale,nodepower,barwidth,fontsize,bubbletext,meanreg,stdevreg);
+		sample.Read(printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,mulreg,tex,x,y,nodescale,nodepower,barwidth,fontsize,bubbletext,meanreg,stdevreg);
 
 	}
 

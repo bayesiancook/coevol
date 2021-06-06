@@ -195,7 +195,7 @@ class AncestralCovarianceSample : public Sample	{
 		cerr << '\n';
 	}
 
-	void Read(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, bool withanc, string mulreg)	{
+	void Read(bool printlog, bool printmean, bool printmed, bool printci, bool printstdev, bool withleaf, bool withinternal, bool withanc, string mulreg)	{
 
 		cerr << "read\n";
 		int Ncont = GetModel()->Ncont;
@@ -205,7 +205,7 @@ class AncestralCovarianceSample : public Sample	{
 
 		MeanExpNormTree** tree = new MeanExpNormTree*[N];
 		for (int k=0; k<N; k++)	{
-			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		int dim = GetModel()->GetCovMatrix()->GetDim();
@@ -415,7 +415,7 @@ class AncestralCovarianceSample : public Sample	{
 		cerr << '\n';
 	}
 
-	void ReadWoCov(bool printlog, bool printmean, bool printci, bool printstdev, bool withleaf, bool withinternal, bool withanc, string mulreg)	{
+	void ReadWoCov(bool printlog, bool printmean, bool printmed, bool printci, bool printstdev, bool withleaf, bool withinternal, bool withanc, string mulreg)	{
 
 		cerr << "read\n";
 		int Ncont = GetModel()->Ncont;
@@ -425,7 +425,7 @@ class AncestralCovarianceSample : public Sample	{
 
 		MeanExpNormTree** tree = new MeanExpNormTree*[N];
 		for (int k=0; k<N; k++)	{
-			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printci,printstdev,withleaf,withinternal);
+			tree[k] = new MeanExpNormTree(GetModel()->GetTree(),false,printlog,printmean,printmed,printci,printstdev,withleaf,withinternal);
 		}
 
 		// cycle over the sample
@@ -503,6 +503,7 @@ int main(int argc, char* argv[])	{
 
 	bool printlog = false;
 	bool printmean = false;
+    bool printmed = false;
 	bool printci = true;
 	bool printstdev = false;
 	bool withleaf = true;
@@ -544,9 +545,17 @@ int main(int argc, char* argv[])	{
 			}
 			else if (s == "+mean")	{
 				printmean = true;
+                printmed = false;
 			}
 			else if (s == "-mean")	{
 				printmean = false;
+			}
+			else if ((s == "+med") || (s == "+median"))	{
+				printmed = true;
+                printmean = false;
+			}
+			else if ((s == "-med") || (s == "-median"))	{
+				printmed = false;
 			}
 			else if (s == "+stdev")	{
 				printstdev = true;
@@ -631,7 +640,7 @@ int main(int argc, char* argv[])	{
 	AncestralCovarianceSample sample(name,burnin,every,until);
 
 	if (wocov)	{
-		sample.ReadWoCov(printlog,printmean,printci,printstdev,withleaf,withinternal,withanc,mulreg);
+		sample.ReadWoCov(printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,withanc,mulreg);
 		exit(1);
 	}
 
@@ -645,7 +654,7 @@ int main(int argc, char* argv[])	{
 		exit(1);
 	}
 
-	sample.Read(printlog,printmean,printci,printstdev,withleaf,withinternal,withanc,mulreg);
+	sample.Read(printlog,printmean,printmed,printci,printstdev,withleaf,withinternal,withanc,mulreg);
 
 }
 
