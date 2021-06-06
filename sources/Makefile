@@ -1,7 +1,7 @@
 CC=g++
 SYSLIB=
 INCLUDES=
-CPPFLAGS= -w -O3 -c -g -std=c++11
+CPPFLAGS= -w -O3 -std=c++11
 LDFLAGS= 
 INSTALL_DIR=
 INSTALL_LIB=
