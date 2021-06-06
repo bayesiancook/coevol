@@ -413,7 +413,7 @@ int main(int argc, char* argv[])	{
 #endif
 
 	if (! myid)	{
-		cerr << "Coevol version 1.5\n";
+		cerr << "Coevol version 1.6\n";
 		cerr << '\n';
 	}
 
