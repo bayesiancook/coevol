@@ -1,23 +1,7 @@
-#To compile with gsl, reactivate the following line (remove '#')
-#USE_GSL=-DGSL
-
-#To statically build the executables, uncomment the following line
-#STATIC=-static
-
-ifdef USE_GSL
-#GSLLIB=-lgsl -lgslcblas
-else
-GSLLIB=
-endif
-
-LIBS=$(GSLLIB)
-#LIBS=$(GSLLIB) -lboost_regex
-
 CC=mpic++
-#OMP=-fopenmp
 SYSLIB=
 INCLUDES=
-CPPFLAGS= -w -O3 -c --std=c++11 
+CPPFLAGS= -w -O3 --std=c++11 
 #LDFLAGS=$(STATIC)
 LDFLAGS= $(OMP)
 INSTALL_DIR=
