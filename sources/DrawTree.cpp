@@ -761,13 +761,14 @@ void HeatTree::MakeScale(ostream& os)	{
 	strs << min;
 	std::string str = strs.str();
 	if (str.at(0) == '0') {
-		z=pow(10,std::count(str.begin(), str.end(), '0'));
+		z=pow(10,1+std::count(str.begin(), str.end(), '0'));
 	}
 	for (int i=0; i <= ngrad; i++)	{
 		double xx = texapprox(x0 + dx * ((double) i) / ngrad);
 		os << "\\path [draw] (" << xx << "," << y + dy << ") -- +(0," << -2 *dy << ");\n";
-		os.precision(3);
+		os.precision(4);
 		double x = ((double) ((int) (z * (min + (max-min) * ((double) i) / ngrad)))) / z;
+		cerr << z << '\t' << i << '\t' << ngrad << '\t' << x << '\n';
         /*
         int exponent = 0;
         int front = 0;
